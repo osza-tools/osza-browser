@@ -172,7 +172,7 @@
      <item>
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>&lt;a href=&quot;https://store.kde.org/browse/cat/572/&quot;&gt;Get more themes...&lt;/a&gt;</string>
+        <string>&lt;a href=&quot;https://github.com/veex-tools/veex-browser&quot;&gt;Get more themes...&lt;/a&gt;</string>
        </property>
        <property name="openExternalLinks">
         <bool>true</bool>

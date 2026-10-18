@@ -13,8 +13,8 @@ if (GNOME_KEYRING_FOUND)
     add_subdirectory(GnomeKeyringPasswords)
 endif()
 
-if (ENABLE_KDE_FRAMEWORKS_INTEGRATION_PLUGIN)
-    add_subdirectory(KDEFrameworksIntegration)
+if (ENABLE_SYSTEM_INTEGRATION_PLUGIN)
+    add_subdirectory(SystemIntegration)
 endif()
 
 if (ENABLE_PYTHON_PLUGINS)

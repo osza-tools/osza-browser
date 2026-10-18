@@ -1,4 +1,4 @@
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 # Federico Fabiani <federico.fabiani85@gmail.com>, 2017.
 # Jorge Sevilla <jsevi@ozu.es>, 2017.
@@ -4040,9 +4040,9 @@ msgstr "Rimuovi"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Ottieni altre estensioni..."
+"<a href=\"https://github.com/veex-tools/veex-browser\">Ottieni altre estensioni..."
 "</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5151,7 +5151,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "Per ulteriori informazioni sul controllo ortografico visita il <a href="
-"\"https://userbase.kde.org/Veex#Spell_Check\">wiki</a>."
+"\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wiki</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5416,9 +5416,9 @@ msgstr "Rimuovi"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Ottieni altri temi...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Ottieni altri temi...</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

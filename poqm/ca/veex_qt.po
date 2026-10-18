@@ -1,5 +1,5 @@
 # Translation of veex_qt.po to Catalan
-# Copyright (C) 2018-2026 This_file_is_part_of_KDE
+# Copyright (C) 2018-2026 This_file_is_part_of_Veex
 # Copyright (C) 2012-2017 Free Software Foundation, Inc.
 # This file is distributed under the license LGPL version 2.1 or
 # version 3 or later versions approved by the membership of KDE e.V.
@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2018-02-25 02:34+0000\n"
 "PO-Revision-Date: 2026-09-29 10:19+0200\n"
 "Last-Translator: Josep M. Ferrer <txemaq@gmail.com>\n"
@@ -4048,9 +4048,9 @@ msgstr "Elimina"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Obtén més extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Obtén més extensions...</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
 msgctxt "PluginsManager|"
@@ -5155,7 +5155,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "Per a més informació sobre la Comprovació ortogràfica, vegeu el <a href="
-"\"https://userbase.kde.org/Veex#Spell_Check\">wiki</a>."
+"\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wiki</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5419,9 +5419,9 @@ msgstr "Elimina"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Obtén més temes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Obtén més temes...</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

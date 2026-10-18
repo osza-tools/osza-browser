@@ -1,4 +1,4 @@
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 #
 # Vasilis Tsivikis <vasitsiv.dev@gmail.com>, 2017.
@@ -4134,9 +4134,9 @@ msgstr "Αφαίρεση"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Ανακτήστε περισσότερες "
+"<a href=\"https://github.com/veex-tools/veex-browser\">Ανακτήστε περισσότερες "
 "επεκτάσεις...</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5255,7 +5255,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "Για περισσότερες πληροφορίες σχετικά με τον ορθογραφικό έλεγχο, ανατρέξτε "
-"στο <a href=\"https://userbase.kde.org/Veex#Spell_Check\">wiki</a>."
+"στο <a href=\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wiki</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5527,9 +5527,9 @@ msgstr "Αφαίρεση"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Ανάκτηση περισσότερων "
+"<a href=\"https://github.com/veex-tools/veex-browser\">Ανάκτηση περισσότερων "
 "θεμάτων...</a>"
 
 #: lib/preferences/useragentdialog.cpp:99

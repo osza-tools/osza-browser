@@ -1,8 +1,8 @@
 #! /bin/sh
 
 XGETTEXT_FLAGS_QML="\
---copyright-holder=This_file_is_part_of_KDE \
---msgid-bugs-address=https://bugs.kde.org \
+--copyright-holder=This_file_is_part_of_Veex \
+--msgid-bugs-address=https://github.com/veex-tools/veex-browser/issues \
 --from-code=UTF-8 \
 -L javascript \
 -ki18n:1 -ki18np:1,2 \

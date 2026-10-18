@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex_helloqml\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2025-11-17 11:51+0000\n"
 "PO-Revision-Date: 2024-04-25 14:02+0200\n"
 "Last-Translator: Xavier Besnard <xavier.besnard@kde.org>\n"

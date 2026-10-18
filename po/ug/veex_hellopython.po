@@ -1,12 +1,12 @@
 # Uyghur translation for veex_hellopython.
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the PACKAGE package.
 # Abduqadir Abliz <sahranbay@gmail.com>, 2026., YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: veex_hellopython\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2025-11-17 11:51+0000\n"
 "PO-Revision-Date: 2026-09-23 06:56+0900\n"
 "Last-Translator: Abduqadir Abliz <sahranbay@gmail.com>\n"

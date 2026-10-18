@@ -4039,9 +4039,9 @@ msgstr "Remove"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Obtene altere "
+"<a href=\"https://github.com/veex-tools/veex-browser\">Obtene altere "
 "extensiones...</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5146,7 +5146,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "Per ulterior information re Spell Check (Corrector Orthographic), pro favor "
-"vide <a href=\"https://userbase.kde.org/Veex#Spell_Check\">wiki</a>."
+"vide <a href=\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wiki</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5411,9 +5411,9 @@ msgstr "Remove"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Obtener altere themas...</"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Obtener altere themas...</"
 "a>"
 
 #: lib/preferences/useragentdialog.cpp:99

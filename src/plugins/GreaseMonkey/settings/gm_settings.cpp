@@ -128,7 +128,7 @@ void GM_Settings::newScript()
 
     const QString script = QL1S("// ==UserScript== \n"
                                 "// @name        %1 \n"
-                                "// @namespace   kde.org \n"
+                                "// @namespace   veex.tools \n"
                                 "// @description Script description \n"
                                 "// @include     * \n"
                                 "// @version     1.0.0 \n"

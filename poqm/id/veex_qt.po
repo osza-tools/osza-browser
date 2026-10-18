@@ -1,4 +1,4 @@
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 # Widya Walesa <walecha99@gmail.com>, 2017.
 # SPDX-FileCopyrightText: 2018, 2019, 2020, 2021, 2022, 2023 Wantoyo <wantoyek@gmail.com>
@@ -4187,9 +4187,9 @@ msgstr "Hapus"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Dapatkan lagi ekstensi...</"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Dapatkan lagi ekstensi...</"
 "a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5312,7 +5312,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "Untuk informasi selebihnya tentang Spell Check, silakan lihat <a href="
-"\"https://userbase.kde.org/Veex#Spell_Check\">wiki</a>."
+"\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wiki</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5636,9 +5636,9 @@ msgstr "Hapus"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Dapatkan lagi tema-tema..."
+"<a href=\"https://github.com/veex-tools/veex-browser\">Dapatkan lagi tema-tema..."
 "</a>"
 
 #: lib/preferences/useragentdialog.cpp:99

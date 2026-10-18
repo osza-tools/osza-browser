@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex_hellopython\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2025-11-17 11:51+0000\n"
 "PO-Revision-Date: 2018-02-28 16:04+0000\n"
 "Last-Translator: José Nuno Coelho Pires <zepires@gmail.com>\n"

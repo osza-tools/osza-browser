@@ -64,10 +64,9 @@ void SpeedDial::loadSettings()
     settings.endGroup();
 
     if (allPages.isEmpty()) {
-        allPages = QL1S("url:\"https://www.veex.org\"|title:\"Veex\";"
-                        "url:\"https://store.veex.org\"|title:\"Veex Store\";"
-                        "url:\"https://www.kde.org\"|title:\"KDE Planet\";"
-                        "url:\"https://planet.kde.org\"|title:\"KDE Community\";");
+        allPages = QL1S("url:\"https://github.com/veex-tools/veex-browser\"|title:\"Veex Browser\";"
+                        "url:\"https://github.com/veex-tools\"|title:\"Veex Tools\";"
+                        "url:\"https://www.wikipedia.org\"|title:\"Wikipedia\";");
     }
     changed(allPages);
 

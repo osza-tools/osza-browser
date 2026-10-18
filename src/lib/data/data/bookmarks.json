@@ -13,33 +13,25 @@
     {
      "description": "",
      "keyword": "veex",
-     "name": "Veex",
+     "name": "Veex Browser",
      "type": "url",
-     "url": "https://www.veex.org/",
+     "url": "https://github.com/veex-tools/veex-browser/",
      "visit_count": 0
     },
     {
      "description": "",
      "keyword": "",
-     "name": "Veex Store",
+     "name": "Veex Tools",
      "type": "url",
-     "url": "https://store.veex.org/",
-     "visit_count": 0
-    },
-    {
-     "description": "",
-     "keyword": "kde",
-     "name": "KDE Community",
-     "type": "url",
-     "url": "https://www.kde.org/",
+     "url": "https://github.com/veex-tools/",
      "visit_count": 0
     },
     {
      "description": "",
      "keyword": "",
-     "name": "KDE Planet",
+     "name": "Wikipedia",
      "type": "url",
-     "url": "https://planet.kde.org/",
+     "url": "https://www.wikipedia.org/",
      "visit_count": 0
     }
    ],

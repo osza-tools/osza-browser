@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2024 Kristof Kiszel <ulysses@fsf.hu>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2024-01-23 11:17+0100\n"
+"Last-Translator: Kristof Kiszel <ulysses@fsf.hu>\n"
+"Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 24.01.90\n"
+
+#: downloadkjob.cpp:34
+msgctxt "DownloadKJob|"
+msgid "Downloading"
+msgstr "Letöltés"
+
+#: downloadkjob.cpp:35
+msgctxt "DownloadKJob|"
+msgid "Source"
+msgstr "Forrás"
+
+#: downloadkjob.cpp:36
+msgctxt "DownloadKJob|"
+msgid "Destination"
+msgstr "Cél"
+
+#: systemintegrationplugin.cpp:116
+msgctxt "SystemIntegrationPlugin|"
+msgid "Share page"
+msgstr "Oldal megosztása"
+
+#: kwalletpasswordbackend.cpp:62
+msgctxt "SystemIntegrationPlugin|"
+msgid "KWallet"
+msgstr "KWallet"
+
+#: kwalletpasswordbackend.cpp:76
+msgctxt "SystemIntegrationPlugin|"
+msgid "Encrypted UserName"
+msgstr ""
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "SystemIntegrationPlugin|"
+msgid "KWallet disabled"
+msgstr "KWallet letiltva"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "SystemIntegrationPlugin|"
+msgid "Please enable KWallet to save password."
+msgstr "Engedélyezze a KWalletet a jelszó mentéséhez."

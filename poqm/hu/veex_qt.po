@@ -4052,9 +4052,9 @@ msgstr "Eltávolítás"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">További kiterjesztések "
+"<a href=\"https://github.com/veex-tools/veex-browser\">További kiterjesztések "
 "letöltése…</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5167,7 +5167,7 @@ msgid ""
 "userbase.kde.org/Veex#Spell_Check\">wiki</a>."
 msgstr ""
 "További információért a helyesírás-ellenőrzésről keresse fel a <a href="
-"\"https://userbase.kde.org/Veex#Spell_Check\">wikit</a>."
+"\"https://github.com/veex-tools/veex-browser/wiki#Spell_Check\">wikit</a>."
 
 #: lib/preferences/preferences.ui:2665
 msgctxt "Preferences|"
@@ -5431,9 +5431,9 @@ msgstr "Eltávolítás"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Új témák letöltése…</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Új témák letöltése…</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

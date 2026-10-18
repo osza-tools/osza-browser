@@ -1,4 +1,4 @@
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 # Muhammad Fawwaz Orabi <mfawwaz93@gmail.com>, 2017.
 # Safa Alfulaij <safa1996alfulaij@gmail.com>, 2018.

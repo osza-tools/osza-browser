@@ -1,0 +1,54 @@
+# Kheyyam Gojayev <xxmn77@gmail.com>, 2020, 2023.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2023-05-29 21:51+0400\n"
+"Last-Translator: Kheyyam <xxmn77@gmail.com>\n"
+"Language-Team: Azerbaijani <kde-i18n-doc@kde.org>\n"
+"Language: az\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 23.04.1\n"
+
+#: downloadkjob.cpp:34
+msgctxt "DownloadKJob|"
+msgid "Downloading"
+msgstr "Endirilir"
+
+#: downloadkjob.cpp:35
+msgctxt "DownloadKJob|"
+msgid "Source"
+msgstr "Mənbə"
+
+#: downloadkjob.cpp:36
+msgctxt "DownloadKJob|"
+msgid "Destination"
+msgstr "Hədəf"
+
+#: systemintegrationplugin.cpp:116
+msgctxt "SystemIntegrationPlugin|"
+msgid "Share page"
+msgstr "Səhifəni paylaşın"
+
+#: kwalletpasswordbackend.cpp:62
+msgctxt "SystemIntegrationPlugin|"
+msgid "KWallet"
+msgstr "KWallet"
+
+#: kwalletpasswordbackend.cpp:76
+msgctxt "SystemIntegrationPlugin|"
+msgid "Encrypted UserName"
+msgstr ""
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "SystemIntegrationPlugin|"
+msgid "KWallet disabled"
+msgstr "KWallet söndürülüb"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "SystemIntegrationPlugin|"
+msgid "Please enable KWallet to save password."
+msgstr "Şifrəni saxlamaq üçün KWallet-i aktiv edin."

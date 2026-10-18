@@ -1,5 +1,5 @@
 # Translation of veex_mousegestures_qt.po to Ukrainian
-# Copyright (C) 2018 This_file_is_part_of_KDE
+# Copyright (C) 2018 This_file_is_part_of_Veex
 # This file is distributed under the license LGPL version 2.1 or
 # version 3 or later versions approved by the membership of KDE e.V.
 #

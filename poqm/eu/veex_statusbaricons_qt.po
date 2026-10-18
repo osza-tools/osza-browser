@@ -1,5 +1,5 @@
 # Translation for veex_statusbaricons_qt.po to Euskara/Basque (eu).
-# Copyright (C) 2017-2024 This_file_is_part_of_KDE
+# Copyright (C) 2017-2024 This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 # SPDX-FileCopyrightText: 2024 KDE euskaratzeko proiektuaren arduraduna <xalba@ni.eus>
 #

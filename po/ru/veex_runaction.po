@@ -1,11 +1,11 @@
-# Copyright (C) YEAR This_file_is_part_of_KDE
+# Copyright (C) YEAR This_file_is_part_of_Veex
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Alexander Yavorsky <kekcuha@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2025-11-17 11:51+0000\n"
 "PO-Revision-Date: 2020-10-28 20:37+0300\n"
 "Last-Translator: Alexander Yavorsky <kekcuha@gmail.com>\n"

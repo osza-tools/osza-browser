@@ -1,5 +1,5 @@
 # Translation of veex_middleclickloader.po to Brazilian Portuguese
-# Copyright (C) 2018-2019 This_file_is_part_of_KDE
+# Copyright (C) 2018-2019 This_file_is_part_of_Veex
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Luiz Fernando Ranghetti <elchevive@opensuse.org>, 2018, 2021.
@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex_middleclickloader\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2025-11-17 11:51+0000\n"
 "PO-Revision-Date: 2021-07-14 11:55-0300\n"
 "Last-Translator: Luiz Fernando Ranghetti <elchevive@opensuse.org>\n"

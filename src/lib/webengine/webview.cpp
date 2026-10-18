@@ -886,7 +886,7 @@ void WebView::createSelectedTextContextMenu(QMenu* menu, const WebHitTestResult 
 
     menu->addSeparator();
     selectedText.truncate(20);
-    // KDE is displaying newlines in menu actions ... weird -,-
+    // Some platform styles display newlines in menu actions ... weird -,-
     selectedText.replace(QLatin1Char('\n'), QLatin1Char(' ')).replace(QLatin1Char('\t'), QLatin1Char(' '));
 
     SearchEngine engine = mApp->searchEnginesManager()->defaultEngine();

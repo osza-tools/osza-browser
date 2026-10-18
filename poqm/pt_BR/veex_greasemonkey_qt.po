@@ -1,5 +1,5 @@
 # Translation of veex_greasemonkey_qt.po to Brazilian Portuguese
-# Copyright (C) 2017-2018 This_file_is_part_of_KDE
+# Copyright (C) 2017-2018 This_file_is_part_of_Veex
 # This file is distributed under the same license as the veex package.
 #
 # Eugenio Oliveira <eugeniosaulo@gmail.com>, 2017.

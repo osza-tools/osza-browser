@@ -121,19 +121,19 @@ endif()
 
 # Optional: KWallet, KIO, KCrash, KCoreAddons
 find_package(KF6Wallet ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6Wallet PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6Wallet PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 find_package(KF6KIO ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6KIO PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6KIO PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 find_package(KF6Crash ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6Crash PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6Crash PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 find_package(KF6CoreAddons ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6CoreAddons PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6CoreAddons PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 find_package(KF6Purpose ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6Purpose PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6Purpose PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 find_package(KF6JobWidgets ${KF_MIN_VERSION} CONFIG)
-set_package_properties(KF6JobWidgets PROPERTIES DESCRIPTION "KDE Frameworks Integration plugin" TYPE OPTIONAL)
+set_package_properties(KF6JobWidgets PROPERTIES DESCRIPTION "System Integration plugin (KWallet/KIO)" TYPE OPTIONAL)
 if (KF6Wallet_FOUND AND KF6KIO_FOUND AND KF6Crash_FOUND AND KF6CoreAddons_FOUND AND KF6Purpose_FOUND AND KF6JobWidgets_FOUND AND NOT WIN32)
-    set(ENABLE_KDE_FRAMEWORKS_INTEGRATION_PLUGIN TRUE)
+    set(ENABLE_SYSTEM_INTEGRATION_PLUGIN TRUE)
 endif()
 
 # Optional: PySide6
@@ -210,7 +210,5 @@ if (BUILD_TESTING)
     add_subdirectory(tests/benchmarks)
 endif()
 
-# Tell releaseme that po is already taken care of
-# SKIP_PO_INSTALL
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

@@ -4060,9 +4060,9 @@ msgstr "Silmək"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Başqa əlavələr almaq...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Başqa əlavələr almaq...</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
 msgctxt "PluginsManager|"
@@ -5439,9 +5439,9 @@ msgstr "Silmək"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Yeni mövzular almaq...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Yeni mövzular almaq...</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

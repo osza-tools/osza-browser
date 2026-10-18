@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2021-09-05 00:16+0000\n"
 "PO-Revision-Date: 2026-10-12 11:37+0300\n"
 "Last-Translator: Emir SARI <emir_sari@icloud.com>\n"
@@ -4032,9 +4032,9 @@ msgstr "Kaldır"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Daha fazla genişletme al…</"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Daha fazla genişletme al…</"
 "a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5402,9 +5402,9 @@ msgstr "Kaldır"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Daha fazla tema al…</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Daha fazla tema al…</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

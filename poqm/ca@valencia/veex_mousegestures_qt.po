@@ -1,5 +1,5 @@
 # Translation of veex_mousegestures_qt.po to Catalan (Valencian)
-# Copyright (C) 2018-2022 This_file_is_part_of_KDE
+# Copyright (C) 2018-2022 This_file_is_part_of_Veex
 # Copyright (C) 2012-2017 Free Software Foundation, Inc.
 # This file is distributed under the license LGPL version 2.1 or
 # version 3 or later versions approved by the membership of KDE e.V.
@@ -12,7 +12,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2018-02-25 02:34+0000\n"
 "PO-Revision-Date: 2022-09-20 23:11+0200\n"
 "Last-Translator: Antoni Bella Pérez <antonibella5@yahoo.com>\n"

@@ -151,9 +151,9 @@ void Plugins::loadSettings()
         QSL("internal:adblock")
     };
 
-    // Enable KDE Frameworks Integration when running inside KDE session
+    // Enable System Integration when running inside a KDE session
     if (qgetenv("KDE_FULL_SESSION") == QByteArray("true")) {
-        defaultAllowedPlugins.append(QSL("lib:KDEFrameworksIntegration.so"));
+        defaultAllowedPlugins.append(QSL("lib:SystemIntegration.so"));
     }
 
     Settings settings;

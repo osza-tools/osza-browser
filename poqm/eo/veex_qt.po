@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: veex\n"
-"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"Report-Msgid-Bugs-To: https://github.com/veex-tools/veex-browser/issues\n"
 "POT-Creation-Date: 2023-11-05 13:43+0100\n"
 "PO-Revision-Date: 2024-12-26 21:43+0100\n"
 "Last-Translator: Oliver Kellogg <olivermkellogg@gmail.com>\n"
@@ -4059,9 +4059,9 @@ msgstr "Forigi"
 #: lib/preferences/pluginslist.ui:81
 msgctxt "PluginsList|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Get more extensions...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more extensions...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/571/\">Akiru pliajn etendaĵojn..."
+"<a href=\"https://github.com/veex-tools/veex-browser\">Akiru pliajn etendaĵojn..."
 "</a>"
 
 #: lib/preferences/pluginsmanager.cpp:201
@@ -5431,9 +5431,9 @@ msgstr "Forigi"
 #: lib/preferences/thememanager.ui:175
 msgctxt "ThemeManager|"
 msgid ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Get more themes...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Get more themes...</a>"
 msgstr ""
-"<a href=\"https://store.kde.org/browse/cat/572/\">Akiri pliajn etosojn...</a>"
+"<a href=\"https://github.com/veex-tools/veex-browser\">Akiri pliajn etosojn...</a>"
 
 #: lib/preferences/useragentdialog.cpp:99
 msgctxt "UserAgentDialog|"

@@ -29,7 +29,7 @@
         <set>Qt::InputMethodHint::ImhNoAutoUppercase|Qt::InputMethodHint::ImhUrlCharactersOnly</set>
        </property>
        <property name="placeholderText">
-        <string>https://kde.org</string>
+        <string>https://example.org</string>
        </property>
       </widget>
      </item>
