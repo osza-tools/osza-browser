@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -181,7 +181,7 @@ bool SiteInfo::canShowSiteInfo(const QUrl &url)
     if (LocationBar::convertUrlToText(url).isEmpty())
         return false;
 
-    if (url.scheme() == QL1S("falkon") || url.scheme() == QL1S("view-source") || url.scheme() == QL1S("extension"))
+    if (url.scheme() == QL1S("veex") || url.scheme() == QL1S("view-source") || url.scheme() == QL1S("extension"))
         return false;
 
     return true;

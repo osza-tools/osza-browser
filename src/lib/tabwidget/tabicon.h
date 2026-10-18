@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class QTimer;
 
 class WebTab;
 
-class FALKON_EXPORT TabIcon : public QWidget
+class VEEX_EXPORT TabIcon : public QWidget
 {
     Q_OBJECT
 

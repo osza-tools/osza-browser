@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class QTimer;
 class Bookmarks;
 class BookmarkItem;
 
-class FALKON_EXPORT BookmarksModel : public QAbstractItemModel
+class VEEX_EXPORT BookmarksModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -79,7 +79,7 @@ private:
     Bookmarks* m_bookmarks;
 };
 
-class FALKON_EXPORT BookmarksFilterModel : public QSortFilterProxyModel
+class VEEX_EXPORT BookmarksFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
@@ -100,7 +100,7 @@ private:
     QTimer* m_filterTimer;
 };
 
-class FALKON_EXPORT BookmarksButtonMimeData : public QMimeData
+class VEEX_EXPORT BookmarksButtonMimeData : public QMimeData
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014 Franz Fellner <alpine.art.de@googlemail.com>
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
@@ -25,7 +25,7 @@
 class WebPage;
 class RecoveryJsObject;
 
-struct FALKON_EXPORT RestoreData
+struct VEEX_EXPORT RestoreData
 {
     QVector<BrowserWindow::SavedWindow> windows;
     QByteArray crashedSession;
@@ -34,11 +34,11 @@ struct FALKON_EXPORT RestoreData
     bool isValid() const;
     void clear();
 
-    friend FALKON_EXPORT QDataStream &operator<<(QDataStream &stream, const RestoreData &data);
-    friend FALKON_EXPORT QDataStream &operator>>(QDataStream &stream, RestoreData &data);
+    friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const RestoreData &data);
+    friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, RestoreData &data);
 };
 
-class FALKON_EXPORT RestoreManager
+class VEEX_EXPORT RestoreManager
 {
 public:
     explicit RestoreManager(const QString &file);

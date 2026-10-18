@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -57,7 +57,7 @@
 class QUrl;
 class QNetworkReply;
 
-class FALKON_EXPORT AdBlockSubscription : public QObject
+class VEEX_EXPORT AdBlockSubscription : public QObject
 {
     Q_OBJECT
 public:

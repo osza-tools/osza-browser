@@ -1,5 +1,5 @@
 /* ============================================================
-* GnomeKeyringPasswords - gnome-keyring support plugin for Falkon
+* GnomeKeyringPasswords - gnome-keyring support plugin for Veex
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include "passwordbackends/passwordbackend.h"
 #include "passwordmanager.h"
 
-class FALKON_EXPORT GnomeKeyringPasswordBackend : public PasswordBackend
+class VEEX_EXPORT GnomeKeyringPasswordBackend : public PasswordBackend
 {
 public:
     explicit GnomeKeyringPasswordBackend();

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -199,9 +199,9 @@ PluginSpec Plugins::createSpec(const DesktopFile &metaData)
     PluginSpec spec;
     spec.name = metaData.name();
     spec.description = metaData.comment();
-    spec.version = metaData.value(QSL("X-Falkon-Version")).toString();
-    spec.author = QSL("%1 <%2>").arg(metaData.value(QSL("X-Falkon-Author")).toString(), metaData.value(QSL("X-Falkon-Email")).toString());
-    spec.hasSettings = metaData.value(QSL("X-Falkon-Settings")).toBool();
+    spec.version = metaData.value(QSL("X-Veex-Version")).toString();
+    spec.author = QSL("%1 <%2>").arg(metaData.value(QSL("X-Veex-Author")).toString(), metaData.value(QSL("X-Veex-Email")).toString());
+    spec.hasSettings = metaData.value(QSL("X-Veex-Settings")).toBool();
 
     const QString iconName = metaData.icon();
     if (!iconName.isEmpty()) {
@@ -245,7 +245,7 @@ void Plugins::loadPlugins()
 
     refreshLoadedPlugins();
 
-    std::cout << "Falkon: " << m_loadedPlugins.count() << " extensions loaded"  << std::endl;
+    std::cout << "Veex: " << m_loadedPlugins.count() << " extensions loaded"  << std::endl;
 }
 
 void Plugins::loadAvailablePlugins()
@@ -268,12 +268,12 @@ void Plugins::loadAvailablePlugins()
             const QString pluginPath = info.absoluteFilePath();
             if (info.isFile() && QLibrary::isLibrary(pluginPath)) {
                 // SharedLibraryPlugin
-                if (info.baseName() != QL1S("PyFalkon")) {
+                if (info.baseName() != QL1S("PyVeex")) {
                     plugin = loadSharedLibraryPlugin(pluginPath);
                 }
             } else if (info.isDir()) {
                 const DesktopFile metaData(QDir(pluginPath).filePath(QSL("metadata.desktop")));
-                const QString type = metaData.value(QSL("X-Falkon-Type")).toString();
+                const QString type = metaData.value(QSL("X-Veex-Type")).toString();
                 if (type == QL1S("Extension/Python")) {
                     // PythonPlugin
                     plugin = loadPythonPlugin(pluginPath);
@@ -320,7 +320,7 @@ void Plugins::loadPythonSupport()
 {
     const QStringList dirs = DataPaths::allPaths(DataPaths::Plugins);
     for (const QString &dir : dirs) {
-        const auto files = QDir(dir).entryInfoList({QSL("PyFalkon*")}, QDir::Files);
+        const auto files = QDir(dir).entryInfoList({QSL("PyVeex*")}, QDir::Files);
         for (const QFileInfo &info : files) {
             m_pythonPlugin = new QLibrary(info.absoluteFilePath(), this);
             m_pythonPlugin->setLoadHints(QLibrary::ExportExternalSymbolsHint);
@@ -329,7 +329,7 @@ void Plugins::loadPythonSupport()
                 delete m_pythonPlugin;
                 m_pythonPlugin = nullptr;
             } else {
-                std::cout << "Falkon: Python plugin support initialized" << std::endl;
+                std::cout << "Veex: Python plugin support initialized" << std::endl;
                 return;
             }
         }
@@ -422,9 +422,9 @@ Plugins::Plugin Plugins::loadPythonPlugin(const QString &name)
         return out;
     }
 
-    auto f = (Plugin*(*)(const QString &)) m_pythonPlugin->resolve("pyfalkon_load_plugin");
+    auto f = (Plugin*(*)(const QString &)) m_pythonPlugin->resolve("pyveex_load_plugin");
     if (!f) {
-        qWarning() << "Failed to resolve" << "pyfalkon_load_plugin";
+        qWarning() << "Failed to resolve" << "pyveex_load_plugin";
         return out;
     }
 
@@ -508,9 +508,9 @@ void Plugins::initPythonPlugin(Plugin *plugin)
         return;
     }
 
-    auto f = (void(*)(Plugin *)) m_pythonPlugin->resolve("pyfalkon_init_plugin");
+    auto f = (void(*)(Plugin *)) m_pythonPlugin->resolve("pyveex_init_plugin");
     if (!f) {
-        qWarning() << "Failed to resolve" << "pyfalkon_init_plugin";
+        qWarning() << "Failed to resolve" << "pyveex_init_plugin";
         return;
     }
 

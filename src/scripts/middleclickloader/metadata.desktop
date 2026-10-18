@@ -90,9 +90,9 @@ Comment[zh_TW]=將選取區域剪貼板的文字載入成網址
 
 Icon=
 Type=Service
-X-Falkon-Type=Extension/Python
+X-Veex-Type=Extension/Python
 
-X-Falkon-Author=Juraj Oravec
-X-Falkon-Email=sgd.orava@gmail.com
-X-Falkon-Version=0.2.0
-X-Falkon-Settings=true
+X-Veex-Author=Juraj Oravec
+X-Veex-Email=sgd.orava@gmail.com
+X-Veex-Version=0.2.0
+X-Veex-Settings=true

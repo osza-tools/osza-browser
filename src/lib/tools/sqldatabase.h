@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT SqlQueryJob : public QObject
+class VEEX_EXPORT SqlQueryJob : public QObject
 {
     Q_OBJECT
 
@@ -54,7 +54,7 @@ private:
     QVector<QSqlRecord> m_records;
 };
 
-class FALKON_EXPORT SqlDatabase : public QObject
+class VEEX_EXPORT SqlDatabase : public QObject
 {
     Q_OBJECT
 

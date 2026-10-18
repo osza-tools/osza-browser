@@ -1,0 +1,255 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: veex_greasemonkey_qt\n"
+"PO-Revision-Date: 2024-12-15 17:36+0530\n"
+"Last-Translator: Kali <EMAIL@ADDRESS>\n"
+"Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: gm_addscriptdialog.cpp:50
+#, qt-format
+msgctxt "GM_AddScriptDialog|"
+msgid "<p>runs at<br/><i>%1</i></p>"
+msgstr "<p>पर चलता है<br/> <i>%1</i></p>"
+
+#: gm_addscriptdialog.cpp:54
+#, qt-format
+msgctxt "GM_AddScriptDialog|"
+msgid "<p>does not run at<br/><i>%1</i></p>"
+msgstr "<p>पर नहीं चलता<br/> <i>%1</i></p>"
+
+#: gm_addscriptdialog.cpp:84
+msgctxt "GM_AddScriptDialog|"
+msgid "Cannot install script"
+msgstr "स्क्रिप्ट स्थापित नहीं की जा सकती"
+
+#: gm_addscriptdialog.cpp:87
+#, qt-format
+msgctxt "GM_AddScriptDialog|"
+msgid "'%1' installed successfully"
+msgstr "'%1' सफलतापूर्वक स्थापित"
+
+#: gm_addscriptdialog.ui:14
+msgctxt "GM_AddScriptDialog|"
+msgid "GreaseMonkey Installation"
+msgstr "ग्रीसमंकी स्थापना"
+
+#: gm_addscriptdialog.ui:45
+msgctxt "GM_AddScriptDialog|"
+msgid "<h3>GreaseMonkey Installation</h3>"
+msgstr "<h3>ग्रीसमंकी स्थापना</h3>"
+
+#: gm_addscriptdialog.ui:67
+msgctxt "GM_AddScriptDialog|"
+msgid "You are about to install this userscript into GreaseMonkey:"
+msgstr "आप इस यूजरस्क्रिप्ट को GreaseMonkey में स्थापित करने वाले हैं:"
+
+#: gm_addscriptdialog.ui:80
+msgctxt "GM_AddScriptDialog|"
+msgid "<b>You should only install scripts from sources you trust!</b>"
+msgstr ""
+"<b>आपको केवल उन स्रोतों से स्क्रिप्ट स्थापित करनी चाहिए जिन पर आप भरोसा करते हैं!</b>"
+
+#: gm_addscriptdialog.ui:90
+msgctxt "GM_AddScriptDialog|"
+msgid "Are you sure you want to install it?"
+msgstr "क्या आप वाकई इसे स्थापित करना चाहते हैं?"
+
+#: gm_addscriptdialog.ui:108
+msgctxt "GM_AddScriptDialog|"
+msgid "Show source code of script"
+msgstr "स्क्रिप्ट का स्रोत कोड दिखाएं"
+
+#: gm_icon.cpp:30
+msgctxt "GM_Icon|"
+msgid "GreaseMonkey"
+msgstr "बंदर को सिखाओ"
+
+#: gm_icon.cpp:45
+msgctxt "GM_Icon|"
+msgid "GreaseMonkey Icon"
+msgstr "ग्रीसमंकी आइकन"
+
+#: gm_icon.cpp:58
+#, fuzzy
+#| msgctxt "GM_Icon|"
+#| msgid "GreaseMonkey"
+msgctxt "GM_Icon|"
+msgid "&Enable GreaseMonkey"
+msgstr "बंदर को सिखाओ"
+
+#: gm_icon.cpp:63
+#, fuzzy
+#| msgctxt "GM_Icon|"
+#| msgid "Open GreaseMonkey settings"
+msgctxt "GM_Icon|"
+msgid "Show GreaseMonkey &Settings"
+msgstr "GreaseMonkey सेटिंग्स खोलें"
+
+#: gm_icon.cpp:78
+#, fuzzy
+#| msgctxt "GM_AddScriptDialog|"
+#| msgid "GreaseMonkey Installation"
+msgctxt "GM_Icon|"
+msgid "GreaseMonkey is active"
+msgstr "ग्रीसमंकी स्थापना"
+
+#: gm_icon.cpp:81
+#, fuzzy
+#| msgctxt "GM_Settings|"
+#| msgid "GreaseMonkey Scripts"
+msgctxt "GM_Icon|"
+msgid "GreaseMonkey is disabled"
+msgstr "ग्रीसमंकी स्क्रिप्ट"
+
+#: gm_manager.cpp:78
+#, qt-format
+msgctxt "GM_Manager|"
+msgid "'%1' is already installed"
+msgstr "'%1' पहले से स्थापित है"
+
+#: gm_manager.cpp:325
+msgctxt "GM_Manager|"
+msgid "GreaseMonkey"
+msgstr "बंदर को सिखाओ"
+
+#: gm_notification.cpp:51
+msgctxt "GM_Notification|"
+msgid "Cannot install script"
+msgstr "स्क्रिप्ट स्थापित नहीं की जा सकती"
+
+#: gm_notification.cpp:59
+#, qt-format
+msgctxt "GM_Notification|"
+msgid "'%1' installed successfully"
+msgstr "'%1' सफलतापूर्वक स्थापित"
+
+#: gm_notification.ui:39
+msgctxt "GM_Notification|"
+msgid "This script can be installed with the GreaseMonkey plugin."
+msgstr "इस स्क्रिप्ट को GreaseMonkey प्लगइन के साथ स्थापित किया जा सकता है।"
+
+#: gm_notification.ui:59
+msgctxt "GM_Notification|"
+msgid "Install"
+msgstr "स्थापित करना"
+
+#: gm_plugin.cpp:97
+msgctxt "GM_Plugin|"
+msgid "GreaseMonkey"
+msgstr "बंदर को सिखाओ"
+
+#: settings/gm_settings.cpp:94
+msgctxt "GM_Settings|"
+msgid "Remove script"
+msgstr "स्क्रिप्ट हटाएँ"
+
+#: settings/gm_settings.cpp:95
+#, qt-format
+msgctxt "GM_Settings|"
+msgid "Are you sure you want to remove '%1'?"
+msgstr "क्या आप वाकई '%1' को हटाना चाहते हैं?"
+
+#: settings/gm_settings.cpp:125
+msgctxt "GM_Settings|"
+msgid "Add script"
+msgstr "स्क्रिप्ट जोड़ें"
+
+#: settings/gm_settings.cpp:125
+msgctxt "GM_Settings|"
+msgid "Choose name for script:"
+msgstr "स्क्रिप्ट के लिए नाम चुनें:"
+
+#: settings/gm_settings.ui:14
+msgctxt "GM_Settings|"
+msgid "GreaseMonkey Scripts"
+msgstr "ग्रीसमंकी स्क्रिप्ट"
+
+#: settings/gm_settings.ui:48
+msgctxt "GM_Settings|"
+msgid "<h3>GreaseMonkey Scripts</h3>"
+msgstr "<h3>ग्रीसमंकी स्क्रिप्ट</h3>"
+
+#: settings/gm_settings.ui:70
+#, fuzzy
+#| msgctxt "GM_Icon|"
+#| msgid "GreaseMonkey"
+msgctxt "GM_Settings|"
+msgid "Enable GreaseMonkey"
+msgstr "बंदर को सिखाओ"
+
+#: settings/gm_settings.ui:77
+msgctxt "GM_Settings|"
+msgid "Double clicking script will show additional information"
+msgstr "स्क्रिप्ट पर डबल क्लिक करने से अतिरिक्त जानकारी दिखाई देगी"
+
+#: settings/gm_settings.ui:157
+msgctxt "GM_Settings|"
+msgid "More scripts can be downloaded from"
+msgstr "अधिक स्क्रिप्ट यहां से डाउनलोड की जा सकती हैं"
+
+#: settings/gm_settings.ui:200
+msgctxt "GM_Settings|"
+msgid "Open scripts directory"
+msgstr "स्क्रिप्ट निर्देशिका खोलें"
+
+#: settings/gm_settings.ui:207
+msgctxt "GM_Settings|"
+msgid "New user script"
+msgstr "नई उपयोगकर्ता स्क्रिप्ट"
+
+#: settings/gm_settingsscriptinfo.cpp:45
+#, qt-format
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Script Details of %1"
+msgstr "%1 की स्क्रिप्ट का विवरण"
+
+#: settings/gm_settingsscriptinfo.ui:19
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Runs at:"
+msgstr "रन:"
+
+#: settings/gm_settingsscriptinfo.ui:45
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Description:"
+msgstr "विवरण:"
+
+#: settings/gm_settingsscriptinfo.ui:55
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Version:"
+msgstr "संस्करण:"
+
+#: settings/gm_settingsscriptinfo.ui:65
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Start at:"
+msgstr "पर शुरू करें:"
+
+#: settings/gm_settingsscriptinfo.ui:85
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Name:"
+msgstr "नाम:"
+
+#: settings/gm_settingsscriptinfo.ui:115
+msgctxt "GM_SettingsScriptInfo|"
+msgid "URL:"
+msgstr "यूआरएल:"
+
+#: settings/gm_settingsscriptinfo.ui:128
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Does not run at:"
+msgstr "यह यहां नहीं चलता:"
+
+#: settings/gm_settingsscriptinfo.ui:138
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Namespace:"
+msgstr "नामस्थान:"
+
+#: settings/gm_settingsscriptinfo.ui:155
+msgctxt "GM_SettingsScriptInfo|"
+msgid "Edit in text editor"
+msgstr "पाठ संपादक में संपादित करें"

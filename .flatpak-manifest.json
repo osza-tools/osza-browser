@@ -1,15 +1,15 @@
 {
-    "id": "org.kde.falkon",
+    "id": "org.veex.VeexBrowser",
     "runtime": "org.kde.Platform",
     "runtime-version": "6.11",
     "base": "io.qt.qtwebengine.BaseApp",
     "base-version": "6.11",
     "sdk": "org.kde.Sdk",
-    "command": "falkon",
-    "rename-icon": "falkon",
+    "command": "veex",
+    "rename-icon": "veex",
     "finish-args": [
         "--device=dri",
-        "--own-name=org.mpris.MediaPlayer2.falkon.*",
+        "--own-name=org.mpris.MediaPlayer2.veex.*",
         "--share=ipc",
         "--share=network",
         "--socket=fallback-x11",
@@ -34,7 +34,7 @@
     "modules": [
         {
             "buildsystem": "cmake-ninja",
-            "name": "falkon",
+            "name": "veex",
             "config-opts": [
                 "-DENABLE_TESTING=OFF"
             ],

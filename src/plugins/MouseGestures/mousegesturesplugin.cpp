@@ -1,5 +1,5 @@
 /* ============================================================
-* Mouse Gestures plugin for Falkon
+* Mouse Gestures plugin for Veex
 * Copyright (C) 2012-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@ void MouseGesturesPlugin::unload()
 bool MouseGesturesPlugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(FALKON_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
 }
 
 void MouseGesturesPlugin::showSettings(QWidget* parent)

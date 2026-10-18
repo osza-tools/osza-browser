@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 /**
  * @brief The class exposing QWebEngineScriptCollection to QML
  */
-class FALKON_EXPORT QmlUserScripts : public QObject
+class VEEX_EXPORT QmlUserScripts : public QObject
 {
     Q_OBJECT
     /**

@@ -1,8 +1,8 @@
-import org.kde.falkon 1.0 as Falkon
+import org.veex 1.0 as Veex
 import QtQuick.Controls 2.3
 import QtQuick 2.3
 
-Falkon.PluginInterface {
+Veex.PluginInterface {
 
     QtObject {
         id: helloQmlObject
@@ -10,18 +10,18 @@ Falkon.PluginInterface {
         signal clicked(int count)
     }
 
-    Falkon.UserScript {
+    Veex.UserScript {
         id: testingHelloQmlUserScript
         name: 'testing-hello-qml'
         runsOnSubFrames: false
-        sourceCode: Falkon.FileUtils.readAllFileContents('script.js')
-        injectionPoint: Falkon.UserScript.DocumentReady
-        worldId: Falkon.UserScript.ApplicationWorld
+        sourceCode: Veex.FileUtils.readAllFileContents('script.js')
+        injectionPoint: Veex.UserScript.DocumentReady
+        worldId: Veex.UserScript.ApplicationWorld
     }
 
     init: function(state, settingsPath){
         console.log(i18n('"Hello QML" plugin loaded'))
-        Falkon.ExternalJsObject.registerExtraObject({
+        Veex.ExternalJsObject.registerExtraObject({
             id: 'helloQmlObject',
             object: helloQmlObject
         })
@@ -35,8 +35,8 @@ Falkon.PluginInterface {
         console.log(i18n('Bye!'))
     }
 
-    // Point falkon to extension://helloqml to see Hello World
-    Falkon.ExtensionScheme {
+    // Point veex to extension://helloqml to see Hello World
+    Veex.ExtensionScheme {
         name: 'helloqml'
         onRequestStarted: {
             request.reply({
@@ -46,13 +46,13 @@ Falkon.PluginInterface {
         }
     }
 
-    Falkon.BrowserAction {
+    Veex.BrowserAction {
         name: 'helloqml-button'
         identity: 'helloqml-id'
         title: i18n('Testing QML Title')
         toolTip: i18n('Testing QML Tooltip')
         icon: 'extensions.svg'
-        location: Falkon.BrowserAction.NavigationToolBar | Falkon.BrowserAction.StatusBar
+        location: Veex.BrowserAction.NavigationToolBar | Veex.BrowserAction.StatusBar
         popup: Rectangle {
             property var borderMargin: 1
             property var imageWidth: 256
@@ -92,7 +92,7 @@ Falkon.PluginInterface {
         }
     }
 
-    Falkon.SideBar {
+    Veex.SideBar {
         name: 'helloqml-sidebar'
         title: i18n('Testing QML SideBar')
         icon: 'extensions.svg'
@@ -122,7 +122,7 @@ Falkon.PluginInterface {
         })
 
         action.triggered.connect(function() {
-            Falkon.Notifications.create({
+            Veex.Notifications.create({
                 heading: i18n('Hello QML'),
                 message: i18n('First qml plugin action works :-)'),
                 icon: 'extensions.svg'
@@ -130,7 +130,7 @@ Falkon.PluginInterface {
         })
     }
 
-    Falkon.Settings {
+    Veex.Settings {
         id: settings
         name: 'HelloQML'
     }

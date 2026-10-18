@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Falkon
+# RunAction plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,28 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Falkon
+import Veex
 from PySide6 import QtCore
 from runaction import actionmanager, button
 
 
-class RunActionPlugin(Falkon.PluginInterface, QtCore.QObject):
+class RunActionPlugin(Veex.PluginInterface, QtCore.QObject):
     buttons = {}
     manager = None
 
     def init(self, state, settingsPath):
-        plugins = Falkon.MainApplication.instance().plugins()
+        plugins = Veex.MainApplication.instance().plugins()
         plugins.mainWindowCreated.connect(self.mainWindowCreated)
         plugins.mainWindowDeleted.connect(self.mainWindowDeleted)
 
         self.manager = actionmanager.ActionManager(settingsPath)
 
-        if state == Falkon.PluginInterface.LateInitState:
-            for window in Falkon.MainApplication.instance().windows():
+        if state == Veex.PluginInterface.LateInitState:
+            for window in Veex.MainApplication.instance().windows():
                 self.mainWindowCreated(window)
 
     def unload(self):
-        for window in Falkon.MainApplication.instance().windows():
+        for window in Veex.MainApplication.instance().windows():
             self.mainWindowDeleted(window)
 
         self.manager = None
@@ -70,4 +70,4 @@ class RunActionPlugin(Falkon.PluginInterface, QtCore.QObject):
         del self.buttons[window]
 
 
-Falkon.registerPlugin(RunActionPlugin())
+Veex.registerPlugin(RunActionPlugin())

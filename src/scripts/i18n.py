@@ -1,5 +1,5 @@
 # ============================================================
-# Falkon - Qt web browser
+# Veex - Qt web browser
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,6 @@ i = locale.name().find('_')
 if i > 0: languages.append(locale.name()[:i])
 localedir = QtCore.QStandardPaths.locate(QtCore.QStandardPaths.GenericDataLocation, 'locale', QtCore.QStandardPaths.LocateDirectory)
 
-t = gettext.translation('falkon_' + __package__, localedir, languages, fallback=True)
+t = gettext.translation('veex_' + __package__, localedir, languages, fallback=True)
 i18n = t.gettext
 i18np = t.ngettext

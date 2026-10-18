@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ void IconProvider::saveIcon(WebView* view)
     }
 
     const QStringList ignoredSchemes = {
-        QStringLiteral("falkon"),
+        QStringLiteral("veex"),
         QStringLiteral("ftp"),
         QStringLiteral("file"),
         QStringLiteral("view-source"),

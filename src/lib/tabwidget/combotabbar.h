@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2014 S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
@@ -36,7 +36,7 @@ class TabBarScrollWidget;
 class TabBarHelper;
 class ToolButton;
 
-class FALKON_EXPORT ComboTabBar : public QWidget
+class VEEX_EXPORT ComboTabBar : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentChanged)
@@ -224,7 +224,7 @@ private:
     friend class TabStackedWidget;
 };
 
-class FALKON_EXPORT TabBarHelper : public QTabBar
+class VEEX_EXPORT TabBarHelper : public QTabBar
 {
     Q_OBJECT
     Q_PROPERTY(int tabPadding READ tabPadding WRITE setTabPadding)
@@ -292,7 +292,7 @@ private:
     ComboTabBar::DropIndicatorPosition m_dropIndicatorPosition;
 };
 
-class FALKON_EXPORT TabScrollBar : public QScrollBar
+class VEEX_EXPORT TabScrollBar : public QScrollBar
 {
     Q_OBJECT
 public:
@@ -308,7 +308,7 @@ private:
 };
 
 
-class FALKON_EXPORT TabBarScrollWidget : public QWidget
+class VEEX_EXPORT TabBarScrollWidget : public QWidget
 {
     Q_OBJECT
 public:

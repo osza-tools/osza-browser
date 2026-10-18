@@ -1,5 +1,5 @@
 /* ============================================================
-* KDEFrameworksIntegration - KDE support plugin for Falkon
+* KDEFrameworksIntegration - KDE support plugin for Veex
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -72,7 +72,7 @@ QStringList KWalletPasswordBackend::getUsernames(const QUrl& url)
         return {};
     }
 
-    if (!KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("FalkonPasswords"), PasswordManager::createHost(url))) {
+    if (!KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("VeexPasswords"), PasswordManager::createHost(url))) {
         return {KDEFrameworksIntegrationPlugin::tr("Encrypted UserName")};
     }
 
@@ -209,8 +209,8 @@ void KWalletPasswordBackend::removeAll()
 
     m_allEntries.clear();
 
-    m_wallet->removeFolder(QSL("FalkonPasswords"));
-    m_wallet->createFolder(QSL("FalkonPasswords"));
+    m_wallet->removeFolder(QSL("VeexPasswords"));
+    m_wallet->createFolder(QSL("VeexPasswords"));
 }
 
 void KWalletPasswordBackend::showErrorNotification()
@@ -235,7 +235,7 @@ void KWalletPasswordBackend::initialize()
 
 void KWalletPasswordBackend::folderMigration()
 {
-    if (!KWallet::Wallet::folderDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("FalkonPasswords"))) {
+    if (!KWallet::Wallet::folderDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("VeexPasswords"))) {
         return;
     }
 
@@ -245,18 +245,18 @@ void KWalletPasswordBackend::folderMigration()
         return;
     }
 
-    bool migrationFalkon = !m_wallet->hasFolder(QSL("FalkonPasswords")) && m_wallet->hasFolder(QSL("Falkon"));
-    bool migrateQupzilla = !m_wallet->hasFolder(QSL("FalkonPasswords")) && !m_wallet->hasFolder(QSL("Falkon")) && m_wallet->hasFolder(QSL("QupZilla"));
+    bool migrationVeex = !m_wallet->hasFolder(QSL("VeexPasswords")) && m_wallet->hasFolder(QSL("Veex"));
+    bool migrateQupzilla = !m_wallet->hasFolder(QSL("VeexPasswords")) && !m_wallet->hasFolder(QSL("Veex")) && m_wallet->hasFolder(QSL("QupZilla"));
     bool migration = false;
 
-    if (!m_wallet->hasFolder(QSL("FalkonPasswords")) && !m_wallet->createFolder(QSL("FalkonPasswords"))) {
-        qWarning() << "KWalletPasswordBackend::initialize Cannot create folder \"FalkonPasswords\"!";
+    if (!m_wallet->hasFolder(QSL("VeexPasswords")) && !m_wallet->createFolder(QSL("VeexPasswords"))) {
+        qWarning() << "KWalletPasswordBackend::initialize Cannot create folder \"VeexPasswords\"!";
         return;
     }
 
-    if (migrationFalkon) {
-        if (!m_wallet->setFolder(QSL("Falkon"))) {
-            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"Falkon\"!";
+    if (migrationVeex) {
+        if (!m_wallet->setFolder(QSL("Veex"))) {
+            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"Veex\"!";
             return;
         }
         migration = true;
@@ -269,8 +269,8 @@ void KWalletPasswordBackend::folderMigration()
         migration = true;
     }
     else {
-        if (!m_wallet->setFolder(QSL("FalkonPasswords"))) {
-            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"FalkonPasswords\"!";
+        if (!m_wallet->setFolder(QSL("VeexPasswords"))) {
+            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"VeexPasswords\"!";
             return;
         }
     }
@@ -293,8 +293,8 @@ void KWalletPasswordBackend::folderMigration()
             ++i;
         }
 
-        if (!m_wallet->setFolder(QSL("FalkonPasswords"))) {
-            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"FalkonPasswords\"!";
+        if (!m_wallet->setFolder(QSL("VeexPasswords"))) {
+            qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"VeexPasswords\"!";
             return;
         }
 
@@ -310,7 +310,7 @@ void KWalletPasswordBackend::updateVersion()
         return;
     }
 
-    Updater::Version lastVersion(m_plugin->lastFalkonVersion());
+    Updater::Version lastVersion(m_plugin->lastVeexVersion());
     Updater::Version currentVersion(QString::fromLatin1(Qz::VERSION));
 
     if (lastVersion == currentVersion) {
@@ -343,8 +343,8 @@ void KWalletPasswordBackend::loadEntries()
         return;
     }
 
-    if (!m_wallet->setFolder(QSL("FalkonPasswords"))) {
-        qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"FalkonPasswords\"!";
+    if (!m_wallet->setFolder(QSL("VeexPasswords"))) {
+        qWarning() << "KWalletPasswordBackend::initialize Cannot set folder \"VeexPasswords\"!";
         return;
     }
 
@@ -376,7 +376,7 @@ void KWalletPasswordBackend::addExistFlag(const QString &host)
         return;
     }
 
-    if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("FalkonPasswords"), host)) {
+    if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("VeexPasswords"), host)) {
         m_wallet->writeMap(host, {{QSL("exists"), QSL("true")}});
     }
 }
@@ -389,7 +389,7 @@ void KWalletPasswordBackend::removeExistFlag(const QString &host)
         return;
     }
 
-    if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("FalkonPasswords"), host)) {
+    if (KWallet::Wallet::keyDoesNotExist(KWallet::Wallet::NetworkWallet(), QSL("VeexPasswords"), host)) {
         return;
     }
 

@@ -47,7 +47,7 @@
 
 class QtLocalPeer;
 
-class FALKON_EXPORT QtSingleApplication : public QApplication
+class VEEX_EXPORT QtSingleApplication : public QApplication
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* KDEFrameworksIntegration - KDE support plugin for Falkon
+* KDEFrameworksIntegration - KDE support plugin for Veex
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -56,7 +56,7 @@ void KDEFrameworksIntegrationPlugin::init(InitState state, const QString &settin
     m_settingsPath = settingsPath + QL1S("/KDEFrameworksIntegration.ini");
 
     QSettings settings(m_settingsPath, QSettings::IniFormat);
-    m_lastFalkonVersion = settings.value(QSL("General/LastFalkonVersion"), QString::fromLatin1(Qz::VERSION)).toString();
+    m_lastVeexVersion = settings.value(QSL("General/LastVeexVersion"), QString::fromLatin1(Qz::VERSION)).toString();
 
     m_backend = new KWalletPasswordBackend(this);
     mApp->autoFill()->passwordManager()->registerBackend(QSL("KWallet"), m_backend);
@@ -116,18 +116,18 @@ void KDEFrameworksIntegrationPlugin::init(InitState state, const QString &settin
     m_sharePageMenu->setTitle(tr("Share page"));
     m_sharePageMenu->setIcon(QIcon::fromTheme(QStringLiteral("document-share")));
     m_sharePageMenu->model()->setInputData(QJsonObject{
-        { QStringLiteral("urls"), QJsonArray {QJsonValue(QSL("falkon"))} },
-        { QStringLiteral("title"), QJsonValue(QSL("falkon")) }
+        { QStringLiteral("urls"), QJsonArray {QJsonValue(QSL("veex"))} },
+        { QStringLiteral("title"), QJsonValue(QSL("veex")) }
     });
     m_sharePageMenu->model()->setPluginType(QStringLiteral("ShareUrl"));
 
-    KAboutData aboutData(QSL("falkon"), QSL("Falkon"), QCoreApplication::applicationVersion());
+    KAboutData aboutData(QSL("veex"), QSL("Veex"), QCoreApplication::applicationVersion());
     KAboutData::setApplicationData(aboutData);
 
     KCrash::initialize();
     KCrash::setFlags(KCrash::KeepFDs);
 
-    settings.setValue(QSL("General/LastFalkonVersion"), QString::fromLatin1(Qz::VERSION));
+    settings.setValue(QSL("General/LastVeexVersion"), QString::fromLatin1(Qz::VERSION));
 }
 
 void KDEFrameworksIntegrationPlugin::unload()
@@ -160,10 +160,10 @@ void KDEFrameworksIntegrationPlugin::populateWebViewMenu(QMenu *menu, WebView *v
 bool KDEFrameworksIntegrationPlugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(FALKON_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
 }
 
-QString KDEFrameworksIntegrationPlugin::lastFalkonVersion() const
+QString KDEFrameworksIntegrationPlugin::lastVeexVersion() const
 {
-    return m_lastFalkonVersion;
+    return m_lastVeexVersion;
 }

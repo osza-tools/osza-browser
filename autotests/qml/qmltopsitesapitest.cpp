@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -31,11 +31,11 @@ void QmlTopSitesApiTest::cleanupTestCase()
 
 void QmlTopSitesApiTest::testTopSites()
 {
-    auto initialList = m_testHelper.evaluate(QSL("Falkon.TopSites.get()")).toVariant().toList();
+    auto initialList = m_testHelper.evaluate(QSL("Veex.TopSites.get()")).toVariant().toList();
     auto initialListLength = initialList.length();
 
     mApp->plugins()->speedDial()->addPage(QUrl(QSL("https://example.com")), QSL("Example Domain"));
-    auto list = m_testHelper.evaluate(QSL("Falkon.TopSites.get()")).toVariant().toList();
+    auto list = m_testHelper.evaluate(QSL("Veex.TopSites.get()")).toVariant().toList();
     qDebug() << "Top sites list size=" << list.length();
     for( const auto& site : list )
     {
@@ -56,4 +56,4 @@ void QmlTopSitesApiTest::testTopSites()
     QCOMPARE(object->property("url").toString(), QSL("https://example.com"));
 }
 
-FALKONTEST_MAIN(QmlTopSitesApiTest)
+VEEXTEST_MAIN(QmlTopSitesApiTest)

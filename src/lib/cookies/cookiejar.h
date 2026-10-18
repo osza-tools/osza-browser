@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 class AutoSaver;
 
-class FALKON_EXPORT CookieJar : public QObject
+class VEEX_EXPORT CookieJar : public QObject
 {
     Q_OBJECT
 

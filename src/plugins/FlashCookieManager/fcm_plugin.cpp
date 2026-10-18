@@ -1,5 +1,5 @@
 /* ============================================================
-* FlashCookieManager plugin for Falkon
+* FlashCookieManager plugin for Veex
 * Copyright (C) 2014-2018 S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2017-2018 David Rosca <nowrep@gmail.com>
 *
@@ -113,7 +113,7 @@ void FCM_Plugin::unload()
 
 bool FCM_Plugin::testPlugin()
 {
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(FALKON_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
 }
 
 void FCM_Plugin::showSettings(QWidget* parent)

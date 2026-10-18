@@ -8,12 +8,12 @@ DEBIAN
 !qt_*.qm
 headers*.tar.gz
 license_template
-bin/falkon
-bin/Falkon.dmg
-mac/images/falkon-dmg-icon.iconset
+bin/veex
+bin/Veex.dmg
+mac/images/veex-dmg-icon.iconset
 lib*.so*
 bin/core
-falkon.sh
+veex.sh
 git_revision
 *.exe
 *.dll
@@ -29,7 +29,7 @@ Thumbs.db
 *.embed.manifest
 bin/autotests
 .clang_complete
-bin/falkon.app
+bin/veex.app
 .DS_Store
 *.dylib
 hunspell

@@ -1,5 +1,5 @@
 # ============================================================
-# MiddleClickLoader - plugin for Falkon
+# MiddleClickLoader - plugin for Veex
 # Copyright (C) 2018 Juraj Oravec <sgd.orava@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
 
-import Falkon
+import Veex
 from PySide6 import QtCore
 from middleclickloader.mcl_handler import MCL_Handler
 
 
-class MCL_Plugin(Falkon.PluginInterface, QtCore.QObject):
+class MCL_Plugin(Veex.PluginInterface, QtCore.QObject):
     handler = None
 
     def init(self, state, settingsPath):
-        plugins = Falkon.MainApplication.instance().plugins()
-        plugins.registerAppEventHandler(Falkon.PluginProxy.MousePressHandler, self)
+        plugins = Veex.MainApplication.instance().plugins()
+        plugins.registerAppEventHandler(Veex.PluginProxy.MousePressHandler, self)
 
         self.handler = MCL_Handler(settingsPath)
 
@@ -38,7 +38,7 @@ class MCL_Plugin(Falkon.PluginInterface, QtCore.QObject):
         return True
 
     def mousePress(self, type, obj, event):
-        if type == Falkon.Qz.ON_WebView:
+        if type == Veex.Qz.ON_WebView:
             return self.handler.mousePress(obj, event)
 
         return False
@@ -48,4 +48,4 @@ class MCL_Plugin(Falkon.PluginInterface, QtCore.QObject):
         self.handler.showSettings(parent)
 
 
-Falkon.registerPlugin(MCL_Plugin())
+Veex.registerPlugin(MCL_Plugin())

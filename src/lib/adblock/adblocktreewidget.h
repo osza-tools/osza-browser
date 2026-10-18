@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -28,7 +28,7 @@ class AdBlockTreeModel;
 class AdBlockFilterModel;
 class AdBlockRule;
 
-class FALKON_EXPORT AdBlockTreeWidget : public QTreeView
+class VEEX_EXPORT AdBlockTreeWidget : public QTreeView
 {
     Q_OBJECT
 public:

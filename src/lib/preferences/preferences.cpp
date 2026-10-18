@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -140,8 +140,8 @@ Preferences::Preferences(BrowserWindow* window)
     Settings settings;
     //GENERAL URLs
     settings.beginGroup(QSL("Web-URL-Settings"));
-    m_homepage = settings.value(QSL("homepage"), QUrl(QSL("falkon:start"))).toUrl();
-    m_newTabUrl = settings.value(QSL("newTabUrl"), QUrl(QSL("falkon:speeddial"))).toUrl();
+    m_homepage = settings.value(QSL("homepage"), QUrl(QSL("veex:start"))).toUrl();
+    m_newTabUrl = settings.value(QSL("newTabUrl"), QUrl(QSL("veex:speeddial"))).toUrl();
     ui->homepage->setText(QString::fromUtf8(m_homepage.toEncoded()));
     ui->newTabUrl->setText(QString::fromUtf8(m_newTabUrl.toEncoded()));
     settings.endGroup();
@@ -160,7 +160,7 @@ Preferences::Preferences(BrowserWindow* window)
         else {
             ui->checkNowDefaultBrowser->setText(tr("Set as default"));
             ui->checkNowDefaultBrowser->setEnabled(true);
-            connect(ui->checkNowDefaultBrowser, SIGNAL(clicked()), this, SLOT(makeFalkonDefault()));
+            connect(ui->checkNowDefaultBrowser, SIGNAL(clicked()), this, SLOT(makeVeexDefault()));
         }
     }
     else {
@@ -182,7 +182,7 @@ Preferences::Preferences(BrowserWindow* window)
     else if (m_newTabUrl == m_homepage) {
         ui->newTab->setCurrentIndex(1);
     }
-    else if (m_newTabUrl.toString() == QL1S("falkon:speeddial")) {
+    else if (m_newTabUrl.toString() == QL1S("veex:speeddial")) {
         ui->newTab->setCurrentIndex(2);
     }
     else {
@@ -678,10 +678,10 @@ void Preferences::showNotificationPreview()
     }
 }
 
-void Preferences::makeFalkonDefault()
+void Preferences::makeVeexDefault()
 {
 #if defined(Q_OS_WIN) && !defined(Q_OS_OS2)
-    disconnect(ui->checkNowDefaultBrowser, SIGNAL(clicked()), this, SLOT(makeFalkonDefault()));
+    disconnect(ui->checkNowDefaultBrowser, SIGNAL(clicked()), this, SLOT(makeVeexDefault()));
     ui->checkNowDefaultBrowser->setText(tr("Default"));
     ui->checkNowDefaultBrowser->setEnabled(false);
 
@@ -957,7 +957,7 @@ void Preferences::saveSettings()
         break;
 
     case 2:
-        settings.setValue(QSL("newTabUrl"), QUrl(QSL("falkon:speeddial")));
+        settings.setValue(QSL("newTabUrl"), QUrl(QSL("veex:speeddial")));
         break;
 
     case 3:

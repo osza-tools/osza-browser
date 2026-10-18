@@ -1,0 +1,61 @@
+# Spanish translations for veex_kdeframeworksintegration_qt.po package.
+# Copyright (C) 2018-2026 This file is copyright:
+# This file is distributed under the same license as the veex package.
+#
+# SPDX-FileCopyrightText: 2018 Eloy Cuadra <ecuadra@eloihr.net>
+# SPDX-FileCopyrightText: 2018 Javier Vinal <fjvinal@gmail.com>
+# SPDX-FileCopyrightText: 2020, 2023, 2025, 2026 Víctor Rodrigo Córdoba <vrcordoba@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: veex_kdeframeworksintegration_qt\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"PO-Revision-Date: 2026-02-01 00:25+0100\n"
+"Last-Translator: Víctor Rodrigo Córdoba <vrcordoba@gmail.com>\n"
+"Language-Team: Spanish <kde-l10n-es@kde.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 25.04.0\n"
+
+#: downloadkjob.cpp:34
+msgctxt "DownloadKJob|"
+msgid "Downloading"
+msgstr "Descargando"
+
+#: downloadkjob.cpp:35
+msgctxt "DownloadKJob|"
+msgid "Source"
+msgstr "Fuente"
+
+#: downloadkjob.cpp:36
+msgctxt "DownloadKJob|"
+msgid "Destination"
+msgstr "Destino"
+
+#: kdeframeworksintegrationplugin.cpp:116
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Share page"
+msgstr "Compartir página"
+
+#: kwalletpasswordbackend.cpp:62
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet"
+msgstr "KWallet"
+
+#: kwalletpasswordbackend.cpp:76
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Encrypted UserName"
+msgstr "Nombre de usuario cifrado"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet disabled"
+msgstr "KWallet está desactivado"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Please enable KWallet to save password."
+msgstr "Por favor, active KWallet para guardar la contraseña."

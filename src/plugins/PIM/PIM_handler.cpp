@@ -1,5 +1,5 @@
 /* ============================================================
-* Personal Information Manager plugin for Falkon
+* Personal Information Manager plugin for Veex
 * Copyright (C) 2012-2016 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2012-2014 Mladen Pejaković <pejakm@autistici.org>
 *

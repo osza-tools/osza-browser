@@ -15,7 +15,7 @@
     <key>CFBundleExecutable</key>
     <string>@EXECUTABLE@</string>
     <key>CFBundleIdentifier</key>
-    <string>org.kde.falkon</string>
+    <string>org.veex.VeexBrowser</string>
 
     <key>CFBundleURLTypes</key>
     <array>
@@ -58,9 +58,9 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleName</key>
-    <string>Falkon</string>
+    <string>Veex</string>
     <key>CFBundleDisplayName</key>
-    <string>Falkon</string>
+    <string>Veex</string>
 
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>

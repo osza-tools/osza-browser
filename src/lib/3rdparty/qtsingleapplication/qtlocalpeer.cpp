@@ -79,7 +79,7 @@ namespace QtLP_Private {
 class QtSingleAppDBusInterface : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.kde.QtSingleApplication")
+    Q_CLASSINFO("D-Bus Interface", "org.veex.QtSingleApplication")
 
 public:
     explicit QtSingleAppDBusInterface(QObject *parent)
@@ -192,7 +192,7 @@ bool QtLocalPeer::sendMessage(const QString &message, int timeout)
 
 #ifdef USE_DBUS
     QDBusMessage msg = QDBusMessage::createMethodCall(id, QStringLiteral("/"),
-                                                      QStringLiteral("org.kde.QtSingleApplication"),
+                                                      QStringLiteral("org.veex.QtSingleApplication"),
                                                       QStringLiteral("SendMessage"));
     msg << message;
     return QDBusConnection::sessionBus().call(msg, QDBus::Block, timeout).type() == QDBusMessage::ReplyMessage;

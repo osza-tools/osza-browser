@@ -17,7 +17,7 @@
  * Boston, MA  02110-1301  USA
  */
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@
 
 class OpenSearchEngine;
 
-class FALKON_EXPORT OpenSearchReader : public QXmlStreamReader
+class VEEX_EXPORT OpenSearchReader : public QXmlStreamReader
 {
 public:
     OpenSearchReader();

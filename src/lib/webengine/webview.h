@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ class WebPage;
 class LoadRequest;
 class WebHitTestResult;
 
-class FALKON_EXPORT WebView : public QWebEngineView
+class VEEX_EXPORT WebView : public QWebEngineView
 {
     Q_OBJECT
 

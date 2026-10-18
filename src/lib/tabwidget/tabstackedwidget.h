@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2018       David Rosca <nowrep@gmail.com>
 *
@@ -29,7 +29,7 @@ class QStackedWidget;
 class QVBoxLayout;
 
 
-class FALKON_EXPORT TabStackedWidget : public QWidget
+class VEEX_EXPORT TabStackedWidget : public QWidget
 {
     Q_OBJECT
 public:

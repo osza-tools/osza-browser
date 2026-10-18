@@ -1,7 +1,7 @@
 # Build:
-#   docker build -t falkon-appimage-build .
+#   docker build -t veex-appimage-build .
 # Run:
-#   docker run -v $OUT_DIRECTORY:/out -it falkon-appimage-build $FALKON_TARBALL_URL
+#   docker run -v $OUT_DIRECTORY:/out -it veex-appimage-build $VEEX_TARBALL_URL
 
 FROM centos:7
 

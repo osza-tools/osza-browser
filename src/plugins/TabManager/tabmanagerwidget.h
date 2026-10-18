@@ -1,5 +1,5 @@
 /* ============================================================
-* TabManager plugin for Falkon
+* TabManager plugin for Veex
 * Copyright (C) 2013-2017  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify

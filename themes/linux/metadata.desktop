@@ -93,8 +93,8 @@ Comment[zh_TW]=適用於 Linux 的預設簡單主題，使用原生元件樣式�
 
 Icon=theme.png
 Type=Service
-X-Falkon-Type=Theme
+X-Veex-Type=Theme
 
-X-Falkon-Author=David Rosca
-X-Falkon-Email=nowrep@gmail.com
-X-Falkon-License=GPLv3
+X-Veex-Author=David Rosca
+X-Veex-Email=nowrep@gmail.com
+X-Veex-License=GPLv3

@@ -52,7 +52,7 @@ namespace Core
 namespace Internal
 {
 
-class FALKON_EXPORT FancyTabProxyStyle : public QProxyStyle
+class VEEX_EXPORT FancyTabProxyStyle : public QProxyStyle
 {
     Q_OBJECT
 
@@ -67,7 +67,7 @@ protected:
     bool eventFilter(QObject* o, QEvent* e) override;
 };
 
-class FALKON_EXPORT FancyTab : public QWidget
+class VEEX_EXPORT FancyTab : public QWidget
 {
     Q_OBJECT
 
@@ -95,7 +95,7 @@ private:
     float m_fader;
 };
 
-class FALKON_EXPORT FancyTabBar : public QWidget
+class VEEX_EXPORT FancyTabBar : public QWidget
 {
     Q_OBJECT
 
@@ -144,7 +144,7 @@ private:
 
 };
 
-class FALKON_EXPORT FancyTabWidget : public QWidget
+class VEEX_EXPORT FancyTabWidget : public QWidget
 {
     Q_OBJECT
 

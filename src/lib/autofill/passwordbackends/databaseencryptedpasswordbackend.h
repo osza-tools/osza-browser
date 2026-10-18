@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2013-2018  David Rosca <nowrep@gmail.com>
 *
@@ -27,7 +27,7 @@
 class AesInterface;
 class MasterPasswordDialog;
 
-class FALKON_EXPORT DatabaseEncryptedPasswordBackend : public PasswordBackend
+class VEEX_EXPORT DatabaseEncryptedPasswordBackend : public PasswordBackend
 {
 public:
     enum MasterPasswordState {

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 class QStandardItem;
 
-class FALKON_EXPORT LocationCompleterRefreshJob : public QObject
+class VEEX_EXPORT LocationCompleterRefreshJob : public QObject
 {
     Q_OBJECT
 

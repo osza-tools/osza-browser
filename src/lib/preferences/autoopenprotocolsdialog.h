@@ -1,5 +1,5 @@
 /*
- * Falkon - Dialog for auto open protocols management
+ * Veex - Dialog for auto open protocols management
  * SPDX-FileCopyrightText: 2024 Juraj Oravec <jurajoravec@mailo.com>
  * SPDX-License-Identifier: GPL-3.0-or-later
  */

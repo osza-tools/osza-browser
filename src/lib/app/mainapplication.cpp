@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -121,14 +121,14 @@ MainApplication::MainApplication(int &argc, char** argv)
 {
     setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
-    setApplicationName(QStringLiteral("falkon"));
-    setOrganizationDomain(QStringLiteral("org.kde"));
+    setApplicationName(QStringLiteral("veex"));
+    setOrganizationDomain(QStringLiteral("org.veex"));
 #if defined(Q_OS_WIN)
     QIcon::setFallbackThemeName(QStringLiteral("breeze"));
     setStyle(QStringLiteral("breeze"));
 #endif
-    setWindowIcon(QIcon::fromTheme(QSL("falkon"), QIcon(QSL(":icons/falkon.svg"))));
-    setDesktopFileName(QSL("org.kde.falkon"));
+    setWindowIcon(QIcon::fromTheme(QSL("veex"), QIcon(QSL(":icons/veex.svg"))));
+    setDesktopFileName(QSL("org.veex.VeexBrowser"));
 
 #ifdef GIT_REVISION
     setApplicationVersion(QSL("%1 (%2)").arg(QString::fromLatin1(Qz::VERSION), GIT_REVISION));
@@ -225,18 +225,18 @@ MainApplication::MainApplication(int &argc, char** argv)
     }
 
     if (!isPortable()) {
-        QSettings falkonConf(QSL("%1/falkon.conf").arg(applicationDirPath()), QSettings::IniFormat);
-        m_isPortable = falkonConf.value(QSL("Config/Portable")).toBool();
+        QSettings veexConf(QSL("%1/veex.conf").arg(applicationDirPath()), QSettings::IniFormat);
+        m_isPortable = veexConf.value(QSL("Config/Portable")).toBool();
     }
 
     if (isPortable()) {
-        std::cout << "Falkon: Running in Portable Mode." << std::endl;
+        std::cout << "Veex: Running in Portable Mode." << std::endl;
         DataPaths::setPortableVersion();
     }
 
     // Don't start single application in private browsing
     if (!isPrivate()) {
-        QString appId = QStringLiteral("org.kde.Falkon");
+        QString appId = QStringLiteral("org.veex.VeexBrowser");
 
         if (isPortable()) {
             appId.append(QLatin1String(".Portable"));
@@ -1200,8 +1200,8 @@ void MainApplication::checkDefaultWebBrowser()
     if (!associationManager()->isDefaultForAllCapabilities()) {
         CheckBoxDialog dialog(QMessageBox::Yes | QMessageBox::No, getWindow());
         dialog.setDefaultButton(QMessageBox::Yes);
-        dialog.setText(tr("Falkon is not currently your default browser. Would you like to make it your default browser?"));
-        dialog.setCheckBoxText(tr("Always perform this check when starting Falkon."));
+        dialog.setText(tr("Veex is not currently your default browser. Would you like to make it your default browser?"));
+        dialog.setCheckBoxText(tr("Always perform this check when starting Veex."));
         dialog.setDefaultCheckState(Qt::Checked);
         dialog.setWindowTitle(tr("Default Browser"));
         dialog.setIcon(QMessageBox::Warning);
@@ -1260,28 +1260,28 @@ void MainApplication::setupUserScripts()
 {
     // WebChannel for SafeJsWorld
     QWebEngineScript script;
-    script.setName(QSL("_falkon_webchannel"));
+    script.setName(QSL("_veex_webchannel"));
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
     script.setWorldId(WebPage::SafeJsWorld);
     script.setRunsOnSubFrames(true);
     script.setSourceCode(Scripts::setupWebChannel());
     m_webProfile->scripts()->insert(script);
 
-    // falkon:restore
-    QWebEngineScript falkonRestore;
-    falkonRestore.setWorldId(WebPage::SafeJsWorld);
-    falkonRestore.setSourceCode(QzTools::readAllFileContents(QSL(":html/restore.user.js")));
-    m_webProfile->scripts()->insert(falkonRestore);
+    // veex:restore
+    QWebEngineScript veexRestore;
+    veexRestore.setWorldId(WebPage::SafeJsWorld);
+    veexRestore.setSourceCode(QzTools::readAllFileContents(QSL(":html/restore.user.js")));
+    m_webProfile->scripts()->insert(veexRestore);
 
-    // falkon:speeddial
-    QWebEngineScript falkonSpeedDial;
-    falkonSpeedDial.setWorldId(WebPage::SafeJsWorld);
-    falkonSpeedDial.setSourceCode(Scripts::setupSpeedDial());
-    m_webProfile->scripts()->insert(falkonSpeedDial);
+    // veex:speeddial
+    QWebEngineScript veexSpeedDial;
+    veexSpeedDial.setWorldId(WebPage::SafeJsWorld);
+    veexSpeedDial.setSourceCode(Scripts::setupSpeedDial());
+    m_webProfile->scripts()->insert(veexSpeedDial);
 
     // document.window object addons
     QWebEngineScript documentWindowAddons;
-    documentWindowAddons.setName(QSL("_falkon_window_object"));
+    documentWindowAddons.setName(QSL("_veex_window_object"));
     documentWindowAddons.setInjectionPoint(QWebEngineScript::DocumentCreation);
     documentWindowAddons.setWorldId(WebPage::UnsafeJsWorld);
     documentWindowAddons.setRunsOnSubFrames(true);
@@ -1310,7 +1310,7 @@ void MainApplication::setUserStyleSheet(const QString &filePath)
 
     userCss += QzTools::readAllFileContents(filePath).remove(QLatin1Char('\n'));
 
-    const QString name = QStringLiteral("_falkon_userstylesheet");
+    const QString name = QStringLiteral("_veex_userstylesheet");
     for (const QWebEngineScript &oldScript : m_webProfile->scripts()->find(name)) {
         m_webProfile->scripts()->remove(oldScript);
     }
@@ -1329,23 +1329,23 @@ void MainApplication::setUserStyleSheet(const QString &filePath)
 
 void MainApplication::initPulseSupport()
 {
-    qputenv("PULSE_PROP_OVERRIDE_application.name", "Falkon");
-    qputenv("PULSE_PROP_OVERRIDE_application.icon_name", "falkon");
-    qputenv("PULSE_PROP_OVERRIDE_media.icon_name", "falkon");
+    qputenv("PULSE_PROP_OVERRIDE_application.name", "Veex");
+    qputenv("PULSE_PROP_OVERRIDE_application.icon_name", "veex");
+    qputenv("PULSE_PROP_OVERRIDE_media.icon_name", "veex");
 }
 
 #if defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 RegisterQAppAssociation* MainApplication::associationManager()
 {
     if (!m_registerQAppAssociation) {
-        QString desc = tr("Falkon is a new and very fast Qt web browser. Falkon is licensed under GPL version 3 or (at your option) any later version. It is based on QtWebEngine and Qt Framework.");
+        QString desc = tr("Veex is a new and very fast Qt web browser. Veex is licensed under GPL version 3 or (at your option) any later version. It is based on QtWebEngine and Qt Framework.");
         QString fileIconPath = QApplication::applicationFilePath() + QSL(",1");
         QString appIconPath = QApplication::applicationFilePath() + QSL(",0");
-        m_registerQAppAssociation = new RegisterQAppAssociation(QSL("Falkon"), QApplication::applicationFilePath(), appIconPath, desc, this);
-        m_registerQAppAssociation->addCapability(QSL(".html"), QSL("FalkonHTML"), QSL("Falkon HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
-        m_registerQAppAssociation->addCapability(QSL(".htm"), QSL("FalkonHTML"), QSL("Falkon HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
-        m_registerQAppAssociation->addCapability(QSL("http"), QSL("FalkonURL"), QSL("Falkon URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
-        m_registerQAppAssociation->addCapability(QSL("https"), QSL("FalkonURL"), QSL("Falkon URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
+        m_registerQAppAssociation = new RegisterQAppAssociation(QSL("Veex"), QApplication::applicationFilePath(), appIconPath, desc, this);
+        m_registerQAppAssociation->addCapability(QSL(".html"), QSL("VeexHTML"), QSL("Veex HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
+        m_registerQAppAssociation->addCapability(QSL(".htm"), QSL("VeexHTML"), QSL("Veex HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
+        m_registerQAppAssociation->addCapability(QSL("http"), QSL("VeexURL"), QSL("Veex URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
+        m_registerQAppAssociation->addCapability(QSL("https"), QSL("VeexURL"), QSL("Veex URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
     }
     return m_registerQAppAssociation;
 }

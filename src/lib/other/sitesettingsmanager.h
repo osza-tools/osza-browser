@@ -1,5 +1,5 @@
 /* ============================================================
- * Falkon - Qt web browser
+ * Veex - Qt web browser
  * Copyright (C) 2022 Juraj Oravec <jurajoravec@mailo.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 class QUrl;
 
 
-class FALKON_EXPORT SiteSettingsManager : public QObject
+class VEEX_EXPORT SiteSettingsManager : public QObject
 {
     Q_OBJECT
 

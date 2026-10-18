@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2024 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT ProgressBar : public QProgressBar
+class VEEX_EXPORT ProgressBar : public QProgressBar
 {
     Q_OBJECT
 public:

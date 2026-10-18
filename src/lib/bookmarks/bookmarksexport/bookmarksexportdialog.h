@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class BookmarksExportDialog;
 
 class BookmarksExporter;
 
-class FALKON_EXPORT BookmarksExportDialog : public QDialog
+class VEEX_EXPORT BookmarksExportDialog : public QDialog
 {
     Q_OBJECT
 

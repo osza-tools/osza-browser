@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #include <QStringList>
 #include <QColor>
 
-class FALKON_EXPORT QzSettings
+class VEEX_EXPORT QzSettings
 {
 public:
     QzSettings();

@@ -1,14 +1,14 @@
 # CMake version required. This must be the very first line, because it sets default policies affecting everything else
 cmake_minimum_required(VERSION 3.18)
 
-# KDE Gear Version, managed by release script
-set(RELEASE_SERVICE_VERSION_MAJOR "26")
-set(RELEASE_SERVICE_VERSION_MINOR "11")
-set(RELEASE_SERVICE_VERSION_MICRO "71")
-set(RELEASE_SERVICE_VERSION "${RELEASE_SERVICE_VERSION_MAJOR}.${RELEASE_SERVICE_VERSION_MINOR}.${RELEASE_SERVICE_VERSION_MICRO}")
+# Veex Browser version
+set(VEEX_VERSION_MAJOR "1")
+set(VEEX_VERSION_MINOR "0")
+set(VEEX_VERSION_MICRO "0")
+set(VEEX_VERSION "${VEEX_VERSION_MAJOR}.${VEEX_VERSION_MINOR}.${VEEX_VERSION_MICRO}")
 
 # Project name and version
-project(Falkon VERSION ${RELEASE_SERVICE_VERSION})
+project(Veex VERSION ${VEEX_VERSION})
 
 set(KF_MAJOR_VERSION "6")
 set(QT_MIN_VERSION "6.4.0")
@@ -37,17 +37,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if (UNIX AND NOT APPLE)
-    set(FALKON_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}/falkon")
+    set(VEEX_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}/veex")
 else()
-    set(FALKON_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}")
+    set(VEEX_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}")
 endif()
-if (IS_ABSOLUTE ${FALKON_INSTALL_PLUGINDIR})
-    set(PLUGIN_PATH "${FALKON_INSTALL_PLUGINDIR}")
+if (IS_ABSOLUTE ${VEEX_INSTALL_PLUGINDIR})
+    set(PLUGIN_PATH "${VEEX_INSTALL_PLUGINDIR}")
 else()
-    set(PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/${FALKON_INSTALL_PLUGINDIR}")
+    set(PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/${VEEX_INSTALL_PLUGINDIR}")
 endif()
 if (NOT WIN32)
-    set(FALKON_PLUGIN_PATH "${PLUGIN_PATH}" CACHE PATH "Default plugin search path")
+    set(VEEX_PLUGIN_PATH "${PLUGIN_PATH}" CACHE PATH "Default plugin search path")
 endif()
 
 # Defines that are always set
@@ -167,7 +167,7 @@ if (EXISTS "${CMAKE_SOURCE_DIR}/.git")
       OUTPUT_VARIABLE GIT_REVISION
     )
     string(REGEX REPLACE "\n" "" GIT_REVISION "${GIT_REVISION}")
-    set(FALKON_GIT_REVISION "${GIT_REVISION}")
+    set(VEEX_GIT_REVISION "${GIT_REVISION}")
   else()
     message(STATUS "Git revision could not be determined")
   endif()

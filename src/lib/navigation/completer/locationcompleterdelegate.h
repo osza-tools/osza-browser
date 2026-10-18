@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT LocationCompleterDelegate : public QStyledItemDelegate
+class VEEX_EXPORT LocationCompleterDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ class QNetworkCookie;
 
 class BrowserWindow;
 
-class FALKON_EXPORT CookieManager : public QDialog
+class VEEX_EXPORT CookieManager : public QDialog
 {
     Q_OBJECT
 

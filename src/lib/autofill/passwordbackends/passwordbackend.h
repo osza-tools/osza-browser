@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 class QWidget;
 
-class FALKON_EXPORT PasswordBackend
+class VEEX_EXPORT PasswordBackend
 {
 public:
     explicit PasswordBackend();

@@ -1,4 +1,4 @@
-FlashCookieManager extension for Falkon
+FlashCookieManager extension for Veex
 -------------------------------------------------
 An extension to manage flash cookies.
 

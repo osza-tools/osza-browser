@@ -1,4 +1,4 @@
-add_definitions(-DFALKON_SHAREDLIBRARY)
+add_definitions(-DVEEX_SHAREDLIBRARY)
 
 set(CMAKE_CXX_STANDARD 14) # Enable C++14, with cmake >= 3.1
 set(CMAKE_CXX_EXTENSIONS OFF) # Don't enable gcc-specific extensions
@@ -135,7 +135,7 @@ set(SRCS ${SRCS}
     network/networkmanager.cpp
     network/networkurlinterceptor.cpp
     network/schemehandlers/extensionschemehandler.cpp
-    network/schemehandlers/falkonschemehandler.cpp
+    network/schemehandlers/veexschemehandler.cpp
     network/sslerrordialog.cpp
     notifications/desktopnotification.cpp
     notifications/desktopnotificationsfactory.cpp
@@ -374,7 +374,7 @@ set(SRCS ${SRCS}
     network/networkmanager.h
     network/networkurlinterceptor.h
     network/schemehandlers/extensionschemehandler.h
-    network/schemehandlers/falkonschemehandler.h
+    network/schemehandlers/veexschemehandler.h
     network/sslerrordialog.h
     notifications/desktopnotification.h
     notifications/desktopnotificationsfactory.h
@@ -520,8 +520,8 @@ set(SRCS ${SRCS}
     webtab/webtab.h
 )
 
-# add the logging category for FALKON
-ecm_qt_declare_logging_category(LOGGING_SRCS HEADER falkon_private_debug.h IDENTIFIER "FALKON_PRIVATE_LOG" CATEGORY_NAME "org.kde.falkon")
+# add the logging category for VEEX
+ecm_qt_declare_logging_category(LOGGING_SRCS HEADER veex_private_debug.h IDENTIFIER "VEEX_PRIVATE_LOG" CATEGORY_NAME "org.veex.browser")
 
 if (HAVE_LIBINTL)
     set(SRCS ${SRCS} plugins/qml/api/i18n/qmli18n.cpp plugins/qml/api/i18n/qmli18n.h)
@@ -597,13 +597,13 @@ qt_add_resources(SRCS
     adblock/adblock.qrc
 )
 
-add_library(FalkonPrivate SHARED ${SRCS} ${LOGGING_SRCS})
+add_library(VeexPrivate SHARED ${SRCS} ${LOGGING_SRCS})
 
 get_property(QT_WEBENGINE_INCLUDE_DIRS TARGET Qt6::WebEngineCore PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
 
-target_include_directories(FalkonPrivate SYSTEM PUBLIC ${QT_WEBENGINE_INCLUDE_DIRS})
+target_include_directories(VeexPrivate SYSTEM PUBLIC ${QT_WEBENGINE_INCLUDE_DIRS})
 
-target_link_libraries(FalkonPrivate
+target_link_libraries(VeexPrivate
     Qt6::Widgets
     Qt6::WebEngineWidgets
     Qt6::Network
@@ -617,32 +617,32 @@ target_link_libraries(FalkonPrivate
 )
 
 if (BUILD_TESTING)
-    target_link_libraries(FalkonPrivate Qt6::Test)
+    target_link_libraries(VeexPrivate Qt6::Test)
 endif()
 
 if (HAVE_LIBINTL)
-    target_include_directories(FalkonPrivate SYSTEM PUBLIC ${Intl_INCLUDE_DIRS})
-    target_link_libraries(FalkonPrivate ${Intl_LIBRARIES})
+    target_include_directories(VeexPrivate SYSTEM PUBLIC ${Intl_INCLUDE_DIRS})
+    target_link_libraries(VeexPrivate ${Intl_LIBRARIES})
 endif()
 
 if (UNIX AND NOT APPLE)
     if (NOT NO_X11)
-        target_link_libraries(FalkonPrivate XCB::XCB)
+        target_link_libraries(VeexPrivate XCB::XCB)
     endif()
 
-    set_target_properties(FalkonPrivate PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION "3")
-    install(TARGETS FalkonPrivate ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+    set_target_properties(VeexPrivate PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION "3")
+    install(TARGETS VeexPrivate ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
 
 elseif (WIN32)
 
-    set_target_properties(FalkonPrivate PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION "3")
-    install(TARGETS FalkonPrivate ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
+    set_target_properties(VeexPrivate PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION "3")
+    install(TARGETS VeexPrivate ${KDE_INSTALL_TARGETS_DEFAULT_ARGS} LIBRARY NAMELINK_SKIP)
 endif()
 
 if (APPLE)
-    target_link_libraries(FalkonPrivate "-framework CoreServices -framework AppKit")
+    target_link_libraries(VeexPrivate "-framework CoreServices -framework AppKit")
 endif()
 
 if (NOT DISABLE_DBUS)
-    target_link_libraries(FalkonPrivate Qt::DBus)
+    target_link_libraries(VeexPrivate Qt::DBus)
 endif()

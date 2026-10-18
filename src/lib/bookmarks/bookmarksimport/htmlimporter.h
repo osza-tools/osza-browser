@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 #include "bookmarksimporter.h"
 
-class FALKON_EXPORT HtmlImporter : public BookmarksImporter
+class VEEX_EXPORT HtmlImporter : public BookmarksImporter
 {
 public:
     explicit HtmlImporter(QObject* parent = nullptr);

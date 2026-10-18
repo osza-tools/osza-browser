@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ class PluginsManager;
 class DesktopNotification;
 class ThemeManager;
 
-class FALKON_EXPORT Preferences : public QDialog
+class VEEX_EXPORT Preferences : public QDialog
 {
     Q_OBJECT
 
@@ -87,7 +87,7 @@ private Q_SLOTS:
 
     void showNotificationPreview();
 
-    void makeFalkonDefault();
+    void makeVeexDefault();
 
 private:
     void closeEvent(QCloseEvent* event) override;

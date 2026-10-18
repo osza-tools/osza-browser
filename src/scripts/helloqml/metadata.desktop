@@ -90,9 +90,9 @@ Comment[zh_TW]=簡易的 QML 外掛
 
 Icon=
 Type=Service
-X-Falkon-Type=Extension/Qml
+X-Veex-Type=Extension/Qml
 
-X-Falkon-Author=Anmol Gautam
-X-Falkon-Email=tarptaeya@gmail.com
-X-Falkon-Version=0.1.0
-X-Falkon-Settings=true
+X-Veex-Author=Anmol Gautam
+X-Veex-Email=tarptaeya@gmail.com
+X-Veex-Version=0.1.0
+X-Veex-Settings=true

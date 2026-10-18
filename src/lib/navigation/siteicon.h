@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class LocationBar;
 class WebView;
 class BrowserWindow;
 
-class FALKON_EXPORT SiteIcon : public ToolButton
+class VEEX_EXPORT SiteIcon : public ToolButton
 {
     Q_OBJECT
 

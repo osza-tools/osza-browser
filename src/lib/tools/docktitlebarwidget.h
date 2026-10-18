@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 class QMenu;
 
-class FALKON_EXPORT DockTitleBarWidget : public QWidget, public Ui_DockTitleBarWidget
+class VEEX_EXPORT DockTitleBarWidget : public QWidget, public Ui_DockTitleBarWidget
 {
 public:
     explicit DockTitleBarWidget(const QString &title, QWidget* parent = nullptr);

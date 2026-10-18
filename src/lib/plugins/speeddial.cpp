@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -64,8 +64,8 @@ void SpeedDial::loadSettings()
     settings.endGroup();
 
     if (allPages.isEmpty()) {
-        allPages = QL1S("url:\"https://www.falkon.org\"|title:\"Falkon\";"
-                        "url:\"https://store.falkon.org\"|title:\"Falkon Store\";"
+        allPages = QL1S("url:\"https://www.veex.org\"|title:\"Veex\";"
+                        "url:\"https://store.veex.org\"|title:\"Veex Store\";"
                         "url:\"https://www.kde.org\"|title:\"KDE Planet\";"
                         "url:\"https://planet.kde.org\"|title:\"KDE Community\";");
     }

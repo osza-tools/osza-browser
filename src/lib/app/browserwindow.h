@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ class LocationBar;
 class TabModel;
 class TabMruModel;
 
-class FALKON_EXPORT BrowserWindow : public QMainWindow
+class VEEX_EXPORT BrowserWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -73,8 +73,8 @@ public:
         bool isValid() const;
         void clear();
 
-        friend FALKON_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedWindow &window);
-        friend FALKON_EXPORT QDataStream &operator>>(QDataStream &stream, SavedWindow &window);
+        friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedWindow &window);
+        friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, SavedWindow &window);
     };
 
     explicit BrowserWindow(Qz::BrowserWindowType type, const QList<QUrl> urls = {});

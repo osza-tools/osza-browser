@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class QMenu;
 
 class BrowserWindow;
 
-class FALKON_EXPORT SideBarInterface : public QObject
+class VEEX_EXPORT SideBarInterface : public QObject
 {
 public:
     explicit SideBarInterface(QObject* parent = nullptr) : QObject(parent) { }

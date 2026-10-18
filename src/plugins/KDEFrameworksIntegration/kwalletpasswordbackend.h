@@ -1,5 +1,5 @@
 /* ============================================================
-* KDEFrameworksIntegration - KDE support plugin for Falkon
+* KDEFrameworksIntegration - KDE support plugin for Veex
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -31,7 +31,7 @@ namespace KWallet {
 class Wallet;
 }
 
-class FALKON_EXPORT KWalletPasswordBackend : public PasswordBackend
+class VEEX_EXPORT KWalletPasswordBackend : public PasswordBackend
 {
 public:
     explicit KWalletPasswordBackend(KDEFrameworksIntegrationPlugin *plugin);

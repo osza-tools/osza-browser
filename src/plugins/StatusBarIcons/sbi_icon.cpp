@@ -1,5 +1,5 @@
 /* ============================================================
-* StatusBarIcons - Extra icons in statusbar for Falkon
+* StatusBarIcons - Extra icons in statusbar for Veex
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify

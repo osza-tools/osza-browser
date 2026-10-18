@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2024 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -147,7 +147,7 @@ void SiteSettingsView_Widget::updateData(int index)
 
     auto url = tab->url();
     /* This condition is copied from webpage.cpp function acceptNavigationRequest()
-     * Falkon has hardcoded properties / attributes for non Web pages*/
+     * Veex has hardcoded properties / attributes for non Web pages*/
     const bool isWeb = url.scheme() == QL1S("http") || url.scheme() == QL1S("https") || url.scheme() == QL1S("file");
     const auto siteSettings = mApp->siteSettingsManager()->getSiteSettings(url);
 

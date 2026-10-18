@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Falkon
+# RunAction plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

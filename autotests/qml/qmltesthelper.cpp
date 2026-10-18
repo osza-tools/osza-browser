@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,12 +23,12 @@
 QmlTestHelper::QmlTestHelper()
 {
     QmlPlugins::registerQmlTypes();
-    qmlRegisterType<QmlTestItem>("org.kde.falkon.test", 1, 0, "TestItem");
+    qmlRegisterType<QmlTestItem>("org.veex.test", 1, 0, "TestItem");
     QQmlComponent component(&engine);
-    component.setData("import org.kde.falkon 1.0 as Falkon\n"
-                      "import org.kde.falkon.test 1.0 as FalkonTest\n"
+    component.setData("import org.veex 1.0 as Veex\n"
+                      "import org.veex.test 1.0 as VeexTest\n"
                       "import QtQuick 2.7\n"
-                      "FalkonTest.TestItem {"
+                      "VeexTest.TestItem {"
                       "    evalFunc: function(source) {"
                       "        return eval(source);"
                       "    }"

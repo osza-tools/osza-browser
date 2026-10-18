@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-FALKON_URL=$1
+VEEX_URL=$1
 RUNTIME_URL="https://github.com/AppImage/AppImageKit/releases/download/continuous/runtime-x86_64"
 
-if [ -z "$FALKON_URL" ]; then
+if [ -z "$VEEX_URL" ]; then
     echo "No url specified!"
     exit 1
 fi
@@ -15,9 +15,9 @@ cd /root
 
 wget $RUNTIME_URL -O runtime
 
-wget $FALKON_URL -O falkon.tar.xz
-tar xf falkon.tar.xz
-cd falkon-*
+wget $VEEX_URL -O veex.tar.xz
+tar xf veex.tar.xz
+cd veex-*
 
 /root/build-appimage.sh \
     --sourcedir=`pwd` \

@@ -13,7 +13,7 @@ set( TabManager_SRCS
         tldextractor/tldextractor.h
         )
 
-ecm_create_qm_loader( TabManager_SRCS falkon_tabmanager_qt )
+ecm_create_qm_loader( TabManager_SRCS veex_tabmanager_qt )
 
 set( TabManager_UIS
 	tabmanagerwidget.ui
@@ -28,6 +28,6 @@ set( TabManager_RSCS
 qt_add_resources(RSCS ${TabManager_RSCS})
 
 add_library(TabManager MODULE ${TabManager_SRCS} ${UIS} ${RSCS})
-install(TARGETS TabManager DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(TabManager FalkonPrivate)
+install(TARGETS TabManager DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(TabManager VeexPrivate)
 

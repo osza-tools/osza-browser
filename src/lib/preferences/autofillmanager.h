@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ namespace Ui
 class AutoFillManager;
 }
 
-class FALKON_EXPORT AutoFillManager : public QWidget
+class VEEX_EXPORT AutoFillManager : public QWidget
 {
     Q_OBJECT
 

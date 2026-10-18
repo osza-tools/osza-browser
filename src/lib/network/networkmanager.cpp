@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #include "passwordmanager.h"
 #include "sslerrordialog.h"
 #include "networkurlinterceptor.h"
-#include "schemehandlers/falkonschemehandler.h"
+#include "schemehandlers/veexschemehandler.h"
 #include "schemehandlers/extensionschemehandler.h"
 #include "webpage.h"
 
@@ -49,9 +49,9 @@ NetworkManager::NetworkManager(QObject *parent)
     // Create scheme handlers
     m_extensionScheme = new ExtensionSchemeManager(this);
 
-    mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("falkon"), new FalkonSchemeHandler(this));
+    mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("veex"), new VeexSchemeHandler(this));
     mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("extension"), m_extensionScheme);
-    WebPage::addSupportedScheme(QSL("falkon"));
+    WebPage::addSupportedScheme(QSL("veex"));
     WebPage::addSupportedScheme(QSL("extension"));
 
     // Create url interceptor
@@ -386,10 +386,10 @@ QString NetworkManager::sslErrorDescription(const QWebEngineCertificateError::Ty
 // static
 void NetworkManager::registerSchemes()
 {
-    QWebEngineUrlScheme falkonScheme("falkon");
-    falkonScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);
-    falkonScheme.setSyntax(QWebEngineUrlScheme::Syntax::Path);
-    QWebEngineUrlScheme::registerScheme(falkonScheme);
+    QWebEngineUrlScheme veexScheme("veex");
+    veexScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);
+    veexScheme.setSyntax(QWebEngineUrlScheme::Syntax::Path);
+    QWebEngineUrlScheme::registerScheme(veexScheme);
 
     QWebEngineUrlScheme extensionScheme("extension");
     extensionScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);

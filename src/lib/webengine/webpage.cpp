@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -71,8 +71,8 @@ QUrl WebPage::s_lastUnsupportedUrl;
 QElapsedTimer WebPage::s_lastUnsupportedUrlTime;
 QStringList s_supportedSchemes;
 
-static const bool kEnableJsOutput = qEnvironmentVariableIsSet("FALKON_ENABLE_JS_OUTPUT");
-static const bool kEnableJsNonBlockDialogs = qEnvironmentVariableIsSet("FALKON_ENABLE_JS_NONBLOCK_DIALOGS");
+static const bool kEnableJsOutput = qEnvironmentVariableIsSet("VEEX_ENABLE_JS_OUTPUT");
+static const bool kEnableJsNonBlockDialogs = qEnvironmentVariableIsSet("VEEX_ENABLE_JS_NONBLOCK_DIALOGS");
 
 WebPage::WebPage(QObject* parent)
     : QWebEnginePage(mApp->webProfile(), parent)
@@ -332,8 +332,8 @@ void WebPage::handleUnknownProtocol(const QUrl &url)
     dialog.setDefaultButton(QMessageBox::Yes);
 
     const QString wrappedUrl = QzTools::alignTextToWidth(url.toString(), QSL("<br/>"), dialog.fontMetrics(), 450);
-    const QString text = tr("Falkon cannot handle <b>%1:</b> links. The requested link "
-                            "is <ul><li>%2</li></ul>Do you want Falkon to try "
+    const QString text = tr("Veex cannot handle <b>%1:</b> links. The requested link "
+                            "is <ul><li>%2</li></ul>Do you want Veex to try "
                             "open this link in system application?").arg(protocol, wrappedUrl);
 
     dialog.setText(text);
@@ -435,7 +435,7 @@ bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::Navigatio
     if (!mApp->plugins()->acceptNavigationRequest(this, url, type, isMainFrame))
         return false;
 
-    if (url.scheme() == QL1S("falkon")) {
+    if (url.scheme() == QL1S("veex")) {
         if (url.path() == QL1S("AddSearchProvider")) {
             QUrlQuery query(url);
             mApp->searchEnginesManager()->addEngine(QUrl(query.queryItemValue(QSL("url"))));

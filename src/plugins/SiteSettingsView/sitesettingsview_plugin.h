@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2024 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ class SiteSettingsView : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.SiteSettingsView" FILE "sitesettingsview.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.SiteSettingsView" FILE "sitesettingsview.json")
 
 public:
     explicit SiteSettingsView();

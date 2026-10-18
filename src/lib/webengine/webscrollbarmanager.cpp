@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2016-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -202,7 +202,7 @@ WebScrollBarManager *WebScrollBarManager::instance()
 void WebScrollBarManager::createUserScript(int thickness)
 {
     QWebEngineScript script;
-    script.setName(QSL("_falkon_scrollbar"));
+    script.setName(QSL("_veex_scrollbar"));
     script.setInjectionPoint(QWebEngineScript::DocumentReady);
     script.setWorldId(WebPage::SafeJsWorld);
     script.setSourceCode(m_scrollbarJs.arg(thickness));
@@ -211,7 +211,7 @@ void WebScrollBarManager::createUserScript(int thickness)
 
 void WebScrollBarManager::removeUserScript()
 {
-    for (const QWebEngineScript &script : mApp->webProfile()->scripts()->find(QSL("_falkon_scrollbar"))) {
+    for (const QWebEngineScript &script : mApp->webProfile()->scripts()->find(QSL("_veex_scrollbar"))) {
         mApp->webProfile()->scripts()->remove(script);
     }
 }

@@ -1,4 +1,4 @@
--- Falkon browsedata.db
+-- Veex browsedata.db
 
 -- Tables
 CREATE TABLE autofill (

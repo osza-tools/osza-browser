@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT BookmarkItem : public QObject
+class VEEX_EXPORT BookmarkItem : public QObject
 {
     Q_OBJECT
 public:

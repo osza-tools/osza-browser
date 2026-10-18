@@ -14,7 +14,7 @@ set( MouseGestures_SRCS
 	mousegesturessettingsdialog.cpp
 	)
 
-ecm_create_qm_loader( MouseGestures_SRCS falkon_mousegestures_qt )
+ecm_create_qm_loader( MouseGestures_SRCS veex_mousegestures_qt )
 
 set( MouseGestures_UIS
 	mousegesturessettingsdialog.ui
@@ -29,6 +29,6 @@ qt_add_resources(RSCS ${MouseGestures_RSCS})
 KDE_ENABLE_EXCEPTIONS()
 
 add_library(MouseGestures MODULE ${MouseGestures_SRCS} ${UIS} ${RSCS})
-install(TARGETS MouseGestures DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(MouseGestures FalkonPrivate)
+install(TARGETS MouseGestures DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(MouseGestures VeexPrivate)
 

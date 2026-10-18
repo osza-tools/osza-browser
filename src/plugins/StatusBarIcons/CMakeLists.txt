@@ -26,7 +26,7 @@ set( StatusBarIcons_SRCS
         sbi_zoomwidget.h
     )
 
-ecm_create_qm_loader( StatusBarIcons_SRCS falkon_statusbaricons_qt )
+ecm_create_qm_loader( StatusBarIcons_SRCS veex_statusbaricons_qt )
 
 set( StatusBarIcons_UIS
 	sbi_proxywidget.ui
@@ -41,6 +41,6 @@ set( StatusBarIcons_RSCS
 qt_add_resources(RSCS ${StatusBarIcons_RSCS})
 
 add_library(StatusBarIcons MODULE ${StatusBarIcons_SRCS} ${UIS} ${RSCS})
-install(TARGETS StatusBarIcons DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(StatusBarIcons FalkonPrivate)
+install(TARGETS StatusBarIcons DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(StatusBarIcons VeexPrivate)
 

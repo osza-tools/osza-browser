@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ AutoFill::AutoFill(QObject* parent)
 
     // Setup AutoFill userscript
     QWebEngineScript script;
-    script.setName(QSL("_falkon_autofill"));
+    script.setName(QSL("_veex_autofill"));
     script.setInjectionPoint(QWebEngineScript::DocumentReady);
     script.setWorldId(WebPage::SafeJsWorld);
     script.setRunsOnSubFrames(true);

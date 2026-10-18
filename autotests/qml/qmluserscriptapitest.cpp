@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -34,26 +34,26 @@ void QmlUserScriptApiTest::cleanupTestCase()
 
 void QmlUserScriptApiTest::testCount()
 {
-    int count = m_testHelper.evaluate(QSL("Falkon.UserScripts.count")).toInt();
+    int count = m_testHelper.evaluate(QSL("Veex.UserScripts.count")).toInt();
     QCOMPARE(count, mApp->webProfile()->scripts()->count());
 }
 
 void QmlUserScriptApiTest::testSize()
 {
-    int size = m_testHelper.evaluate(QSL("Falkon.UserScripts.size")).toInt();
+    int size = m_testHelper.evaluate(QSL("Veex.UserScripts.size")).toInt();
     QCOMPARE(size, mApp->webProfile()->scripts()->count());
 }
 
 void QmlUserScriptApiTest::testEmpty()
 {
-    bool empty = m_testHelper.evaluate(QSL("Falkon.UserScripts.empty")).toBool();
+    bool empty = m_testHelper.evaluate(QSL("Veex.UserScripts.empty")).toBool();
     QCOMPARE(empty, mApp->webProfile()->scripts()->isEmpty());
 }
 
 void QmlUserScriptApiTest::testContains()
 {
     QWebEngineScript script = mApp->webProfile()->scripts()->toList().at(0);
-    QObject *object = m_testHelper.evaluateQObject(QSL("Falkon.UserScripts"));
+    QObject *object = m_testHelper.evaluateQObject(QSL("Veex.UserScripts"));
     auto *userScripts = dynamic_cast<QmlUserScripts*>(object);
     QVERIFY(userScripts);
     auto *userScript = new QmlUserScript();
@@ -65,7 +65,7 @@ void QmlUserScriptApiTest::testContains()
 void QmlUserScriptApiTest::testFind()
 {
     QWebEngineScript script = mApp->webProfile()->scripts()->toList().at(0);
-    QObject *object = m_testHelper.evaluateQObject(QSL("Falkon.UserScripts"));
+    QObject *object = m_testHelper.evaluateQObject(QSL("Veex.UserScripts"));
     auto *userScripts = dynamic_cast<QmlUserScripts*>(object);
     QVERIFY(userScripts);
     QObject *scriptFound = userScripts->findScript(script.name());
@@ -75,8 +75,8 @@ void QmlUserScriptApiTest::testFind()
 
 void QmlUserScriptApiTest::testInsertRemove()
 {
-    int initialCount = m_testHelper.evaluate(QSL("Falkon.UserScripts.count")).toInt();
-    QObject *object = m_testHelper.evaluateQObject(QSL("Falkon.UserScripts"));
+    int initialCount = m_testHelper.evaluate(QSL("Veex.UserScripts.count")).toInt();
+    QObject *object = m_testHelper.evaluateQObject(QSL("Veex.UserScripts"));
     auto *userScripts = dynamic_cast<QmlUserScripts*>(object);
     QVERIFY(userScripts);
     auto *userScript = new QmlUserScript();
@@ -85,13 +85,13 @@ void QmlUserScriptApiTest::testInsertRemove()
                               "    alert('Hello World')"
                               "})()"));
     userScripts->insert(userScript);
-    int finalCount = m_testHelper.evaluate(QSL("Falkon.UserScripts.count")).toInt();
+    int finalCount = m_testHelper.evaluate(QSL("Veex.UserScripts.count")).toInt();
     QCOMPARE(finalCount, initialCount + 1);
 
     userScripts->remove(userScript);
 
-    int ultimateCount = m_testHelper.evaluate(QSL("Falkon.UserScripts.count")).toInt();
+    int ultimateCount = m_testHelper.evaluate(QSL("Veex.UserScripts.count")).toInt();
     QCOMPARE(ultimateCount, initialCount);
 }
 
-FALKONTEST_MAIN(QmlUserScriptApiTest)
+VEEXTEST_MAIN(QmlUserScriptApiTest)

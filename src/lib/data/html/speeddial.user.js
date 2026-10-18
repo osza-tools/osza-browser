@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name     _falkon_speeddial
+// @name     _veex_speeddial
 // @run-at   document-end
-// @include  falkon:speeddial
+// @include  veex:speeddial
 // ==/UserScript==
 
 var scriptData = {};
@@ -502,8 +502,8 @@ function init() {
 %JQUERY-UI%
 
 // Initialize
-if (window._falkon_external) {
+if (window._veex_external) {
     init();
 } else {
-    document.addEventListener("_falkon_external_created", init);
+    document.addEventListener("_veex_external_created", init);
 }

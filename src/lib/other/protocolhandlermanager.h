@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2019 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT ProtocolHandlerManager : public QObject
+class VEEX_EXPORT ProtocolHandlerManager : public QObject
 {
     Q_OBJECT
 

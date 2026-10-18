@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 class QWebEngineNewWindowRequest;
 
-class FALKON_EXPORT AdBlockNeworkRequest
+class VEEX_EXPORT AdBlockNeworkRequest
 {
 public:
     explicit AdBlockNeworkRequest(const QWebEngineUrlRequestInfo &request);

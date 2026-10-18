@@ -15,7 +15,7 @@ set( GreaseMonkey_SRCS
 	settings/gm_settingslistwidget.cpp
 	)
 
-ecm_create_qm_loader( GreaseMonkey_SRCS falkon_greasemonkey_qt )
+ecm_create_qm_loader( GreaseMonkey_SRCS veex_greasemonkey_qt )
 
 set( GreaseMonkey_UIS
 	gm_addscriptdialog.ui
@@ -31,6 +31,6 @@ set( GreaseMonkey_RSCS
 qt_add_resources(RSCS ${GreaseMonkey_RSCS})
 
 add_library(GreaseMonkey MODULE ${GreaseMonkey_SRCS} ${UIS} ${RSCS})
-install(TARGETS GreaseMonkey DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(GreaseMonkey FalkonPrivate)
+install(TARGETS GreaseMonkey DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(GreaseMonkey VeexPrivate)
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 class QTemporaryDir;
 
-class FALKON_EXPORT DataPaths
+class VEEX_EXPORT DataPaths
 {
 public:
     enum Path {
@@ -50,7 +50,7 @@ public:
 
     // Returns main path (Themes -> /usr/share/themes)
     static QString path(Path type);
-    // Returns all paths (Themes -> /usr/share/themes, ~/.config/falkon/themes)
+    // Returns all paths (Themes -> /usr/share/themes, ~/.config/veex/themes)
     static QStringList allPaths(Path type);
     // Returns full path of existing file
     static QString locate(Path type, const QString &file);

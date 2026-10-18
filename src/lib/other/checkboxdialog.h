@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2017  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2017  Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 *
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT CheckBoxDialog : public QMessageBox
+class VEEX_EXPORT CheckBoxDialog : public QMessageBox
 {
     Q_OBJECT
 public:

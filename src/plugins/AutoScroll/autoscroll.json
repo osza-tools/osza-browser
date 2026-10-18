@@ -48,8 +48,8 @@
     "Name[x-test]": "xxAutoScrollxx",
     "Name[zh_CN]": "自动滚动",
     "Name[zh_TW]": "AutoScroll",
-    "X-Falkon-Author": "David Rosca",
-    "X-Falkon-Email": "nowrep@gmail.com",
-    "X-Falkon-Settings": "true",
-    "X-Falkon-Version": "1.0.1"
+    "X-Veex-Author": "David Rosca",
+    "X-Veex-Email": "nowrep@gmail.com",
+    "X-Veex-Settings": "true",
+    "X-Veex-Version": "1.0.1"
 }

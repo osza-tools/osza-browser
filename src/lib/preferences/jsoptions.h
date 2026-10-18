@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
                 2013-2014  Mladen Pejaković <pejakm@autistici.org>
 *
@@ -28,7 +28,7 @@ namespace Ui
 class JsOptions;
 }
 
-class FALKON_EXPORT JsOptions : public QDialog
+class VEEX_EXPORT JsOptions : public QDialog
 {
     Q_OBJECT
 

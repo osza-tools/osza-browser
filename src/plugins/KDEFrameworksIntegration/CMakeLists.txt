@@ -9,7 +9,7 @@ set(KDEFrameworksIntegration_SRCS
     downloadkjob.h
 )
 
-ecm_create_qm_loader(KDEFrameworksIntegration_SRCS falkon_kdeframeworksintegration_qt)
+ecm_create_qm_loader(KDEFrameworksIntegration_SRCS veex_kdeframeworksintegration_qt)
 
 set(KDEFrameworksIntegration_RSCS
     kdeframeworksintegration.qrc
@@ -17,9 +17,9 @@ set(KDEFrameworksIntegration_RSCS
 qt_add_resources(RSCS ${KDEFrameworksIntegration_RSCS})
 
 add_library(KDEFrameworksIntegration MODULE ${KDEFrameworksIntegration_SRCS} ${RSCS})
-install(TARGETS KDEFrameworksIntegration DESTINATION ${FALKON_INSTALL_PLUGINDIR})
+install(TARGETS KDEFrameworksIntegration DESTINATION ${VEEX_INSTALL_PLUGINDIR})
 target_link_libraries(KDEFrameworksIntegration
-    FalkonPrivate
+    VeexPrivate
     KF6::Wallet
     KF6::KIOCore
     KF6::KIOWidgets

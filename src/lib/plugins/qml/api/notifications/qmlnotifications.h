@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -33,8 +33,8 @@ public:
      *        - icon:
      *          String representing the icon file url. The icon path will be
      *          search in the following order
-     *          - Falkon resource: for the icons starting with ":", they are searched in
-     *               falkon resource file
+     *          - Veex resource: for the icons starting with ":", they are searched in
+     *               veex resource file
      *          - Files in plugin directory: All other paths will be resolved relative to
      *               the plugin directory. If the icon path is outside the
      *               plugin directory, then it will be resolved as empty path.

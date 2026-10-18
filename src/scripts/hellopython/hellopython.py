@@ -1,5 +1,5 @@
 # ============================================================
-# HelloPython plugin for Falkon
+# HelloPython plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,39 +15,39 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Falkon
+import Veex
 from PySide6 import QtCore, QtGui, QtWidgets
 from hellopython import sidebar, button
 from hellopython.i18n import i18n
 
-class HelloPlugin(Falkon.PluginInterface, QtCore.QObject):
+class HelloPlugin(Veex.PluginInterface, QtCore.QObject):
     buttons = {}
 
     def init(self, state, settingsPath):
         print("{} {}".format(state, settingsPath))
 
-        plugins = Falkon.MainApplication.instance().plugins()
-        plugins.registerAppEventHandler(Falkon.PluginProxy.MousePressHandler, self)
+        plugins = Veex.MainApplication.instance().plugins()
+        plugins.registerAppEventHandler(Veex.PluginProxy.MousePressHandler, self)
 
         plugins.mainWindowCreated.connect(self.mainWindowCreated)
         plugins.mainWindowDeleted.connect(self.mainWindowDeleted)
 
         self.sidebar = sidebar.HelloSidebar()
-        Falkon.SideBarManager.addSidebar("hellopython-sidebar", self.sidebar)
+        Veex.SideBarManager.addSidebar("hellopython-sidebar", self.sidebar)
 
         self.schemeHandler = HelloSchemeHandler()
-        Falkon.MainApplication.instance().networkManager().registerExtensionSchemeHandler("hello", self.schemeHandler)
+        Veex.MainApplication.instance().networkManager().registerExtensionSchemeHandler("hello", self.schemeHandler)
 
-        if state == Falkon.PluginInterface.LateInitState:
-            for window in Falkon.MainApplication.instance().windows():
+        if state == Veex.PluginInterface.LateInitState:
+            for window in Veex.MainApplication.instance().windows():
                 self.mainWindowCreated(window)
 
     def unload(self):
         print("unload")
 
-        Falkon.SideBarManager.removeSidebar(self.sidebar)
+        Veex.SideBarManager.removeSidebar(self.sidebar)
 
-        for window in Falkon.MainApplication.instance().windows():
+        for window in Veex.MainApplication.instance().windows():
             self.mainWindowDeleted(window)
 
     def testPlugin(self):
@@ -89,7 +89,7 @@ class HelloPlugin(Falkon.PluginInterface, QtCore.QObject):
 
         self.settings.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.settings.setWindowTitle(i18n("Hello Python Settings"))
-        self.settings.setWindowIcon(QtGui.QIcon(":icons/falkon.svg"))
+        self.settings.setWindowIcon(QtGui.QIcon(":icons/veex.svg"))
         closeButton.clicked.connect(self.settings.close)
 
         self.settings.show()
@@ -107,9 +107,9 @@ class HelloPlugin(Falkon.PluginInterface, QtCore.QObject):
         window.navigationBar().removeToolButton(b)
         del self.buttons[window]
 
-Falkon.registerPlugin(HelloPlugin())
+Veex.registerPlugin(HelloPlugin())
 
-class HelloSchemeHandler(Falkon.ExtensionSchemeHandler):
+class HelloSchemeHandler(Veex.ExtensionSchemeHandler):
     def requestStarted(self, job):
         print("req {}".format(job.requestUrl()))
         self.setReply(job, "text/html", "<h1>TEST</h1>{}".format(job.requestUrl()))

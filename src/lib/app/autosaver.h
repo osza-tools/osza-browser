@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class FALKON_EXPORT AutoSaver : public QObject
+class VEEX_EXPORT AutoSaver : public QObject
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* AutoScroll - Autoscroll for Falkon
+* AutoScroll - Autoscroll for Veex
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class AutoScrollPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.AutoScroll" FILE "autoscroll.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.AutoScroll" FILE "autoscroll.json")
 
 public:
     explicit AutoScrollPlugin();

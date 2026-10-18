@@ -90,9 +90,9 @@ Comment[zh_TW]=Python 擴充程式範例
 
 Icon=
 Type=Service
-X-Falkon-Type=Extension/Python
+X-Veex-Type=Extension/Python
 
-X-Falkon-Author=David Rosca
-X-Falkon-Email=nowrep@gmail.com
-X-Falkon-Version=0.1.0
-X-Falkon-Settings=true
+X-Veex-Author=David Rosca
+X-Veex-Email=nowrep@gmail.com
+X-Veex-Version=0.1.0
+X-Veex-Settings=true

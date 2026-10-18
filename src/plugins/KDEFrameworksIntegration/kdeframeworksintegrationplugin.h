@@ -1,5 +1,5 @@
 /* ============================================================
-* KDEFrameworksIntegration - KDE support plugin for Falkon
+* KDEFrameworksIntegration - KDE support plugin for Veex
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -30,7 +30,7 @@ class KDEFrameworksIntegrationPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.KDEFrameworksIntegration" FILE "kdeframeworksintegration.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.KDEFrameworksIntegration" FILE "kdeframeworksintegration.json")
 
 public:
     explicit KDEFrameworksIntegrationPlugin();
@@ -40,7 +40,7 @@ public:
     bool testPlugin() override;
     void populateWebViewMenu(QMenu *menu, WebView *view, const WebHitTestResult &r) override;
 
-    QString lastFalkonVersion() const;
+    QString lastVeexVersion() const;
 
 private:
     KWalletPasswordBackend *m_backend = nullptr;
@@ -49,5 +49,5 @@ private:
     KUiServerV2JobTracker *m_jobTracker = nullptr;
 
     QString m_settingsPath;
-    QString m_lastFalkonVersion;
+    QString m_lastVeexVersion;
 };

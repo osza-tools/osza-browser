@@ -1,5 +1,5 @@
 # ============================================================
-# MiddleClickLoader - plugin for Falkon
+# MiddleClickLoader - plugin for Veex
 # Copyright (C) 2018 Juraj Oravec <sgd.orava@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
 
-import Falkon
+import Veex
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from middleclickloader.mcl_loadmode import MCL_LoadMode
@@ -70,7 +70,7 @@ class MCL_Handler(QtCore.QObject):
                     return False
 
                 if not isValid:
-                    searchManager = Falkon.MainApplication.instance().searchEnginesManager()
+                    searchManager = Veex.MainApplication.instance().searchEnginesManager()
                     engine = searchManager.defaultEngine()
                     req = searchManager.searchResult(engine, selectionClipboard)
                     guessedUrl = req.url()
@@ -80,11 +80,11 @@ class MCL_Handler(QtCore.QObject):
 
     def loadUrl(self, view, url):
         if self.loadMode == MCL_LoadMode.NEW_TAB:
-            view.openUrlInNewTab(url, Falkon.Qz.NT_NotSelectedTab)
+            view.openUrlInNewTab(url, Veex.Qz.NT_NotSelectedTab)
         elif self.loadMode == MCL_LoadMode.CURRENT_TAB:
             view.load(url)
         elif self.loadMode == MCL_LoadMode.NEW_WINDOW:
-            Falkon.MainApplication.instance().createWindow(Falkon.Qz.BW_NewWindow, url)
+            Veex.MainApplication.instance().createWindow(Veex.Qz.BW_NewWindow, url)
         else:
             return False
         return True

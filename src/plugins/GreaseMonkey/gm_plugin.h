@@ -1,5 +1,5 @@
 /* ============================================================
-* GreaseMonkey plugin for Falkon
+* GreaseMonkey plugin for Veex
 * Copyright (C) 2012-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class GM_Plugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.GreaseMonkey" FILE "greasemonkey.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.GreaseMonkey" FILE "greasemonkey.json")
 
 public:
     explicit GM_Plugin();

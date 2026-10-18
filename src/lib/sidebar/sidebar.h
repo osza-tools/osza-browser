@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ class SideBarInterface;
 class SideBarManager;
 class BrowserWindow;
 
-class FALKON_EXPORT SideBar : public QWidget
+class VEEX_EXPORT SideBar : public QWidget
 {
     Q_OBJECT
 public:
@@ -54,7 +54,7 @@ private:
     SideBarManager* m_manager;
 };
 
-class FALKON_EXPORT SideBarManager : public QObject
+class VEEX_EXPORT SideBarManager : public QObject
 {
     Q_OBJECT
 public:

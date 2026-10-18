@@ -4,7 +4,7 @@ set( PIM_SRCS
 	PIM_settings.cpp
 	)
 
-ecm_create_qm_loader( PIM_SRCS falkon_pim_qt )
+ecm_create_qm_loader( PIM_SRCS veex_pim_qt )
 
 set( PIM_UIS
 	PIM_settings.ui
@@ -17,6 +17,6 @@ set( PIM_RSCS
 qt_add_resources(RSCS ${PIM_RSCS})
 
 add_library(PIM MODULE ${PIM_SRCS} ${UIS} ${RSCS})
-install(TARGETS PIM DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(PIM FalkonPrivate)
+install(TARGETS PIM DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(PIM VeexPrivate)
 

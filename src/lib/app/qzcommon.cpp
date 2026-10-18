@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2020-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -23,13 +23,13 @@ namespace Qz
 {
 const int sessionVersion = 0x0004;
 
-FALKON_EXPORT const char *APPNAME = "Falkon";
-FALKON_EXPORT const char *VERSION = FALKON_VERSION;
-FALKON_EXPORT const char *AUTHOR = "Juraj Oravec";
-FALKON_EXPORT const char *COPYRIGHT = "2020-2025";
-FALKON_EXPORT const char *WWWADDRESS = "https://falkon.org";
-FALKON_EXPORT const char *BUGSADDRESS = "https://bugs.kde.org/describecomponents.cgi?product=Falkon";
-FALKON_EXPORT const char *WIKIADDRESS = "https://userbase.kde.org/Falkon";
+VEEX_EXPORT const char *APPNAME = "Veex";
+VEEX_EXPORT const char *VERSION = VEEX_VERSION;
+VEEX_EXPORT const char *AUTHOR = "Juraj Oravec";
+VEEX_EXPORT const char *COPYRIGHT = "2020-2025";
+VEEX_EXPORT const char *WWWADDRESS = "https://github.com/veex-tools/veex-browser";
+VEEX_EXPORT const char *BUGSADDRESS = "https://github.com/veex-tools/veex-browser/issues";
+VEEX_EXPORT const char *WIKIADDRESS = "https://github.com/veex-tools/veex-browser/wiki";
 
 const QList<AuthorInfo> AUTHORS = {
     {QSL("Juraj Oravec"), QSL("jurajoravec@mailo.com"), 2020, 2025},

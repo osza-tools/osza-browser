@@ -1,5 +1,5 @@
 /* ============================================================
- * Falkon - Qt web browser
+ * Veex - Qt web browser
  * Copyright (C) 2024  Juraj Oravec <jurajoravec@mailo.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,17 +39,17 @@ void SiteSettingsTest::cleanupTestCase()
 void SiteSettingsTest::webAttributeTest()
 {
     SiteSettingsManager *siteSettings = mApp->siteSettingsManager();
-    siteSettings->setOption(QWebEngineSettings::AutoLoadImages, QUrl(QSL("https://www.falkon.org/")), SiteSettingsManager::Deny);
+    siteSettings->setOption(QWebEngineSettings::AutoLoadImages, QUrl(QSL("https://www.veex.org/")), SiteSettingsManager::Deny);
     siteSettings->setOption(QWebEngineSettings::JavascriptEnabled, QUrl(QSL("https://kde.org/")), SiteSettingsManager::Deny);
     siteSettings->setOption(QWebEngineSettings::PlaybackRequiresUserGesture, QUrl(QSL("https://planet.kde.org/")), SiteSettingsManager::Allow);
 
 
-    checkInternalPage(QUrl(QSL("falkon:start")));
+    checkInternalPage(QUrl(QSL("veex:start")));
 
-    checkExternalPage(QUrl(QSL("https://www.falkon.org/")));
+    checkExternalPage(QUrl(QSL("https://www.veex.org/")));
     checkExternalPage(QUrl(QSL("https://kde.org/")));
 
-    checkInternalPage(QUrl(QSL("falkon:about")));
+    checkInternalPage(QUrl(QSL("veex:about")));
 
     checkExternalPage(QUrl(QSL("https://planet.kde.org/")));
 }
@@ -106,4 +106,4 @@ void SiteSettingsTest::checkExternalPage(QUrl url)
     QCOMPARE(checkWebAttributes(page, siteSettings->getWebAttributes(url)), true);
 }
 
-FALKONTEST_MAIN(SiteSettingsTest)
+VEEXTEST_MAIN(SiteSettingsTest)

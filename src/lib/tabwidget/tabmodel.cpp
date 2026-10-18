@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ QStringList TabModelMimeData::formats() const
 // static
 QString TabModelMimeData::mimeType()
 {
-    return QSL("application/falkon.tabmodel.tab");
+    return QSL("application/veex.tabmodel.tab");
 }
 
 // TabModel

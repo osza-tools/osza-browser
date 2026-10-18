@@ -8,4 +8,4 @@ XGETTEXT_FLAGS_QML="\
 -ki18n:1 -ki18np:1,2 \
 "
 
-$XGETTEXT_PROGRAM $XGETTEXT_FLAGS_QML `find . -name '*.qml' -o -name '*.js'` -o $podir/falkon_helloqml.pot
+$XGETTEXT_PROGRAM $XGETTEXT_FLAGS_QML `find . -name '*.qml' -o -name '*.js'` -o $podir/veex_helloqml.pot

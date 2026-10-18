@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2015  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *

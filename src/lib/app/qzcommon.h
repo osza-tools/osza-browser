@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2020-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -24,10 +24,10 @@
 #include <QList>
 #include <QtWebEngineCore/QtWebEngineCoreVersion>
 
-#ifdef FALKON_SHAREDLIBRARY
-#define FALKON_EXPORT Q_DECL_EXPORT
+#ifdef VEEX_SHAREDLIBRARY
+#define VEEX_EXPORT Q_DECL_EXPORT
 #else
-#define FALKON_EXPORT Q_DECL_IMPORT
+#define VEEX_EXPORT Q_DECL_IMPORT
 #endif
 
 #ifndef Q_UNLIKELY
@@ -55,13 +55,13 @@ namespace Qz
 // Version of session.dat file
 extern const int sessionVersion;
 
-FALKON_EXPORT extern const char *APPNAME;
-FALKON_EXPORT extern const char *VERSION;
-FALKON_EXPORT extern const char *AUTHOR;
-FALKON_EXPORT extern const char *COPYRIGHT;
-FALKON_EXPORT extern const char *WWWADDRESS;
-FALKON_EXPORT extern const char *BUGSADDRESS;
-FALKON_EXPORT extern const char *WIKIADDRESS;
+VEEX_EXPORT extern const char *APPNAME;
+VEEX_EXPORT extern const char *VERSION;
+VEEX_EXPORT extern const char *AUTHOR;
+VEEX_EXPORT extern const char *COPYRIGHT;
+VEEX_EXPORT extern const char *WWWADDRESS;
+VEEX_EXPORT extern const char *BUGSADDRESS;
+VEEX_EXPORT extern const char *WIKIADDRESS;
 ;
 struct AuthorInfo
 {

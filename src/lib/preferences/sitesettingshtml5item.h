@@ -1,5 +1,5 @@
 /*
- * Falkon - Permission item for HTML5 features for preferences
+ * Veex - Permission item for HTML5 features for preferences
  * SPDX-FileCopyrightText: 2024 Juraj Oravec <jurajoravec@mailo.com>
  * SPDX-License-Identifier: GPL-3.0-or-later
  */

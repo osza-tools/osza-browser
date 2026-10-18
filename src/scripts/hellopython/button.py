@@ -1,5 +1,5 @@
 # ============================================================
-# HelloPython plugin for Falkon
+# HelloPython plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Falkon
+import Veex
 from PySide6 import QtGui, QtWidgets
 
-class HelloButton(Falkon.AbstractButtonInterface):
+class HelloButton(Veex.AbstractButtonInterface):
     def __init__(self):
         super().__init__()
         self.setIcon(QtGui.QIcon(":icons/other/about.svg"))

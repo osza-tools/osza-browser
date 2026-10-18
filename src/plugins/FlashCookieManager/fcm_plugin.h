@@ -1,5 +1,5 @@
 /* ============================================================
-* FlashCookieManager plugin for Falkon
+* FlashCookieManager plugin for Veex
 * Copyright (C) 2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2018  David Rosca <nowrep@gmail.com>
 *
@@ -46,7 +46,7 @@ class FCM_Plugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.FlashCookieManager" FILE "flashcookiemanager.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.FlashCookieManager" FILE "flashcookiemanager.json")
 
 public:
     explicit FCM_Plugin();

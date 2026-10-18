@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Falkon
+# RunAction plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Falkon
+import Veex
 import os
 import re
 import enum
@@ -43,7 +43,7 @@ class Action():
     supported = False
 
     def __init__(self, fileName):
-        data = Falkon.DesktopFile(fileName)
+        data = Veex.DesktopFile(fileName)
         self.id = os.path.splitext(os.path.basename(fileName))[0]
         self.title = data.name()
         self.menuTitle = data.comment()

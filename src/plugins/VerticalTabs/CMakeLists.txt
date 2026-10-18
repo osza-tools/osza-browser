@@ -23,7 +23,7 @@ set( VerticalTabs_SRCS
     verticaltabsschemehandler.h
 )
 
-ecm_create_qm_loader( VerticalTabs_SRCS falkon_verticaltabs_qt )
+ecm_create_qm_loader( VerticalTabs_SRCS veex_verticaltabs_qt )
 
 set( VerticalTabs_UIS
     verticaltabssettings.ui
@@ -36,5 +36,5 @@ set( VerticalTabs_RSCS
 qt_add_resources(RSCS ${VerticalTabs_RSCS})
 
 add_library(VerticalTabs MODULE ${VerticalTabs_SRCS} ${UIS} ${RSCS})
-install(TARGETS VerticalTabs DESTINATION ${FALKON_INSTALL_PLUGINDIR})
-target_link_libraries(VerticalTabs FalkonPrivate)
+install(TARGETS VerticalTabs DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+target_link_libraries(VerticalTabs VeexPrivate)

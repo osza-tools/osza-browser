@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ void TestPlugin::init(InitState state, const QString &settingsPath)
 
     // This function is called right after plugin is loaded
     // it will be called even if we return false from testPlugin()
-    // so it is recommended not to call any Falkon function here
+    // so it is recommended not to call any Veex function here
 
     // Settings path is PROFILE/extensions (without trailign slash),
     // in this directory you can use global .ini file for QSettings
@@ -84,7 +84,7 @@ bool TestPlugin::testPlugin()
     // There should be some testing if plugin is loaded correctly
     // If this function returns false, plugin is automatically unloaded
 
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(FALKON_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
 }
 
 void TestPlugin::showSettings(QWidget* parent)
@@ -107,7 +107,7 @@ void TestPlugin::showSettings(QWidget* parent)
 
         m_settings.data()->setAttribute(Qt::WA_DeleteOnClose);
         m_settings.data()->setWindowTitle(tr("Example Plugin Settings"));
-        m_settings.data()->setWindowIcon(QIcon(QSL(":icons/falkon.svg")));
+        m_settings.data()->setWindowIcon(QIcon(QSL(":icons/veex.svg")));
         connect(closeButton, SIGNAL(clicked()), m_settings.data(), SLOT(close()));
     }
 
@@ -144,7 +144,7 @@ bool TestPlugin::mousePress(Qz::ObjectName type, QObject* obj, QMouseEvent* even
     qDebug() << "mousePress" << type << obj << event;
 
     // Returning false means, that we don't want to block propagating this event
-    // Returning true may affect behaviour of Falkon, so make sure you know what
+    // Returning true may affect behaviour of Veex, so make sure you know what
     // you are doing!
     return false;
 }

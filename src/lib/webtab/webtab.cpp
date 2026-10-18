@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -621,7 +621,7 @@ void WebTab::titleWasChanged(const QString &title)
     }
 
     if (m_isCurrentTab) {
-        m_window->setWindowTitle(tr("%1 - Falkon").arg(title));
+        m_window->setWindowTitle(tr("%1 - Veex").arg(title));
     }
 
     m_tabBar->setTabText(tabIndex(), title);

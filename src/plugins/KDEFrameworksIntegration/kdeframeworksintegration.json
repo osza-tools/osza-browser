@@ -47,8 +47,8 @@
     "Name[x-test]": "xxKDE Frameworks Integrationxx",
     "Name[zh_CN]": "KDE 框架集成",
     "Name[zh_TW]": "KDE Frameworks 整合",
-    "X-Falkon-Author": "David Rosca",
-    "X-Falkon-Email": "nowrep@gmail.com",
-    "X-Falkon-Settings": "false",
-    "X-Falkon-Version": "0.3.0"
+    "X-Veex-Author": "David Rosca",
+    "X-Veex-Email": "nowrep@gmail.com",
+    "X-Veex-Settings": "false",
+    "X-Veex-Version": "0.3.0"
 }

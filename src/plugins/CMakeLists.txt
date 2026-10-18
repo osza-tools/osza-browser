@@ -18,7 +18,7 @@ if (ENABLE_KDE_FRAMEWORKS_INTEGRATION_PLUGIN)
 endif()
 
 if (ENABLE_PYTHON_PLUGINS)
-    add_subdirectory(PyFalkon)
+    add_subdirectory(PyVeex)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")

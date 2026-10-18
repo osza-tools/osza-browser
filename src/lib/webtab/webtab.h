@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -36,11 +36,11 @@ class TabIcon;
 class TabBar;
 class LoadRequest;
 
-class FALKON_EXPORT WebTab : public QWidget
+class VEEX_EXPORT WebTab : public QWidget
 {
     Q_OBJECT
 public:
-    struct FALKON_EXPORT SavedTab {
+    struct VEEX_EXPORT SavedTab {
         QString title;
         QUrl url;
         QIcon icon;
@@ -57,8 +57,8 @@ public:
         bool isValid() const;
         void clear();
 
-        friend FALKON_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedTab &tab);
-        friend FALKON_EXPORT QDataStream &operator>>(QDataStream &stream, SavedTab &tab);
+        friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedTab &tab);
+        friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, SavedTab &tab);
     };
 
     enum AddChildBehavior {

@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Falkon
+# RunAction plugin for Veex
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Falkon
+import Veex
 import os
 import subprocess
 from PySide6 import QtCore
@@ -57,11 +57,11 @@ class ActionManager(QtCore.QObject):
                 cond = Action.TypeCondition.Page
 
             if action.testAction(cond, url):
-                act = Falkon.Action(action.icon, action.title, self)
+                act = Veex.Action(action.icon, action.title, self)
                 act.triggered.connect(lambda checked, a=action, w=webView, u=url, t=text: self.execAction(a, w, u, t))
                 if action.submenu:
                     if action.submenu not in menus:
-                        menu = Falkon.Menu(action.menuTitle, webView)
+                        menu = Veex.Menu(action.menuTitle, webView)
                         menus[action.submenu] = menu
                         out.append(menu)
                     menus[action.submenu].addAction(act)
@@ -89,7 +89,7 @@ class ActionManager(QtCore.QObject):
         if action.actionType == Action.Type.Command:
             subprocess.Popen(command, shell=True)
         elif action.actionType == Action.Type.Url:
-            webView.openUrlInNewTab(QtCore.QUrl(command), Falkon.Qz.NT_SelectedTab)
+            webView.openUrlInNewTab(QtCore.QUrl(command), Veex.Qz.NT_SelectedTab)
 
     def loadActions(self):
         self.actions = []

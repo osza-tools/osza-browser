@@ -11,23 +11,23 @@ fi
 
 MACDEPLOYQT=$1
 QTDIR="`dirname $MACDEPLOYQT`/.."
-LIBRARY_NAME="libFalkonPrivate.2.dylib"
-PLUGINS="Falkon.app/Contents/Resources/plugins"
-QTPLUGINS="Falkon.app/Contents/PlugIns"
+LIBRARY_NAME="libVeexPrivate.2.dylib"
+PLUGINS="Veex.app/Contents/Resources/plugins"
+QTPLUGINS="Veex.app/Contents/PlugIns"
 
 # cd to directory with bundle
 test -d bin || cd ..
 cd bin
 
-# copy libFalkonPrivate into bundle
-cp $LIBRARY_NAME Falkon.app/Contents/MacOS/
+# copy libVeexPrivate into bundle
+cp $LIBRARY_NAME Veex.app/Contents/MacOS/
 
-# copy all Falkon plugins into bundle
+# copy all Veex plugins into bundle
 test -d $PLUGINS || mkdir $PLUGINS
 cp plugins/*.dylib $PLUGINS/
 
-# fix libFalkon
-install_name_tool -change $LIBRARY_NAME @executable_path/$LIBRARY_NAME Falkon.app/Contents/MacOS/Falkon
+# fix libVeex
+install_name_tool -change $LIBRARY_NAME @executable_path/$LIBRARY_NAME Veex.app/Contents/MacOS/Veex
 
 # fix plugins
 for plugin in $PLUGINS/*.dylib
@@ -51,7 +51,7 @@ else
 fi
 
 # run macdeployqt
-$MACDEPLOYQT Falkon.app -qmldir=$PWD/../src/lib/data/data
+$MACDEPLOYQT Veex.app -qmldir=$PWD/../src/lib/data/data
 
 # create final dmg image
 cd ../mac

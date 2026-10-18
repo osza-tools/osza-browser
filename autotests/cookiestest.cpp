@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -97,4 +97,4 @@ void CookiesTest::listMatchesDomainTest()
     QCOMPARE(m_cookieJar->listMatchesDomain(list, cookieDomain), result);
 }
 
-FALKONTEST_MAIN(CookiesTest)
+VEEXTEST_MAIN(CookiesTest)

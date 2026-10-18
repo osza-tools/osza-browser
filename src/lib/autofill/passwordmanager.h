@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class PasswordBackend;
 class DatabasePasswordBackend;
 class DatabaseEncryptedPasswordBackend;
 
-struct FALKON_EXPORT PasswordEntry {
+struct VEEX_EXPORT PasswordEntry {
     QVariant id;
     QString host;
     QString username;
@@ -50,11 +50,11 @@ struct FALKON_EXPORT PasswordEntry {
         return updated > other.updated;
     }
 
-    friend FALKON_EXPORT QDataStream &operator<<(QDataStream &stream, const PasswordEntry &entry);
-    friend FALKON_EXPORT QDataStream &operator>>(QDataStream &stream, PasswordEntry &entry);
+    friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const PasswordEntry &entry);
+    friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, PasswordEntry &entry);
 };
 
-class FALKON_EXPORT PasswordManager : public QObject
+class VEEX_EXPORT PasswordManager : public QObject
 {
     Q_OBJECT
 public:

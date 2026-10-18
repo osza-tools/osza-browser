@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ class QTimer;
 class QAbstractItemModelTester;
 #endif
 
-class FALKON_EXPORT AdBlockTreeModel : public QAbstractListModel
+class VEEX_EXPORT AdBlockTreeModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -61,7 +61,7 @@ private:
 };
 
 
-class FALKON_EXPORT AdBlockFilterModel : public QSortFilterProxyModel
+class VEEX_EXPORT AdBlockFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 

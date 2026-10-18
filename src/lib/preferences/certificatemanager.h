@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2023 Javier Llorente <javier@opensuse.org>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ namespace Ui
 class CertificateManager;
 }
 
-class FALKON_EXPORT CertificateManager : public QDialog
+class VEEX_EXPORT CertificateManager : public QDialog
 {
     Q_OBJECT
 

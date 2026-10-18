@@ -47,8 +47,8 @@
     "Name[x-test]": "xxTab Managerxx",
     "Name[zh_CN]": "标签页管理器",
     "Name[zh_TW]": "分頁管理器",
-    "X-Falkon-Author": "Razi Alavizadeh",
-    "X-Falkon-Email": "s.r.alavizadeh@gmail.com",
-    "X-Falkon-Settings": "true",
-    "X-Falkon-Version": "0.8.0"
+    "X-Veex-Author": "Razi Alavizadeh",
+    "X-Veex-Email": "s.r.alavizadeh@gmail.com",
+    "X-Veex-Settings": "true",
+    "X-Veex-Version": "0.8.0"
 }

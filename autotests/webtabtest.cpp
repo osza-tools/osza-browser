@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -289,4 +289,4 @@ void WebTabTest::saveNotRestoredTabTest()
     QCOMPARE(saved.url, QUrl(QSL("qrc:autotests/data/basic_page.html")));
 }
 
-FALKONTEST_MAIN(WebTabTest)
+VEEXTEST_MAIN(WebTabTest)

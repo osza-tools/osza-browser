@@ -1,5 +1,5 @@
 /* ============================================================
-* FlashCookieManager plugin for Falkon
+* FlashCookieManager plugin for Veex
 * Copyright (C) 2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *

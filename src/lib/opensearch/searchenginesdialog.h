@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ namespace Ui
 class SearchEnginesDialog;
 }
 
-class FALKON_EXPORT SearchEnginesDialog : public QDialog
+class VEEX_EXPORT SearchEnginesDialog : public QDialog
 {
     Q_OBJECT
 

@@ -4,8 +4,8 @@ function init() {
     })
 }
 
-if (window._falkon_external) {
+if (window._veex_external) {
     init();
 } else {
-    document.addEventListener("_falkon_external_created", init);
+    document.addEventListener("_veex_external_created", init);
 }

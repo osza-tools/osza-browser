@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2010-2018  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ class BrowserWindow;
 class TabbedWebView;
 class ClosedTabsManager;
 
-class FALKON_EXPORT AddTabButton : public ToolButton
+class VEEX_EXPORT AddTabButton : public ToolButton
 {
 public:
     explicit AddTabButton(TabWidget* tabWidget, TabBar* tabBar);
@@ -49,7 +49,7 @@ private:
     TabWidget* m_tabWidget;
 };
 
-class FALKON_EXPORT MenuTabs : public QMenu
+class VEEX_EXPORT MenuTabs : public QMenu
 {
     Q_OBJECT
 public:
@@ -62,7 +62,7 @@ private:
     void mouseReleaseEvent(QMouseEvent* event) override;
 };
 
-class FALKON_EXPORT TabWidget : public TabStackedWidget
+class VEEX_EXPORT TabWidget : public TabStackedWidget
 {
     Q_OBJECT
 public:

@@ -1,5 +1,5 @@
 /* ============================================================
-* Falkon - Qt web browser
+* Veex - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 class WebTab;
 class BrowserWindow;
 
-class FALKON_EXPORT TabModelMimeData : public QMimeData
+class VEEX_EXPORT TabModelMimeData : public QMimeData
 {
     Q_OBJECT
 
@@ -45,7 +45,7 @@ private:
     QPointer<WebTab> m_tab;
 };
 
-class FALKON_EXPORT TabModel : public QAbstractListModel
+class VEEX_EXPORT TabModel : public QAbstractListModel
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* TabManager plugin for Falkon
+* TabManager plugin for Veex
 * Copyright (C) 2013-2017  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ class TabManagerPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Falkon.Browser.plugin.TabManagerPlugin" FILE "tabmanager.json")
+    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.TabManagerPlugin" FILE "tabmanager.json")
 
 public:
     explicit TabManagerPlugin();
