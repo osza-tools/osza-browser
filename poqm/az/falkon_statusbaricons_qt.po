@@ -1,0 +1,289 @@
+# Kheyyam Gojayev <xxmn77@gmail.com>, 2020, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2022-07-06 09:32+0400\n"
+"Last-Translator: Kheyyam <xxmn77@gmail.com>\n"
+"Language-Team: Azerbaijani <kde-i18n-doc@kde.org>\n"
+"Language: az\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 22.04.2\n"
+
+#: sbi_imagesicon.cpp:34
+msgctxt "SBI_ImagesIcon|"
+msgid "Modify images loading settings per-site and globally"
+msgstr ""
+"Hər sayt üçün və ümumi olaraq şəkillərin yüklənməsi ayarlarını dəyişmək"
+
+#: sbi_imagesicon.cpp:58
+msgctxt "SBI_ImagesIcon|"
+msgid "Current Page Settings"
+msgstr "Cari Səhifə Ayarları"
+
+#: sbi_imagesicon.cpp:61
+msgctxt "SBI_ImagesIcon|"
+msgid "Disable loading images (temporarily)"
+msgstr "Şəkillərin üyklənməsini söndürmək (müvəqqəti)"
+
+#: sbi_imagesicon.cpp:64
+msgctxt "SBI_ImagesIcon|"
+msgid "Enable loading images (temporarily)"
+msgstr "Şəkillərin yüklənməsini aktiv etmək (müvəqqəti)"
+
+#: sbi_imagesicon.cpp:68
+msgctxt "SBI_ImagesIcon|"
+msgid "Global Settings"
+msgstr "Ümumi Ayarlar"
+
+#: sbi_imagesicon.cpp:70
+msgctxt "SBI_ImagesIcon|"
+msgid "Automatically load images"
+msgstr "Şəkillər avtomatik yüklənir"
+
+#: sbi_javascripticon.cpp:35
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Modify JavaScript settings per-site and globally"
+msgstr "Hər sayt üçün və ümumi olaraq JavaScript ayarlarını dəyişmək"
+
+#: sbi_javascripticon.cpp:52
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Current Page Settings"
+msgstr "Cari Səhifə Ayarları"
+
+#: sbi_javascripticon.cpp:55
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Disable JavaScript (temporarily)"
+msgstr "JavaScript'i söndürmək (müvəqqəti)"
+
+#: sbi_javascripticon.cpp:58
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Enable JavaScript (temporarily)"
+msgstr "JavaScript'i aktiv etmək (müvəqqəti)"
+
+#: sbi_javascripticon.cpp:67
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Global Settings"
+msgstr "Ümumi Ayarlar"
+
+#: sbi_javascripticon.cpp:68
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Manage JavaScript settings"
+msgstr "JavaScript Meneceri ayarları"
+
+#: sbi_networkicon.cpp:70
+msgctxt "SBI_NetworkIcon|"
+msgid "Proxy Configuration"
+msgstr "Proksi Ayarları"
+
+#: sbi_networkicon.cpp:72
+msgctxt "SBI_NetworkIcon|"
+msgid "Select proxy"
+msgstr "Proksi seçmək"
+
+#: sbi_networkicon.cpp:86
+msgctxt "SBI_NetworkIcon|"
+msgid "Empty"
+msgstr "Boş"
+
+#: sbi_networkicon.cpp:90
+msgctxt "SBI_NetworkIcon|"
+msgid "Manage proxies"
+msgstr "Proksilər meneceri"
+
+#: sbi_networkicon.cpp:103
+#, qt-format
+msgctxt "SBI_NetworkIcon|"
+msgid ""
+"Shows network status and manages proxy<br/><br/><b>Network:</b><br/>%1<br/"
+"><br/><b>Proxy:</b><br/>%2"
+msgstr ""
+"Şəbəkə statusunu və proksi menecerini göstərmək<br/><br/><b>Şəbəkə:</b><br/>"
+"%1<br/><br/><b>Proksi:</b><br/>%2"
+
+#: sbi_networkicon.cpp:107
+#, fuzzy
+#| msgctxt "SBI_NetworkIcon|"
+#| msgid "Connected"
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Online"
+msgstr "Qoşuldu"
+
+#: sbi_networkicon.cpp:110
+#, fuzzy
+#| msgctxt "SBI_NetworkIcon|"
+#| msgid "Connected"
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Site"
+msgstr "Qoşuldu"
+
+#: sbi_networkicon.cpp:113
+#, fuzzy
+#| msgctxt "SBI_NetworkIcon|"
+#| msgid "Connected"
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Local"
+msgstr "Qoşuldu"
+
+#: sbi_networkicon.cpp:116
+#, fuzzy
+#| msgctxt "SBI_NetworkIcon|"
+#| msgid "Connected"
+msgctxt "SBI_NetworkIcon|"
+msgid "Disconnected"
+msgstr "Qoşuldu"
+
+#: sbi_networkicon.cpp:120
+msgctxt "SBI_NetworkIcon|"
+msgid "Unknown"
+msgstr ""
+
+#: sbi_networkicon.cpp:126
+msgctxt "SBI_NetworkIcon|"
+msgid "System proxy"
+msgstr "Sistem proksi"
+
+#: sbi_networkicon.cpp:130
+msgctxt "SBI_NetworkIcon|"
+msgid "No proxy"
+msgstr "Proksi yoxdur"
+
+#: sbi_networkicon.cpp:134
+msgctxt "SBI_NetworkIcon|"
+msgid "User defined"
+msgstr "İstifadəçi təyin etdi"
+
+#: sbi_networkicondialog.cpp:57 sbi_networkicondialog.ui:38
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Add proxy"
+msgstr "Proksi əlavə etmək"
+
+#: sbi_networkicondialog.cpp:57
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Name of proxy:"
+msgstr "Proksinin adı:"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove current proxy"
+msgstr "Cari proksini silmək"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Are you sure you want to remove current proxy?"
+msgstr "Cari proksini silmək istədiyinizə əminsiniz?"
+
+#: sbi_networkicondialog.ui:14
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Proxy Manager"
+msgstr "Proksi Meneceri"
+
+#: sbi_networkicondialog.ui:28
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Select proxy: "
+msgstr "Proksi seçmək: "
+
+#: sbi_networkicondialog.ui:45
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove proxy"
+msgstr "Proksini silmək"
+
+#: sbi_networkicondialog.ui:69
+msgctxt "SBI_NetworkIconDialog|"
+msgid "No proxies. You can add proxy by clicking on <b>Add</b> button."
+msgstr ""
+"Proksi yoxdur. <b>Əlavə etmək</b> düyməsinə vurmaqla proksi əlavə edə "
+"bilərsiniz."
+
+#: sbi_networkicondialog.ui:104
+msgctxt "SBI_NetworkIconDialog|"
+msgid "All changes must be saved with <b>Save</b> button."
+msgstr "Bütün dəyişikliklər <b>Saxlayın</b> düyməsi ilə saxlanılmalıdır."
+
+#: sbi_proxywidget.ui:14
+msgctxt "SBI_ProxyWidget|"
+msgid "Form"
+msgstr "Forma"
+
+#: sbi_proxywidget.ui:23
+msgctxt "SBI_ProxyWidget|"
+msgid "HTTP"
+msgstr "HTTP"
+
+#: sbi_proxywidget.ui:28
+msgctxt "SBI_ProxyWidget|"
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: sbi_proxywidget.ui:39
+msgctxt "SBI_ProxyWidget|"
+msgid "Port:"
+msgstr "Port:"
+
+#: sbi_proxywidget.ui:76
+msgctxt "SBI_ProxyWidget|"
+msgid "Username:"
+msgstr "İstifadəçi adı:"
+
+#: sbi_proxywidget.ui:86
+msgctxt "SBI_ProxyWidget|"
+msgid "Password:"
+msgstr "Şifrə:"
+
+#: sbi_proxywidget.ui:111
+msgctxt "SBI_ProxyWidget|"
+msgid "S&ystem proxy configuration"
+msgstr "S&istem proksi tənzimləmələri"
+
+#: sbi_proxywidget.ui:118
+msgctxt "SBI_ProxyWidget|"
+msgid "&Manual configuration"
+msgstr "Əl ilə tənzi&mləmək"
+
+#: sbi_settingsdialog.ui:14
+msgctxt "SBI_SettingsDialog|"
+msgid "StatusBar Icons"
+msgstr "Vəziyyət Paneli Nişanları"
+
+#: sbi_settingsdialog.ui:48
+msgctxt "SBI_SettingsDialog|"
+msgid "<h3>StatusBar Icons</h3>"
+msgstr "<h3>Vəziyyət Paneli Nişanları</h3>"
+
+#: sbi_settingsdialog.ui:70
+msgctxt "SBI_SettingsDialog|"
+msgid "These icons will be displayed in statusbar:"
+msgstr "Vəziyyət_panelində bu nişanlar görünəcəkdir:"
+
+#: sbi_settingsdialog.ui:97
+msgctxt "SBI_SettingsDialog|"
+msgid "Images Icon"
+msgstr "Şəkil Nişanı"
+
+#: sbi_settingsdialog.ui:104
+msgctxt "SBI_SettingsDialog|"
+msgid "JavaScript Icon"
+msgstr "JavaScript Nişanı"
+
+#: sbi_settingsdialog.ui:111
+msgctxt "SBI_SettingsDialog|"
+msgid "Network Icon"
+msgstr "Şəbəkə Nişanı"
+
+#: sbi_settingsdialog.ui:118
+msgctxt "SBI_SettingsDialog|"
+msgid "Zoom widget"
+msgstr "Miqyas Əlavəsi"
+
+#: sbi_zoomwidget.cpp:48
+#, qt-format
+msgctxt "SBI_ZoomWidget|"
+msgid "Zoom: %1%"
+msgstr "Miqyas: %1%"
+
+#~ msgctxt "SBI_NetworkIcon|"
+#~ msgid "Offline"
+#~ msgstr "Bağlantı yoxdur"

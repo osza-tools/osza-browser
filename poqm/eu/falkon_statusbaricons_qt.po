@@ -1,0 +1,283 @@
+# Translation for falkon_statusbaricons_qt.po to Euskara/Basque (eu).
+# Copyright (C) 2017-2024 This_file_is_part_of_KDE
+# This file is distributed under the same license as the falkon package.
+# SPDX-FileCopyrightText: 2024 KDE euskaratzeko proiektuaren arduraduna <xalba@ni.eus>
+#
+# Translators:
+# Xabier Aramendi <azpidatziak@gmail.com>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2024-12-25 09:05+0100\n"
+"Last-Translator: Iñigo Salvador Azurmendi <xalba@ni.eus>\n"
+"Language-Team: Basque <kde-i18n-eu@kde.org>\n"
+"Language: eu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: eu_ES\n"
+"X-Qt-Contexts: true\n"
+"X-Generator: Lokalize 24.12.0\n"
+
+#: sbi_imagesicon.cpp:34
+msgctxt "SBI_ImagesIcon|"
+msgid "Modify images loading settings per-site and globally"
+msgstr "Aldatu irudiak ezarpenak gune-bakoitzeko eta orokorki gertatuz"
+
+#: sbi_imagesicon.cpp:58
+msgctxt "SBI_ImagesIcon|"
+msgid "Current Page Settings"
+msgstr "Oraingo Orrialdearen Ezarpenak"
+
+#: sbi_imagesicon.cpp:61
+msgctxt "SBI_ImagesIcon|"
+msgid "Disable loading images (temporarily)"
+msgstr "Ezgaitu irudiak gertatzea (aldibaterako)"
+
+#: sbi_imagesicon.cpp:64
+msgctxt "SBI_ImagesIcon|"
+msgid "Enable loading images (temporarily)"
+msgstr "Gaitu irudiak gertatzea (aldibaterako)"
+
+#: sbi_imagesicon.cpp:68
+msgctxt "SBI_ImagesIcon|"
+msgid "Global Settings"
+msgstr "Ezarpen Orokorrak"
+
+#: sbi_imagesicon.cpp:70
+msgctxt "SBI_ImagesIcon|"
+msgid "Automatically load images"
+msgstr "Berezgaitasunez gertatu irudiak"
+
+#: sbi_javascripticon.cpp:35
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Modify JavaScript settings per-site and globally"
+msgstr "Aldatu JavaScript ezarpenak gune-bakoitzeko eta orokorki"
+
+#: sbi_javascripticon.cpp:52
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Current Page Settings"
+msgstr "Oraingo Orrialdearen Ezarpenak"
+
+#: sbi_javascripticon.cpp:55
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Disable JavaScript (temporarily)"
+msgstr "Ezgaitu JavaScript (aldibaterako)"
+
+#: sbi_javascripticon.cpp:58
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Enable JavaScript (temporarily)"
+msgstr "Gaitu JavaScript (aldibaterako)"
+
+#: sbi_javascripticon.cpp:67
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Global Settings"
+msgstr "Ezarpen Orokorrak"
+
+#: sbi_javascripticon.cpp:68
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Manage JavaScript settings"
+msgstr "Kudeatu JavaScript ezarpenak"
+
+#: sbi_networkicon.cpp:70
+msgctxt "SBI_NetworkIcon|"
+msgid "Proxy Configuration"
+msgstr "Ordezkari konfigurazioa"
+
+#: sbi_networkicon.cpp:72
+msgctxt "SBI_NetworkIcon|"
+msgid "Select proxy"
+msgstr "Hautatu ordezkaria"
+
+#: sbi_networkicon.cpp:86
+msgctxt "SBI_NetworkIcon|"
+msgid "Empty"
+msgstr "Hutsik"
+
+#: sbi_networkicon.cpp:90
+msgctxt "SBI_NetworkIcon|"
+msgid "Manage proxies"
+msgstr "Kudeatu ordezkariak"
+
+#: sbi_networkicon.cpp:103
+#, qt-format
+msgctxt "SBI_NetworkIcon|"
+msgid ""
+"Shows network status and manages proxy<br/><br/><b>Network:</b><br/>%1<br/"
+"><br/><b>Proxy:</b><br/>%2"
+msgstr ""
+"Sarearen egoera erakutsi eta ordezkaria kudeatzen du<br/><br/><b>Sarea:</"
+"b><br/>%1<br/><br/><b>Ordezkaria:</b><br/>%2"
+
+#: sbi_networkicon.cpp:107
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Online"
+msgstr "Konektatuta - Lerroan"
+
+#: sbi_networkicon.cpp:110
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Site"
+msgstr "Konektatuta - Lekua"
+
+#: sbi_networkicon.cpp:113
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Local"
+msgstr "Konektatuta - Lokala"
+
+#: sbi_networkicon.cpp:116
+msgctxt "SBI_NetworkIcon|"
+msgid "Disconnected"
+msgstr "Deskonektatuta"
+
+#: sbi_networkicon.cpp:120
+msgctxt "SBI_NetworkIcon|"
+msgid "Unknown"
+msgstr "Ezezaguna"
+
+#: sbi_networkicon.cpp:126
+msgctxt "SBI_NetworkIcon|"
+msgid "System proxy"
+msgstr "Sistemaren ordezkaria"
+
+#: sbi_networkicon.cpp:130
+msgctxt "SBI_NetworkIcon|"
+msgid "No proxy"
+msgstr "Ordezkaririk gabe"
+
+#: sbi_networkicon.cpp:134
+msgctxt "SBI_NetworkIcon|"
+msgid "User defined"
+msgstr "Erabiltzaileak zehaztuta"
+
+#: sbi_networkicondialog.cpp:57 sbi_networkicondialog.ui:38
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Add proxy"
+msgstr "Gehitu ordezkaria"
+
+#: sbi_networkicondialog.cpp:57
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Name of proxy:"
+msgstr "Ordezkariaren izena:"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove current proxy"
+msgstr "Kendu oraingo ordezkaria"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Are you sure you want to remove current proxy?"
+msgstr "Ziur zaude oraingo ordezkaria kendu nahi duzula?"
+
+#: sbi_networkicondialog.ui:14
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Proxy Manager"
+msgstr "Ordezkari-kudeatzailea"
+
+#: sbi_networkicondialog.ui:28
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Select proxy: "
+msgstr "Hautatu ordezkaria: "
+
+#: sbi_networkicondialog.ui:45
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove proxy"
+msgstr "Kendu ordezkaria"
+
+#: sbi_networkicondialog.ui:69
+msgctxt "SBI_NetworkIconDialog|"
+msgid "No proxies. You can add proxy by clicking on <b>Add</b> button."
+msgstr ""
+"Ordezkaririk gabe. Ordezkaria gehitu dezakezu <b>Gehitu</b> botoiari klik "
+"eginda."
+
+#: sbi_networkicondialog.ui:104
+msgctxt "SBI_NetworkIconDialog|"
+msgid "All changes must be saved with <b>Save</b> button."
+msgstr "Aldaketa guztiak <b>Gorde</b> botoiarekin gorde behar dira."
+
+#: sbi_proxywidget.ui:14
+msgctxt "SBI_ProxyWidget|"
+msgid "Form"
+msgstr "Inprimakia"
+
+#: sbi_proxywidget.ui:23
+msgctxt "SBI_ProxyWidget|"
+msgid "HTTP"
+msgstr "HTTP"
+
+#: sbi_proxywidget.ui:28
+msgctxt "SBI_ProxyWidget|"
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: sbi_proxywidget.ui:39
+msgctxt "SBI_ProxyWidget|"
+msgid "Port:"
+msgstr "Ataka:"
+
+#: sbi_proxywidget.ui:76
+msgctxt "SBI_ProxyWidget|"
+msgid "Username:"
+msgstr "Erabiltzaile-izena:"
+
+#: sbi_proxywidget.ui:86
+msgctxt "SBI_ProxyWidget|"
+msgid "Password:"
+msgstr "Pasahitza:"
+
+#: sbi_proxywidget.ui:111
+msgctxt "SBI_ProxyWidget|"
+msgid "S&ystem proxy configuration"
+msgstr "&Sistema ordezkariaren konfigurazioa"
+
+#: sbi_proxywidget.ui:118
+msgctxt "SBI_ProxyWidget|"
+msgid "&Manual configuration"
+msgstr "Es&kuzko konfigurazioa"
+
+#: sbi_settingsdialog.ui:14
+msgctxt "SBI_SettingsDialog|"
+msgid "StatusBar Icons"
+msgstr "Egoera-Barra Ikurrak"
+
+#: sbi_settingsdialog.ui:48
+msgctxt "SBI_SettingsDialog|"
+msgid "<h3>StatusBar Icons</h3>"
+msgstr "<h3>Egoera-Barra Ikurrak</h3>"
+
+#: sbi_settingsdialog.ui:70
+msgctxt "SBI_SettingsDialog|"
+msgid "These icons will be displayed in statusbar:"
+msgstr "Ikur hauek egoerabarran erakutsiko dira:"
+
+#: sbi_settingsdialog.ui:97
+msgctxt "SBI_SettingsDialog|"
+msgid "Images Icon"
+msgstr "Irudi Ikurra"
+
+#: sbi_settingsdialog.ui:104
+msgctxt "SBI_SettingsDialog|"
+msgid "JavaScript Icon"
+msgstr "JavaScript Ikurra"
+
+#: sbi_settingsdialog.ui:111
+msgctxt "SBI_SettingsDialog|"
+msgid "Network Icon"
+msgstr "Sare Ikurra"
+
+#: sbi_settingsdialog.ui:118
+msgctxt "SBI_SettingsDialog|"
+msgid "Zoom widget"
+msgstr "Zoom widgeta"
+
+#: sbi_zoomwidget.cpp:48
+#, qt-format
+msgctxt "SBI_ZoomWidget|"
+msgid "Zoom: %1%"
+msgstr "Zooma: %1%"
+
+#~ msgctxt "SBI_NetworkIcon|"
+#~ msgid "Offline"
+#~ msgstr "Lineaz-kanpo"

@@ -1,0 +1,101 @@
+# translation of falkon_sitesettingsview_qt.po to Slovak
+# SPDX-FileCopyrightText: 2024 Roman Paholik <wizzardsk@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: falkon_sitesettingsview_qt\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2024-11-07 22:21+0100\n"
+"PO-Revision-Date: 2024-11-11 17:45+0100\n"
+"Last-Translator: Roman Paholík <wizzardsk@gmail.com>\n"
+"Language-Team: Slovak <kde-sk@linux.sk>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 24.08.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Qt-Contexts: true\n"
+
+#: sitesettingsview_controller.cpp:40
+msgctxt "SiteSettingsView_Controller|"
+msgid "Site Settings"
+msgstr "Nastavenia servera"
+
+#: sitesettingsview_controller.cpp:48
+msgctxt "SiteSettingsView_Controller|"
+msgid "Site Settings View"
+msgstr "Pohľad nastavenia servera"
+
+#: sitesettingsview_widget.cpp:53
+msgctxt "SiteSettingsView_Widget|"
+msgid "Mode:"
+msgstr "Režim:"
+
+#: sitesettingsview_widget.cpp:55
+msgctxt "SiteSettingsView_Widget|"
+msgid "Private"
+msgstr "Súkromné"
+
+#: sitesettingsview_widget.cpp:58
+msgctxt "SiteSettingsView_Widget|"
+msgid "Normal"
+msgstr "Normálne"
+
+#: sitesettingsview_widget.cpp:60
+msgctxt "SiteSettingsView_Widget|"
+msgid "isWeb:"
+msgstr "isWeb:"
+
+#: sitesettingsview_widget.cpp:64
+msgctxt "SiteSettingsView_Widget|"
+msgid "Refresh"
+msgstr "Obnoviť"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Real"
+msgstr "Reálne"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:92
+#: sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Local"
+msgstr "Miestne"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:92
+#: sitesettingsview_widget.cpp:109 sitesettingsview_widget.cpp:223
+msgctxt "SiteSettingsView_Widget|"
+msgid "Default"
+msgstr "Predvolené"
+
+#: sitesettingsview_widget.cpp:75
+msgctxt "SiteSettingsView_Widget|"
+msgid "Attributes"
+msgstr "Atribúty"
+
+#: sitesettingsview_widget.cpp:92
+msgctxt "SiteSettingsView_Widget|"
+msgid "Feature"
+msgstr "Funkcia"
+
+#: sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Option"
+msgstr "Voľba"
+
+#: sitesettingsview_widget.cpp:155
+msgctxt "SiteSettingsView_Widget|"
+msgid "True"
+msgstr "Pravda"
+
+#: sitesettingsview_widget.cpp:158
+msgctxt "SiteSettingsView_Widget|"
+msgid "False"
+msgstr "Nepravda"
+
+#: sitesettingsview_widget.cpp:219 sitesettingsview_widget.cpp:227
+#: sitesettingsview_widget.cpp:231
+#, qt-format
+msgctxt "SiteSettingsView_Widget|"
+msgid "%1 (%2%)"
+msgstr "%1 (%2%)"

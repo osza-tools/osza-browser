@@ -1,0 +1,143 @@
+# scootergrisen, 2018.
+# Martin Schlander <mschlander@opensuse.org>, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2020-02-11 19:53+0100\n"
+"Last-Translator: Martin Schlander <mschlander@opensuse.org>\n"
+"Language-Team: Danish <kde-i18n-doc@kde.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Unmute Tab"
+msgstr "Slå lyden til i faneblad"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Mute Tab"
+msgstr "Slå lyden fra i faneblad"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Unmute Tab"
+msgstr "Slå lyden til i faneblad"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Mute Tab"
+msgstr "Slå lyden fra i faneblad"
+
+#: tabtreeview.cpp:318
+msgctxt "TabTreeView|"
+msgid "Close Tab"
+msgstr "Luk faneblad"
+
+#: tabtreeview.cpp:394
+msgctxt "TabTreeView|"
+msgid "Tab Tree"
+msgstr "Fanebladstræ"
+
+#: tabtreeview.cpp:398
+msgctxt "TabTreeView|"
+msgid "Close Tree"
+msgstr "Luk træ"
+
+#: tabtreeview.cpp:401
+msgctxt "TabTreeView|"
+msgid "Unload Tree"
+msgstr "Afindlæs træ"
+
+#: tabtreeview.cpp:407
+msgctxt "TabTreeView|"
+msgid "Expand All"
+msgstr "Udfold alle"
+
+#: tabtreeview.cpp:408
+msgctxt "TabTreeView|"
+msgid "Collapse All"
+msgstr "Sammenfold alle"
+
+#: verticaltabscontroller.cpp:36
+msgctxt "VerticalTabsController|"
+msgid "Vertical Tabs"
+msgstr "Lodrette faneblade"
+
+#: verticaltabsschemehandler.cpp:47
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "Vertical Tabs"
+msgstr "Lodrette faneblade"
+
+#: verticaltabsschemehandler.cpp:57
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "New Group"
+msgstr "Ny gruppe"
+
+#: verticaltabssettings.cpp:58
+msgctxt "VerticalTabsSettings|"
+msgid "Theme file"
+msgstr "Temafil"
+
+#: verticaltabssettings.cpp:83
+msgctxt "VerticalTabsSettings|"
+msgid "Custom..."
+msgstr "Brugerdefineret..."
+
+#: verticaltabssettings.ui:14
+msgctxt "VerticalTabsSettings|"
+msgid "Vertical Tabs Settings"
+msgstr "Indstillinger for lodrette faneblade"
+
+#: verticaltabssettings.ui:20
+msgctxt "VerticalTabsSettings|"
+msgid "View"
+msgstr "Vis"
+
+#: verticaltabssettings.ui:26
+msgctxt "VerticalTabsSettings|"
+msgid "Tab List"
+msgstr "Fanebladsliste"
+
+#: verticaltabssettings.ui:33
+msgctxt "VerticalTabsSettings|"
+msgid "Tab Tree"
+msgstr "Fanebladstræ"
+
+#: verticaltabssettings.ui:43
+msgctxt "VerticalTabsSettings|"
+msgid "Options"
+msgstr "Valgmuligheder"
+
+#: verticaltabssettings.ui:49
+msgctxt "VerticalTabsSettings|"
+msgid "Theme:"
+msgstr "Tema:"
+
+#: verticaltabssettings.ui:62
+msgctxt "VerticalTabsSettings|"
+msgid "Use as replacement for main tab bar"
+msgstr "Bryg som erstatning til primær fanebladslinje"
+
+#: verticaltabswidget.cpp:59
+msgctxt "VerticalTabsWidget|"
+msgid "New Tab"
+msgstr "Nyt faneblad"
+
+#: verticaltabswidget.cpp:247
+msgctxt "VerticalTabsWidget|"
+msgid "Add New Group..."
+msgstr "Tilføj ny gruppe..."
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the end of tab tree"
+#~ msgstr "Tilføj nye barnefaneblade til slutningen af fanebladstræ"
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the beginning of tab tree"
+#~ msgstr "Tilføj nye barnefaneblade til begyndelsen af fanebladstræ"

@@ -1,0 +1,98 @@
+# SPDX-FileCopyrightText: 2024 Łukasz Wojniłowicz <lukasz.wojnilowicz@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2024-06-16 10:59+0200\n"
+"Last-Translator: Łukasz Wojniłowicz <lukasz.wojnilowicz@gmail.com>\n"
+"Language-Team: Polish <kde-i18n-doc@kde.org>\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Qt-Contexts: true\n"
+
+#: sitesettingsview_controller.cpp:40
+msgctxt "SiteSettingsView_Controller|"
+msgid "Site Settings"
+msgstr "Ustawienia strony"
+
+#: sitesettingsview_controller.cpp:48
+msgctxt "SiteSettingsView_Controller|"
+msgid "Site Settings View"
+msgstr "Widok ustawień strony"
+
+#: sitesettingsview_widget.cpp:53
+msgctxt "SiteSettingsView_Widget|"
+msgid "Mode:"
+msgstr "Tryb:"
+
+#: sitesettingsview_widget.cpp:55
+msgctxt "SiteSettingsView_Widget|"
+msgid "Private"
+msgstr "Prywatny"
+
+#: sitesettingsview_widget.cpp:58
+msgctxt "SiteSettingsView_Widget|"
+msgid "Normal"
+msgstr "Normalny"
+
+#: sitesettingsview_widget.cpp:60
+msgctxt "SiteSettingsView_Widget|"
+msgid "isWeb:"
+msgstr "isWeb:"
+
+#: sitesettingsview_widget.cpp:64
+msgctxt "SiteSettingsView_Widget|"
+msgid "Refresh"
+msgstr "Odśwież"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Real"
+msgstr "Rzeczywista"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:92
+#: sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Local"
+msgstr "Lokalny"
+
+#: sitesettingsview_widget.cpp:75 sitesettingsview_widget.cpp:92
+#: sitesettingsview_widget.cpp:109 sitesettingsview_widget.cpp:223
+msgctxt "SiteSettingsView_Widget|"
+msgid "Default"
+msgstr "Domyślne"
+
+#: sitesettingsview_widget.cpp:75
+msgctxt "SiteSettingsView_Widget|"
+msgid "Attributes"
+msgstr "Atrybuty"
+
+#: sitesettingsview_widget.cpp:92
+msgctxt "SiteSettingsView_Widget|"
+msgid "Feature"
+msgstr "Funkcja"
+
+#: sitesettingsview_widget.cpp:109
+msgctxt "SiteSettingsView_Widget|"
+msgid "Option"
+msgstr "Ustawienie"
+
+#: sitesettingsview_widget.cpp:155
+msgctxt "SiteSettingsView_Widget|"
+msgid "True"
+msgstr "Prawda"
+
+#: sitesettingsview_widget.cpp:158
+msgctxt "SiteSettingsView_Widget|"
+msgid "False"
+msgstr "Fałsz"
+
+#: sitesettingsview_widget.cpp:219 sitesettingsview_widget.cpp:227
+#: sitesettingsview_widget.cpp:231
+#, qt-format
+msgctxt "SiteSettingsView_Widget|"
+msgid "%1 (%2%)"
+msgstr "%1 (%2%)"

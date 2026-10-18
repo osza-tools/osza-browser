@@ -1,0 +1,141 @@
+# Wantoyo <wantoyek@gmail.com>, 2018, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2020-07-15 07:20+0700\n"
+"Last-Translator: Wantoyo <wantoyek@gmail.com>\n"
+"Language-Team: Indonesian <kde-i18n-doc@kde.org>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Qt-Contexts: true\n"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Unmute Tab"
+msgstr "Bunyikan Tab"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Mute Tab"
+msgstr "Bungkam Tab"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Unmute Tab"
+msgstr "Bunyikan Tab"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Mute Tab"
+msgstr "Bungkam Tab"
+
+#: tabtreeview.cpp:318
+msgctxt "TabTreeView|"
+msgid "Close Tab"
+msgstr "Tutup Tab"
+
+#: tabtreeview.cpp:394
+msgctxt "TabTreeView|"
+msgid "Tab Tree"
+msgstr "Tab Ranting"
+
+#: tabtreeview.cpp:398
+msgctxt "TabTreeView|"
+msgid "Close Tree"
+msgstr "Tutup Ranting"
+
+#: tabtreeview.cpp:401
+msgctxt "TabTreeView|"
+msgid "Unload Tree"
+msgstr "Takmuat Ranting"
+
+#: tabtreeview.cpp:407
+msgctxt "TabTreeView|"
+msgid "Expand All"
+msgstr "Bentangkan Semua"
+
+#: tabtreeview.cpp:408
+msgctxt "TabTreeView|"
+msgid "Collapse All"
+msgstr "Ciutkan Semua"
+
+#: verticaltabscontroller.cpp:36
+msgctxt "VerticalTabsController|"
+msgid "Vertical Tabs"
+msgstr "Tab-tab Tegak"
+
+#: verticaltabsschemehandler.cpp:47
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "Vertical Tabs"
+msgstr "Tab-tab Tegak"
+
+#: verticaltabsschemehandler.cpp:57
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "New Group"
+msgstr "Grup Baru"
+
+#: verticaltabssettings.cpp:58
+msgctxt "VerticalTabsSettings|"
+msgid "Theme file"
+msgstr "File tema"
+
+#: verticaltabssettings.cpp:83
+msgctxt "VerticalTabsSettings|"
+msgid "Custom..."
+msgstr "Kustom..."
+
+#: verticaltabssettings.ui:14
+msgctxt "VerticalTabsSettings|"
+msgid "Vertical Tabs Settings"
+msgstr "Pengaturan Tab-tab Tegak"
+
+#: verticaltabssettings.ui:20
+msgctxt "VerticalTabsSettings|"
+msgid "View"
+msgstr "Tampilan"
+
+#: verticaltabssettings.ui:26
+msgctxt "VerticalTabsSettings|"
+msgid "Tab List"
+msgstr "Daftar Tab"
+
+#: verticaltabssettings.ui:33
+msgctxt "VerticalTabsSettings|"
+msgid "Tab Tree"
+msgstr "Ranting Tab"
+
+#: verticaltabssettings.ui:43
+msgctxt "VerticalTabsSettings|"
+msgid "Options"
+msgstr "Opsi"
+
+#: verticaltabssettings.ui:49
+msgctxt "VerticalTabsSettings|"
+msgid "Theme:"
+msgstr "Tema:"
+
+#: verticaltabssettings.ui:62
+msgctxt "VerticalTabsSettings|"
+msgid "Use as replacement for main tab bar"
+msgstr "Gunakan sebagai pengganti bilah tab utama"
+
+#: verticaltabswidget.cpp:59
+msgctxt "VerticalTabsWidget|"
+msgid "New Tab"
+msgstr "Tab Baru"
+
+#: verticaltabswidget.cpp:247
+msgctxt "VerticalTabsWidget|"
+msgid "Add New Group..."
+msgstr "Tambah Grup Baru..."
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the end of tab tree"
+#~ msgstr "Tambahkan anak tab baru pada akhir ranting tab"
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the beginning of tab tree"
+#~ msgstr "Tambahkan anak tab baru pada awal ranting tab"

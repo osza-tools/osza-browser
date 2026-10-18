@@ -1,0 +1,277 @@
+# SPDX-FileCopyrightText: 2018, 2023, 2024 Adrian Chaves <adrian@chaves.io>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2024-12-27 19:18+0100\n"
+"Last-Translator: Adrián Chaves (Gallaecio) <adrian@chaves.io>\n"
+"Language-Team: Proxecto Trasno (proxecto@trasno.gal)\n"
+"Language: gl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 24.12.0\n"
+"X-Qt-Contexts: true\n"
+
+#: sbi_imagesicon.cpp:34
+msgctxt "SBI_ImagesIcon|"
+msgid "Modify images loading settings per-site and globally"
+msgstr ""
+"Modificar a configuración de carga de imaxes por cada sitio e globalmente"
+
+#: sbi_imagesicon.cpp:58
+msgctxt "SBI_ImagesIcon|"
+msgid "Current Page Settings"
+msgstr "Configuración da páxina actual"
+
+#: sbi_imagesicon.cpp:61
+msgctxt "SBI_ImagesIcon|"
+msgid "Disable loading images (temporarily)"
+msgstr "Desactivar a carga de imaxes (temporalmente)"
+
+#: sbi_imagesicon.cpp:64
+msgctxt "SBI_ImagesIcon|"
+msgid "Enable loading images (temporarily)"
+msgstr "Activar a carga de imaxes (temporalmente)"
+
+#: sbi_imagesicon.cpp:68
+msgctxt "SBI_ImagesIcon|"
+msgid "Global Settings"
+msgstr "Configuración global"
+
+#: sbi_imagesicon.cpp:70
+msgctxt "SBI_ImagesIcon|"
+msgid "Automatically load images"
+msgstr "Cargar as imaxes automaticamente"
+
+#: sbi_javascripticon.cpp:35
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Modify JavaScript settings per-site and globally"
+msgstr "Modificar a configuración de JavaScript por cada sitio e globalmente"
+
+#: sbi_javascripticon.cpp:52
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Current Page Settings"
+msgstr "Configuración da páxina actual"
+
+#: sbi_javascripticon.cpp:55
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Disable JavaScript (temporarily)"
+msgstr "Desactivar JavaScript (temporalmente)"
+
+#: sbi_javascripticon.cpp:58
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Enable JavaScript (temporarily)"
+msgstr "Activar JavaScript (temporalmente)"
+
+#: sbi_javascripticon.cpp:67
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Global Settings"
+msgstr "Configuración global"
+
+#: sbi_javascripticon.cpp:68
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Manage JavaScript settings"
+msgstr "Xestionar a configuración de JavaScript"
+
+#: sbi_networkicon.cpp:70
+msgctxt "SBI_NetworkIcon|"
+msgid "Proxy Configuration"
+msgstr "Configuración do mandatario"
+
+#: sbi_networkicon.cpp:72
+msgctxt "SBI_NetworkIcon|"
+msgid "Select proxy"
+msgstr "Seleccionar un mandatario"
+
+#: sbi_networkicon.cpp:86
+msgctxt "SBI_NetworkIcon|"
+msgid "Empty"
+msgstr "Baleiro"
+
+#: sbi_networkicon.cpp:90
+msgctxt "SBI_NetworkIcon|"
+msgid "Manage proxies"
+msgstr "Xestionar os mandatarios"
+
+#: sbi_networkicon.cpp:103
+#, qt-format
+msgctxt "SBI_NetworkIcon|"
+msgid ""
+"Shows network status and manages proxy<br/><br/><b>Network:</b><br/>%1<br/"
+"><br/><b>Proxy:</b><br/>%2"
+msgstr ""
+"Amosa o estado da rede e xestiona o mandatario.<br/><br/><b>Rede:</b><br/>"
+"%1<br/><br/><b>Mandatario:</b><br/>%2"
+
+#: sbi_networkicon.cpp:107
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Online"
+msgstr "Con conexión a Internet"
+
+#: sbi_networkicon.cpp:110
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Site"
+msgstr "Con conexión ao sitio"
+
+#: sbi_networkicon.cpp:113
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Local"
+msgstr "Con conexión local"
+
+# skip-rule: trasno-attachment2_reverse
+#: sbi_networkicon.cpp:116
+msgctxt "SBI_NetworkIcon|"
+msgid "Disconnected"
+msgstr "Sen conexión"
+
+#: sbi_networkicon.cpp:120
+msgctxt "SBI_NetworkIcon|"
+msgid "Unknown"
+msgstr "Descoñecida"
+
+#: sbi_networkicon.cpp:126
+msgctxt "SBI_NetworkIcon|"
+msgid "System proxy"
+msgstr "Mandatario do sistema"
+
+#: sbi_networkicon.cpp:130
+msgctxt "SBI_NetworkIcon|"
+msgid "No proxy"
+msgstr "Sen mandatario"
+
+#: sbi_networkicon.cpp:134
+msgctxt "SBI_NetworkIcon|"
+msgid "User defined"
+msgstr "Definido polo usuario"
+
+#: sbi_networkicondialog.cpp:57 sbi_networkicondialog.ui:38
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Add proxy"
+msgstr "Engadir un mandatario"
+
+#: sbi_networkicondialog.cpp:57
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Name of proxy:"
+msgstr "Nome do mandatario:"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove current proxy"
+msgstr "Retirar o mandatario actual"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Are you sure you want to remove current proxy?"
+msgstr "Seguro que quere retirar o mandatario actual?"
+
+#: sbi_networkicondialog.ui:14
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Proxy Manager"
+msgstr "Xestor de mandatarios"
+
+#: sbi_networkicondialog.ui:28
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Select proxy: "
+msgstr "Seleccionar un mandatario: "
+
+#: sbi_networkicondialog.ui:45
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove proxy"
+msgstr "Retirar o mandatario"
+
+#: sbi_networkicondialog.ui:69
+msgctxt "SBI_NetworkIconDialog|"
+msgid "No proxies. You can add proxy by clicking on <b>Add</b> button."
+msgstr ""
+"Sen mandatarios. Pode engadir mandatarios premendo o botón de <b>Engadir</b>."
+
+#: sbi_networkicondialog.ui:104
+msgctxt "SBI_NetworkIconDialog|"
+msgid "All changes must be saved with <b>Save</b> button."
+msgstr "Todos os cambios deben gardarse co botón <b>Gardar</b>."
+
+#: sbi_proxywidget.ui:14
+msgctxt "SBI_ProxyWidget|"
+msgid "Form"
+msgstr "Formulario"
+
+#: sbi_proxywidget.ui:23
+msgctxt "SBI_ProxyWidget|"
+msgid "HTTP"
+msgstr "HTTP"
+
+#: sbi_proxywidget.ui:28
+msgctxt "SBI_ProxyWidget|"
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: sbi_proxywidget.ui:39
+msgctxt "SBI_ProxyWidget|"
+msgid "Port:"
+msgstr "Porto:"
+
+#: sbi_proxywidget.ui:76
+msgctxt "SBI_ProxyWidget|"
+msgid "Username:"
+msgstr "Nome de usuaria:"
+
+#: sbi_proxywidget.ui:86
+msgctxt "SBI_ProxyWidget|"
+msgid "Password:"
+msgstr "Contrasinal:"
+
+#: sbi_proxywidget.ui:111
+msgctxt "SBI_ProxyWidget|"
+msgid "S&ystem proxy configuration"
+msgstr "Configuración de &mandatario do sistema"
+
+#: sbi_proxywidget.ui:118
+msgctxt "SBI_ProxyWidget|"
+msgid "&Manual configuration"
+msgstr "Configuración &manual"
+
+#: sbi_settingsdialog.ui:14
+msgctxt "SBI_SettingsDialog|"
+msgid "StatusBar Icons"
+msgstr "Iconas da barra de estado"
+
+#: sbi_settingsdialog.ui:48
+msgctxt "SBI_SettingsDialog|"
+msgid "<h3>StatusBar Icons</h3>"
+msgstr "<h3>Iconas da barra de estado</h3>"
+
+#: sbi_settingsdialog.ui:70
+msgctxt "SBI_SettingsDialog|"
+msgid "These icons will be displayed in statusbar:"
+msgstr "Esta iconas amosaranse na barra de estado:"
+
+#: sbi_settingsdialog.ui:97
+msgctxt "SBI_SettingsDialog|"
+msgid "Images Icon"
+msgstr "Icona de imaxe"
+
+#: sbi_settingsdialog.ui:104
+msgctxt "SBI_SettingsDialog|"
+msgid "JavaScript Icon"
+msgstr "Icona de JavaScript"
+
+#: sbi_settingsdialog.ui:111
+msgctxt "SBI_SettingsDialog|"
+msgid "Network Icon"
+msgstr "Icona de rede"
+
+#: sbi_settingsdialog.ui:118
+msgctxt "SBI_SettingsDialog|"
+msgid "Zoom widget"
+msgstr "Trebello de ampliación"
+
+#: sbi_zoomwidget.cpp:48
+#, qt-format
+msgctxt "SBI_ZoomWidget|"
+msgid "Zoom: %1%"
+msgstr "Ampliación: %1%"
+
+#~ msgctxt "SBI_NetworkIcon|"
+#~ msgid "Offline"
+#~ msgstr "Desconectado"

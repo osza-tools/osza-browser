@@ -1,0 +1,61 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the falkon package.
+# Jérôme Giry <baikalink@hotmail.fr>, 2017.
+# Nicolas Ourceau <lamessen@hotmail.fr>, 2017.
+# Simon Depiets <sdepiets@gmail.com>, 2018, 2020.
+# SPDX-FileCopyrightText: 2023, 2026 Xavier Besnard <xavier.besnard@kde.org>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2026-01-27 18:37+0100\n"
+"Last-Translator: Xavier Besnard <xavier.besnard@kde.org>\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Lokalize 25.12.1\n"
+"X-Language: fr_FR\n"
+"X-Qt-Contexts: true\n"
+
+#: downloadkjob.cpp:34
+msgctxt "DownloadKJob|"
+msgid "Downloading"
+msgstr "Téléchargement en cours"
+
+#: downloadkjob.cpp:35
+msgctxt "DownloadKJob|"
+msgid "Source"
+msgstr "Source"
+
+#: downloadkjob.cpp:36
+msgctxt "DownloadKJob|"
+msgid "Destination"
+msgstr "Destination"
+
+#: kdeframeworksintegrationplugin.cpp:116
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Share page"
+msgstr "Partager une page"
+
+#: kwalletpasswordbackend.cpp:62
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet"
+msgstr "KWallet"
+
+#: kwalletpasswordbackend.cpp:76
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Encrypted UserName"
+msgstr "Nom d'utilisateur chiffré"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet disabled"
+msgstr "KWallet désactivé"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Please enable KWallet to save password."
+msgstr "Veuillez activer KWallet pour enregistrer le mot de passe."

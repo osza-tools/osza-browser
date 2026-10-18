@@ -1,0 +1,144 @@
+# SPDX-FileCopyrightText: 2022, 2026 Zayed Al-Saidi <zayed.alsaidi@gmail.com>
+# Safa Alfulaij <safa1996alfulaij@gmail.com>, 2018.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2026-03-24 11:01+0400\n"
+"Last-Translator: Zayed Al-Saidi <zayed.alsaidi@gmail.com>\n"
+"Language-Team: ar\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Lokalize 23.08.5\n"
+"X-Qt-Contexts: true\n"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Unmute Tab"
+msgstr "ألغِ كتم اللسان"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Mute Tab"
+msgstr "اكتم اللسان"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Unmute Tab"
+msgstr "ألغِ كتم اللسان"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Mute Tab"
+msgstr "اكتم اللسان"
+
+#: tabtreeview.cpp:318
+msgctxt "TabTreeView|"
+msgid "Close Tab"
+msgstr "أغلق اللسان"
+
+#: tabtreeview.cpp:394
+msgctxt "TabTreeView|"
+msgid "Tab Tree"
+msgstr "شجرة الألسنة"
+
+#: tabtreeview.cpp:398
+msgctxt "TabTreeView|"
+msgid "Close Tree"
+msgstr "أغلق الشجرة"
+
+#: tabtreeview.cpp:401
+msgctxt "TabTreeView|"
+msgid "Unload Tree"
+msgstr "أفرغ الشجرة"
+
+#: tabtreeview.cpp:407
+msgctxt "TabTreeView|"
+msgid "Expand All"
+msgstr "وسّع الكلّ"
+
+#: tabtreeview.cpp:408
+msgctxt "TabTreeView|"
+msgid "Collapse All"
+msgstr "اطوِ الكلّ"
+
+#: verticaltabscontroller.cpp:36
+msgctxt "VerticalTabsController|"
+msgid "Vertical Tabs"
+msgstr "الألسنة العموديّة"
+
+#: verticaltabsschemehandler.cpp:47
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "Vertical Tabs"
+msgstr "الألسنة العموديّة"
+
+#: verticaltabsschemehandler.cpp:57
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "New Group"
+msgstr "مجموعة جديدة"
+
+#: verticaltabssettings.cpp:58
+msgctxt "VerticalTabsSettings|"
+msgid "Theme file"
+msgstr "ملفّ السمة"
+
+#: verticaltabssettings.cpp:83
+msgctxt "VerticalTabsSettings|"
+msgid "Custom..."
+msgstr "مخصّص..."
+
+#: verticaltabssettings.ui:14
+msgctxt "VerticalTabsSettings|"
+msgid "Vertical Tabs Settings"
+msgstr "إعدادات ”الألسنة العموديّة“"
+
+#: verticaltabssettings.ui:20
+msgctxt "VerticalTabsSettings|"
+msgid "View"
+msgstr "العرض"
+
+#: verticaltabssettings.ui:26
+msgctxt "VerticalTabsSettings|"
+msgid "Tab List"
+msgstr "قائمة ألسنة"
+
+#: verticaltabssettings.ui:33
+msgctxt "VerticalTabsSettings|"
+msgid "Tab Tree"
+msgstr "شجرة ألسنة"
+
+#: verticaltabssettings.ui:43
+msgctxt "VerticalTabsSettings|"
+msgid "Options"
+msgstr "خيارات"
+
+#: verticaltabssettings.ui:49
+msgctxt "VerticalTabsSettings|"
+msgid "Theme:"
+msgstr "السمة:"
+
+#: verticaltabssettings.ui:62
+msgctxt "VerticalTabsSettings|"
+msgid "Use as replacement for main tab bar"
+msgstr "استخدمها كبديل عن شريط الألسنة الرئيس"
+
+#: verticaltabswidget.cpp:59
+msgctxt "VerticalTabsWidget|"
+msgid "New Tab"
+msgstr "لسان جديد"
+
+#: verticaltabswidget.cpp:247
+msgctxt "VerticalTabsWidget|"
+msgid "Add New Group..."
+msgstr "أضِف مجموعة جديدة..."
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the end of tab tree"
+#~ msgstr "أضِف الألسنة الابنة الجديدة إلى نهاية شجرة الألسنة"
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the beginning of tab tree"
+#~ msgstr "أضِف الألسنة الابنة الجديدة إلى بداية شجرة الألسنة"

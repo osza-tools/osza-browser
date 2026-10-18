@@ -1,0 +1,282 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the falkon package.
+# Muhammad Fawwaz Orabi <mfawwaz93@gmail.com>, 2017.
+# Safa Alfulaij <safa1996alfulaij@gmail.com>, 2018.
+# SPDX-FileCopyrightText: 2024 Zayed Al-Saidi <zayed.alsaidi@gmail.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2024-12-26 08:17+0400\n"
+"Last-Translator: Zayed Al-Saidi <zayed.alsaidi@gmail.com>\n"
+"Language-Team: ar\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Lokalize 23.08.5\n"
+"X-Qt-Contexts: true\n"
+
+#: sbi_imagesicon.cpp:34
+msgctxt "SBI_ImagesIcon|"
+msgid "Modify images loading settings per-site and globally"
+msgstr ""
+"عدّل على إعدادات تحميل الصور إن كانت لكلّ موقع على حدة أو لكلّ المواقع معًا"
+
+#: sbi_imagesicon.cpp:58
+msgctxt "SBI_ImagesIcon|"
+msgid "Current Page Settings"
+msgstr "إعدادات الصفحة الحاليّة"
+
+#: sbi_imagesicon.cpp:61
+msgctxt "SBI_ImagesIcon|"
+msgid "Disable loading images (temporarily)"
+msgstr "امنع تحميل الصور (مؤقّتًا)"
+
+#: sbi_imagesicon.cpp:64
+msgctxt "SBI_ImagesIcon|"
+msgid "Enable loading images (temporarily)"
+msgstr "اسمح بتحميل الصور (مؤقّتًا)"
+
+#: sbi_imagesicon.cpp:68
+msgctxt "SBI_ImagesIcon|"
+msgid "Global Settings"
+msgstr "الإعدادات العامّة"
+
+#: sbi_imagesicon.cpp:70
+msgctxt "SBI_ImagesIcon|"
+msgid "Automatically load images"
+msgstr "اسمح بتحميل الصور"
+
+#: sbi_javascripticon.cpp:35
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Modify JavaScript settings per-site and globally"
+msgstr ""
+"عدّل على إعدادات تحميل جافاسكربت إن كانت لكلّ موقع على حدة أو لكلّ المواقع معًا"
+
+#: sbi_javascripticon.cpp:52
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Current Page Settings"
+msgstr "إعدادات الصفحة الحاليّة"
+
+#: sbi_javascripticon.cpp:55
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Disable JavaScript (temporarily)"
+msgstr "امنع جافاسكربت (مؤقّتًا)"
+
+#: sbi_javascripticon.cpp:58
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Enable JavaScript (temporarily)"
+msgstr "اسمح بجافاسكربت (مؤقّتًا)"
+
+#: sbi_javascripticon.cpp:67
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Global Settings"
+msgstr "الإعدادات العامّة"
+
+#: sbi_javascripticon.cpp:68
+msgctxt "SBI_JavaScriptIcon|"
+msgid "Manage JavaScript settings"
+msgstr "أدِر إعدادات جافاسكربت"
+
+#: sbi_networkicon.cpp:70
+msgctxt "SBI_NetworkIcon|"
+msgid "Proxy Configuration"
+msgstr "ضبط الخادم الوكيل"
+
+#: sbi_networkicon.cpp:72
+msgctxt "SBI_NetworkIcon|"
+msgid "Select proxy"
+msgstr "اختر خادمًا وكيلًا"
+
+#: sbi_networkicon.cpp:86
+msgctxt "SBI_NetworkIcon|"
+msgid "Empty"
+msgstr "فارغ"
+
+#: sbi_networkicon.cpp:90
+msgctxt "SBI_NetworkIcon|"
+msgid "Manage proxies"
+msgstr "أدِر الخواديم الوكيلة"
+
+#: sbi_networkicon.cpp:103
+#, qt-format
+msgctxt "SBI_NetworkIcon|"
+msgid ""
+"Shows network status and manages proxy<br/><br/><b>Network:</b><br/>%1<br/"
+"><br/><b>Proxy:</b><br/>%2"
+msgstr ""
+"يعرض حالة الشبكة ويدير الخادم الوكيل<br/><br/><b>الشبكة:</b><br/>%1<br/><br/"
+"><b>الخادم الوكيل:</b><br/>%2"
+
+#: sbi_networkicon.cpp:107
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Online"
+msgstr "متّصل - على الخط"
+
+#: sbi_networkicon.cpp:110
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Site"
+msgstr "متّصل - الموقع"
+
+#: sbi_networkicon.cpp:113
+msgctxt "SBI_NetworkIcon|"
+msgid "Connected - Local"
+msgstr "متّصل - محلي"
+
+#: sbi_networkicon.cpp:116
+msgctxt "SBI_NetworkIcon|"
+msgid "Disconnected"
+msgstr "غير متصل"
+
+#: sbi_networkicon.cpp:120
+msgctxt "SBI_NetworkIcon|"
+msgid "Unknown"
+msgstr "مجهولة"
+
+#: sbi_networkicon.cpp:126
+msgctxt "SBI_NetworkIcon|"
+msgid "System proxy"
+msgstr "الخادم الوكيل للنظام"
+
+#: sbi_networkicon.cpp:130
+msgctxt "SBI_NetworkIcon|"
+msgid "No proxy"
+msgstr "بلا خادم وكيل"
+
+#: sbi_networkicon.cpp:134
+msgctxt "SBI_NetworkIcon|"
+msgid "User defined"
+msgstr "عرّفه المستخدم"
+
+#: sbi_networkicondialog.cpp:57 sbi_networkicondialog.ui:38
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Add proxy"
+msgstr "أضِف خادمًا وكيلًا"
+
+#: sbi_networkicondialog.cpp:57
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Name of proxy:"
+msgstr "اسم الخادم الوكيل:"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove current proxy"
+msgstr "احذف الخادم الوكيل الحاليّ"
+
+#: sbi_networkicondialog.cpp:70
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Are you sure you want to remove current proxy?"
+msgstr "أمتأكّد من إزالة الخادم الوكيل الحاليّ؟"
+
+#: sbi_networkicondialog.ui:14
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Proxy Manager"
+msgstr "مدير الخواديم الوكيلة"
+
+#: sbi_networkicondialog.ui:28
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Select proxy: "
+msgstr "اختر خادمًا وكيلًا: "
+
+#: sbi_networkicondialog.ui:45
+msgctxt "SBI_NetworkIconDialog|"
+msgid "Remove proxy"
+msgstr "أزِل الخادم الوكيل"
+
+#: sbi_networkicondialog.ui:69
+msgctxt "SBI_NetworkIconDialog|"
+msgid "No proxies. You can add proxy by clicking on <b>Add</b> button."
+msgstr "لا خواديم وكيلة. يمكنك إضافة واحد بنقر زرّ <b>أضِف</b>."
+
+#: sbi_networkicondialog.ui:104
+msgctxt "SBI_NetworkIconDialog|"
+msgid "All changes must be saved with <b>Save</b> button."
+msgstr "عليك أن تحفظ كلّ التغييرات بنقر زرّ <b>احفظ</b>."
+
+#: sbi_proxywidget.ui:14
+msgctxt "SBI_ProxyWidget|"
+msgid "Form"
+msgstr "استمارة"
+
+#: sbi_proxywidget.ui:23
+msgctxt "SBI_ProxyWidget|"
+msgid "HTTP"
+msgstr "HTTP"
+
+#: sbi_proxywidget.ui:28
+msgctxt "SBI_ProxyWidget|"
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: sbi_proxywidget.ui:39
+msgctxt "SBI_ProxyWidget|"
+msgid "Port:"
+msgstr "المنفذ:"
+
+#: sbi_proxywidget.ui:76
+msgctxt "SBI_ProxyWidget|"
+msgid "Username:"
+msgstr "اسم المستخدم:"
+
+#: sbi_proxywidget.ui:86
+msgctxt "SBI_ProxyWidget|"
+msgid "Password:"
+msgstr "كلمة السرّ:"
+
+#: sbi_proxywidget.ui:111
+msgctxt "SBI_ProxyWidget|"
+msgid "S&ystem proxy configuration"
+msgstr "ضبط وكيل الن&ظام"
+
+#: sbi_proxywidget.ui:118
+msgctxt "SBI_ProxyWidget|"
+msgid "&Manual configuration"
+msgstr "ضبط ي&دويّ"
+
+#: sbi_settingsdialog.ui:14
+msgctxt "SBI_SettingsDialog|"
+msgid "StatusBar Icons"
+msgstr "أيقونات شريط الحالة"
+
+#: sbi_settingsdialog.ui:48
+msgctxt "SBI_SettingsDialog|"
+msgid "<h3>StatusBar Icons</h3>"
+msgstr "<h3>أيقونات شريط الحالة</h3>"
+
+#: sbi_settingsdialog.ui:70
+msgctxt "SBI_SettingsDialog|"
+msgid "These icons will be displayed in statusbar:"
+msgstr "ستُعرض هذه الأيقونات في شريط الحالة:"
+
+#: sbi_settingsdialog.ui:97
+msgctxt "SBI_SettingsDialog|"
+msgid "Images Icon"
+msgstr "أيقونة الصور"
+
+#: sbi_settingsdialog.ui:104
+msgctxt "SBI_SettingsDialog|"
+msgid "JavaScript Icon"
+msgstr "أيقونة جافاسكربت"
+
+#: sbi_settingsdialog.ui:111
+msgctxt "SBI_SettingsDialog|"
+msgid "Network Icon"
+msgstr "أيقونة الشبكة"
+
+#: sbi_settingsdialog.ui:118
+msgctxt "SBI_SettingsDialog|"
+msgid "Zoom widget"
+msgstr "أيقونة التقريب"
+
+#: sbi_zoomwidget.cpp:48
+#, qt-format
+msgctxt "SBI_ZoomWidget|"
+msgid "Zoom: %1%"
+msgstr "التقريب: %1%"
+
+#~ msgctxt "SBI_NetworkIcon|"
+#~ msgid "Offline"
+#~ msgstr "غير متّصل"

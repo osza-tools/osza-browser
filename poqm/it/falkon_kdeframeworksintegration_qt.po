@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2018, 2020, 2023, 2026 Paolo Zamponi <feus73@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"PO-Revision-Date: 2026-01-29 20:51+0100\n"
+"Last-Translator: Paolo Zamponi <feus73@gmail.com>\n"
+"Language-Team: Italian <kde-i18n-it@kde.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 25.12.1\n"
+"X-Qt-Contexts: true\n"
+
+#: downloadkjob.cpp:34
+msgctxt "DownloadKJob|"
+msgid "Downloading"
+msgstr "Scaricamento"
+
+#: downloadkjob.cpp:35
+msgctxt "DownloadKJob|"
+msgid "Source"
+msgstr "Sorgente"
+
+#: downloadkjob.cpp:36
+msgctxt "DownloadKJob|"
+msgid "Destination"
+msgstr "Destinazione"
+
+#: kdeframeworksintegrationplugin.cpp:116
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Share page"
+msgstr "Condividi pagina"
+
+#: kwalletpasswordbackend.cpp:62
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet"
+msgstr "KWallet"
+
+#: kwalletpasswordbackend.cpp:76
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Encrypted UserName"
+msgstr "NomeUtente cifrato"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "KWallet disabled"
+msgstr "KWallet disabilitato"
+
+#: kwalletpasswordbackend.cpp:222
+msgctxt "KDEFrameworksIntegrationPlugin|"
+msgid "Please enable KWallet to save password."
+msgstr "Abilita KWallet per salvare la password."

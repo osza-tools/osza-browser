@@ -1,0 +1,186 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: falkon_pim_qt\n"
+"PO-Revision-Date: 2024-12-15 17:36+0530\n"
+"Last-Translator: Kali <EMAIL@ADDRESS>\n"
+"Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: PIM_handler.cpp:59
+msgctxt "PIM_Handler|"
+msgid "Last Name"
+msgstr "उपनाम"
+
+#: PIM_handler.cpp:60
+msgctxt "PIM_Handler|"
+msgid "First Name"
+msgstr "पहला नाम"
+
+#: PIM_handler.cpp:61
+msgctxt "PIM_Handler|"
+msgid "E-mail"
+msgstr "ई-मेल"
+
+#: PIM_handler.cpp:62
+msgctxt "PIM_Handler|"
+msgid "Mobile"
+msgstr "गतिमान"
+
+#: PIM_handler.cpp:63
+msgctxt "PIM_Handler|"
+msgid "Phone"
+msgstr "फ़ोन"
+
+#: PIM_handler.cpp:64
+msgctxt "PIM_Handler|"
+msgid "Address"
+msgstr "पता"
+
+#: PIM_handler.cpp:65
+msgctxt "PIM_Handler|"
+msgid "City"
+msgstr "शहर"
+
+#: PIM_handler.cpp:66
+msgctxt "PIM_Handler|"
+msgid "ZIP Code"
+msgstr "ज़िप कोड"
+
+#: PIM_handler.cpp:67
+msgctxt "PIM_Handler|"
+msgid "State/Region"
+msgstr "राज्य/क्षेत्र"
+
+#: PIM_handler.cpp:68
+msgctxt "PIM_Handler|"
+msgid "Country"
+msgstr "देश"
+
+#: PIM_handler.cpp:69
+msgctxt "PIM_Handler|"
+msgid "Home Page"
+msgstr "होम पेज"
+
+#: PIM_handler.cpp:70
+msgctxt "PIM_Handler|"
+msgid "Custom 1"
+msgstr "कस्टम 1"
+
+#: PIM_handler.cpp:71
+msgctxt "PIM_Handler|"
+msgid "Custom 2"
+msgstr "कस्टम 2"
+
+#: PIM_handler.cpp:72
+msgctxt "PIM_Handler|"
+msgid "Custom 3"
+msgstr "कस्टम 3"
+
+#: PIM_handler.cpp:114
+msgctxt "PIM_Handler|"
+msgid "Insert Personal Information"
+msgstr "व्यक्तिगत जानकारी डालें"
+
+#: PIM_handler.cpp:135
+msgctxt "PIM_Handler|"
+msgid "Edit"
+msgstr "संपादन करना"
+
+#: PIM_settings.ui:14
+msgctxt "PIM_Settings|"
+msgid "PIM Settings"
+msgstr "पीआईएम सेटिंग्स"
+
+#: PIM_settings.ui:42
+msgctxt "PIM_Settings|"
+msgid "<h2>Personal Information Manager</h2>"
+msgstr "<h2>व्यक्तिगत सूचना प्रबंधक</h2>"
+
+#: PIM_settings.ui:64
+msgctxt "PIM_Settings|"
+msgid "Your personal information that will be used on webpages."
+msgstr "आपकी व्यक्तिगत जानकारी जिसका उपयोग वेबपृष्ठों पर किया जाएगा।"
+
+#: PIM_settings.ui:76
+msgctxt "PIM_Settings|"
+msgid "First Name:"
+msgstr "पहला नाम:"
+
+#: PIM_settings.ui:89
+msgctxt "PIM_Settings|"
+msgid "Last Name:"
+msgstr "उपनाम:"
+
+#: PIM_settings.ui:102
+msgctxt "PIM_Settings|"
+msgid "E-mail:"
+msgstr "ई-मेल:"
+
+#: PIM_settings.ui:115
+msgctxt "PIM_Settings|"
+msgid "Phone:"
+msgstr "फ़ोन:"
+
+#: PIM_settings.ui:128
+msgctxt "PIM_Settings|"
+msgid "Mobile Phone:"
+msgstr "चल दूरभाष:"
+
+#: PIM_settings.ui:141
+msgctxt "PIM_Settings|"
+msgid "Address:"
+msgstr "पता:"
+
+#: PIM_settings.ui:154
+msgctxt "PIM_Settings|"
+msgid "City:"
+msgstr "शहर:"
+
+#: PIM_settings.ui:167
+msgctxt "PIM_Settings|"
+msgid "ZIP Code:"
+msgstr "ज़िप कोड:"
+
+#: PIM_settings.ui:180
+msgctxt "PIM_Settings|"
+msgid "State/Region:"
+msgstr "राज्य/क्षेत्र:"
+
+#: PIM_settings.ui:193
+msgctxt "PIM_Settings|"
+msgid "Country:"
+msgstr "देश:"
+
+#: PIM_settings.ui:206
+msgctxt "PIM_Settings|"
+msgid "Home Page:"
+msgstr "होम पेज:"
+
+#: PIM_settings.ui:219
+msgctxt "PIM_Settings|"
+msgid "Custom 1:"
+msgstr "कस्टम 1:"
+
+#: PIM_settings.ui:232
+msgctxt "PIM_Settings|"
+msgid "Custom 2:"
+msgstr "कस्टम 2:"
+
+#: PIM_settings.ui:245
+msgctxt "PIM_Settings|"
+msgid "Custom 3:"
+msgstr "कस्टम 3:"
+
+#: PIM_settings.ui:260
+msgctxt "PIM_Settings|"
+msgid ""
+"<b>Note:</b> Press Ctrl+ENTER to autofill form fields for which Falkon finds "
+"personal entries."
+msgstr ""
+"<b>नोट:</b> उन फॉर्म फ़ील्ड को स्वतः भरने के लिए Ctrl+ENTER दबाएँ जिनके लिए Falkon "
+"व्यक्तिगत प्रविष्टियाँ ढूँढता है।"

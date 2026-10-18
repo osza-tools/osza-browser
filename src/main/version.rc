@@ -1,0 +1,34 @@
+#include "winver.h"
+#include "falkonversion.h"
+
+IDI_ICON1 ICON DISCARDABLE "..\lib\data\icons\exeicons\falkon.ico"
+IDI_ICON2 ICON DISCARDABLE "..\lib\data\icons\exeicons\page.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION FALKON_VERSION_MAJOR,FALKON_VERSION_MINOR,FALKON_VERSION_PATCH,0
+ PRODUCTVERSION FALKON_VERSION_MAJOR,FALKON_VERSION_MINOR,FALKON_VERSION_PATCH,0
+ FILEFLAGS 0x0L
+ FILEFLAGSMASK 0x3fL
+ FILEOS 0x00040004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "CompanyName", "KDE"
+            VALUE "FileDescription", "Falkon"
+            VALUE "FileVersion", FALKON_VERSION_STRING
+            VALUE "LegalCopyright", "Copyright (C) 2010-2018 David Rosca"
+            VALUE "InternalName", "falkon"
+            VALUE "OriginalFilename", "falkon.exe"
+            VALUE "ProductName", "Falkon"
+            VALUE "ProductVersion", FALKON_VERSION_STRING
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
