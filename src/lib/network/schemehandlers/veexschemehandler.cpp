@@ -157,8 +157,8 @@ QString VeexSchemeReply::startPage()
     }
 
     sPage.append(QzTools::readAllFileContents(QSL(":html/start.html")));
-    sPage.replace(QLatin1String("%ABOUT-IMG%"), QSL("qrc:icons/other/startpage.svg"));
-    sPage.replace(QLatin1String("%ABOUT-IMG-DARK%"), QSL("qrc:icons/other/startpage-dark.svg"));
+    sPage.replace(QLatin1String("%ABOUT-IMG%"), QSL("qrc:icons/other/logo.png"));
+    sPage.replace(QLatin1String("%ABOUT-IMG-DARK%"), QSL("qrc:icons/other/logo.png"));
 
     sPage.replace(QLatin1String("%TITLE%"), tr("Start Page"));
     sPage.replace(QLatin1String("%BUTTON-LABEL%"), tr("Search on Web"));
