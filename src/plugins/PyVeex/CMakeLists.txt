@@ -31,6 +31,16 @@ foreach(INCLUDE_DIR ${VeexPrivate_INCLUDE_DIRS})
     list(APPEND INCLUDES "-I${INCLUDE_DIR}")
 endforeach()
 
+# Shiboken's Clang-based parser needs the compiler's built-in headers (e.g.
+# stddef.h). If libclang's resource directory is not installed, Clang cannot
+# find them on its own, so pass the compiler's implicit include directories
+# explicitly. They are treated as system headers and thus not processed.
+foreach(INCLUDE_DIR ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+    if(EXISTS "${INCLUDE_DIR}")
+        list(APPEND INCLUDES "-isystem${INCLUDE_DIR}")
+    endif()
+endforeach()
+
 # Set up the options to pass to shiboken.
 set(GLOBAL_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/pyveex_global.h)
 set(TYPESYSTEM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/typesystem_pyveex.xml)
