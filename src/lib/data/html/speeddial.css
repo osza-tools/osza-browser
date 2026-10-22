@@ -1,0 +1,337 @@
+/* ============================================================
+ * Veex - Qt web browser
+ * Speed Dial stylesheet — "Veex Cyber" design system
+ *
+ * Visual redesign of the veex:speeddial new-tab page.
+ * Dark-first, glassmorphic, fully token-driven.
+ *
+ * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
+ * Copyright (C) 2026 Veex Tools contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * ============================================================
+ *
+ * HOW TO THEME — every visual value lives in a --veex-* custom
+ * property on :root. Re-theming (accent, surfaces, radii, blur,
+ * density) only requires overriding those variables. Dark is the
+ * default; light values are swapped in by the
+ * `prefers-color-scheme: light` block below.
+ *
+ * NOTE: this file is served verbatim from the Qt resources, so it
+ * must NOT contain percent-wrapped placeholder tokens — dynamic
+ * values substituted by the C++ scheme handler (wallpaper URL,
+ * loading image, text direction, ...) are injected through the
+ * small inline <style> block in speeddial.html instead.
+ * ============================================================ */
+
+/* --- 1. Design tokens --------------------------------------------------- */
+:root {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --veex-bg-base: #0a0a0f;
+    --veex-bg-panel: rgba(18, 20, 29, 0.82);
+    --veex-card-bg: rgba(255, 255, 255, 0.06);
+    --veex-card-bg-hover: rgba(255, 255, 255, 0.10);
+    --veex-card-border: rgba(255, 255, 255, 0.10);
+    --veex-card-border-hover: rgba(0, 255, 209, 0.55);
+
+    /* Accent (neon cyan) + secondary (violet, mesh only) */
+    --veex-accent: #00ffd1;
+    --veex-accent-rgb: 0, 255, 209;
+    --veex-accent-dim: rgba(0, 255, 209, 0.14);
+    --veex-accent-soft: rgba(0, 255, 209, 0.35);
+    --veex-accent-alt-rgb: 124, 58, 237;
+
+    /* Text */
+    --veex-text: #e9edf5;
+    --veex-text-dim: #9aa3b5;
+    --veex-text-faint: #6b7386;
+
+    /* Glass */
+    --veex-blur: 16px;
+    --veex-saturate: 180%;
+    --veex-panel-blur: 24px;
+
+    /* Geometry */
+    --veex-radius: 16px;
+    --veex-radius-sm: 10px;
+    --veex-gap: clamp(16px, 1.4vw, 24px);
+    --veex-max-width: 1400px;
+
+    /* Typography */
+    --veex-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --veex-font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+    /* Motion */
+    --veex-ease: cubic-bezier(0.2, 0.8, 0.3, 1);
+    --veex-speed: 200ms;
+
+    /* Elevation */
+    --veex-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --veex-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.55);
+    --veex-glow: 0 0 24px rgba(var(--veex-accent-rgb), 0.30);
+
+    /* Wallpaper (URL injected via the inline style block) */
+    --veex-wallpaper: none;
+    --veex-wallpaper-veil: rgba(8, 9, 14, 0.52);
+
+    /* Layout hooks written by speeddial.user.js from SpeedDial settings:
+       --veex-dial-w    dial width  (Settings > sdsize,   default 240px)
+       --veex-grid-cols column cap  (Settings > pagesrow, default 4)    */
+    --veex-dial-w: 240px;
+    --veex-grid-cols: 4;
+}
+
+/* Light theme — pure variable swap, same structure */
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: light;
+        --veex-bg-base: #eef1f7;
+        --veex-bg-panel: rgba(255, 255, 255, 0.85);
+        --veex-card-bg: rgba(255, 255, 255, 0.55);
+        --veex-card-bg-hover: rgba(255, 255, 255, 0.75);
+        --veex-card-border: rgba(15, 23, 42, 0.10);
+        --veex-card-border-hover: rgba(0, 166, 133, 0.65);
+        --veex-accent: #009e7c;
+        --veex-accent-rgb: 0, 158, 124;
+        --veex-text: #171c28;
+        --veex-text-dim: #4b5566;
+        --veex-text-faint: #7d8698;
+        --veex-shadow-card: 0 10px 30px rgba(15, 23, 42, 0.12);
+        --veex-shadow-panel: 0 24px 80px rgba(15, 23, 42, 0.18);
+        --veex-wallpaper-veil: rgba(238, 241, 247, 0.45);
+    }
+}
+
+/* --- 2. Base ------------------------------------------------------------ */
+* { box-sizing: border-box; }
+html { background: var(--veex-bg-base); }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; font-family: var(--veex-font-sans); font-size: 15px; color: var(--veex-text); -webkit-user-select: none; user-select: none; }
+body * { margin: 0; font-size: 100%; line-height: 1.55; }
+noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20px; text-align: center; border: 1px dashed var(--veex-card-border); border-radius: var(--veex-radius-sm); color: var(--veex-text-dim); }
+
+/* --- 3. Background layer system -----------------------------------------
+ * Layer 0 — solid base color
+ * Layer 1 — CSS mesh gradient + grid lines + noise
+ * Layer 2 — optional user wallpaper (blurred behind glass cards)      */
+.background-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+.background-layer--base { background: var(--veex-bg-base); }
+.background-layer--mesh { background-image: radial-gradient(ellipse 70% 55% at 12% 8%, rgba(var(--veex-accent-rgb), 0.10), transparent 60%), radial-gradient(ellipse 55% 45% at 88% 14%, rgba(var(--veex-accent-alt-rgb), 0.13), transparent 65%), radial-gradient(ellipse 65% 55% at 50% 108%, rgba(var(--veex-accent-rgb), 0.07), transparent 60%); }
+
+/* Faint blueprint grid for the cyber-tools feel */
+.background-layer--mesh::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px); background-size: 56px 56px; -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 75%); }
+
+@media (prefers-color-scheme: light) {
+    .background-layer--mesh::before { background-image: linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px); }
+}
+
+/* Film-grain noise (inline SVG, fully offline) */
+.background-layer--mesh::after { content: ""; position: absolute; inset: 0; opacity: 0.5; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); }
+
+.background-layer--wallpaper { background-image: var(--veex-wallpaper); background-position: center center; background-repeat: no-repeat; background-size: cover; background-attachment: fixed; }
+
+/* Readability veil over user wallpapers */
+.background-layer--wallpaper::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, var(--veex-wallpaper-veil), var(--veex-wallpaper-veil)); }
+
+/* --- 4. Header — brand, search, settings -------------------------------- */
+.sd-header { position: relative; z-index: 10; padding: clamp(18px, 3vh, 32px) clamp(20px, 3vw, 48px) 0; }
+.sd-header__inner { max-width: var(--veex-max-width); margin-inline: auto; display: flex; align-items: center; gap: clamp(14px, 2vw, 24px); }
+.sd-brand { display: flex; align-items: baseline; gap: 8px; font-family: var(--veex-font-mono); font-weight: 700; font-size: 17px; letter-spacing: 0.14em; white-space: nowrap; color: var(--veex-text); }
+.sd-brand::after { content: ""; inline-size: 7px; block-size: 7px; border-radius: 50%; background: var(--veex-accent); box-shadow: 0 0 12px var(--veex-accent-soft); align-self: center; }
+.sd-brand__sub { font-weight: 500; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--veex-text-faint); }
+
+/* Search pill — a native GET form, same pattern as veex:start */
+.omni { flex: 1; display: flex; align-items: center; gap: 12px; max-width: 560px; min-width: 0; margin-inline: auto; block-size: 46px; padding-inline: 18px; border: 1px solid var(--veex-card-border); border-radius: 999px; background: var(--veex-card-bg); -webkit-backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); transition: border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease); }
+.omni:hover { border-color: rgba(255, 255, 255, 0.22); }
+.omni:focus-within { border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); }
+.omni svg { flex: none; color: var(--veex-text-faint); }
+.omni__input { flex: 1; min-width: 0; block-size: 100%; border: none; outline: none; background: transparent; color: var(--veex-text); font-family: var(--veex-font-sans); font-size: 14.5px; -webkit-user-select: auto; user-select: auto; }
+.omni__input::placeholder { color: var(--veex-text-dim); }
+
+/* --- 5. Buttons — header gear + floating add button --------------------- */
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; inline-size: 42px; block-size: 42px; padding: 0; border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius-sm); background: var(--veex-card-bg); -webkit-backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); color: var(--veex-text-dim); cursor: pointer; transition: color var(--veex-speed) var(--veex-ease), border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), transform var(--veex-speed) var(--veex-ease); }
+.icon-btn:hover, .icon-btn:focus-visible { color: var(--veex-accent); border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); transform: translateY(-1px); }
+.icon-btn:active { transform: translateY(0); }
+
+/* Floating action button */
+.fab { position: fixed; inset-inline-end: clamp(18px, 2.5vw, 32px); inset-block-end: clamp(18px, 2.5vw, 32px); z-index: 20; display: inline-flex; align-items: center; justify-content: center; inline-size: 56px; block-size: 56px; padding: 0; border: 1px solid var(--veex-card-border-hover); border-radius: 18px; background: var(--veex-card-bg); -webkit-backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); color: var(--veex-accent); cursor: pointer; box-shadow: var(--veex-shadow-card); transition: transform var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), background-color var(--veex-speed) var(--veex-ease); }
+.fab:hover, .fab:focus-visible { background: var(--veex-accent-dim); box-shadow: var(--veex-shadow-card), var(--veex-glow); transform: translateY(-3px); }
+.fab:active { transform: translateY(-1px) scale(0.97); }
+
+/* --- 6. Dial grid -------------------------------------------------------- */
+.dial-container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: var(--veex-max-width); margin-inline: auto; padding: clamp(24px, 4vh, 48px) clamp(20px, 3vw, 48px) 110px; }
+.speeddial-grid { width: 100%; margin-block: auto; /* vertical centering when few rows */ display: grid; grid-template-columns: repeat(var(--veex-grid-cols), minmax(min(var(--veex-dial-w), 100%), 1fr)); gap: var(--veex-gap); justify-content: start; outline: none; }
+
+/* "Center speed dials" setting: classic fixed-size centered cluster */
+.speeddial-grid.sd-centered { grid-template-columns: repeat(var(--veex-grid-cols), minmax(0, var(--veex-dial-w))); justify-content: center; }
+
+/* Empty state — dashed ghost card (label injected via inline block) */
+.speeddial-grid:empty { min-block-size: 230px; }
+.speeddial-grid:empty::after { content: ""; display: flex; align-items: center; justify-content: center; min-block-size: 230px; border: 2px dashed rgba(var(--veex-accent-rgb), 0.35); border-radius: var(--veex-radius); background: rgba(var(--veex-accent-rgb), 0.03); color: var(--veex-text-dim); font-family: var(--veex-font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; transition: border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), color var(--veex-speed) var(--veex-ease); }
+.speeddial-grid:empty:hover::after { border-color: rgba(var(--veex-accent-rgb), 0.7); color: var(--veex-accent); box-shadow: var(--veex-glow); }
+
+/* --- 7. Dial cards ------------------------------------------------------- */
+.entry { position: relative; aspect-ratio: 16 / 10; min-width: 0; border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius); background-color: var(--veex-card-bg); -webkit-backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); backdrop-filter: blur(var(--veex-blur)) saturate(var(--veex-saturate)); background-clip: padding-box; overflow: hidden; box-shadow: var(--veex-shadow-card); animation: veex-dial-in 240ms var(--veex-ease) both; transition: transform var(--veex-speed) var(--veex-ease), border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), background-color var(--veex-speed) var(--veex-ease); }
+
+@keyframes veex-dial-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Loading spinner breathing (used by the inline dynamic block) */
+@keyframes veex-pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+}
+
+.entry:hover { background-color: var(--veex-card-bg-hover); border-color: var(--veex-card-border-hover); box-shadow: var(--veex-shadow-card), var(--veex-glow); transform: translateY(-4px); }
+
+/* Thumbnail */
+.dial-preview { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: inherit; transition: transform var(--veex-speed) var(--veex-ease); }
+.entry:hover .dial-preview { transform: scale(1.05); }
+
+/* Placeholder dial with no image yet */
+#quickdial img[src=""] { visibility: hidden; }
+
+/* Click target — whole card */
+.entry a.boxUrl { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+
+/* Title bar */
+.entry span.boxTitle { position: absolute; inset-inline: 0; inset-block-end: 0; z-index: 2; padding: 18px 12px 8px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: default; pointer-events: none; font-family: var(--veex-font-mono); font-weight: 700; font-size: clamp(10px, 0.75vw, 12px); letter-spacing: 0.08em; text-transform: uppercase; color: var(--veex-text); background: linear-gradient(to top, rgba(7, 8, 13, 0.92) 20%, rgba(7, 8, 13, 0.55) 60%, transparent); }
+
+@media (prefers-color-scheme: light) {
+    .entry span.boxTitle { background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 20%, rgba(255, 255, 255, 0.6) 60%, transparent); }
+}
+
+/* --- 8. Card action chips (edit / reload / close) ------------------------ */
+.entry span.edit, .entry span.close, .entry span.reload { position: absolute; z-index: 3; inline-size: 30px; block-size: 30px; border-radius: 9px; background-color: rgba(10, 12, 18, 0.65); border: 1px solid rgba(255, 255, 255, 0.14); background-position: center; background-repeat: no-repeat; background-size: 14px 14px; opacity: 0; cursor: pointer; transition: opacity var(--veex-speed) var(--veex-ease), border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), transform var(--veex-speed) var(--veex-ease); }
+.entry span.edit { inset-inline-start: 8px; inset-block-end: 8px; background-image: url("qrc:html/edit.svg"); }
+.entry span.close { inset-inline-end: 8px; inset-block-end: 8px; background-image: url("qrc:html/close.svg"); }
+.entry span.reload { inset-inline-end: 8px; inset-block-start: 8px; background-image: url("qrc:html/reload.svg"); }
+.entry:hover span.edit, .entry:hover span.close, .entry:hover span.reload { opacity: 1; }
+.entry span.edit:hover { background-image: url("qrc:html/edit_active.svg"); border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); transform: scale(1.06); }
+.entry span.close:hover { background-image: url("qrc:html/close_active.svg"); border-color: rgba(255, 99, 132, 0.7); box-shadow: 0 0 18px rgba(255, 99, 132, 0.35); transform: scale(1.06); }
+.entry span.reload:hover { background-image: url("qrc:html/reload_active.svg"); border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); transform: scale(1.06); }
+
+/* jQuery-UI sortable drag state */
+.entry.ui-sortable-helper { opacity: 0.92; transform: rotate(1.6deg) scale(1.02); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55), var(--veex-glow); }
+
+/* --- 9. Overlays (settings + edit dialogs) ------------------------------- */
+.overlay { position: fixed; inset: 0; z-index: 100; padding: 7vh 20px 70px; overflow-y: auto; overflow-x: hidden; background: rgba(5, 6, 11, 0.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+@media (prefers-color-scheme: light) {
+    .overlay { background: rgba(220, 226, 238, 0.55); }
+}
+
+.sd-panel { margin-inline: auto; width: min(460px, 100%); padding: 26px 26px 20px; border: 1px solid var(--veex-card-border); border-radius: 20px; background: var(--veex-bg-panel); -webkit-backdrop-filter: blur(var(--veex-panel-blur)) saturate(var(--veex-saturate)); backdrop-filter: blur(var(--veex-panel-blur)) saturate(var(--veex-saturate)); box-shadow: var(--veex-shadow-panel); }
+.sd-panel__title { margin-block-end: 18px; padding-block-end: 14px; border-block-end: 1px solid var(--veex-card-border); font-family: var(--veex-font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--veex-text-dim); }
+.sd-panel__title::before { content: "// "; color: var(--veex-accent); }
+
+/* --- 10. Settings panel content ------------------------------------------ */
+.sd-setting-row { padding-block: 12px; border-block-end: 1px solid rgba(255, 255, 255, 0.06); }
+.sd-setting-row:last-of-type { border-block-end: none; }
+
+@media (prefers-color-scheme: light) {
+    .sd-setting-row { border-block-end: 1px solid rgba(15, 23, 42, 0.07); }
+}
+
+.sd-setting-label { display: block; margin-block-end: 10px; color: var(--veex-text-dim); font-size: 13.5px; }
+.sd-slider { display: flex; align-items: center; gap: 14px; }
+.sd-slider__value { flex: none; min-inline-size: 34px; padding: 3px 8px; border: 1px solid var(--veex-card-border); border-radius: 7px; background: var(--veex-accent-dim); color: var(--veex-accent); font-family: var(--veex-font-mono); font-size: 12.5px; font-weight: 700; text-align: center; }
+
+/* Wallpaper picker */
+#ImgSelector { padding-block: 12px; }
+.thumbhold { inline-size: 100%; aspect-ratio: 16 / 10; margin-block: 4px 14px; border: 1px dashed var(--veex-card-border); border-radius: var(--veex-radius-sm); overflow: hidden; cursor: default; opacity: 0.45; transition: opacity var(--veex-speed) var(--veex-ease), border-color var(--veex-speed) var(--veex-ease); }
+.thumbhold:not([disabled]) { opacity: 1; border-style: solid; cursor: pointer; }
+.thumbhold:not([disabled]):hover { border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); }
+#thumb { inline-size: 100%; block-size: 100%; margin: 0; background-color: rgba(var(--veex-accent-rgb), 0.04); background-position: center center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; color: var(--veex-text-faint); font-size: 12.5px; }
+
+/* Hidden inputs carrying the chosen wallpaper between dialogs */
+.sd-hidden-inputs { display: none; }
+
+/* --- 11. Form controls ---------------------------------------------------- */
+/* Toggle switch checkbox */
+.checkbox { display: flex; align-items: center; gap: 12px; padding-block: 7px; position: relative; }
+.checkbox input[type="checkbox"] { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+.checkbox label { flex: none; position: relative; inline-size: 40px; block-size: 22px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.10); cursor: pointer; transition: background-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease); }
+.checkbox label::after { content: ""; position: absolute; inset-block-start: 2px; inset-inline-start: 2px; inline-size: 16px; block-size: 16px; border-radius: 50%; background: var(--veex-text-dim); transition: transform var(--veex-speed) var(--veex-ease), background-color var(--veex-speed) var(--veex-ease); }
+.checkbox input[type="checkbox"]:checked + label { background: rgba(var(--veex-accent-rgb), 0.85); border-color: rgba(var(--veex-accent-rgb), 0.9); box-shadow: var(--veex-glow); }
+.checkbox input[type="checkbox"]:checked + label::after { transform: translateX(18px); background: #06120f; }
+.checkbox input[type="checkbox"]:focus-visible + label { outline: 2px solid var(--veex-accent); outline-offset: 2px; }
+.checkbox__text { color: var(--veex-text-dim); font-size: 13.5px; -webkit-user-select: none; user-select: none; }
+
+/* Range slider */
+input[type="range"] { flex: 1; min-width: 0; -webkit-appearance: none; appearance: none; inline-size: 100%; block-size: 20px; margin: 6px 0; background: transparent; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { inline-size: 100%; block-size: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.14); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-block-start: -7px; inline-size: 18px; block-size: 18px; border: none; border-radius: 50%; background: var(--veex-accent); box-shadow: 0 0 0 4px rgba(var(--veex-accent-rgb), 0.18); transition: box-shadow var(--veex-speed) var(--veex-ease); }
+input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 7px rgba(var(--veex-accent-rgb), 0.22); }
+input[type="range"]:disabled { opacity: 0.35; cursor: default; }
+input[type="range"]:disabled::-webkit-slider-thumb { background: var(--veex-text-faint); box-shadow: none; }
+
+/* Select */
+select { inline-size: 100%; block-size: 38px; padding-inline: 14px 36px; margin: 0; border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius-sm); background-color: var(--veex-card-bg); background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2398a1b3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; color: var(--veex-text); font-family: var(--veex-font-sans); font-size: 13.5px; -webkit-appearance: none; appearance: none; cursor: pointer; transition: border-color var(--veex-speed) var(--veex-ease); }
+select:hover { border-color: rgba(255, 255, 255, 0.25); }
+select:disabled { opacity: 0.35; cursor: default; }
+
+/* Text inputs */
+input[type="text"] { inline-size: 100%; block-size: 40px; padding-inline: 14px; margin: 4px 0 10px; border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius-sm); background: rgba(0, 0, 0, 0.35) !important; outline: none; color: var(--veex-text); font-family: var(--veex-font-mono); font-size: 13.5px; -webkit-user-select: auto; user-select: auto; transition: border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease); }
+
+@media (prefers-color-scheme: light) {
+    input[type="text"] { background: rgba(255, 255, 255, 0.75) !important; }
+}
+
+input[type="text"]:hover { border-color: rgba(255, 255, 255, 0.25); }
+input[type="text"]:focus { border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); }
+
+/* Buttons */
+.buttonbox { display: flex; justify-content: flex-end; gap: 10px; margin-block-start: 18px; padding-block-start: 16px; border-block-start: 1px solid var(--veex-card-border); }
+input[type="button"] { min-inline-size: 96px; block-size: 38px; padding-inline: 18px; margin: 0; border: 1px solid var(--veex-card-border); border-radius: 999px; background: var(--veex-card-bg); color: var(--veex-text-dim); font-family: var(--veex-font-sans); font-size: 13.5px; font-weight: 600; letter-spacing: 0.02em; cursor: pointer; transition: color var(--veex-speed) var(--veex-ease), border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease), background-color var(--veex-speed) var(--veex-ease); }
+input[type="button"]:hover, input[type="button"]:focus-visible { color: var(--veex-text); border-color: rgba(255, 255, 255, 0.28); }
+input[type="button"]:active { transform: translateY(1px); }
+
+/* Primary actions */
+#button-apply, #acceptEditBox { background: rgba(var(--veex-accent-rgb), 0.16); border-color: rgba(var(--veex-accent-rgb), 0.55); color: var(--veex-accent); }
+#button-apply:hover, #acceptEditBox:hover { background: rgba(var(--veex-accent-rgb), 0.26); box-shadow: var(--veex-glow); color: var(--veex-accent); }
+
+/* --- 12. Edit dial dialog ------------------------------------------------- */
+#overlay-edit { width: min(440px, 100%); }
+.edit-preview { display: block; margin-inline: auto; margin-block-end: 18px; max-inline-size: 100%; max-block-size: 200px; border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius); object-fit: cover; }
+.edit-label { display: block; margin-block-end: 2px; color: var(--veex-text-dim); font-family: var(--veex-font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+
+/* --- 13. Scrollbars, focus, motion, responsive ---------------------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--veex-accent-rgb), 0.45); background-clip: content-box; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--veex-accent); outline-offset: 3px; border-radius: 4px; }
+.entry a.boxUrl:focus-visible { outline-offset: -3px; border-radius: var(--veex-radius); }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Narrow viewports: stack the header, shrink the FAB */
+@media (max-width: 760px) {
+    .sd-header__inner { flex-wrap: wrap; }
+    .omni { order: 3; flex-basis: 100%; max-width: none; }
+    .dial-container { padding-block-end: 120px; }
+    .fab { inline-size: 50px; block-size: 50px; }
+}

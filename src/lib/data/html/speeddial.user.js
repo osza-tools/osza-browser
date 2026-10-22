@@ -41,15 +41,8 @@ function configureSpeedDial()
     $('#BgImgToggle').is(':checked') ? $('#BgImgSel').removeAttr('disabled') : $('#BgImgSel').attr('disabled', 'disabled');
     $('#BgImgToggle').is(':checked') ? $('#BgImgSelSiz').removeAttr('disabled') : $('#BgImgSelSiz').attr('disabled', 'disabled');
     $('#SdSizeToggle').is(':checked') ? $('#SdSize').removeAttr('disabled') : $('#SdSize').attr('disabled', 'disabled');
-    if ($('#BgImgToggle').prop('checked') != true) {
-        $('#ImgSelectorMenu').css({'color' : 'rgba(0,0,0, 0.0)', 'text-shadow' : 'none'});
-        $('#BgImgSel').css({'color' : 'rgba(0,0,0, 0.0)', 'text-shadow' : 'none'});
-        $('#BgImgSelSiz').css('visibility', 'hidden');
-        }
-    if ($('#SdSizeToggle').prop('checked') != true)
-        $('#SdSizeStateColor').css('color', 'rgba(0,0,0, 0.0)');
     // ======================== SHOW DIALOG ======================== //
-    $('#fadeOverlay2').css({'filter' : 'alpha(opacity=100)'}).fadeIn();
+    $('#fadeOverlay2').fadeIn();
     $('#fadeOverlay2').click(function() { $(this).fadeOut('slow'); });
     $('#settingsBox').click(function(event) { event.stopPropagation(); });
 }
@@ -93,17 +86,18 @@ function onEditClick(box) {
     if (boxUrl === '')
         boxUrl = 'http://';
 
-    $('body').append('<div id="fadeOverlay" class="overlay" style="display:none;">' +
-        '<div id="overlay-edit">' +
-        '<img src="' + $(box).children('img').first().attr('src') + '"> ' +
-        '<table><tr><td>' + scriptData.url + ': </td><td>' +
-        '<input type="text" id="formUrl" value="' + boxUrl + '"></td></tr>' +
-        '<tr id="titleLine"><td>' + scriptData.title + ': </td><td>' +
-        '<input type="text" id="formTitle" value="' + boxTitle + '"></td></tr>' +
-        '<tr><td></td><td><div class="checkbox"><input type="checkbox" id="fetchTitle">' +
-        '<label for="fetchTitle"></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ' + scriptData.titleFetchTitle + ' </div></td></tr>' +
-        '</table><p class="buttonbox"><input id="cancelEditBox" type="button" value=" ' + scriptData.cancel + ' ">&nbsp;&nbsp;&nbsp;' +
-        '<input id="acceptEditBox" type="button" value="   ' + scriptData.edit + '   "></p>' +
+    $('body').append('<div id="fadeOverlay" class="overlay" style="display:none;" role="dialog" aria-modal="true">' +
+        '<div id="overlay-edit" class="sd-panel">' +
+        '<h2 class="sd-panel__title">' + scriptData.edit + '</h2>' +
+        '<img class="edit-preview" src="' + $(box).children('img').first().attr('src') + '" alt="">' +
+        '<div class="edit-field"><label class="edit-label" for="formUrl">' + scriptData.url + '</label>' +
+        '<input type="text" id="formUrl" value="' + boxUrl + '"></div>' +
+        '<div class="edit-field" id="titleLine"><label class="edit-label" for="formTitle">' + scriptData.title + '</label>' +
+        '<input type="text" id="formTitle" value="' + boxTitle + '"></div>' +
+        '<div class="checkbox"><input type="checkbox" id="fetchTitle">' +
+        '<label for="fetchTitle" aria-hidden="true"></label><span class="checkbox__text">' + scriptData.titleFetchTitle + '</span></div>' +
+        '<p class="buttonbox"><input id="cancelEditBox" type="button" value="' + scriptData.cancel + '">' +
+        '<input id="acceptEditBox" type="button" value="' + scriptData.edit + '"></p>' +
         '</div></div>');
 
     $('#fetchTitle').click(function() {
@@ -117,7 +111,7 @@ function onEditClick(box) {
 
     $('#acceptEditBox').click(boxEdited);
 
-    $('#fadeOverlay').css({'filter' : 'alpha(opacity=100)'}).fadeIn();
+    $('#fadeOverlay').fadeIn();
     $('#fadeOverlay').click(function() {hideEditBox()});
     $('#overlay-edit').click(function(event) { event.stopPropagation(); });
 
@@ -167,12 +161,10 @@ function boxEdited() {
 }
 
 function allPages() {
-    var urls = $('a[class="boxUrl"]');
-    var titles = $('span[class="boxTitle"]');
     var value = "";
     $('div.entry').each(function(i) {
         var url = $(this).children('a').first().attr('href');
-        var title = $(this).children('span[class="boxTitle"]').first().text();
+        var title = $(this).children('span.boxTitle').first().text();
 
         value += 'url:"' + escapeUrl(url) + '"|title:"' + escapeTitle(title) + '";';
     });
@@ -189,14 +181,15 @@ function reloadAll() {
 
 function addBox(url, title, img_source) {
     var div = document.createElement('div');
-    div.setAttribute('class', 'entry');
+    div.setAttribute('class', 'entry dial');
     var img = document.createElement('img');
+    img.setAttribute('class', 'dial-preview');
     img.setAttribute('src', img_source);
     var a = document.createElement('a');
     a.setAttribute('href', url);
     a.setAttribute('class', 'boxUrl');
     var span1 = document.createElement('span');
-    span1.setAttribute('class', 'boxTitle');
+    span1.setAttribute('class', 'boxTitle dial-title');
     span1.setAttribute('title', unescapeTitle(title));
     span1.innerText = unescapeTitle(title);
     var span2 = document.createElement('span');
@@ -302,27 +295,32 @@ function removeBox(id) {
 }
 
 function alignPage() {
-    var dialWidth = parseInt(scriptData.dialWidth);
-    var dialHeight = Math.floor(Math.round(dialWidth / 1.54));
-    $('head').append('<style>#quickdial img{height:auto;width:'+dialWidth+'px}</style>');
-    $('#quickdial div.entry').css({'width' : dialWidth + 'px',
-        'height' : dialHeight  + 'px'});
-    var fullwidth = $(window).width();
+    var dialWidth = parseInt(scriptData.dialWidth, 10);
+    if (isNaN(dialWidth) || dialWidth < 100) {
+        dialWidth = 240;
+    }
+    var maxPagesRow = parseInt(scriptData.maxPagesRow, 10);
+    if (isNaN(maxPagesRow) || maxPagesRow < 1) {
+        maxPagesRow = 4;
+    }
+
+    /* Read the gap from the stylesheet so JS and CSS never disagree. */
+    var gap = 24;
+    try {
+        gap = parseFloat(getComputedStyle(document.getElementById('quickdial')).columnGap) || 24;
+    } catch (e) {}
+
+    var fullwidth = window.innerWidth;
     var width = Math.floor(fullwidth - 76);
-    var height = $(window).height();
-    var boxWidth = Math.floor(dialWidth + 12);
-    var boxHeight = dialHeight + 22;
-    var maxBoxes = Math.floor(width / boxWidth);
-    if (maxBoxes > scriptData.maxPagesRow) maxBoxes = scriptData.maxPagesRow;
+    var maxBoxes = Math.floor(width / (dialWidth + gap));
+    if (maxBoxes > maxPagesRow) maxBoxes = maxPagesRow;
     if (maxBoxes < 1) maxBoxes = 1;
-    var maxwidth = maxBoxes * boxWidth;
-    $("#quickdial").css('width', maxwidth + 'px');
-    var boxesCount = $("#quickdial").children("div").size();
-    var rows = Math.ceil(boxesCount / maxBoxes);
-    var margintop = (height - rows * boxHeight) / 2;
-    if (margintop < 0) margintop = 0;
-    $("#quickdial").css('margin-top', margintop + 'px');
-    $("span.boxTitle").css('font-size', ((dialHeight - dialWidth / 1.77) / 1.5) + 'px');
+
+    /* Layout is owned by CSS custom properties (see speeddial.css). */
+    var root = document.documentElement.style;
+    root.setProperty('--veex-dial-w', dialWidth + 'px');
+    root.setProperty('--veex-grid-cols', String(maxBoxes));
+
     if (scriptData.sdCenter == "true") {
         enableCentering();
     } else {
@@ -363,15 +361,6 @@ function bgImgToggle() {
     BgImgHoldUrl.disabled = (check.checked ? false : true);
     BgImgSz.disabled = (check.checked ? false : true);
     BgImgHoldUrl.value = (check.checked ? scriptData.urlBackground : '');
-    if ($('#BgImgToggle').prop('checked') != true) {
-        $('#ImgSelectorMenu').css({'color' : 'rgba(0,0,0, 0.0)', 'text-shadow' : 'none'});
-        $('#BgImgSel').css({'color' : 'rgba(0,0,0, 0.0)', 'text-shadow' : 'none'});
-        $('#BgImgSelSiz').css('visibility', 'hidden');
-    } else {
-        $('#ImgSelectorMenu').css({'color' : '#eaeaea', 'text-shadow' : '1px 1px 2px #000000, 0 0 1em #000000'});
-        $('#BgImgSel').css({'color' : '#eaeaea', 'text-shadow' : '1px 1px 2px #000000, 0 0 1em #000000'});
-        $('#BgImgSelSiz').css('visibility', 'visible');
-    };
 }
 
 function sdSizeToggle() {
@@ -381,11 +370,6 @@ function sdSizeToggle() {
     SdSize.disabled = (check.checked ? false : true);
     SdSize.value = (check.checked ? SdSize.value : 240);
     SdSizeSl.innerHTML = (check.checked ? scriptData.dialWidth : 240);
-    if ($('#SdSizeToggle').prop('checked') != true) {
-        $('#SdSizeStateColor').css('color', 'rgba(0,0,0, 0.0)');
-    } else {
-    $('#SdSizeStateColor').css('color', '#eaeaea')
-    }
 }
 
 function bgImgUpdate() {
@@ -395,22 +379,19 @@ function bgImgUpdate() {
     imgThumb.style.backgroundImage = 'url("' + imgUrl + '")';
     imgThumb.title = imgUrl.substring(imgUrl.lastIndexOf('/')+1);
     imgThumb.style.backgroundSize = imgSize;
-    document.documentElement.style.backgroundImage = 'url("' + imgUrl + '")';
-    document.documentElement.style.backgroundSize = imgSize;
+    var layer = document.querySelector('.background-layer--wallpaper');
+    if (layer) {
+        layer.style.backgroundImage = 'url("' + imgUrl + '")';
+        layer.style.backgroundSize = imgSize;
+    }
 }
 
 function enableCentering() {
-    $('#quickdial div.entry').css({
-        float: 'none',
-        display: 'inline-block'
-    });
+    document.getElementById('quickdial').classList.add('sd-centered');
 }
 
 function disableCentering() {
-    $('#quickdial div.entry').css({
-        float: scriptData.leftStr,
-        display: 'block'
-    });
+    document.getElementById('quickdial').classList.remove('sd-centered');
 }
 
 function init() {
@@ -445,10 +426,6 @@ function init() {
         location.reload();
     };
 
-    if (scriptData.imgBackground == '') {
-        document.getElementById("html").style.backgroundSize = "cover";
-    }
-
     $(document).keyup(function(e) {
         if (editingId == -1)
             return;
@@ -476,6 +453,18 @@ function init() {
     external.speedDial.pageTitleLoaded.connect(setTitleToUrl);
 
     $(window).resize(function() { alignPage(); });
+
+    /* CSS Grid blockifies its items, so jQuery-UI cannot detect that the
+       dial grid flows horizontally (it only understands floats and
+       inline-blocks). Without this, dials in the same row could not be
+       swapped by dragging. Presentation-only workaround. */
+    if ($.ui && $.ui.sortable) {
+        var veexIsFloating = $.ui.sortable.prototype._isFloating;
+        $.ui.sortable.prototype._isFloating = function(item) {
+            return item.hasClass('entry') || veexIsFloating.call(this, item);
+        };
+    }
+
     $("#quickdial").sortable({
         revert: true,
         cursor: 'move',
