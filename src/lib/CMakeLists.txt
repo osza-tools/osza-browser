@@ -531,7 +531,7 @@ if (WIN32)
     set(SRCS ${SRCS} other/registerqappassociation.cpp other/registerqappassociation.h)
 endif()
 if (APPLE)
-    set(SRCS ${SRCS} tools/disablewindowtabbbing.mm)
+    set(SRCS ${SRCS} tools/disablewindowtabbbing.mm tools/setdockmenu.mm)
 endif()
 
 # TODO: use ki18n_wrap_ui?

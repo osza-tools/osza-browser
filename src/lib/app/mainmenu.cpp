@@ -42,7 +42,7 @@
 #include <QDesktopServices>
 
 #ifdef Q_OS_MACOS
-extern void qt_mac_set_dock_menu(QMenu* menu);
+extern void setDockMenuNative(void* menu);
 #endif
 
 MainMenu::MainMenu(BrowserWindow* window, QWidget* parent)
@@ -634,7 +634,7 @@ void MainMenu::init()
     dockMenu->addAction(m_actions[QSL("File/NewTab")]);
     dockMenu->addAction(m_actions[QSL("File/NewWindow")]);
     dockMenu->addAction(m_actions[QSL("File/NewPrivateWindow")]);
-    qt_mac_set_dock_menu(dockMenu);
+    setDockMenuNative(dockMenu->toNSMenu());
 #endif
 
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)
