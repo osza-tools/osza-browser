@@ -1,20 +1,32 @@
 Veex Browser - Changelog
 ========================
 
-1.0.0  (2026-10-18)
+0.1.0  (2026-10-23)
 -------------------
-Initial release of Veex Browser.
+First public release of Veex Browser.
 
 Changed:
 - Rebranded from Falkon (KDE) with a deep rename of the codebase:
   namespace, classes, identifiers, files, build targets and catalogs.
 - New application identity: org.veex.VeexBrowser, executable "veex".
-- Version scheme reset to 1.0.0.
 - New temporary logo and icon set (gradient V on dark diamond).
 - Replaced upstream KDE service links with the Veex Tools GitHub project.
 - Default bookmarks and speed dial now point to Veex Tools resources.
 - Renamed the KDE Frameworks Integration plugin to System Integration.
 - Removed KDE CI configuration files.
+
+Fixed:
+- Speed Dial thumbnails are now written atomically (encode to memory,
+  commit via QSaveFile) so an interrupted save can no longer leave a
+  truncated PNG on disk.
+- Page thumbnailer loads its QML with the canonical qrc:/ resource URL.
+
+Packaging:
+- Cross-platform release CI: Linux tar.gz, Linux snap, macOS dmg and
+  Windows zip are built and attached to every v* tag release.
+- Added BUILD_TRANSLATIONS build option so platforms without Ki18n
+  (e.g. Windows) can skip the po-installation requirement.
+- Repository-local dependency installer: linux/install-build-deps.sh.
 
 Notes:
 - Veex Browser is based on Falkon, licensed under GPL-3.0-or-later.
