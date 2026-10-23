@@ -53,6 +53,7 @@ jobs:
         with:
           files: Veex-Browser-*-linux-x86_64.tar.gz
           fail_on_unmatched_patterns: true
+          overwrite_files: true
           retries: 3
 
   linux-snap:
@@ -70,6 +71,7 @@ jobs:
         with:
           files: ${{ steps.snap.outputs.snap }}
           fail_on_unmatched_patterns: true
+          overwrite_files: true
           retries: 3
 
   macos-dmg:
@@ -184,6 +186,7 @@ jobs:
         with:
           files: Veex-Browser-*-macos-arm64.dmg
           fail_on_unmatched_patterns: true
+          overwrite_files: true
           retries: 3
 
   windows-zip:
@@ -276,4 +279,5 @@ jobs:
         with:
           files: Veex-Browser-*-windows-x64.zip
           fail_on_unmatched_patterns: true
+          overwrite_files: true
           retries: 3
