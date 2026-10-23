@@ -72,6 +72,7 @@ packages=(
     build-essential
     cmake
     extra-cmake-modules
+    gettext
     pkg-config
     qt6-base-dev
     qt6-base-private-dev
