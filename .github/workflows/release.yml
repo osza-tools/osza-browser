@@ -1,0 +1,268 @@
+# Builds Veex Browser packages for every supported platform on a version tag
+# and attaches them to the corresponding GitHub release.
+#
+# Jobs are independent on purpose: one failing platform never blocks the
+# others' assets from being published.
+name: Release packages
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  linux-tarball:
+    name: Linux (tar.gz)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo ./linux/install-build-deps.sh
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF
+
+      - name: Build
+        run: cmake --build build --parallel "$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Stage install
+        run: cmake --install build --prefix dist/usr --strip
+
+      - name: Package tarball
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          tar -C dist --sort=name --numeric-owner --owner=0 --group=0 \
+            -czf "Veex-Browser-${VERSION}-linux-x86_64.tar.gz" usr
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Veex-Browser-*-linux-x86_64.tar.gz
+          fail_on_unmatched_patterns: true
+          retries: 3
+
+  linux-snap:
+    name: Linux (snap)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build snap
+        id: snap
+        uses: snapcore/action-build@v1
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.snap.outputs.snap }}
+          fail_on_unmatched_patterns: true
+          retries: 3
+
+  macos-dmg:
+    name: macOS (dmg)
+    runs-on: macos-15
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install qt qtwebengine karchive ki18n extra-cmake-modules openssl@3
+          echo "HOMEBREW_P=$(brew --prefix)" >> "$GITHUB_ENV"
+
+      - name: Configure
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_TESTING=OFF
+          -DBUILD_PYTHON_SUPPORT=OFF
+          -DBUILD_KEYRING=OFF
+          -DOPENSSL_ROOT_DIR="${HOMEBREW_P}/opt/openssl@3"
+          -DCMAKE_PREFIX_PATH="$HOMEBREW_P/opt/qt;$HOMEBREW_P/opt/qtwebengine;$HOMEBREW_P/opt/karchive;$HOMEBREW_P/opt/ki18n"
+
+      - name: Build
+        run: cmake --build build --parallel "$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Locate app bundle
+        run: echo "BUNDLE=$(ls -d build/bin/*.app | head -n 1)" >> "$GITHUB_ENV"
+
+      - name: Bundle plugins, private library and resources
+        run: |
+          set -u
+          APP="$BUNDLE"
+          LIB_FILE=$(ls build/bin/libVeexPrivate*.dylib | head -n 1)
+          LIB=$(basename "$LIB_FILE")
+          cp "$LIB_FILE" "$APP/Contents/MacOS/"
+          mkdir -p "$APP/Contents/Resources/plugins"
+          cp -R build/bin/plugins/. "$APP/Contents/Resources/plugins/"
+          mkdir -p "$APP/Contents/Resources/themes"
+          cp -R themes/. "$APP/Contents/Resources/themes/"
+          if [ -d build/bin/locale ]; then
+            cp -R build/bin/locale "$APP/Contents/Resources/locale"
+          fi
+          # Fix the import references to the private library, whatever install
+          # name CMake recorded for it in the build tree
+          OLDID=$(otool -D "$APP/Contents/MacOS/$LIB" | tail -n 1 | awk '{print $1}')
+          targets=$(find "$APP/Contents/MacOS" "$APP/Contents/Resources/plugins" -type f \( -name '*.dylib' -o -perm -u+x \))
+          for f in $targets; do
+            if otool -L "$f" 2>/dev/null | grep -q libVeexPrivate; then
+              install_name_tool -change "$OLDID" "@executable_path/$LIB" "$f" 2>/dev/null || true
+              install_name_tool -change "libVeexPrivate.2.dylib" "@executable_path/$LIB" "$f" 2>/dev/null || true
+            fi
+          done
+          echo "targets_export=$targets" >> "$GITHUB_ENV"
+
+      - name: Run macdeployqt
+        run: |
+          "$HOMEBREW_P/opt/qt/bin/macdeployqt" "$BUNDLE" -qmldir="$PWD/src/lib/data/data"
+
+      - name: Bundle non-Qt libraries (KF6/OpenSSL) and fix remaining references
+        run: |
+          set -u
+          APP="$BUNDLE"
+          FW="$APP/Contents/Frameworks"
+          mkdir -p "$FW"
+          # Qt frameworks were already bundled by macdeployqt; rewrite every
+          # remaining absolute /opt/homebrew reference in-place to @rpath and
+          # copy plain dylibs into the bundle. Three passes handle transitive
+          # copied libraries.
+          for pass in 1 2 3; do
+            targets=$(find "$APP/Contents/MacOS" "$APP/Contents/Resources/plugins" "$FW" \
+                        -type f \( -name '*.dylib' -o -perm -u+x \))
+            for f in $targets; do
+              deps=$(otool -L "$f" 2>/dev/null | tail -n +2 | awk '{print $1}' \
+                       | grep '^/opt/homebrew/' || true)
+              for dep in $deps; do
+                rel="${dep#*/lib/}"
+                [ -n "$rel" ] && [ "$rel" != "$dep" ] || rel=$(basename "$dep")
+                if [ -d "${dep%.framework/Versions/*}" ] && printf '%s' "$dep" | grep -qF '.framework'; then
+                  rel="${dep#*/lib/}"
+                fi
+                case "$dep" in
+                  *.framework/*) mkdir -p "$FW/$(dirname "$rel")"; cp -Rf "$dep" "$FW/$rel" ;;
+                  *) cp -f "$dep" "$FW/$rel" ;;
+                esac
+                install_name_tool -change "$dep" "@rpath/$rel" "$f" 2>/dev/null || true
+              done
+            done
+          done
+          # Ensure every shipped Mach-O can resolve @rpath against Contents/Frameworks
+          targets=$(find "$APP/Contents/MacOS" "$APP/Contents/Resources/plugins" "$FW" \
+                      -type f \( -name '*.dylib' -o -perm -u+x \))
+          for f in $targets; do
+            if ! otool -l "$f" 2>/dev/null | grep -Fq '@executable_path/../Frameworks'; then
+              install_name_tool -add_rpath "@executable_path/../Frameworks" "$f" 2>/dev/null || true
+            fi
+          done
+
+      - name: Assemble and create DMG
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          STAGE="$(mktemp -d)/Veex"
+          mkdir -p "$STAGE"
+          cp -R "$BUNDLE" "$STAGE/"
+          ln -s /Applications "$STAGE/Applications"
+          hdiutil create -volname Veex -srcfolder "$STAGE" -ov -format UDZO \
+            "Veex-Browser-${VERSION}-macos-arm64.dmg"
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Veex-Browser-*-macos-arm64.dmg
+          fail_on_unmatched_patterns: true
+          retries: 3
+
+  windows-zip:
+    name: Windows (zip)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt (MSVC, with WebEngine)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.7.*"
+          arch: win64_msvc2019_64
+          modules: qtwebengine
+          cache: true
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install OpenSSL and zlib via vcpkg
+        shell: pwsh
+        run: |
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install openssl:x64-windows zlib:x64-windows
+
+      - name: Build Extra CMake Modules and KF6 Archive
+        shell: pwsh
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $base = 'https://download.kde.org/stable/frameworks/6.13/'
+          New-Item -ItemType Directory -Force deps | Out-Null
+          foreach ($proj in @('extra-cmake-modules', 'karchive')) {
+            $url = "$base$proj-6.13.0.tar.xz"
+            $dst = "deps/$proj-6.13.0"
+            Invoke-WebRequest -Uri $url -OutFile "deps/$proj.tar.xz"
+            tar -xJf "deps/$proj.tar.xz" -C deps
+            cmake -S $dst -B "deps/$proj-build" -G Ninja -DCMAKE_BUILD_TYPE=Release `
+              -DCMAKE_INSTALL_PREFIX="$PWD/deps/install" `
+              -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+              -DBUILD_TESTING=OFF
+            cmake --build "deps/$proj-build"
+            cmake --install "deps/$proj-build"
+          }
+
+      - name: Configure Veex
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_PREFIX_PATH="$PWD/deps/install" `
+            -DOPENSSL_ROOT_DIR="$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows" `
+            -DBUILD_TESTING=OFF `
+            -DBUILD_PYTHON_SUPPORT=OFF `
+            -DBUILD_KEYRING=OFF `
+            -DBUILD_TRANSLATIONS=OFF
+
+      - name: Build Veex
+        shell: pwsh
+        run: cmake --build build
+
+      - name: Deploy Qt runtime and assemble zip
+        shell: pwsh
+        run: |
+          $qtRoot = $env:QT_ROOT_DIR
+          if (-not $qtRoot) {
+            $qtRoot = ((Get-Command qmake.exe).Source | Split-Path | Split-Path)
+          }
+          $qtBin = "$qtRoot\bin"
+          windeployqt --release --compiler-runtime --qmldir src/lib/data/data build/bin/veex.exe
+          foreach ($src in @("$qtBin\QtWebEngineProcess.exe", "$qtBin\Qt6WebEngineCore.dll", "$qtBin\Qt6WebEngine.dll", "$qtBin\Qt6WebEngineWidgets.dll")) {
+            if (Test-Path $src) { Copy-Item $src 'build\bin' -Force }
+          }
+          foreach ($dir in @("$qtRoot\resources", "$qtBin\resources")) {
+            if (Test-Path $dir) { Copy-Item $dir 'build\bin\resources' -Recurse -Force }
+          }
+          foreach ($dir in @("$qtRoot\translations\qtwebengine_locales", "$qtBin\translations\qtwebengine_locales")) {
+            if (Test-Path $dir) {
+              New-Item -ItemType Directory -Force 'build\bin\translations' | Out-Null
+              Copy-Item $dir 'build\bin\translations\qtwebengine_locales' -Recurse -Force
+            }
+          }
+          # OpenSSL + zlib runtime DLLs from vcpkg
+          $vcpkgBin = "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin"
+          Get-ChildItem $vcpkgBin -Filter *.dll | Where-Object { $_.Name -match '^(libssl|libcrypto|zlib)' } |
+            Copy-Item -Destination 'build\bin' -Force
+          $version = $env:GITHUB_REF_NAME -replace '^v',''
+          Compress-Archive -Path build\bin\* -DestinationPath "Veex-Browser-$version-windows-x64.zip"
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Veex-Browser-*-windows-x64.zip
+          fail_on_unmatched_patterns: true
+          retries: 3
