@@ -23,10 +23,12 @@
 #include "autosaver.h"
 
 #include <QDir>
+#include <QBuffer>
 #include <QCryptographicHash>
 #include <QFileDialog>
 #include <QImage>
 #include <QJsonDocument>
+#include <QSaveFile>
 
 #define ENSURE_LOADED if (!m_loaded) loadSettings();
 
@@ -354,7 +356,20 @@ void SpeedDial::thumbnailCreated(const QPixmap &pixmap)
         title = tr("Unable to load");
     }
     else {
-        if (!pixmap.save(fileName, "PNG")) {
+        // Save atomically (encode to memory first, then commit) so a crash
+        // or kill during save cannot leave a truncated PNG behind
+        QByteArray data;
+        QBuffer buffer(&data);
+        bool ok = buffer.open(QIODevice::WriteOnly) && pixmap.save(&buffer, "PNG");
+        if (ok) {
+            QSaveFile file(fileName);
+            ok = file.open(QIODevice::WriteOnly);
+            if (ok) {
+                file.write(data);
+                ok = file.commit();
+            }
+        }
+        if (!ok) {
             qWarning() << "SpeedDial::thumbnailCreated Cannot save thumbnail to " << fileName;
         }
         //fileName = QUrl::fromLocalFile(fileName).toString();
