@@ -40,7 +40,7 @@ public:
     bool autoRaise() const;
 
     void setIconColor(QColor color = QColor());
-    QColor iconColor();
+    const QColor iconColor() const;
 
     void setDefaultIconColor(QColor color = QColor());
     const QColor defaultIconColor() const;
@@ -51,6 +51,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void selectColorDialog();
+    void resetIconColor();
 
 private:
     bool m_autoRise;
