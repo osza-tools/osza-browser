@@ -220,7 +220,8 @@ jobs:
           foreach ($proj in @('extra-cmake-modules', 'karchive')) {
             $url = "$base$proj-6.13.0.tar.xz"
             $dst = "deps/$proj-6.13.0"
-            Invoke-WebRequest -Uri $url -OutFile "deps/$proj.tar.xz"
+            curl.exe -L --fail --max-time 600 --retry 3 -o "deps/$proj.tar.xz" $url
+            if ($LASTEXITCODE -ne 0) { throw "download failed: $url" }
             tar -xJf "deps/$proj.tar.xz" -C deps
             cmake -S $dst -B "deps/$proj-build" -G Ninja -DCMAKE_BUILD_TYPE=Release `
               -DCMAKE_INSTALL_PREFIX="$PWD/deps/install" `
