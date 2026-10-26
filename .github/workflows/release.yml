@@ -126,7 +126,9 @@ jobs:
               install_name_tool -change "libOszaPrivate.2.dylib" "@executable_path/$LIB" "$f" 2>/dev/null || true
             fi
           done
-          echo "targets_export=$targets" >> "$GITHUB_ENV"
+          # NOTE: never write $targets to $GITHUB_ENV — find() output is
+          # multi-line and GITHUB_ENV only accepts single-line "key=value"
+          # records (use the heredoc "<<EOF" form if it is ever needed).
 
       - name: Run macdeployqt
         run: |
