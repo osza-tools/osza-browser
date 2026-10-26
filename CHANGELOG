@@ -14,6 +14,10 @@ Changed:
   pyosza_load_plugin / pyosza_init_plugin.
 - Desktop, appstream, snap, flatpak, AppImage and CI packaging updated
   to the new names, paths and osza-tools GitHub links.
+- New temporary logo: vintage gold royal medallion (ruby-set crown,
+  engraved O cipher, laurel wreath, beaded ring) with flat black/white
+  emblem variants, full icon sets (hicolor, Windows .ico, macOS .icns)
+  and the DMG installer icon.
 
 0.1.0  (2026-10-23)
 -------------------
