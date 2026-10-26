@@ -1,0 +1,52 @@
+# Fast build check for pushes and pull requests.
+#
+# The release workflow only runs on version tags, which means compile
+# breakage historically surfaced only at release time. This workflow
+# compiles the full tree — including the autotests and benchmark targets —
+# on every push to main and on pull requests, so breakage is caught early.
+#
+# Tests are compiled but not executed here: many of them need a display,
+# network access or a full QtWebEngine runtime and are too flaky for a
+# fast gate. Compile coverage alone already catches most regressions.
+name: Build check
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-build:
+    name: Linux (compile, incl. test targets)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KDE Neon repository (Ubuntu 24.04 lacks KF6 packages)
+        run: |
+          if grep -q 'noble' /etc/os-release; then
+            curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x444DABCF3667D0283F894EDDE6D4736255751E5D' \
+              | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/kde-neon-user.gpg
+            echo "deb http://origin.archive.neon.kde.org/user noble main" | sudo tee /etc/apt/sources.list.d/kde-neon-user.list
+            sudo apt-get update
+          else
+            echo "Runner already ships KF6 packages; skipping Neon repo."
+          fi
+
+      - name: Install build dependencies
+        run: sudo ./linux/install-build-deps.sh
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+
+      - name: Build
+        run: cmake --build build --parallel "$(getconf _NPROCESSORS_ONLN)"
