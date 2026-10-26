@@ -1,5 +1,5 @@
 /* ============================================================
-* SystemIntegration - KDE support plugin for Veex
+* SystemIntegration - KDE support plugin for Osza
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -30,7 +30,7 @@ class SystemIntegrationPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.SystemIntegration" FILE "systemintegration.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.SystemIntegration" FILE "systemintegration.json")
 
 public:
     explicit SystemIntegrationPlugin();
@@ -40,7 +40,7 @@ public:
     bool testPlugin() override;
     void populateWebViewMenu(QMenu *menu, WebView *view, const WebHitTestResult &r) override;
 
-    QString lastVeexVersion() const;
+    QString lastOszaVersion() const;
 
 private:
     KWalletPasswordBackend *m_backend = nullptr;
@@ -49,5 +49,5 @@ private:
     KUiServerV2JobTracker *m_jobTracker = nullptr;
 
     QString m_settingsPath;
-    QString m_lastVeexVersion;
+    QString m_lastOszaVersion;
 };

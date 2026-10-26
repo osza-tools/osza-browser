@@ -1,5 +1,5 @@
 /* ============================================================
-* VerticalTabs plugin for Veex
+* VerticalTabs plugin for Osza
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class VerticalTabsPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.VerticalTabs" FILE "verticaltabs.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.VerticalTabs" FILE "verticaltabs.json")
 
 public:
     explicit VerticalTabsPlugin();

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -268,7 +268,7 @@ void PopupWindow::searchOnPage()
 
 void PopupWindow::titleChanged()
 {
-    setWindowTitle(tr("%1 - Veex").arg(m_view->title()));
+    setWindowTitle(tr("%1 - Osza").arg(m_view->title()));
 }
 
 void PopupWindow::setWindowGeometry(QRect newRect)

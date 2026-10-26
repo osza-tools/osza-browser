@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -100,4 +100,4 @@ void WebViewTest::loadSignalsChangePageTest()
     QCOMPARE(loadFinishedSpy.count(), 0);
 }
 
-VEEXTEST_MAIN(WebViewTest)
+OSZATEST_MAIN(WebViewTest)

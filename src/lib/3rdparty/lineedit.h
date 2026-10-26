@@ -29,7 +29,7 @@
 * SUCH DAMAGE.
 */
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -63,7 +63,7 @@ As widgets are added to the class they are inserted from the outside
 into the center of the widget.
 */
 class SideWidget;
-class VEEX_EXPORT LineEdit : public QLineEdit
+class OSZA_EXPORT LineEdit : public QLineEdit
 {
     Q_OBJECT
     Q_PROPERTY(QSize fixedsize READ size WRITE setFixedSize)
@@ -144,7 +144,7 @@ private:
 };
 
 
-class VEEX_EXPORT SideWidget : public QWidget
+class OSZA_EXPORT SideWidget : public QWidget
 {
     Q_OBJECT
 

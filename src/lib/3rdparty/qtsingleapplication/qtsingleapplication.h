@@ -47,7 +47,7 @@
 
 class QtLocalPeer;
 
-class VEEX_EXPORT QtSingleApplication : public QApplication
+class OSZA_EXPORT QtSingleApplication : public QApplication
 {
     Q_OBJECT
 

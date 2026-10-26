@@ -1,4 +1,4 @@
-// Veex - SiteSettings permission browser dialog
+// Osza - SiteSettings permission browser dialog
 // SPDX-FileCopyrightText: 2024 Juraj Oravec <jurajoravec@mailo.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 

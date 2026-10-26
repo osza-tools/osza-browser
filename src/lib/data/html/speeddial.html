@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!--
-  Veex - Qt web browser
-  Speed Dial page (veex:speeddial)
+  Osza - Qt web browser
+  Speed Dial page (osza:speeddial)
 
   Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
-  Copyright (C) 2026 Veex Tools contributors
+  Copyright (C) 2026 Osza Tools contributors
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@
 
 <style>
 /* ============================================================
- * Dynamic values — injected by VeexSchemeHandler at serve time.
+ * Dynamic values — injected by OszaSchemeHandler at serve time.
  * These rules MUST stay inline: the scheme handler performs
  * placeholder substitution on the HTML document only, never on
  * the linked speeddial.css resource.
  * ============================================================ */
 :root {
-    --veex-wallpaper: url("%IMG_BACKGROUND%");
+    --osza-wallpaper: url("%IMG_BACKGROUND%");
 }
 
 body {
@@ -47,7 +47,7 @@ body {
     block-size: 44px;
     object-fit: contain;
     opacity: 0.9;
-    animation: veex-pulse 1.6s ease-in-out infinite;
+    animation: osza-pulse 1.6s ease-in-out infinite;
 }
 
 #overlay-edit img[src="%LOADING-IMG%"] {
@@ -77,7 +77,7 @@ body {
 
 <header class="sd-header">
     <div class="sd-header__inner">
-        <div class="sd-brand" aria-hidden="true">VEEX<span class="sd-brand__sub">speed&nbsp;dial</span></div>
+        <div class="sd-brand" aria-hidden="true">OSZA<span class="sd-brand__sub">speed&nbsp;dial</span></div>
 
         <form class="omni" action="https://duckduckgo.com/" method="GET" role="search">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>

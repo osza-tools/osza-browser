@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *

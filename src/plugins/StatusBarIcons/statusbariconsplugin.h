@@ -1,5 +1,5 @@
 /* ============================================================
-* StatusBarIcons - Extra icons in statusbar for Veex
+* StatusBarIcons - Extra icons in statusbar for Osza
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class StatusBarIconsPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.StatusBarIcons" FILE "statusbaricons.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.StatusBarIcons" FILE "statusbaricons.json")
 
 public:
     explicit StatusBarIconsPlugin();

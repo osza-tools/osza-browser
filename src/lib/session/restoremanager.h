@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014 Franz Fellner <alpine.art.de@googlemail.com>
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
@@ -25,7 +25,7 @@
 class WebPage;
 class RecoveryJsObject;
 
-struct VEEX_EXPORT RestoreData
+struct OSZA_EXPORT RestoreData
 {
     QVector<BrowserWindow::SavedWindow> windows;
     QByteArray crashedSession;
@@ -34,11 +34,11 @@ struct VEEX_EXPORT RestoreData
     bool isValid() const;
     void clear();
 
-    friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const RestoreData &data);
-    friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, RestoreData &data);
+    friend OSZA_EXPORT QDataStream &operator<<(QDataStream &stream, const RestoreData &data);
+    friend OSZA_EXPORT QDataStream &operator>>(QDataStream &stream, RestoreData &data);
 };
 
-class VEEX_EXPORT RestoreManager
+class OSZA_EXPORT RestoreManager
 {
 public:
     explicit RestoreManager(const QString &file);

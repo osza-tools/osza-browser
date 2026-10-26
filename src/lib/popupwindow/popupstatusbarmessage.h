@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 class PopupWindow;
 class TipLabel;
 
-class VEEX_EXPORT PopupStatusBarMessage
+class OSZA_EXPORT PopupStatusBarMessage
 {
 public:
     explicit PopupStatusBarMessage(PopupWindow* window);

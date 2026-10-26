@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -407,7 +407,7 @@ bool AdBlockManager::isEnabled() const
 bool AdBlockManager::canRunOnScheme(const QString &scheme) const
 {
     return !(scheme == QL1S("file") || scheme == QL1S("qrc") || scheme == QL1S("view-source")
-             || scheme == QL1S("veex") || scheme == QL1S("data") || scheme == QL1S("abp"));
+             || scheme == QL1S("osza") || scheme == QL1S("data") || scheme == QL1S("abp"));
 }
 
 bool AdBlockManager::canBeBlocked(const QUrl &url) const

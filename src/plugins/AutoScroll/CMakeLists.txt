@@ -9,7 +9,7 @@ set( AutoScroll_SRCS
         autoscrollsettings.h
         )
 
-ecm_create_qm_loader( AutoScroll_SRCS veex_autoscroll_qt )
+ecm_create_qm_loader( AutoScroll_SRCS osza_autoscroll_qt )
 
 set( AutoScroll_UIS
 	autoscrollsettings.ui
@@ -22,6 +22,6 @@ set( AutoScroll_RSCS
 qt_add_resources(RSCS ${AutoScroll_RSCS})
 
 add_library(AutoScroll MODULE ${AutoScroll_SRCS} ${UIS} ${RSCS})
-install(TARGETS AutoScroll DESTINATION ${VEEX_INSTALL_PLUGINDIR})
-target_link_libraries(AutoScroll VeexPrivate)
+install(TARGETS AutoScroll DESTINATION ${OSZA_INSTALL_PLUGINDIR})
+target_link_libraries(AutoScroll OszaPrivate)
 

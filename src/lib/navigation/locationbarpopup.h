@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  Franz Fellner <alpine.art.de@googlemail.com>
 *                          David Rosca <nowrep@gmail.com>
 *
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT LocationBarPopup : public QFrame
+class OSZA_EXPORT LocationBarPopup : public QFrame
 {
 public:
     explicit LocationBarPopup(QWidget* parent);

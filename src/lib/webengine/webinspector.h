@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 class QWebEngineProfile;
 class WebView;
 
-class VEEX_EXPORT WebInspector : public QWebEngineView
+class OSZA_EXPORT WebInspector : public QWebEngineView
 {
     Q_OBJECT
 

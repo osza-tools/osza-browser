@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ class WebView;
 class WebHitTestResult;
 class DelayedFileWatcher;
 
-class VEEX_EXPORT WebPage : public QWebEnginePage
+class OSZA_EXPORT WebPage : public QWebEnginePage
 {
     Q_OBJECT
 

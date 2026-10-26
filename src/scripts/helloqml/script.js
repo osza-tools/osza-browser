@@ -4,8 +4,8 @@ function init() {
     })
 }
 
-if (window._veex_external) {
+if (window._osza_external) {
     init();
 } else {
-    document.addEventListener("_veex_external_created", init);
+    document.addEventListener("_osza_external_created", init);
 }

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  Mattias Cibien <mattias@mattiascibien.net>
 *
 * This program is free software: you can redistribute it and/or modify

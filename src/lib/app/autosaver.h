@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2016  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT AutoSaver : public QObject
+class OSZA_EXPORT AutoSaver : public QObject
 {
     Q_OBJECT
 

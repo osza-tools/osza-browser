@@ -1,5 +1,5 @@
 # ============================================================
-# MiddleClickLoader - plugin for Veex
+# MiddleClickLoader - plugin for Osza
 # Copyright (C) 2018 Juraj Oravec <sgd.orava@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

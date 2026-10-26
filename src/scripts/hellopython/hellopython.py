@@ -1,5 +1,5 @@
 # ============================================================
-# HelloPython plugin for Veex
+# HelloPython plugin for Osza
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,39 +15,39 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Veex
+import Osza
 from PySide6 import QtCore, QtGui, QtWidgets
 from hellopython import sidebar, button
 from hellopython.i18n import i18n
 
-class HelloPlugin(Veex.PluginInterface, QtCore.QObject):
+class HelloPlugin(Osza.PluginInterface, QtCore.QObject):
     buttons = {}
 
     def init(self, state, settingsPath):
         print("{} {}".format(state, settingsPath))
 
-        plugins = Veex.MainApplication.instance().plugins()
-        plugins.registerAppEventHandler(Veex.PluginProxy.MousePressHandler, self)
+        plugins = Osza.MainApplication.instance().plugins()
+        plugins.registerAppEventHandler(Osza.PluginProxy.MousePressHandler, self)
 
         plugins.mainWindowCreated.connect(self.mainWindowCreated)
         plugins.mainWindowDeleted.connect(self.mainWindowDeleted)
 
         self.sidebar = sidebar.HelloSidebar()
-        Veex.SideBarManager.addSidebar("hellopython-sidebar", self.sidebar)
+        Osza.SideBarManager.addSidebar("hellopython-sidebar", self.sidebar)
 
         self.schemeHandler = HelloSchemeHandler()
-        Veex.MainApplication.instance().networkManager().registerExtensionSchemeHandler("hello", self.schemeHandler)
+        Osza.MainApplication.instance().networkManager().registerExtensionSchemeHandler("hello", self.schemeHandler)
 
-        if state == Veex.PluginInterface.LateInitState:
-            for window in Veex.MainApplication.instance().windows():
+        if state == Osza.PluginInterface.LateInitState:
+            for window in Osza.MainApplication.instance().windows():
                 self.mainWindowCreated(window)
 
     def unload(self):
         print("unload")
 
-        Veex.SideBarManager.removeSidebar(self.sidebar)
+        Osza.SideBarManager.removeSidebar(self.sidebar)
 
-        for window in Veex.MainApplication.instance().windows():
+        for window in Osza.MainApplication.instance().windows():
             self.mainWindowDeleted(window)
 
     def testPlugin(self):
@@ -89,7 +89,7 @@ class HelloPlugin(Veex.PluginInterface, QtCore.QObject):
 
         self.settings.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.settings.setWindowTitle(i18n("Hello Python Settings"))
-        self.settings.setWindowIcon(QtGui.QIcon(":icons/veex.svg"))
+        self.settings.setWindowIcon(QtGui.QIcon(":icons/osza.svg"))
         closeButton.clicked.connect(self.settings.close)
 
         self.settings.show()
@@ -107,9 +107,9 @@ class HelloPlugin(Veex.PluginInterface, QtCore.QObject):
         window.navigationBar().removeToolButton(b)
         del self.buttons[window]
 
-Veex.registerPlugin(HelloPlugin())
+Osza.registerPlugin(HelloPlugin())
 
-class HelloSchemeHandler(Veex.ExtensionSchemeHandler):
+class HelloSchemeHandler(Osza.ExtensionSchemeHandler):
     def requestStarted(self, job):
         print("req {}".format(job.requestUrl()))
         self.setReply(job, "text/html", "<h1>TEST</h1>{}".format(job.requestUrl()))

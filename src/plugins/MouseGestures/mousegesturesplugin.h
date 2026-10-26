@@ -1,5 +1,5 @@
 /* ============================================================
-* Mouse Gestures plugin for Veex
+* Mouse Gestures plugin for Osza
 * Copyright (C) 2012-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ class MouseGesturesPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.MouseGestures" FILE "mousegestures.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.MouseGestures" FILE "mousegestures.json")
 
 public:
     MouseGesturesPlugin();

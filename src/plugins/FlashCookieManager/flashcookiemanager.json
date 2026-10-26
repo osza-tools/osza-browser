@@ -47,8 +47,8 @@
     "Name[x-test]": "xxFlash Cookie Managerxx",
     "Name[zh_CN]": "Flash Cookie 管理器",
     "Name[zh_TW]": "Flash Cookie 管理員",
-    "X-Veex-Author": "Razi Alavizadeh",
-    "X-Veex-Email": "s.r.alavizadeh@gmail.com",
-    "X-Veex-Settings": "true",
-    "X-Veex-Version": "0.3.0"
+    "X-Osza-Author": "Razi Alavizadeh",
+    "X-Osza-Email": "s.r.alavizadeh@gmail.com",
+    "X-Osza-Settings": "true",
+    "X-Osza-Version": "0.3.0"
 }

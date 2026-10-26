@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2019 Javier Llorente <javier@opensuse.org>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include <KJob>
 #include <QUrl>
 
-class VEEX_EXPORT DownloadKJob : public KJob
+class OSZA_EXPORT DownloadKJob : public KJob
 {
     Q_OBJECT
 

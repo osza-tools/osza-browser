@@ -1,5 +1,5 @@
 /* ============================================================
- * Veex - Qt web browser
+ * Osza - Qt web browser
  * Copyright (C) 2024  Juraj Oravec <jurajoravec@mailo.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,17 +39,17 @@ void SiteSettingsTest::cleanupTestCase()
 void SiteSettingsTest::webAttributeTest()
 {
     SiteSettingsManager *siteSettings = mApp->siteSettingsManager();
-    siteSettings->setOption(QWebEngineSettings::AutoLoadImages, QUrl(QSL("https://www.veex.org/")), SiteSettingsManager::Deny);
+    siteSettings->setOption(QWebEngineSettings::AutoLoadImages, QUrl(QSL("https://www.osza.org/")), SiteSettingsManager::Deny);
     siteSettings->setOption(QWebEngineSettings::JavascriptEnabled, QUrl(QSL("https://kde.org/")), SiteSettingsManager::Deny);
     siteSettings->setOption(QWebEngineSettings::PlaybackRequiresUserGesture, QUrl(QSL("https://planet.kde.org/")), SiteSettingsManager::Allow);
 
 
-    checkInternalPage(QUrl(QSL("veex:start")));
+    checkInternalPage(QUrl(QSL("osza:start")));
 
-    checkExternalPage(QUrl(QSL("https://www.veex.org/")));
+    checkExternalPage(QUrl(QSL("https://www.osza.org/")));
     checkExternalPage(QUrl(QSL("https://kde.org/")));
 
-    checkInternalPage(QUrl(QSL("veex:about")));
+    checkInternalPage(QUrl(QSL("osza:about")));
 
     checkExternalPage(QUrl(QSL("https://planet.kde.org/")));
 }
@@ -106,4 +106,4 @@ void SiteSettingsTest::checkExternalPage(QUrl url)
     QCOMPARE(checkWebAttributes(page, siteSettings->getWebAttributes(url)), true);
 }
 
-VEEXTEST_MAIN(SiteSettingsTest)
+OSZATEST_MAIN(SiteSettingsTest)

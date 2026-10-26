@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -106,7 +106,7 @@ void SiteIcon::mouseReleaseEvent(QMouseEvent* e)
     bool activated = false;
 
     if (e->button() == Qt::LeftButton && rect().contains(e->pos())) {
-        // Popup may not be always shown, eg. on veex: pages
+        // Popup may not be always shown, eg. on osza: pages
         activated = showPopup();
     }
 

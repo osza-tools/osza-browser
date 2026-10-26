@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 class QWheelEvent;
 
-class VEEX_EXPORT WheelHelper
+class OSZA_EXPORT WheelHelper
 {
 public:
     enum Direction {

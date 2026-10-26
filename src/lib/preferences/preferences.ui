@@ -459,7 +459,7 @@
              <item>
               <widget class="QCheckBox" name="checkDefaultBrowser">
                <property name="text">
-                <string>Check to see if Veex is the default browser on startup</string>
+                <string>Check to see if Osza is the default browser on startup</string>
                </property>
                <property name="checked">
                 <bool>false</bool>
@@ -2621,7 +2621,7 @@
            <item row="7" column="1" colspan="6">
             <widget class="QLabel" name="label_40">
              <property name="text">
-              <string>For more information about Spell Check, please see &lt;a href=&quot;https://github.com/veex-tools/veex-browser/wiki#Spell_Check&quot;&gt;wiki&lt;/a&gt;.</string>
+              <string>For more information about Spell Check, please see &lt;a href=&quot;https://github.com/osza-tools/osza-browser/wiki#Spell_Check&quot;&gt;wiki&lt;/a&gt;.</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignCenter</set>

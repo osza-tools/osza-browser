@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ namespace Ui
 class IconChooser;
 }
 
-class VEEX_EXPORT IconChooser : public QDialog
+class OSZA_EXPORT IconChooser : public QDialog
 {
     Q_OBJECT
 
@@ -48,7 +48,7 @@ private:
     Ui::IconChooser* ui;
 };
 
-class VEEX_EXPORT IconChooserDelegate : public QStyledItemDelegate
+class OSZA_EXPORT IconChooserDelegate : public QStyledItemDelegate
 {
 public:
     explicit IconChooserDelegate(QWidget* parent = nullptr);

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ void QmlHistoryApiTest::testAddition()
 {
     qRegisterMetaType<HistoryEntry>();
     QSignalSpy historySpy(mApp->history(), &History::historyEntryAdded);
-    m_testHelper.evaluate(QL1S("Veex.History.addUrl({"
+    m_testHelper.evaluate(QL1S("Osza.History.addUrl({"
                      "    url: 'https://example.com',"
                      "    title: 'Example Domain'"
                      "})"));
@@ -44,7 +44,7 @@ void QmlHistoryApiTest::testAddition()
     HistoryEntry entry = qvariant_cast<HistoryEntry>(historySpy.at(0).at(0));
     QCOMPARE(entry.title, QSL("Example Domain"));
 
-    auto object = m_testHelper.evaluateQObject(QSL("Veex.History"));
+    auto object = m_testHelper.evaluateQObject(QSL("Osza.History"));
     QSignalSpy qmlHistorySpy(object, SIGNAL(visited(QmlHistoryItem*)));
     mApp->history()->addHistoryEntry(QUrl(QSL("https://sample.com")), QSL("Sample Domain"));
     QTRY_COMPARE(qmlHistorySpy.count(), 1);
@@ -58,31 +58,31 @@ void QmlHistoryApiTest::testSearch()
     mApp->history()->addHistoryEntry(QUrl(QSL("https://another-example.com")), QSL("Another Example Domain"));
     mApp->history()->addHistoryEntry(QUrl(QSL("https://sample.com")), QSL("Sample Domain"));
     QTRY_COMPARE(historySpy.count(), 3);
-    auto list = m_testHelper.evaluate(QSL("Veex.History.search('example')")).toVariant().toList();
+    auto list = m_testHelper.evaluate(QSL("Osza.History.search('example')")).toVariant().toList();
     QCOMPARE(list.length(), 2);
 }
 
 void QmlHistoryApiTest::testVisits()
 {
-    int visits = m_testHelper.evaluate(QSL("Veex.History.getVisits('https://sample.com')")).toInt();
+    int visits = m_testHelper.evaluate(QSL("Osza.History.getVisits('https://sample.com')")).toInt();
     QCOMPARE(visits, 1);
     QSignalSpy historySpy(mApp->history(), &History::historyEntryEdited);
     mApp->history()->addHistoryEntry(QUrl(QSL("https://sample.com")), QSL("Sample Domain"));
     QTRY_COMPARE(historySpy.count(), 1);
-    visits = m_testHelper.evaluate(QSL("Veex.History.getVisits('https://sample.com')")).toInt();
+    visits = m_testHelper.evaluate(QSL("Osza.History.getVisits('https://sample.com')")).toInt();
     QCOMPARE(visits, 2);
 }
 
 void QmlHistoryApiTest::testRemoval()
 {
     QSignalSpy historySpy(mApp->history(), &History::historyEntryDeleted);
-    m_testHelper.evaluate(QSL("Veex.History.deleteUrl('https://sample.com')"));
+    m_testHelper.evaluate(QSL("Osza.History.deleteUrl('https://sample.com')"));
     QTRY_COMPARE(historySpy.count(), 1);
 
-    auto object = m_testHelper.evaluateQObject(QSL("Veex.History"));
+    auto object = m_testHelper.evaluateQObject(QSL("Osza.History"));
     QSignalSpy qmlHistorySpy(object, SIGNAL(visitRemoved(QmlHistoryItem*)));
     mApp->history()->deleteHistoryEntry(QSL("https://example.com"), QSL("Example Domain"));
     QTRY_COMPARE(qmlHistorySpy.count(), 1);
 }
 
-VEEXTEST_MAIN(QmlHistoryApiTest)
+OSZATEST_MAIN(QmlHistoryApiTest)

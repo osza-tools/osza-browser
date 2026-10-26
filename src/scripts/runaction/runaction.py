@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Veex
+# RunAction plugin for Osza
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,28 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Veex
+import Osza
 from PySide6 import QtCore
 from runaction import actionmanager, button
 
 
-class RunActionPlugin(Veex.PluginInterface, QtCore.QObject):
+class RunActionPlugin(Osza.PluginInterface, QtCore.QObject):
     buttons = {}
     manager = None
 
     def init(self, state, settingsPath):
-        plugins = Veex.MainApplication.instance().plugins()
+        plugins = Osza.MainApplication.instance().plugins()
         plugins.mainWindowCreated.connect(self.mainWindowCreated)
         plugins.mainWindowDeleted.connect(self.mainWindowDeleted)
 
         self.manager = actionmanager.ActionManager(settingsPath)
 
-        if state == Veex.PluginInterface.LateInitState:
-            for window in Veex.MainApplication.instance().windows():
+        if state == Osza.PluginInterface.LateInitState:
+            for window in Osza.MainApplication.instance().windows():
                 self.mainWindowCreated(window)
 
     def unload(self):
-        for window in Veex.MainApplication.instance().windows():
+        for window in Osza.MainApplication.instance().windows():
             self.mainWindowDeleted(window)
 
         self.manager = None
@@ -70,4 +70,4 @@ class RunActionPlugin(Veex.PluginInterface, QtCore.QObject):
         del self.buttons[window]
 
 
-Veex.registerPlugin(RunActionPlugin())
+Osza.registerPlugin(RunActionPlugin())

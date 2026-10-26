@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class QVBoxLayout;
 
 class TabBar;
 
-class VEEX_EXPORT NavigationContainer : public QWidget
+class OSZA_EXPORT NavigationContainer : public QWidget
 {
 public:
     explicit NavigationContainer(QWidget* parent = nullptr);

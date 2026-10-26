@@ -24,8 +24,8 @@
     "Comment[zh_CN]": "提供在 KWallet 中保存密码以及 KIO 的支持",
     "Icon": "base64:PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0OCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4QjVDRjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0RjQ2RTUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iNDQiIGhlaWdodD0iNDQiIHJ4PSIxMSIgZmlsbD0iIzE3MTIyQiIvPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSI0MiIgaGVpZ2h0PSI0MiIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS1vcGFjaXR5PSIwLjciIHN0cm9rZS13aWR0aD0iMiIvPjxwYXRoIGQ9Ik0gMTIgMTQgTCAyNCAzNiBMIDM2IDE0IEwgMzAuNCAxNCBMIDI0IDI1LjggTCAxNy42IDE0IFoiIGZpbGw9InVybCgjZykiLz48L3N2Zz4=",
     "Name": "System Integration",
-                                                                                                "X-Veex-Author": "David Rosca",
-    "X-Veex-Email": "nowrep@gmail.com",
-    "X-Veex-Settings": "false",
-    "X-Veex-Version": "0.3.0"
+                                                                                                "X-Osza-Author": "David Rosca",
+    "X-Osza-Email": "nowrep@gmail.com",
+    "X-Osza-Settings": "false",
+    "X-Osza-Version": "0.3.0"
 }

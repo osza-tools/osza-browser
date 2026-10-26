@@ -1,5 +1,5 @@
 # ============================================================
-# HelloPython plugin for Veex
+# HelloPython plugin for Osza
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Veex
+import Osza
 from PySide6 import QtGui, QtWidgets
 from hellopython.i18n import i18n
 
-class HelloSidebar(Veex.SideBarInterface):
+class HelloSidebar(Osza.SideBarInterface):
     def title(self):
         return i18n("Hello Python Sidebar")
 

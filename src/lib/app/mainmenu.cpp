@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -338,21 +338,21 @@ void MainMenu::aboutQt()
 void MainMenu::showInfoAboutApp()
 {
     if (m_window) {
-        m_window->tabWidget()->addView(QUrl(QSL("veex:about")), Qz::NT_CleanSelectedTab);
+        m_window->tabWidget()->addView(QUrl(QSL("osza:about")), Qz::NT_CleanSelectedTab);
     }
 }
 
 void MainMenu::showConfigInfo()
 {
     if (m_window) {
-        m_window->tabWidget()->addView(QUrl(QSL("veex:config")), Qz::NT_CleanSelectedTab);
+        m_window->tabWidget()->addView(QUrl(QSL("osza:config")), Qz::NT_CleanSelectedTab);
     }
 }
 
 void MainMenu::reportIssue()
 {
     if (m_window) {
-        m_window->tabWidget()->addView(QUrl(QSL("veex:reportbug")), Qz::NT_CleanSelectedTab);
+        m_window->tabWidget()->addView(QUrl(QSL("osza:reportbug")), Qz::NT_CleanSelectedTab);
     }
 }
 
@@ -469,7 +469,7 @@ void MainMenu::init()
     m_actions[QSL(name)] = action
 
     // Standard actions - needed on Mac to be placed correctly in "application" menu
-    auto* action = new QAction(QIcon::fromTheme(QSL("help-about")), tr("&About Veex"), this);
+    auto* action = new QAction(QIcon::fromTheme(QSL("help-about")), tr("&About Osza"), this);
     action->setMenuRole(QAction::AboutRole);
     connect(action, &QAction::triggered, this, &MainMenu::showAboutDialog);
     m_actions[QSL("Standard/About")] = action;

@@ -1,0 +1,7018 @@
+# Copyright (C) YEAR This_file_is_part_of_Osza
+# This file is distributed under the same license as the osza package.
+# Mladen Pejaković <pejakm@autistici.org>, 2017
+# Mladen Pejaković <pejakm@autistici.org>, 2017
+# Mladen Pejaković <pejakm@autistici.org>, 2017
+# Mladen Pejaković <pejakm@autistici.org>, 2017
+#
+msgid ""
+msgstr ""
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Language: sr\n"
+"X-Qt-Contexts: true\n"
+"X-Accelerator-Marker: &\n"
+"X-Text-Markup: qtrich\n"
+"X-Environment: kde\n"
+
+#: lib/3rdparty/lineedit.cpp:102
+msgctxt "LineEdit|"
+msgid "&Undo"
+msgstr "&Опозови"
+
+#: lib/3rdparty/lineedit.cpp:107
+msgctxt "LineEdit|"
+msgid "&Redo"
+msgstr "&Понови"
+
+#: lib/3rdparty/lineedit.cpp:112
+msgctxt "LineEdit|"
+msgid "Cu&t"
+msgstr "&Исеци"
+
+#: lib/3rdparty/lineedit.cpp:117
+msgctxt "LineEdit|"
+msgid "&Copy"
+msgstr "&Копирај"
+
+#: lib/3rdparty/lineedit.cpp:122
+msgctxt "LineEdit|"
+msgid "&Paste"
+msgstr "&Налепи"
+
+#: lib/3rdparty/lineedit.cpp:131
+msgctxt "LineEdit|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/3rdparty/lineedit.cpp:134
+msgctxt "LineEdit|"
+msgid "Clear All"
+msgstr "Очисти све"
+
+#: lib/3rdparty/lineedit.cpp:137
+msgctxt "LineEdit|"
+msgid "Select All"
+msgstr "Изабери све"
+
+#: lib/3rdparty/squeezelabelv2.cpp:64
+msgctxt "SqueezeLabelV2|"
+msgid "Copy"
+msgstr "Копирај"
+
+#: lib/adblock/adblockaddsubscriptiondialog.cpp:40
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Other..."
+msgstr "Остале..."
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:14
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Add Subscription"
+msgstr "Додај претплату"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:23
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Title:"
+msgstr "Наслов:"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:33
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Address:"
+msgstr "Адреса:"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:53
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Add new subscription to AdBlock:"
+msgstr "Додај нову претплату на АдБлок:"
+
+#: lib/adblock/adblockdialog.cpp:50
+msgctxt "AdBlockDialog|"
+msgid "Add Rule"
+msgstr "Додај филтер"
+
+#: lib/adblock/adblockdialog.cpp:51
+msgctxt "AdBlockDialog|"
+msgid "Remove Rule"
+msgstr "Уклони филтер"
+
+#: lib/adblock/adblockdialog.cpp:53
+msgctxt "AdBlockDialog|"
+msgid "Add Subscription"
+msgstr "Додај претплату"
+
+#: lib/adblock/adblockdialog.cpp:54
+msgctxt "AdBlockDialog|"
+msgid "Remove Subscription"
+msgstr "Уклони претплату"
+
+#: lib/adblock/adblockdialog.cpp:55
+msgctxt "AdBlockDialog|"
+msgid "Update Subscriptions"
+msgstr "Ажурирај претплате"
+
+#: lib/adblock/adblockdialog.cpp:57
+msgctxt "AdBlockDialog|"
+msgid "Learn about writing rules..."
+msgstr "Научите правити филтере..."
+
+#: lib/adblock/adblockdialog.ui:14
+msgctxt "AdBlockDialog|"
+msgid "AdBlock Configuration"
+msgstr "Поставке Адблока"
+
+#: lib/adblock/adblockdialog.ui:20
+msgctxt "AdBlockDialog|"
+msgid "Enable AdBlock"
+msgstr "Укључи Адблок"
+
+#: lib/adblock/adblockdialog.ui:32
+msgctxt "AdBlockDialog|"
+msgid "Search..."
+msgstr "Тражи..."
+
+#: lib/adblock/adblockdialog.ui:77
+msgctxt "AdBlockDialog|"
+msgid "Options"
+msgstr "Опције"
+
+#: lib/adblock/adblockdialog.ui:107
+msgctxt "AdBlockDialog|"
+msgid "AdBlock"
+msgstr "Адблок"
+
+#: lib/adblock/adblockicon.cpp:34
+msgctxt "AdBlockIcon|"
+msgid "AdBlock"
+msgstr "Адблок"
+
+#: lib/adblock/adblockicon.cpp:52
+msgctxt "AdBlockIcon|"
+msgid "AdBlock Icon"
+msgstr ""
+
+#: lib/adblock/adblockicon.cpp:86
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is disabled"
+msgstr ""
+
+#: lib/adblock/adblockicon.cpp:92
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is disabled on this site "
+msgstr ""
+
+#: lib/adblock/adblockicon.cpp:98
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is active"
+msgstr ""
+
+#: lib/adblock/adblockicon.cpp:146
+#, fuzzy
+#| msgctxt "AdBlockDialog|"
+#| msgid "Enable AdBlock"
+msgctxt "AdBlockIcon|"
+msgid "&Enable AdBlock"
+msgstr "Укључи Адблок"
+
+#: lib/adblock/adblockicon.cpp:151
+msgctxt "AdBlockIcon|"
+msgid "Show AdBlock &Settings"
+msgstr "&Подешавање Адблока"
+
+#: lib/adblock/adblockicon.cpp:159
+#, qt-format
+msgctxt "AdBlockIcon|"
+msgid "Disable on %1"
+msgstr "Онемогући на %1"
+
+#: lib/adblock/adblockicon.cpp:165
+msgctxt "AdBlockIcon|"
+msgid "Disable only on this page"
+msgstr "Онемогући само на овој страници"
+
+#: lib/adblock/adblockmanager.cpp:186
+#, qt-format
+msgctxt "AdBlockManager|"
+msgid "Do you want to add <b>%1</b> subscription?"
+msgstr "Желите ли да додате претплату на <b>%1</b>?"
+
+#: lib/adblock/adblockmanager.cpp:188
+msgctxt "AdBlockManager|"
+msgid "AdBlock Subscription"
+msgstr "АдБлок претплата"
+
+#: lib/adblock/adblockmanager.cpp:319
+msgctxt "AdBlockManager|"
+msgid "EasyList"
+msgstr "EasyList"
+
+#: lib/adblock/adblockmanager.cpp:324
+msgctxt "AdBlockManager|"
+msgid "NoCoin List"
+msgstr ""
+
+#: lib/adblock/adblocksubscription.cpp:176
+msgctxt "AdBlockSubscription|"
+msgid "Cannot load subscription!"
+msgstr "Не могу да учитам претплату!"
+
+#: lib/adblock/adblocksubscription.cpp:289
+msgctxt "AdBlockCustomList|"
+msgid "Custom Rules"
+msgstr "Посебни филтери"
+
+#: lib/adblock/adblocktreemodel.cpp:108
+#, qt-format
+msgctxt "AdBlockTreeModel|"
+msgid "%1 - %2"
+msgstr ""
+
+#: lib/adblock/adblocktreewidget.cpp:88
+msgctxt "AdBlockTreeWidget|"
+msgid "Add Rule"
+msgstr "Додај филтер"
+
+#: lib/adblock/adblocktreewidget.cpp:90
+msgctxt "AdBlockTreeWidget|"
+msgid "Remove Rule"
+msgstr "Уклони филтер"
+
+#: lib/adblock/adblocktreewidget.cpp:110
+msgctxt "AdBlockTreeWidget|"
+msgid "Add Custom Rule"
+msgstr "Додај посебни филтер"
+
+#: lib/adblock/adblocktreewidget.cpp:110
+msgctxt "AdBlockTreeWidget|"
+msgid "Please write your rule here:"
+msgstr "Упишите ваш филтерски израз овде:"
+
+#: lib/adblock/adblockurlinterceptor.cpp:44
+msgctxt "AdBlockUrlInterceptor|"
+msgid "Blocked content"
+msgstr ""
+
+#: lib/adblock/adblockurlinterceptor.cpp:45
+#, qt-format
+msgctxt "AdBlockUrlInterceptor|"
+msgid "Blocked by <i>%1 (%2)</i>"
+msgstr ""
+
+#: lib/app/browserwindow.cpp:205 lib/app/browserwindow.cpp:1014
+msgctxt "BrowserWindow|"
+msgid "Osza"
+msgstr ""
+
+#: lib/app/browserwindow.cpp:400
+msgctxt "BrowserWindow|"
+msgid "IP Address of current page"
+msgstr "ИП адреса текуће странице"
+
+#: lib/app/browserwindow.cpp:757
+msgctxt "BrowserWindow|"
+msgid " ["
+msgstr ""
+
+#: lib/app/browserwindow.cpp:760
+msgctxt "BrowserWindow|"
+msgid " (Private Browsing)"
+msgstr " (приватно прегледање)"
+
+#: lib/app/browserwindow.cpp:1016
+#, qt-format
+msgctxt "BrowserWindow|"
+msgid "%1 - Osza"
+msgstr ""
+
+#: lib/app/browserwindow.cpp:1082
+msgctxt "BrowserWindow|"
+msgid "&Menu Bar"
+msgstr "Трака &менија"
+
+#: lib/app/browserwindow.cpp:1087
+msgctxt "BrowserWindow|"
+msgid "&Navigation Toolbar"
+msgstr "Трака &навигације"
+
+#: lib/app/browserwindow.cpp:1091
+msgctxt "BrowserWindow|"
+msgid "&Bookmarks Toolbar"
+msgstr "Трака &обележивача"
+
+#: lib/app/browserwindow.cpp:1097
+msgctxt "BrowserWindow|"
+msgid "&Tabs on Top"
+msgstr "&Језичци на врху"
+
+#: lib/app/browserwindow.cpp:1150
+msgctxt "BrowserWindow|"
+msgid "Other"
+msgstr "Остало"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "HTML files"
+msgstr "ХТМЛ фајлови"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "Image files"
+msgstr "Фајлови слика"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "Text files"
+msgstr "Фајлови текста"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "All files"
+msgstr "Сви фајлови"
+
+#: lib/app/browserwindow.cpp:1194
+msgctxt "BrowserWindow|"
+msgid "Open file..."
+msgstr "Отвори фајл..."
+
+#: lib/app/browserwindow.cpp:1531
+#, fuzzy, qt-format
+#| msgctxt "BrowserWindow|"
+#| msgid ""
+#| "There are still %n open tabs and your session won't be stored. \n"
+#| "Are you sure you want to close this window?"
+#| msgid_plural ""
+#| "There are still %n open tabs and your session won't be stored. \n"
+#| "Are you sure you want to close this window?"
+msgctxt "BrowserWindow|"
+msgid ""
+"There are still %n open tabs and your session won't be stored.\n"
+"Are you sure you want to close this window?"
+msgid_plural ""
+"There are still %n open tabs and your session won't be stored.\n"
+"Are you sure you want to close this window?"
+msgstr[0] ""
+"И даље имате %n отворен језичак а ваша сесија неће бити сачувана.\n"
+"Желите ли заиста да затворите овај прозор?"
+msgstr[1] ""
+"И даље имате %n отворена језичка а ваша сесија неће бити сачувана.\n"
+"Желите ли заиста да затворите овај прозор?"
+msgstr[2] ""
+"И даље имате %n отворених језичака а ваша сесија неће бити сачувана.\n"
+"Желите ли заиста да затворите овај прозор?"
+
+#: lib/app/browserwindow.cpp:1532
+msgctxt "BrowserWindow|"
+msgid "Don't ask again"
+msgstr "Не питај поново"
+
+#: lib/app/browserwindow.cpp:1533
+msgctxt "BrowserWindow|"
+msgid "There are still open tabs"
+msgstr "И даље имате отворених језичака"
+
+#: lib/app/mainapplication.cpp:1203
+#, fuzzy
+#| msgctxt "MainApplication|"
+#| msgid ""
+#| "QupZilla is not currently your default browser. Would you like to make it "
+#| "your default browser?"
+msgctxt "MainApplication|"
+msgid ""
+"Osza is not currently your default browser. Would you like to make it your "
+"default browser?"
+msgstr ""
+"Капзила тренутно није ваш подразумевани прегледач веба. Да ли желите да "
+"поставите за подразумеваног прегледача?"
+
+#: lib/app/mainapplication.cpp:1204
+#, fuzzy
+#| msgctxt "MainApplication|"
+#| msgid "Always perform this check when starting QupZilla."
+msgctxt "MainApplication|"
+msgid "Always perform this check when starting Osza."
+msgstr "Увек изврши ову проверу по покретању Капзиле."
+
+#: lib/app/mainapplication.cpp:1206
+msgctxt "MainApplication|"
+msgid "Default Browser"
+msgstr "Подразумевани прегледач"
+
+#: lib/app/mainapplication.cpp:1341
+#, fuzzy
+#| msgctxt "MainApplication|"
+#| msgid ""
+#| "QupZilla is a new, fast and secure open-source WWW browser. QupZilla is "
+#| "licensed under GPL version 3 or (at your option) any later version. It is "
+#| "based on WebKit core and Qt Framework."
+msgctxt "MainApplication|"
+msgid ""
+"Osza is a new and very fast Qt web browser. Osza is licensed under GPL "
+"version 3 or (at your option) any later version. It is based on QtWebEngine "
+"and Qt Framework."
+msgstr ""
+"Капзила је нов, брз и сигуран веб прегледач отвореног кода. Лиценциран под "
+"издањем 3 ГПЛ лиценце или (по вашем нахођењу) било којим каснијим издањем "
+"лиценце. Базиран на ВебКит језгру и Кут радном окружењу."
+
+#: lib/app/mainmenu.cpp:84 lib/app/mainmenu.cpp:502
+msgctxt "MainMenu|"
+msgid "Sessions"
+msgstr ""
+
+#: lib/app/mainmenu.cpp:472
+msgctxt "MainMenu|"
+msgid "&About Osza"
+msgstr ""
+
+#: lib/app/mainmenu.cpp:477
+msgctxt "MainMenu|"
+msgid "Pr&eferences"
+msgstr "По&дешавање"
+
+#: lib/app/mainmenu.cpp:483
+msgctxt "MainMenu|"
+msgid "Quit"
+msgstr "Напусти"
+
+#: lib/app/mainmenu.cpp:490
+msgctxt "MainMenu|"
+msgid "&File"
+msgstr "&Фајл"
+
+#: lib/app/mainmenu.cpp:493
+msgctxt "MainMenu|"
+msgid "New Tab"
+msgstr "Нови језичак"
+
+#: lib/app/mainmenu.cpp:494
+msgctxt "MainMenu|"
+msgid "&New Window"
+msgstr "&Нови прозор"
+
+#: lib/app/mainmenu.cpp:495
+msgctxt "MainMenu|"
+msgid "New &Private Window"
+msgstr "Нови п&риватни прозор"
+
+#: lib/app/mainmenu.cpp:496
+msgctxt "MainMenu|"
+msgid "Open Location"
+msgstr "Отвори локацију"
+
+#: lib/app/mainmenu.cpp:497
+msgctxt "MainMenu|"
+msgid "Open &File..."
+msgstr "Отвори &фајл..."
+
+#: lib/app/mainmenu.cpp:498
+msgctxt "MainMenu|"
+msgid "Close Window"
+msgstr "Затвори прозор"
+
+#: lib/app/mainmenu.cpp:505
+msgctxt "MainMenu|"
+msgid "Session Manager"
+msgstr ""
+
+#: lib/app/mainmenu.cpp:512
+msgctxt "MainMenu|"
+msgid "&Save Page As..."
+msgstr "&Сачувај страницу као..."
+
+#: lib/app/mainmenu.cpp:513
+msgctxt "MainMenu|"
+msgid "Send Link..."
+msgstr "Пошаљи везу..."
+
+#: lib/app/mainmenu.cpp:514
+msgctxt "MainMenu|"
+msgid "&Print..."
+msgstr "&Штампај..."
+
+#: lib/app/mainmenu.cpp:519
+msgctxt "MainMenu|"
+msgid "&Edit"
+msgstr "&Уређивање"
+
+#: lib/app/mainmenu.cpp:522
+msgctxt "MainMenu|"
+msgid "&Undo"
+msgstr "&Опозови"
+
+#: lib/app/mainmenu.cpp:524
+msgctxt "MainMenu|"
+msgid "&Redo"
+msgstr "&Понови"
+
+#: lib/app/mainmenu.cpp:527
+msgctxt "MainMenu|"
+msgid "&Cut"
+msgstr "&Исеци"
+
+#: lib/app/mainmenu.cpp:529
+msgctxt "MainMenu|"
+msgid "C&opy"
+msgstr "&Копирај"
+
+#: lib/app/mainmenu.cpp:531
+msgctxt "MainMenu|"
+msgid "&Paste"
+msgstr "&Налепи"
+
+#: lib/app/mainmenu.cpp:534
+msgctxt "MainMenu|"
+msgid "Select &All"
+msgstr "Изабери &све"
+
+#: lib/app/mainmenu.cpp:536
+msgctxt "MainMenu|"
+msgid "&Find"
+msgstr "Н&ађи"
+
+#: lib/app/mainmenu.cpp:541
+msgctxt "MainMenu|"
+msgid "&View"
+msgstr "&Приказ"
+
+#: lib/app/mainmenu.cpp:544
+msgctxt "MainMenu|"
+msgid "Toolbars"
+msgstr "Траке алатки"
+
+#: lib/app/mainmenu.cpp:546
+msgctxt "MainMenu|"
+msgid "Sidebar"
+msgstr ""
+
+#: lib/app/mainmenu.cpp:548
+msgctxt "MainMenu|"
+msgid "Character &Encoding"
+msgstr "&Кодирање знакова"
+
+#: lib/app/mainmenu.cpp:557
+msgctxt "MainMenu|"
+msgid "Sta&tus Bar"
+msgstr "Трака &стања"
+
+#: lib/app/mainmenu.cpp:559
+msgctxt "MainMenu|"
+msgid "&Stop"
+msgstr "&Заустави"
+
+#: lib/app/mainmenu.cpp:560
+msgctxt "MainMenu|"
+msgid "&Reload"
+msgstr "&Учитај поново"
+
+#: lib/app/mainmenu.cpp:562
+msgctxt "MainMenu|"
+msgid "Zoom &In"
+msgstr "У&величај"
+
+#: lib/app/mainmenu.cpp:563
+msgctxt "MainMenu|"
+msgid "Zoom &Out"
+msgstr "У&мањи"
+
+#: lib/app/mainmenu.cpp:564
+msgctxt "MainMenu|"
+msgid "Reset"
+msgstr "Стварна величина"
+
+#: lib/app/mainmenu.cpp:568
+msgctxt "MainMenu|"
+msgid "&Page Source"
+msgstr "&Извор странице"
+
+#: lib/app/mainmenu.cpp:570
+msgctxt "MainMenu|"
+msgid "&FullScreen"
+msgstr "&Цео екран"
+
+#: lib/app/mainmenu.cpp:573
+msgctxt "MainMenu|"
+msgid "&Tools"
+msgstr "Ала&тке"
+
+#: lib/app/mainmenu.cpp:576
+msgctxt "MainMenu|"
+msgid "&Web Search"
+msgstr "Претрага &веба"
+
+#: lib/app/mainmenu.cpp:577
+msgctxt "MainMenu|"
+msgid "Site &Info"
+msgstr "Подаци о &сајту"
+
+#: lib/app/mainmenu.cpp:580
+msgctxt "MainMenu|"
+msgid "&Download Manager"
+msgstr "Менаџер &преузимања"
+
+#: lib/app/mainmenu.cpp:581
+msgctxt "MainMenu|"
+msgid "&Cookies Manager"
+msgstr "Менаџер &колачића"
+
+#: lib/app/mainmenu.cpp:582
+msgctxt "MainMenu|"
+msgid "Web In&spector"
+msgstr "Веб и&нспектор"
+
+#: lib/app/mainmenu.cpp:583
+msgctxt "MainMenu|"
+msgid "Clear Recent &History"
+msgstr "&Обриши приватне податке"
+
+#: lib/app/mainmenu.cpp:588
+msgctxt "MainMenu|"
+msgid "&Extensions"
+msgstr "Про&ширења"
+
+#: lib/app/mainmenu.cpp:594
+msgctxt "MainMenu|"
+msgid "&Help"
+msgstr "По&моћ"
+
+#: lib/app/mainmenu.cpp:597
+msgctxt "MainMenu|"
+msgid "About &Qt"
+msgstr "О &Куту"
+
+#: lib/app/mainmenu.cpp:602
+msgctxt "MainMenu|"
+msgid "Information about application"
+msgstr "Подаци о програму"
+
+#: lib/app/mainmenu.cpp:603
+msgctxt "MainMenu|"
+msgid "Configuration Information"
+msgstr "Поставке програма"
+
+#: lib/app/mainmenu.cpp:604
+msgctxt "MainMenu|"
+msgid "Report &Issue"
+msgstr "&Пријави проблем"
+
+#: lib/app/mainmenu.cpp:617
+msgctxt "MainMenu|"
+msgid "Restore &Closed Tab"
+msgstr "&Обнови затворени језичак"
+
+#: lib/autofill/autofillicon.cpp:29
+msgctxt "AutoFillWidget|"
+msgid "Choose username to login"
+msgstr "Корисничко име за пријаву"
+
+#: lib/autofill/autofillnotification.cpp:39
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "on %1"
+msgstr "на %1"
+
+#: lib/autofill/autofillnotification.cpp:43
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "for <b>%1</b>"
+msgstr "за <b>%1</b>"
+
+#: lib/autofill/autofillnotification.cpp:47
+#, fuzzy, qt-format
+#| msgctxt "AutoFillNotification|"
+#| msgid "Do you want QupZilla to update saved password %1?"
+msgctxt "AutoFillNotification|"
+msgid "Do you want Osza to update saved password %1?"
+msgstr "Желите ли да Капзила ажурира лозинку %1?"
+
+#: lib/autofill/autofillnotification.cpp:53
+#, fuzzy, qt-format
+#| msgctxt "AutoFillNotification|"
+#| msgid "Do you want QupZilla to remember the password %1 %2?"
+msgctxt "AutoFillNotification|"
+msgid "Do you want Osza to remember the password %1 %2?"
+msgstr "Желите ли да Капзила упамти лозинку %1 %2?"
+
+#: lib/autofill/autofillnotification.ui:69
+msgctxt "AutoFillNotification|"
+msgid "Update"
+msgstr "Ажурирај"
+
+#: lib/autofill/autofillnotification.ui:85
+msgctxt "AutoFillNotification|"
+msgid "Remember"
+msgstr "Упамти"
+
+#: lib/autofill/autofillnotification.ui:101
+msgctxt "AutoFillNotification|"
+msgid "Never For This Site"
+msgstr "Никад за овај сајт"
+
+#: lib/autofill/autofillnotification.ui:117
+msgctxt "AutoFillNotification|"
+msgid "Not Now"
+msgstr "Не сада"
+
+#: lib/autofill/autofillwidget.ui:11
+msgctxt "AutoFillWidget|"
+msgid "Login as:"
+msgstr "Пријави се као:"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:258
+msgctxt "AutoFill|"
+msgid "Database (encrypted)"
+msgstr "Шифровану базу"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:547
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:552
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:601
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:644
+msgctxt "MasterPasswordDialog|"
+msgid "Warning!"
+msgstr "Упозорење!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:547
+msgctxt "MasterPasswordDialog|"
+msgid "You entered a wrong password!"
+msgstr "Унели сте погрешну лозинку!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:552
+msgctxt "MasterPasswordDialog|"
+msgid "New/Confirm password fields do not match!"
+msgstr "Лозинке се не поклапају!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:579
+msgctxt "AutoFill|"
+msgid "Warning!"
+msgstr "Упозорење!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:580
+#, fuzzy
+#| msgctxt "AutoFill|"
+#| msgid ""
+#| "This backend needs a master password to be set! QupZilla just switches to "
+#| "its default backend"
+msgctxt "AutoFill|"
+msgid ""
+"This backend needs a master password to be set! Osza just switches to its "
+"default backend"
+msgstr ""
+"Ова позадина захтева да главна лозинка буде постављена! Капзила враћа "
+"подразумевану позадину"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:601
+msgctxt "MasterPasswordDialog|"
+msgid "Are you sure you want to clear master password and decrypt data?"
+msgstr "Желите ли заиста да уклоните главну лозинку и дешифрујете све податке?"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:644
+msgctxt "MasterPasswordDialog|"
+msgid "Some data has not been decrypted. The master password was not cleared!"
+msgstr "Део података није дешифрован. Главна лозинка није уклоњена!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:670
+msgctxt "AutoFill|"
+msgid "Enter Master Password"
+msgstr "Унесите главну лозинку"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:674
+msgctxt "AutoFill|"
+msgid "Permission is required, please enter Master Password:"
+msgstr "Потребна је дозвола, унесите главну лозинку:"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:680
+msgctxt "AutoFill|"
+msgid "Entered password is wrong!"
+msgstr "Унесена лозинка је погрешна!"
+
+#: lib/autofill/passwordbackends/databasepasswordbackend.cpp:32
+msgctxt "AutoFill|"
+msgid "Database (plaintext)"
+msgstr "Текстуалну базу"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:20
+msgctxt "MasterPasswordDialog|"
+msgid "Encrypted DataBase Settings"
+msgstr "Поставке шифроване базе података"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:33
+msgctxt "MasterPasswordDialog|"
+msgid "Set/Change Master Password..."
+msgstr "Постави/промени главну лозинку..."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:36
+msgctxt "MasterPasswordDialog|"
+msgid "This backend does not work without a master password."
+msgstr "Ова позадина не ради ако главна лозинка није постављена."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:43
+msgctxt "MasterPasswordDialog|"
+msgid "Clear Master Password..."
+msgstr "Уклони главну лозинку..."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:46
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"This option clears the master password and moves all encrypted data to the "
+"\"DataBase (Plain Text)\" backend, and switches to it."
+msgstr ""
+"Ово ће уклонити главну лозинку и преместити шифроване податке у позадину "
+"„Текстуална база“ и активирати је."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:64
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"The Master Password is used to protect site passwords and form data. If you "
+"set a Master Password you will be asked to enter it once per session."
+msgstr ""
+"Главна лозинка штити лозинке за сајтове и податке формулара. Ако је "
+"поставите, биће вам затражена једном по сесији."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:76
+msgctxt "MasterPasswordDialog|"
+msgid "Current Password:"
+msgstr "Текућа лозинка:"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:83
+msgctxt "MasterPasswordDialog|"
+msgid "New Password:"
+msgstr "Нова лозинка:"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:90
+msgctxt "MasterPasswordDialog|"
+msgid "Confirm Password:"
+msgstr "Потврди лозинку:"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:120
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"<b>Note:</b> The Master Password is not resettable. Do not forget it, please."
+msgstr "<b>Напомена:</b> Главну лозинку не можете повратити ако је заборавите."
+
+#: lib/bookmarks/bookmarks.cpp:208
+msgctxt "Bookmarks|"
+msgid "Bookmarks Toolbar"
+msgstr "Трака обележивача"
+
+#: lib/bookmarks/bookmarks.cpp:209
+msgctxt "Bookmarks|"
+msgid "Bookmarks located in Bookmarks Toolbar"
+msgstr "Обележивачи у траци обележивача"
+
+#: lib/bookmarks/bookmarks.cpp:212
+msgctxt "Bookmarks|"
+msgid "Bookmarks Menu"
+msgstr "Мени обележивача"
+
+#: lib/bookmarks/bookmarks.cpp:213
+msgctxt "Bookmarks|"
+msgid "Bookmarks located in Bookmarks Menu"
+msgstr "Обележивачи у менију обележивача"
+
+#: lib/bookmarks/bookmarks.cpp:216
+msgctxt "Bookmarks|"
+msgid "Unsorted Bookmarks"
+msgstr "Неразврстани обележивачи"
+
+#: lib/bookmarks/bookmarks.cpp:217
+msgctxt "Bookmarks|"
+msgid "All other bookmarks"
+msgstr "Сви остали обележивачи"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.cpp:64
+msgctxt "BookmarksExportDialog|"
+msgid "Error!"
+msgstr "Грешка!"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:14
+msgctxt "BookmarksExportDialog|"
+msgid "Export Bookmarks"
+msgstr "Извоз обележивача"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:20
+msgctxt "BookmarksExportDialog|"
+msgid "<b>Export Bookmarks</b>"
+msgstr "<b>Извоз обележивача</b>"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:27
+msgctxt "BookmarksExportDialog|"
+msgid "Export options"
+msgstr "Опције извоза"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:42
+msgctxt "BookmarksExportDialog|"
+msgid "Choose..."
+msgstr "Изабери..."
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:73
+msgctxt "BookmarksExportDialog|"
+msgid "Output File:"
+msgstr "Излазни фајл:"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:89
+msgctxt "BookmarksExportDialog|"
+msgid "Format:"
+msgstr "Сачувај као:"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:31
+msgctxt "BookmarksExporter|"
+msgid "HTML File"
+msgstr "ХТМЛ фајл"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:37
+msgctxt "BookmarksExporter|"
+msgid "HTML Bookmarks"
+msgstr "ХТМЛ обележивачи"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:38
+msgctxt "BookmarksExporter|"
+msgid "Choose file..."
+msgstr "Изабери фајл..."
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:47
+msgctxt "BookmarksExporter|"
+msgid "Cannot open file for writing!"
+msgstr "Не могу да отворим фајл за упис!"
+
+#: lib/bookmarks/bookmarksicon.cpp:37 lib/bookmarks/bookmarksicon.cpp:108
+msgctxt "BookmarksIcon|"
+msgid "Bookmark this Page"
+msgstr "Обележи ову страницу"
+
+#: lib/bookmarks/bookmarksicon.cpp:100
+msgctxt "BookmarksIcon|"
+msgid "Edit this bookmark"
+msgstr "Уреди овај обележивач"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:113
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:118
+msgctxt "BookmarksImportDialog|"
+msgid "Error!"
+msgstr "Грешка!"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:118
+msgctxt "BookmarksImportDialog|"
+msgid "No bookmarks were found."
+msgstr "Обележивачи нису нађени."
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:125
+msgctxt "BookmarksImportDialog|"
+msgid "Finish"
+msgstr "Заврши"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:157
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:270
+msgctxt "BookmarksImportDialog|"
+msgid "Next >"
+msgstr "Следеће >"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:186
+#, qt-format
+msgctxt "BookmarksImportDialog|"
+msgid "<b>Importing from %1</b>"
+msgstr "<b>Увозим из %1</b>"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:20
+msgctxt "BookmarksImportDialog|"
+msgid "Import Bookmarks"
+msgstr "Увоз обележивача"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:26
+msgctxt "BookmarksImportDialog|"
+msgid "<b>Import Bookmarks</b>"
+msgstr "<b>Увоз обележивача</b>"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:74
+msgctxt "BookmarksImportDialog|"
+msgid "Internet Explorer"
+msgstr "Интернет Експлорер"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:83
+msgctxt "BookmarksImportDialog|"
+msgid "Html File"
+msgstr "ХТМЛ фајл"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:95
+msgctxt "BookmarksImportDialog|"
+msgid "Choose from which you want to import bookmarks:"
+msgstr "Изаберите одакле желите да увезете обележиваче:"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:125
+msgctxt "BookmarksImportDialog|"
+msgid "Choose..."
+msgstr "Изабери..."
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:257
+msgctxt "BookmarksImportDialog|"
+msgid "< Back"
+msgstr "< Назад"
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Google Chrome stores its bookmarks in <b>Bookmarks</b> text file. This file "
+"is usually located in"
+msgstr ""
+"Гуглов Хром успрема обележиваче у <b>Bookmarks</b> текстуалном фајлу. Овај "
+"фајл се обично налази у"
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:50
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:57
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:44
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:44
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:48
+msgctxt "BookmarksImporter|"
+msgid "Choose file..."
+msgstr "Изабери фајл..."
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:59
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:53
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:57
+msgctxt "BookmarksImporter|"
+msgid "Unable to open file."
+msgstr "Не могу да отворим фајл."
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:76
+msgctxt "BookmarksImporter|"
+msgid "Cannot parse JSON file!"
+msgstr "Не могу да рашчланим ЈСОН фајл!"
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:42
+msgctxt "BookmarksImporter|"
+msgid ""
+"Mozilla Firefox stores its bookmarks in <b>places.sqlite</b> SQLite "
+"database. This file is usually located in"
+msgstr ""
+"Мозилин Фајерфокс успрема обележиваче у <b>places.sqlite</b> Скулајт бази "
+"података. Овај фајл се обично налази у"
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:70
+msgctxt "BookmarksImportDialog|"
+msgid "File does not exist."
+msgstr "Фајл не постоји."
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:77
+msgctxt "BookmarksImportDialog|"
+msgid "Unable to open database. Is Firefox running?"
+msgstr "Не могу да отворим базу података. Да ли је Фајерфокс покренут?"
+
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:32
+msgctxt "BookmarksImporter|"
+msgid ""
+"You can import bookmarks from any browser that supports HTML exporting. This "
+"file has usually these suffixes"
+msgstr ""
+"Можете увести обележиваче из било ког прегледача који подржава извоз у ХТМЛ-"
+"у. Овај фајл обично има ове суфиксе"
+
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:43
+msgctxt "BookmarksImporter|"
+msgid "HTML Bookmarks"
+msgstr "ХТМЛ обележивачи"
+
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Internet Explorer stores its bookmarks in <b>Favorites</b> folder. This "
+"folder is usually located in"
+msgstr ""
+"Интернет Експлорер успрема обележиваче у фасцикли <b>Favorites</b>. Ова "
+"фасцикла се обично налази у"
+
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:52
+msgctxt "BookmarksImporter|"
+msgid "Directory does not exist."
+msgstr "Директоријум не постоји."
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Opera stores its bookmarks in <b>bookmarks.adr</b> text file. This file is "
+"usually located in"
+msgstr ""
+"Опера успрема обележиваче у <b>bookmarks.adr</b> текстуалном фајлу. Овај "
+"фајл се обично налази у"
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:64
+msgctxt "BookmarksImporter|"
+msgid "File is not valid Opera bookmarks file!"
+msgstr "Фајл није исправан фајл Опериних обележивача!"
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:69
+msgctxt "BookmarksImporter|"
+msgid "Only UTF-8 encoded Opera bookmarks file is supported!"
+msgstr "Подржан је само УТФ-8 кодиран фајл Опериних обележивача!"
+
+#: lib/bookmarks/bookmarksmanager.cpp:106
+msgctxt "BookmarksManager|"
+msgid "Open in new tab"
+msgstr "Отвори у новом језичку"
+
+#: lib/bookmarks/bookmarksmanager.cpp:107
+msgctxt "BookmarksManager|"
+msgid "Open in new window"
+msgstr "Отвори у новом прозору"
+
+#: lib/bookmarks/bookmarksmanager.cpp:108
+msgctxt "BookmarksManager|"
+msgid "Open in new private window"
+msgstr "Отвори у приватном прозору"
+
+#: lib/bookmarks/bookmarksmanager.cpp:111
+#: lib/bookmarks/bookmarksmanager.cpp:246
+msgctxt "BookmarksManager|"
+msgid "New Bookmark"
+msgstr "Нови обележивач"
+
+#: lib/bookmarks/bookmarksmanager.cpp:112
+#: lib/bookmarks/bookmarksmanager.cpp:254
+msgctxt "BookmarksManager|"
+msgid "New Folder"
+msgstr "Нова фасцикла"
+
+#: lib/bookmarks/bookmarksmanager.cpp:113
+msgctxt "BookmarksManager|"
+msgid "New Separator"
+msgstr "Нови раздвајач"
+
+#: lib/bookmarks/bookmarksmanager.cpp:117
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "Cu&t"
+msgctxt "BookmarksManager|"
+msgid "Cu&t"
+msgstr "&Исеци"
+
+#: lib/bookmarks/bookmarksmanager.cpp:118
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "&Copy"
+msgctxt "BookmarksManager|"
+msgid "&Copy"
+msgstr "&Копирај"
+
+#: lib/bookmarks/bookmarksmanager.cpp:119
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "&Paste"
+msgctxt "BookmarksManager|"
+msgid "&Paste"
+msgstr "&Налепи"
+
+#: lib/bookmarks/bookmarksmanager.cpp:121
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "BookmarksManager|"
+msgid "&Remove"
+msgstr "Уклони"
+
+#: lib/bookmarks/bookmarksmanager.ui:14
+msgctxt "BookmarksManager|"
+msgid "Bookmarks"
+msgstr "Обележивачи"
+
+#: lib/bookmarks/bookmarksmanager.ui:32
+msgctxt "BookmarksManager|"
+msgid "Title:"
+msgstr "Наслов:"
+
+#: lib/bookmarks/bookmarksmanager.ui:42
+msgctxt "BookmarksManager|"
+msgid "Address:"
+msgstr "Адреса:"
+
+#: lib/bookmarks/bookmarksmanager.ui:52
+msgctxt "BookmarksManager|"
+msgid "Keyword:"
+msgstr "Пречица:"
+
+#: lib/bookmarks/bookmarksmanager.ui:62
+msgctxt "BookmarksManager|"
+msgid "Description"
+msgstr "Опис"
+
+#: lib/bookmarks/bookmarksmenu.cpp:172
+msgctxt "BookmarksMenu|"
+msgid "&Bookmarks"
+msgstr "&Обележивачи"
+
+#: lib/bookmarks/bookmarksmenu.cpp:174
+msgctxt "BookmarksMenu|"
+msgid "Bookmark &This Page"
+msgstr "Обележи овај &језичак"
+
+#: lib/bookmarks/bookmarksmenu.cpp:175
+msgctxt "BookmarksMenu|"
+msgid "Bookmark &All Tabs"
+msgstr "Обележи &све језичке"
+
+#: lib/bookmarks/bookmarksmenu.cpp:176
+msgctxt "BookmarksMenu|"
+msgid "Organize &Bookmarks"
+msgstr "&Организуј обележиваче"
+
+#: lib/bookmarks/bookmarksmodel.cpp:148
+msgctxt "BookmarksModel|"
+msgid "Title"
+msgstr "име"
+
+#: lib/bookmarks/bookmarksmodel.cpp:150
+msgctxt "BookmarksModel|"
+msgid "Address"
+msgstr "адреса"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:73
+msgctxt "BookmarksToolbar|"
+msgid "Open in new tab"
+msgstr "Отвори у новом језичку"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:74
+msgctxt "BookmarksToolbar|"
+msgid "Open in new window"
+msgstr "Отвори у новом прозору"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:75
+msgctxt "BookmarksToolbar|"
+msgid "Open in new private window"
+msgstr "Отвори у приватном прозору"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:77 lib/bookmarks/bookmarkstoolbar.cpp:197
+#, fuzzy
+#| msgctxt "BookmarksManager|"
+#| msgid "New Folder"
+msgctxt "BookmarksToolbar|"
+msgid "New Folder"
+msgstr "Нова фасцикла"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:78
+msgctxt "BookmarksToolbar|"
+msgid "Edit"
+msgstr "Уреди"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:79
+msgctxt "BookmarksToolbar|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:83
+msgctxt "BookmarksToolbar|"
+msgid "Show Only Icons"
+msgstr "Прикажи само иконе"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:88
+msgctxt "BookmarksToolbar|"
+msgid "Show Only Text"
+msgstr "Прикажи само текст"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:197
+msgctxt "BookmarksToolbar|"
+msgid "Enter Folder Name:"
+msgstr ""
+
+#: lib/bookmarks/bookmarkstools.cpp:77
+#, qt-format
+msgctxt "BookmarksFoldersMenu|"
+msgid "Choose %1"
+msgstr "Изабери %1"
+
+#: lib/bookmarks/bookmarkstools.cpp:154
+msgctxt "Bookmarks|"
+msgid "Choose name and location of this bookmark."
+msgstr "Одредите име и локацију за овај обележивач."
+
+#: lib/bookmarks/bookmarkstools.cpp:158
+msgctxt "Bookmarks|"
+msgid "Add New Bookmark"
+msgstr "Додавање обележивача"
+
+#: lib/bookmarks/bookmarkstools.cpp:198
+msgctxt "Bookmarks|"
+msgid "Choose folder for bookmarks:"
+msgstr "Изаберите фасциклу обележивача:"
+
+#: lib/bookmarks/bookmarkstools.cpp:199
+msgctxt "Bookmarks|"
+msgid "Bookmark All Tabs"
+msgstr "Обележи све језичке"
+
+#: lib/bookmarks/bookmarkstools.cpp:240
+msgctxt "Bookmarks|"
+msgid "Title:"
+msgstr "Наслов:"
+
+#: lib/bookmarks/bookmarkstools.cpp:243
+msgctxt "Bookmarks|"
+msgid "Address:"
+msgstr "Адреса:"
+
+#: lib/bookmarks/bookmarkstools.cpp:245
+msgctxt "Bookmarks|"
+msgid "Keyword:"
+msgstr "Пречица:"
+
+#: lib/bookmarks/bookmarkstools.cpp:248
+msgctxt "Bookmarks|"
+msgid "Description:"
+msgstr "Опис:"
+
+#: lib/bookmarks/bookmarkstools.cpp:253
+msgctxt "Bookmarks|"
+msgid "Edit Bookmark"
+msgstr "Уређивање обележивача"
+
+#: lib/bookmarks/bookmarkstools.cpp:345
+msgctxt "Bookmarks|"
+msgid "Confirmation"
+msgstr ""
+
+#: lib/bookmarks/bookmarkstools.cpp:346
+#, qt-format
+msgctxt "Bookmarks|"
+msgid "Are you sure you want to open all bookmarks from '%1' folder in tabs?"
+msgstr ""
+
+#: lib/bookmarks/bookmarkstools.cpp:456
+msgctxt "Bookmarks|"
+msgid "Empty"
+msgstr "Празно"
+
+#: lib/bookmarks/bookmarkswidget.cpp:98
+msgctxt "BookmarksWidget|"
+msgid "Update Bookmark"
+msgstr "Ажурирај обележивач"
+
+#: lib/bookmarks/bookmarkswidget.cpp:112 lib/bookmarks/bookmarkswidget.ui:33
+msgctxt "BookmarksWidget|"
+msgid "Add to Speed Dial"
+msgstr "Додај на брзо бирање"
+
+#: lib/bookmarks/bookmarkswidget.cpp:116
+msgctxt "BookmarksWidget|"
+msgid "Remove from Speed Dial"
+msgstr "Уклони са брзог бирања"
+
+#: lib/bookmarks/bookmarkswidget.cpp:121
+msgctxt "BookmarksWidget|"
+msgid "Remove from Bookmarks"
+msgstr "Уклони из обележивача"
+
+#: lib/bookmarks/bookmarkswidget.ui:20
+msgctxt "BookmarksWidget|"
+msgid "Add to Bookmarks"
+msgstr ""
+
+#: lib/cookies/cookiemanager.cpp:78
+msgctxt "CookieManager|"
+msgid "Search"
+msgstr "Тражи"
+
+#: lib/cookies/cookiemanager.cpp:133
+msgctxt "CookieManager|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/cookies/cookiemanager.cpp:134
+msgctxt "CookieManager|"
+msgid "Are you sure you want to delete all cookies on your computer?"
+msgstr "Желите ли заиста да обришете све колачиће са вашег рачунара?"
+
+#: lib/cookies/cookiemanager.cpp:179 lib/cookies/cookiemanager.cpp:180
+#: lib/cookies/cookiemanager.cpp:181 lib/cookies/cookiemanager.cpp:182
+#: lib/cookies/cookiemanager.cpp:183 lib/cookies/cookiemanager.cpp:184
+#: lib/cookies/cookiemanager.ui:154 lib/cookies/cookiemanager.ui:164
+#: lib/cookies/cookiemanager.ui:174 lib/cookies/cookiemanager.ui:184
+#: lib/cookies/cookiemanager.ui:194 lib/cookies/cookiemanager.ui:204
+msgctxt "CookieManager|"
+msgid "<cookie not selected>"
+msgstr "<колачић није изабран>"
+
+#: lib/cookies/cookiemanager.cpp:186 lib/cookies/cookiemanager.cpp:196
+#: lib/cookies/cookiemanager.ui:245
+msgctxt "CookieManager|"
+msgid "Remove cookies"
+msgstr "Уклони колачиће"
+
+#: lib/cookies/cookiemanager.cpp:189 lib/cookies/cookiemanager.cpp:190
+#: lib/cookies/cookiemanager.cpp:191 lib/cookies/cookiemanager.cpp:192
+#: lib/cookies/cookiemanager.cpp:193 lib/cookies/cookiemanager.cpp:194
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "<cookie not selected>"
+msgctxt "CookieManager|"
+msgid "<multiple cookies selected>"
+msgstr "<колачић није изабран>"
+
+#: lib/cookies/cookiemanager.cpp:206
+msgctxt "CookieManager|"
+msgid "Secure only"
+msgstr "Само безбедне везе"
+
+#: lib/cookies/cookiemanager.cpp:206
+msgctxt "CookieManager|"
+msgid "All connections"
+msgstr "Све везе"
+
+#: lib/cookies/cookiemanager.cpp:207
+msgctxt "CookieManager|"
+msgid "Session cookie"
+msgstr "Колачић сесије"
+
+#: lib/cookies/cookiemanager.cpp:209
+msgctxt "CookieManager|"
+msgid "Remove cookie"
+msgstr "Уклони колачић"
+
+#: lib/cookies/cookiemanager.cpp:214 lib/cookies/cookiemanager.cpp:245
+#: lib/cookies/cookiemanager.ui:126
+msgctxt "CookieManager|"
+msgid "Server:"
+msgstr "Сервер:"
+
+#: lib/cookies/cookiemanager.cpp:214
+msgctxt "CookieManager|"
+msgid "Add to whitelist"
+msgstr "Додавање на белу листу"
+
+#: lib/cookies/cookiemanager.cpp:221
+msgctxt "CookieManager|"
+msgid "Already blacklisted!"
+msgstr "Већ је на црној листи!"
+
+#: lib/cookies/cookiemanager.cpp:221
+#, qt-format
+msgctxt "CookieManager|"
+msgid "The server \"%1\" is already in blacklist, please remove it first."
+msgstr "Сервер „%1“ је већ на црној листи, најпре га уклоните."
+
+#: lib/cookies/cookiemanager.cpp:245
+msgctxt "CookieManager|"
+msgid "Add to blacklist"
+msgstr "Додавање на црну листу"
+
+#: lib/cookies/cookiemanager.cpp:256
+msgctxt "CookieManager|"
+msgid "Already whitelisted!"
+msgstr "Већ је на белој листи!"
+
+#: lib/cookies/cookiemanager.cpp:256
+#, qt-format
+msgctxt "CookieManager|"
+msgid "The server \"%1\" is already in whitelist, please remove it first."
+msgstr "Сервер „%1“ је већ на белој листи, најпре га уклоните."
+
+#: lib/cookies/cookiemanager.ui:14
+msgctxt "CookieManager|"
+msgid "Cookies"
+msgstr "Колачићи"
+
+#: lib/cookies/cookiemanager.ui:36
+msgctxt "CookieManager|"
+msgid "Stored Cookies"
+msgstr "Успремљени колачићи"
+
+#: lib/cookies/cookiemanager.ui:42
+msgctxt "CookieManager|"
+msgid "Find: "
+msgstr "Нађи: "
+
+#: lib/cookies/cookiemanager.ui:52
+msgctxt "CookieManager|"
+msgid "These cookies are stored on your computer:"
+msgstr "Ови колачићи су успремљени на вашем рачунару:"
+
+#: lib/cookies/cookiemanager.ui:66
+msgctxt "CookieManager|"
+msgid "Server"
+msgstr "сајт"
+
+#: lib/cookies/cookiemanager.ui:71
+msgctxt "CookieManager|"
+msgid "Cookie name"
+msgstr "име колачића"
+
+#: lib/cookies/cookiemanager.ui:109
+msgctxt "CookieManager|"
+msgid "Name:"
+msgstr "Име:"
+
+#: lib/cookies/cookiemanager.ui:119
+msgctxt "CookieManager|"
+msgid "Value:"
+msgstr "Вредност:"
+
+#: lib/cookies/cookiemanager.ui:133
+msgctxt "CookieManager|"
+msgid "Path:"
+msgstr "Путања:"
+
+#: lib/cookies/cookiemanager.ui:140
+msgctxt "CookieManager|"
+msgid "Secure:"
+msgstr "Безбедност:"
+
+#: lib/cookies/cookiemanager.ui:147
+msgctxt "CookieManager|"
+msgid "Expiration:"
+msgstr "Истиче:"
+
+#: lib/cookies/cookiemanager.ui:238
+msgctxt "CookieManager|"
+msgid "Remove all cookies"
+msgstr "Уклони све колачиће"
+
+#: lib/cookies/cookiemanager.ui:269
+msgctxt "CookieManager|"
+msgid "Cookie Filtering"
+msgstr "Филтрирање колачића"
+
+#: lib/cookies/cookiemanager.ui:275
+msgctxt "CookieManager|"
+msgid "<b>Cookie whitelist</b>"
+msgstr "<b>Бела листа колачића</b>"
+
+#: lib/cookies/cookiemanager.ui:282
+msgctxt "CookieManager|"
+msgid ""
+"Cookies from these servers will ALWAYS be accepted (even if you have "
+"disabled saving cookies)"
+msgstr ""
+"Колачићи са ових сервера ће УВЕК бити прихватани (чак и ако искључите "
+"успремање колачића)"
+
+#: lib/cookies/cookiemanager.ui:307 lib/cookies/cookiemanager.ui:361
+msgctxt "CookieManager|"
+msgid "Add"
+msgstr "Додај"
+
+#: lib/cookies/cookiemanager.ui:314 lib/cookies/cookiemanager.ui:368
+msgctxt "CookieManager|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/cookies/cookiemanager.ui:326
+msgctxt "CookieManager|"
+msgid "<b>Cookie blacklist</b>"
+msgstr "<b>Црна листа колачића</b>"
+
+#: lib/cookies/cookiemanager.ui:333
+msgctxt "CookieManager|"
+msgid "Cookies from these servers will NEVER be accepted"
+msgstr "Колачићи са ових сервера НИКАД неће бити прихватани"
+
+#: lib/cookies/cookiemanager.ui:385
+msgctxt "CookieManager|"
+msgid "Settings"
+msgstr "Подешавање"
+
+#: lib/cookies/cookiemanager.ui:407
+msgctxt "CookieManager|"
+msgid "Filter 3rd party cookies"
+msgstr "Пречишћај колачиће треће стране"
+
+#: lib/cookies/cookiemanager.ui:414
+msgctxt "CookieManager|"
+msgid "<b>Cookie Settings</b>"
+msgstr "<b>Поставке колачића</b>"
+
+#: lib/cookies/cookiemanager.ui:421
+msgctxt "CookieManager|"
+msgid "Allow storing of cookies"
+msgstr "Дозволи успремање колачића"
+
+#: lib/cookies/cookiemanager.ui:428
+msgctxt "CookieManager|"
+msgid "Filter tracking cookies"
+msgstr "Пречишћај колачиће пратиоце"
+
+#: lib/cookies/cookiemanager.ui:435
+msgctxt "CookieManager|"
+msgid "Delete cookies on close"
+msgstr ""
+
+#: lib/downloads/downloaditem.cpp:77
+msgctxt "DownloadItem|"
+msgid "Remaining time unavailable"
+msgstr "Преостало време није доступно"
+
+#: lib/downloads/downloaditem.cpp:133
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Done - %1 (%2)"
+msgstr "Готово - %1 (%2)"
+
+#: lib/downloads/downloaditem.cpp:137
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Error - %1"
+msgstr "Грешка - %1"
+
+#: lib/downloads/downloaditem.cpp:141 lib/downloads/downloaditem.cpp:284
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Cancelled - %1"
+msgstr "Отказано - %1"
+
+#: lib/downloads/downloaditem.cpp:192 lib/downloads/downloaditem.cpp:328
+msgctxt "DownloadItem|"
+msgid "Cancelled"
+msgstr "Отказано"
+
+#: lib/downloads/downloaditem.cpp:198
+msgctxt "DownloadItem|"
+msgid "few seconds"
+msgstr "неколико секунди"
+
+#: lib/downloads/downloaditem.cpp:203
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n seconds"
+msgid_plural "%n seconds"
+msgstr[0] "%n секунда"
+msgstr[1] "%n секунде"
+msgstr[2] "%n секунди"
+
+#: lib/downloads/downloaditem.cpp:208
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n minutes"
+msgid_plural "%n minutes"
+msgstr[0] "%n минута"
+msgstr[1] "%n минуте"
+msgstr[2] "%n минута"
+
+#: lib/downloads/downloaditem.cpp:213
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n hours"
+msgid_plural "%n hours"
+msgstr[0] "%n сат"
+msgstr[1] "%n сата"
+msgstr[2] "%n сати"
+
+#: lib/downloads/downloaditem.cpp:220
+msgctxt "DownloadItem|"
+msgid "Unknown speed"
+msgstr "Брзина није позната"
+
+#: lib/downloads/downloaditem.cpp:226
+#, fuzzy, qt-format
+#| msgctxt "DownloadItem|"
+#| msgid "kB/s"
+msgctxt "DownloadItem|"
+msgid "%1 kB/s"
+msgstr "kB/s"
+
+#: lib/downloads/downloaditem.cpp:231
+#, fuzzy, qt-format
+#| msgctxt "DownloadItem|"
+#| msgid "MB/s"
+msgctxt "DownloadItem|"
+msgid "%1 MB/s"
+msgstr "MB/s"
+
+#: lib/downloads/downloaditem.cpp:235
+#, fuzzy, qt-format
+#| msgctxt "DownloadItem|"
+#| msgid "GB/s"
+msgctxt "DownloadItem|"
+msgid "%1 GB/s"
+msgstr "GB/s"
+
+#: lib/downloads/downloaditem.cpp:263
+msgctxt "DownloadItem|"
+msgid "Unknown size"
+msgstr "Величина није позната"
+
+#: lib/downloads/downloaditem.cpp:264
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%2 - unknown size (%3)"
+msgstr "%2 - непознате величине (%3)"
+
+#: lib/downloads/downloaditem.cpp:267
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Remaining %1 - %2 of %3 (%4)"
+msgstr "Преостало %1 - %2 од %3 (%4)"
+
+#: lib/downloads/downloaditem.cpp:299
+#, fuzzy, qt-format
+#| msgctxt "DownloadItem|"
+#| msgid "Cancelled - %1"
+msgctxt "DownloadItem|"
+msgid "Paused - %1"
+msgstr "Отказано - %1"
+
+#: lib/downloads/downloaditem.cpp:312
+msgctxt "DownloadItem|"
+msgid "Open File"
+msgstr "Отвори фајл"
+
+#: lib/downloads/downloaditem.cpp:314
+msgctxt "DownloadItem|"
+msgid "Open Folder"
+msgstr "Отвори фасциклу"
+
+#: lib/downloads/downloaditem.cpp:316
+msgctxt "DownloadItem|"
+msgid "Copy Download Link"
+msgstr "Копирај везу преузимања"
+
+#: lib/downloads/downloaditem.cpp:318
+msgctxt "DownloadItem|"
+msgid "Cancel downloading"
+msgstr "Откажи преузимање"
+
+#: lib/downloads/downloaditem.cpp:321
+#, fuzzy
+#| msgctxt "DownloadItem|"
+#| msgid "Cancel downloading"
+msgctxt "DownloadItem|"
+msgid "Resume downloading"
+msgstr "Откажи преузимање"
+
+#: lib/downloads/downloaditem.cpp:323
+#, fuzzy
+#| msgctxt "DownloadItem|"
+#| msgid "Cancel downloading"
+msgctxt "DownloadItem|"
+msgid "Pause downloading"
+msgstr "Откажи преузимање"
+
+#: lib/downloads/downloaditem.cpp:326
+msgctxt "DownloadItem|"
+msgid "Remove From List"
+msgstr "Уклони са списка"
+
+#: lib/downloads/downloaditem.cpp:328
+msgctxt "DownloadItem|"
+msgid "Error"
+msgstr "Грешка"
+
+#: lib/downloads/downloaditem.cpp:354
+msgctxt "DownloadItem|"
+msgid "Not found"
+msgstr "Није нађено"
+
+#: lib/downloads/downloaditem.cpp:354
+#, qt-format
+msgctxt "DownloadItem|"
+msgid ""
+"Sorry, the file \n"
+" %1 \n"
+" was not found!"
+msgstr ""
+"Фајл \n"
+" %1 \n"
+" није нађен!"
+
+#: lib/downloads/downloadmanager.cpp:166 lib/downloads/downloadmanager.cpp:389
+#: lib/downloads/downloadmanager.ui:20
+msgctxt "DownloadManager|"
+msgid "Download Manager"
+msgstr "Менаџер преузимања"
+
+#: lib/downloads/downloadmanager.cpp:200
+#, qt-format
+msgctxt "DownloadManager|"
+msgid "%1% of %2 files (%3) %4 remaining"
+msgstr "%1% од %2 фајлова (%3) %4 до завршетка"
+
+#: lib/downloads/downloadmanager.cpp:203
+#, qt-format
+msgctxt "DownloadManager|"
+msgid "%1% - Download Manager"
+msgstr "%1% - менаџер преузимања"
+
+#: lib/downloads/downloadmanager.cpp:269
+msgctxt "DownloadManager|"
+msgid "Save file as..."
+msgstr "Сачувај фајл као..."
+
+#: lib/downloads/downloadmanager.cpp:279
+msgctxt "DownloadManager|"
+msgid "MIME HTML Archive (*.mhtml)"
+msgstr "МИМЕ ХТМЛ архива (*.mhtml)"
+
+#: lib/downloads/downloadmanager.cpp:280
+msgctxt "DownloadManager|"
+msgid "HTML Page, single (*.html)"
+msgstr "ХТМЛ страница, сама (*.html)"
+
+#: lib/downloads/downloadmanager.cpp:281
+msgctxt "DownloadManager|"
+msgid "HTML Page, complete (*.html)"
+msgstr "ХТМЛ страница, комплетна (*.html)"
+
+#: lib/downloads/downloadmanager.cpp:285
+msgctxt "DownloadManager|"
+msgid "Save page as..."
+msgstr "Сачувај страницу као..."
+
+#: lib/downloads/downloadmanager.cpp:382
+#, fuzzy
+#| msgctxt "DownloadOptionsDialog|"
+#| msgid "Download link copied."
+msgctxt "DownloadManager|"
+msgid "Osza: Download Finished"
+msgstr "Веза је копирана."
+
+#: lib/downloads/downloadmanager.cpp:382
+msgctxt "DownloadManager|"
+msgid "All files have been successfully downloaded."
+msgstr "Сви фајлови су успешно преузети."
+
+#: lib/downloads/downloadmanager.cpp:426
+msgctxt "DownloadManager|"
+msgid "Warning"
+msgstr "Упозорење"
+
+#: lib/downloads/downloadmanager.cpp:427
+msgctxt "DownloadManager|"
+msgid ""
+"Are you sure you want to quit? All uncompleted downloads will be cancelled!"
+msgstr ""
+"Желите ли заиста да напустите? Сва незавршена преузимања ће бити отказана!"
+
+#: lib/downloads/downloadmanager.ui:69
+msgctxt "DownloadManager|"
+msgid "Clear"
+msgstr "Очисти"
+
+#: lib/downloads/downloadoptionsdialog.cpp:49
+#, qt-format
+msgctxt "DownloadOptionsDialog|"
+msgid "Opening %1"
+msgstr "Отварам %1"
+
+#: lib/downloads/downloadoptionsdialog.cpp:112
+msgctxt "DownloadOptionsDialog|"
+msgid "Download link copied."
+msgstr "Веза је копирана."
+
+#: lib/downloads/downloadoptionsdialog.ui:25
+#, fuzzy
+#| msgctxt "DownloadOptionsDialog|"
+#| msgid "What should QupZilla do with this file?"
+msgctxt "DownloadOptionsDialog|"
+msgid "What should Osza do with this file?"
+msgstr "Шта да радим са овим фајлом?"
+
+#: lib/downloads/downloadoptionsdialog.ui:47
+msgctxt "DownloadOptionsDialog|"
+msgid "Open..."
+msgstr "Отвори..."
+
+#: lib/downloads/downloadoptionsdialog.ui:54
+msgctxt "DownloadOptionsDialog|"
+msgid "Save File"
+msgstr "Сачувај фајл"
+
+#: lib/downloads/downloadoptionsdialog.ui:64
+msgctxt "DownloadOptionsDialog|"
+msgid "Download with External Manager"
+msgstr "Преузми спољашњим менаџером"
+
+#: lib/downloads/downloadoptionsdialog.ui:165
+msgctxt "DownloadOptionsDialog|"
+msgid "which is:"
+msgstr ""
+
+#: lib/downloads/downloadoptionsdialog.ui:215
+msgctxt "DownloadOptionsDialog|"
+msgid "from:"
+msgstr "са:"
+
+#: lib/downloads/downloadoptionsdialog.ui:241
+msgctxt "DownloadOptionsDialog|"
+msgid "Copy download link"
+msgstr "Копирај везу преузимања"
+
+#: lib/downloads/downloadoptionsdialog.ui:256
+msgctxt "DownloadOptionsDialog|"
+msgid "You have chosen to open"
+msgstr "Изабрали сте да отворите"
+
+#: lib/downloads/downloadsbutton.cpp:27 lib/downloads/downloadsbutton.cpp:43
+msgctxt "DownloadsButton|"
+msgid "Downloads"
+msgstr ""
+
+#: lib/downloads/downloadsbutton.cpp:28
+msgctxt "DownloadsButton|"
+msgid "Open Download Manager"
+msgstr ""
+
+#: lib/history/history.cpp:83
+msgctxt "History|"
+msgid "Empty Page"
+msgstr "Празна страница"
+
+#: lib/history/history.cpp:273
+msgctxt "History|"
+msgid "January"
+msgstr "Јануар"
+
+#: lib/history/history.cpp:275
+msgctxt "History|"
+msgid "February"
+msgstr "Фебруар"
+
+#: lib/history/history.cpp:277
+msgctxt "History|"
+msgid "March"
+msgstr "Март"
+
+#: lib/history/history.cpp:279
+msgctxt "History|"
+msgid "April"
+msgstr "Април"
+
+#: lib/history/history.cpp:281
+msgctxt "History|"
+msgid "May"
+msgstr "Мај"
+
+#: lib/history/history.cpp:283
+msgctxt "History|"
+msgid "June"
+msgstr "Јун"
+
+#: lib/history/history.cpp:285
+msgctxt "History|"
+msgid "July"
+msgstr "Јул"
+
+#: lib/history/history.cpp:287
+msgctxt "History|"
+msgid "August"
+msgstr "Август"
+
+#: lib/history/history.cpp:289
+msgctxt "History|"
+msgid "September"
+msgstr "Септембар"
+
+#: lib/history/history.cpp:291
+msgctxt "History|"
+msgid "October"
+msgstr "Октобар"
+
+#: lib/history/history.cpp:293
+msgctxt "History|"
+msgid "November"
+msgstr "Новембар"
+
+#: lib/history/history.cpp:295
+msgctxt "History|"
+msgid "December"
+msgstr "Децембар"
+
+#: lib/history/historymanager.cpp:78
+msgctxt "HistoryManager|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/history/historymanager.cpp:79
+msgctxt "HistoryManager|"
+msgid "Are you sure you want to delete all history?"
+msgstr "Желите ли заиста да обришете сав историјат?"
+
+#: lib/history/historymanager.cpp:145
+msgctxt "HistoryManager|"
+msgid "Open in new tab"
+msgstr "Отвори у новом језичку"
+
+#: lib/history/historymanager.cpp:146
+msgctxt "HistoryManager|"
+msgid "Open in new window"
+msgstr "Отвори у новом прозору"
+
+#: lib/history/historymanager.cpp:147
+msgctxt "HistoryManager|"
+msgid "Open in new private window"
+msgstr "Отвори у приватном прозору"
+
+#: lib/history/historymanager.cpp:150
+msgctxt "HistoryManager|"
+msgid "Copy url"
+msgstr "Копирај адресу"
+
+#: lib/history/historymanager.cpp:151
+msgctxt "HistoryManager|"
+msgid "Copy title"
+msgstr "Копирај наслов"
+
+#: lib/history/historymanager.cpp:154 lib/history/historymanager.ui:20
+msgctxt "HistoryManager|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/history/historymanager.ui:14
+msgctxt "HistoryManager|"
+msgid "History"
+msgstr "Историјат"
+
+#: lib/history/historymanager.ui:27
+msgctxt "HistoryManager|"
+msgid "Clear All History"
+msgstr "Обриши историјат"
+
+#: lib/history/historymenu.cpp:146 lib/history/historymenu.cpp:168
+#: lib/history/historymenu.cpp:197
+msgctxt "HistoryMenu|"
+msgid "Empty"
+msgstr "Празно"
+
+#: lib/history/historymenu.cpp:172
+msgctxt "HistoryMenu|"
+msgid "Restore All Closed Tabs"
+msgstr "Врати све затворене језичке"
+
+#: lib/history/historymenu.cpp:173 lib/history/historymenu.cpp:201
+msgctxt "HistoryMenu|"
+msgid "Clear list"
+msgstr "Очисти списак"
+
+#: lib/history/historymenu.cpp:200
+msgctxt "HistoryMenu|"
+msgid "Restore All Closed Windows"
+msgstr ""
+
+#: lib/history/historymenu.cpp:252
+msgctxt "HistoryMenu|"
+msgid "Hi&story"
+msgstr "&Историјат"
+
+#: lib/history/historymenu.cpp:254
+msgctxt "HistoryMenu|"
+msgid "&Back"
+msgstr "На&зад"
+
+#: lib/history/historymenu.cpp:257
+msgctxt "HistoryMenu|"
+msgid "&Forward"
+msgstr "На&пред"
+
+#: lib/history/historymenu.cpp:260
+msgctxt "HistoryMenu|"
+msgid "&Home"
+msgstr "&Домаћа"
+
+#: lib/history/historymenu.cpp:263
+msgctxt "HistoryMenu|"
+msgid "Show &All History"
+msgstr "Прикажи &сав историјат"
+
+#: lib/history/historymenu.cpp:271
+msgctxt "HistoryMenu|"
+msgid "Most Visited"
+msgstr "Најпосећеније"
+
+#: lib/history/historymenu.cpp:275
+msgctxt "HistoryMenu|"
+msgid "Closed Tabs"
+msgstr "Затворени језичци"
+
+#: lib/history/historymenu.cpp:278
+msgctxt "HistoryMenu|"
+msgid "Closed Windows"
+msgstr ""
+
+#: lib/history/historymodel.cpp:57
+msgctxt "HistoryModel|"
+msgid "Title"
+msgstr "наслов"
+
+#: lib/history/historymodel.cpp:59
+msgctxt "HistoryModel|"
+msgid "Address"
+msgstr "адреса"
+
+#: lib/history/historymodel.cpp:61
+msgctxt "HistoryModel|"
+msgid "Visit Date"
+msgstr "датум посете"
+
+#: lib/history/historymodel.cpp:63
+msgctxt "HistoryModel|"
+msgid "Visit Count"
+msgstr "број посета"
+
+#: lib/history/historymodel.cpp:341 lib/history/historymodel.cpp:472
+msgctxt "HistoryModel|"
+msgid "Today"
+msgstr "Данас"
+
+#: lib/history/historymodel.cpp:477
+msgctxt "HistoryModel|"
+msgid "This Week"
+msgstr "Ове недеље"
+
+#: lib/history/historymodel.cpp:482
+msgctxt "HistoryModel|"
+msgid "This Month"
+msgstr "Овога месеца"
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:158
+msgctxt "LocationCompleterDelegate|"
+msgid "Visit"
+msgstr ""
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:165
+#: lib/navigation/completer/locationcompleterdelegate.cpp:172
+#, qt-format
+msgctxt "LocationCompleterDelegate|"
+msgid "Search with %1"
+msgstr ""
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:206
+msgctxt "LocationCompleterDelegate|"
+msgid "Switch to tab"
+msgstr ""
+
+#: lib/navigation/completer/locationcompleterview.cpp:73
+msgctxt "LocationCompleterView|"
+msgid "Manage Search Engines"
+msgstr ""
+
+#: lib/navigation/completer/locationcompleterview.cpp:78
+msgctxt "LocationCompleterView|"
+msgid "Search with:"
+msgstr ""
+
+#: lib/navigation/locationbar.cpp:96
+msgctxt "LocationBar|"
+msgid "Paste And &Go"
+msgstr "Налепи и и&ди"
+
+#: lib/navigation/locationbar.cpp:171
+#, qt-format
+msgctxt "LocationBar|"
+msgid "Enter address or search with %1"
+msgstr ""
+
+#: lib/navigation/locationbar.cpp:173
+msgctxt "LocationBar|"
+msgid "Enter address"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:50
+msgctxt "NavigationBar|"
+msgid "Empty Page"
+msgstr "Празна страница"
+
+#: lib/navigation/navigationbar.cpp:78
+msgctxt "NavigationBar|"
+msgid "Back"
+msgstr "Назад"
+
+#: lib/navigation/navigationbar.cpp:88
+msgctxt "NavigationBar|"
+msgid "Forward"
+msgstr "Напред"
+
+#: lib/navigation/navigationbar.cpp:108
+msgctxt "NavigationBar|"
+msgid "Home"
+msgstr "Домаћа"
+
+#: lib/navigation/navigationbar.cpp:116
+msgctxt "NavigationBar|"
+msgid "New Tab"
+msgstr "Нови језичак"
+
+#: lib/navigation/navigationbar.cpp:136
+msgctxt "NavigationBar|"
+msgid "Tools"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:149
+msgctxt "NavigationBar|"
+msgid "Main Menu"
+msgstr "Главни мени"
+
+#: lib/navigation/navigationbar.cpp:166
+msgctxt "NavigationBar|"
+msgid "Exit Fullscreen"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:192
+msgctxt "NavigationBar|"
+msgid "Back and Forward buttons"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:193
+msgctxt "NavigationBar|"
+msgid "Reload button"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:194
+msgctxt "NavigationBar|"
+msgid "Home button"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:195
+msgctxt "NavigationBar|"
+msgid "Add tab button"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:196
+msgctxt "NavigationBar|"
+msgid "Address and Search bar"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:197
+msgctxt "NavigationBar|"
+msgid "Tools button"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:198
+msgctxt "NavigationBar|"
+msgid "Exit Fullscreen button"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:399 lib/navigation/navigationbar.cpp:438
+msgctxt "NavigationBar|"
+msgid "Clear history"
+msgstr "Обриши историјат"
+
+#: lib/navigation/navigationbar.cpp:447
+msgctxt "NavigationBar|"
+msgid "Toolbars"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:448
+msgctxt "NavigationBar|"
+msgid "Sidebar"
+msgstr ""
+
+#: lib/navigation/navigationbar.cpp:463 lib/navigation/navigationbar.cpp:477
+msgctxt "NavigationBar|"
+msgid "Configure Toolbar"
+msgstr ""
+
+#: lib/navigation/navigationbarconfigdialog.ui:14
+msgctxt "NavigationBarConfigDialog|"
+msgid "Configure Toolbar"
+msgstr ""
+
+#: lib/navigation/navigationbarconfigdialog.ui:62
+msgctxt "NavigationBarConfigDialog|"
+msgid "Show search bar"
+msgstr ""
+
+#: lib/navigation/navigationbarconfigdialog.ui:82
+msgctxt "NavigationBarConfigDialog|"
+msgid "Available items:"
+msgstr ""
+
+#: lib/navigation/navigationbarconfigdialog.ui:89
+msgctxt "NavigationBarConfigDialog|"
+msgid "Current items:"
+msgstr ""
+
+#: lib/navigation/reloadstopbutton.cpp:57
+msgctxt "ReloadStopButton|"
+msgid "Stop"
+msgstr "Заустави"
+
+#: lib/navigation/reloadstopbutton.cpp:61
+msgctxt "ReloadStopButton|"
+msgid "Reload"
+msgstr "Учитај поново"
+
+#: lib/navigation/siteicon.cpp:40
+msgctxt "LocationBar|"
+msgid "Show information about this page"
+msgstr "Прикажи податке о овој страници"
+
+#: lib/navigation/websearchbar.cpp:97
+msgctxt "WebSearchBar|"
+msgid "Paste And &Search"
+msgstr "Налепи и &тражи"
+
+#: lib/navigation/websearchbar.cpp:127
+#, qt-format
+msgctxt "WebSearchBar|"
+msgid "Add %1 ..."
+msgstr "Додај %1 ..."
+
+#: lib/navigation/websearchbar.cpp:131
+msgctxt "WebSearchBar|"
+msgid "Manage Search Engines"
+msgstr "Управљај моторима претраге"
+
+#: lib/navigation/websearchbar.cpp:261
+msgctxt "WebSearchBar|"
+msgid "Show suggestions"
+msgstr "Приказуј предлоге"
+
+#: lib/navigation/websearchbar.cpp:266
+msgctxt "WebSearchBar|"
+msgid "Search when engine changed"
+msgstr "Претражуј по промени мотора"
+
+#: lib/navigation/zoomlabel.cpp:36
+msgctxt "ZoomLabel|"
+msgid "Reset zoom level"
+msgstr ""
+
+#: lib/navigation/zoomlabel.cpp:61
+#, qt-format
+msgctxt "ZoomLabel|"
+msgid "%1%"
+msgstr ""
+
+#: lib/network/networkmanager.cpp:91
+msgctxt "NetworkManager|"
+msgid "SSL Certificate Error!"
+msgstr "Грешка ССЛ сертификата!"
+
+#: lib/network/networkmanager.cpp:92
+#, fuzzy, qt-format
+#| msgctxt "NetworkManager|"
+#| msgid ""
+#| "The page you are trying to access has the following errors in the SSL "
+#| "certificate:"
+msgctxt "NetworkManager|"
+msgid ""
+"The page <strong>%1</strong> you are trying to access has the following "
+"errors in the SSL certificate:"
+msgstr ""
+"Страница којој покушавате да приступите има следеће грешке у ССЛ сертификату:"
+
+#: lib/network/networkmanager.cpp:93
+msgctxt "NetworkManager|"
+msgid "Would you like to make an exception for this certificate?"
+msgstr "Желите ли да направите изузетак за овај сертификат?"
+
+#: lib/network/networkmanager.cpp:125
+#, fuzzy
+#| msgctxt "NetworkManager|"
+#| msgid "Authorisation required"
+msgctxt "NetworkManager|"
+msgid "Authorization required"
+msgstr "Потребно овлашћење"
+
+#: lib/network/networkmanager.cpp:132 lib/network/networkmanager.cpp:218
+msgctxt "NetworkManager|"
+msgid "Username: "
+msgstr "Корисничко име: "
+
+#: lib/network/networkmanager.cpp:133 lib/network/networkmanager.cpp:219
+msgctxt "NetworkManager|"
+msgid "Password: "
+msgstr "Лозинка: "
+
+#: lib/network/networkmanager.cpp:139
+msgctxt "NetworkManager|"
+msgid "Save username and password for this site"
+msgstr "Сачувај корисничко име и лозинку за овај сајт"
+
+#: lib/network/networkmanager.cpp:147
+#, qt-format
+msgctxt "NetworkManager|"
+msgid ""
+"A username and password are being requested by %1. The site says: \"%2\""
+msgstr "%1 захтева корисничко име и лозинку. Сајт каже: „%2“"
+
+#: lib/network/networkmanager.cpp:211
+#, fuzzy
+#| msgctxt "NetworkManager|"
+#| msgid "Proxy authorisation required"
+msgctxt "NetworkManager|"
+msgid "Proxy authorization required"
+msgstr "Потребно је овлашћење за прокси"
+
+#: lib/network/networkmanager.cpp:231
+#, qt-format
+msgctxt "NetworkManager|"
+msgid "A username and password are being requested by proxy %1. "
+msgstr "Прокси %1 захтева корисничко име и шифру. "
+
+#: lib/network/networkmanager.cpp:345
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate did not match the built-in public keys pinned for the host "
+"name."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:347
+msgctxt "NetworkManager|"
+msgid "The certificate's common name did not match the host name."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:349
+msgctxt "NetworkManager|"
+msgid "The certificate is not valid at the current date and time."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:351
+msgctxt "NetworkManager|"
+msgid "The certificate is not signed by a trusted authority."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:353
+msgctxt "NetworkManager|"
+msgid "The certificate contains errors."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:355
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate has no mechanism for determining if it has been revoked."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:357
+msgctxt "NetworkManager|"
+msgid "Revocation information for the certificate is not available."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:359
+msgctxt "NetworkManager|"
+msgid "The certificate has been revoked."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:361
+msgctxt "NetworkManager|"
+msgid "The certificate is invalid."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:363
+msgctxt "NetworkManager|"
+msgid "The certificate is signed using a weak signature algorithm."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:365
+msgctxt "NetworkManager|"
+msgid "The host name specified in the certificate is not unique."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:367
+msgctxt "NetworkManager|"
+msgid "The certificate contains a weak key."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:369
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate claimed DNS names that are in violation of name constraints."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:371
+msgctxt "NetworkManager|"
+msgid "The certificate has a validity period that is too long."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:373
+msgctxt "NetworkManager|"
+msgid ""
+"Certificate Transparency was required for this connection, but the server "
+"did not provide CT information that complied with the policy."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:375
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate is known to be used for interception by an entity other the "
+"device owner."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:377
+msgctxt "NetworkManager|"
+msgid "The connection uses an obsolete version of SSL/TLS"
+msgstr ""
+
+#: lib/network/networkmanager.cpp:379
+msgctxt "NetworkManager|"
+msgid "The certificate is a legacy Symantec one that's no longer valid."
+msgstr ""
+
+#: lib/network/networkmanager.cpp:382
+#, fuzzy
+#| msgctxt "DownloadItem|"
+#| msgid "Unknown size"
+msgctxt "NetworkManager|"
+msgid "Unknown error"
+msgstr "Величина није позната"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:163
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Start Page"
+msgctxt "OszaSchemeReply|"
+msgid "Start Page"
+msgstr "Почетна страница"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:164
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Search on Web"
+msgctxt "OszaSchemeReply|"
+msgid "Search on Web"
+msgstr "Тражи на вебу"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:165
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Search results provided by DuckDuckGo"
+msgctxt "OszaSchemeReply|"
+msgid "Search results provided by DuckDuckGo"
+msgstr "Резултате претраге обезбеђује ДакДакГо"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:167
+#: lib/network/schemehandlers/oszaschemehandler.cpp:184
+#: lib/network/schemehandlers/oszaschemehandler.cpp:185
+msgctxt "OszaSchemeReply|"
+msgid "About Osza"
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:168
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "<h1>Private Browsing</h1>"
+msgctxt "OszaSchemeReply|"
+msgid "<h1>Private Browsing</h1>"
+msgstr "<h1>Приватно прегледање</h1>"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:186
+#: lib/network/schemehandlers/oszaschemehandler.cpp:303
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Information about version"
+msgctxt "OszaSchemeReply|"
+msgid "Information about version"
+msgstr "Подаци о издању"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:187
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Copyright"
+msgctxt "OszaSchemeReply|"
+msgid "Copyright"
+msgstr "Ауторска права"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:190
+#: lib/network/schemehandlers/oszaschemehandler.cpp:313
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Version"
+msgctxt "OszaSchemeReply|"
+msgid "Version"
+msgstr "Издање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:197
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Main developer"
+msgctxt "OszaSchemeReply|"
+msgid "Main developer"
+msgstr "Главни програмер"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:224
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Speed Dial"
+msgctxt "OszaSchemeReply|"
+msgid "Speed Dial"
+msgstr "Брзо бирање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:225
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Add New Page"
+msgctxt "OszaSchemeReply|"
+msgid "Add New Page"
+msgstr "Додај нову страницу"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:226
+#, fuzzy
+#| msgctxt "AutoFillManager|"
+#| msgid "Edit"
+msgctxt "OszaSchemeReply|"
+msgid "Edit"
+msgstr "Уреди"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:227
+#, fuzzy
+#| msgctxt "AcceptLanguage|"
+#| msgid "Remove"
+msgctxt "OszaSchemeReply|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:228
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Reload"
+msgctxt "OszaSchemeReply|"
+msgid "Reload"
+msgstr "Учитај поново"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:229
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Are you sure you want to remove this speed dial?"
+msgctxt "OszaSchemeReply|"
+msgid "Are you sure you want to remove this speed dial?"
+msgstr "Желите ли заиста да уклоните ово брзо бирање?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:230
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Are you sure you want to reload all speed dials?"
+msgctxt "OszaSchemeReply|"
+msgid "Are you sure you want to reload all speed dials?"
+msgstr "Желите ли заиста поново да учитате сва брза бирања?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:231
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Load title from page"
+msgctxt "OszaSchemeReply|"
+msgid "Load title from page"
+msgstr "Учитај наслов са странице"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:232
+msgctxt "OszaSchemeReply|"
+msgid "SpeedDial requires enabled JavaScript."
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:233
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Url"
+msgctxt "OszaSchemeReply|"
+msgid "Url"
+msgstr "Урл"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:234
+#, fuzzy
+#| msgctxt "BookmarksModel|"
+#| msgid "Title"
+msgctxt "OszaSchemeReply|"
+msgid "Title"
+msgstr "име"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:235
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Apply"
+msgctxt "OszaSchemeReply|"
+msgid "Apply"
+msgstr "Примени"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:236
+#, fuzzy
+#| msgctxt "DownloadItem|"
+#| msgid "Cancelled"
+msgctxt "OszaSchemeReply|"
+msgid "Cancel"
+msgstr "Отказано"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:237
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "New Page"
+msgctxt "OszaSchemeReply|"
+msgid "New Page"
+msgstr "Нова страница"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:238
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Speed Dial settings"
+msgctxt "OszaSchemeReply|"
+msgid "Speed Dial settings"
+msgstr "Подеси брзо бирање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:239
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Placement: "
+msgctxt "OszaSchemeReply|"
+msgid "Placement: "
+msgstr "Положај: "
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:240
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Auto"
+msgctxt "OszaSchemeReply|"
+msgid "Auto"
+msgstr "Ауто"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:241
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Cover"
+msgctxt "OszaSchemeReply|"
+msgid "Cover"
+msgstr "Прекриј"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:242
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Fit"
+msgctxt "OszaSchemeReply|"
+msgid "Fit"
+msgstr "Уклопи"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:243
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Fit Width"
+msgctxt "OszaSchemeReply|"
+msgid "Fit Width"
+msgstr "Уклопи ширину"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:244
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Fit Height"
+msgctxt "OszaSchemeReply|"
+msgid "Fit Height"
+msgstr "Уклопи висину"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:245
+msgctxt "OszaSchemeReply|"
+msgid "Use custom wallpaper"
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:246
+msgctxt "OszaSchemeReply|"
+msgid "Click to select image"
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:247
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Maximum pages in a row:"
+msgctxt "OszaSchemeReply|"
+msgid "Maximum pages in a row:"
+msgstr "Највише брзих бирања у реду:"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:248
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Change size of pages:"
+msgctxt "OszaSchemeReply|"
+msgid "Change size of pages:"
+msgstr "Промени величину брзих бирања:"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:249
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Center speed dials"
+msgctxt "OszaSchemeReply|"
+msgid "Center speed dials"
+msgstr "Центрирај брза бирања"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:250
+msgctxt "OszaSchemeReply|"
+msgid "Lock the position of SpeedDial entries."
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:276
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Restore Session"
+msgctxt "OszaSchemeReply|"
+msgid "Restore Session"
+msgstr "Обнови сесију"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:277
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Oops, QupZilla crashed."
+msgctxt "OszaSchemeReply|"
+msgid "Oops, Osza crashed."
+msgstr "Упс, Капзила се срушила."
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:278
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid ""
+#| "We apologize for this. Would you like to restore the last saved state?"
+msgctxt "OszaSchemeReply|"
+msgid "We apologize for this. Would you like to restore the last saved state?"
+msgstr ""
+"Извињавамо се због овога. Желите ли да обновите последње сачувано стање?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:279
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Try removing one or more tabs that you think cause troubles"
+msgctxt "OszaSchemeReply|"
+msgid "Try removing one or more tabs that you think cause troubles"
+msgstr ""
+"Покушајте да уклоните један или више језичака за које мислите да узрокују "
+"проблеме"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:280
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Or you can start completely new session"
+msgctxt "OszaSchemeReply|"
+msgid "Or you can start completely new session"
+msgstr "Или можете покренути нову сесију"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:281
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Window"
+msgctxt "OszaSchemeReply|"
+msgid "Window"
+msgstr "Прозор"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:282
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Windows and Tabs"
+msgctxt "OszaSchemeReply|"
+msgid "Windows and Tabs"
+msgstr "Прозори и језичци"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:283
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Start New Session"
+msgctxt "OszaSchemeReply|"
+msgid "Start New Session"
+msgstr "Почни нову сесију"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:284
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Restore"
+msgctxt "OszaSchemeReply|"
+msgid "Restore"
+msgstr "Обнови"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:285
+msgctxt "OszaSchemeReply|"
+msgid "Requires enabled JavaScript."
+msgstr ""
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:301
+#: lib/network/schemehandlers/oszaschemehandler.cpp:302
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "Configuration Information"
+msgctxt "OszaSchemeReply|"
+msgid "Configuration Information"
+msgstr "Поставке програма"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:304
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid ""
+#| "This page contains information about QupZilla's current configuration - "
+#| "relevant for troubleshooting. Please include this information when "
+#| "submitting bug reports."
+msgctxt "OszaSchemeReply|"
+msgid ""
+"This page contains information about Osza's current configuration - "
+"relevant for troubleshooting. Please include this information when "
+"submitting bug reports."
+msgstr ""
+"Ова страница садржи податке о текућим Капзилиним поставкама битним за "
+"решавање проблема. Укључите ове податке приликом слања извештаја о грешци."
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:305
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Browser Identification"
+msgctxt "OszaSchemeReply|"
+msgid "Browser Identification"
+msgstr "Идентификација прегледача"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:306
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Paths"
+msgctxt "OszaSchemeReply|"
+msgid "Paths"
+msgstr "Путање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:307
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Build Configuration"
+msgctxt "OszaSchemeReply|"
+msgid "Build Configuration"
+msgstr "Параметри компајлирања"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:308
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Preferences"
+msgctxt "OszaSchemeReply|"
+msgid "Preferences"
+msgstr "Поставке"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:309
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Option"
+msgctxt "OszaSchemeReply|"
+msgid "Option"
+msgstr "Поставка"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:310
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Value"
+msgctxt "OszaSchemeReply|"
+msgid "Value"
+msgstr "Вредност"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:311
+#: lib/network/schemehandlers/oszaschemehandler.cpp:347
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Extensions"
+msgctxt "OszaSchemeReply|"
+msgid "Extensions"
+msgstr "Проширења"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:312
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Name"
+msgctxt "OszaSchemeReply|"
+msgid "Name"
+msgstr "Име"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:314
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Author"
+msgctxt "OszaSchemeReply|"
+msgid "Author"
+msgstr "Аутор"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:315
+#, fuzzy
+#| msgctxt "BookmarksManager|"
+#| msgid "Description"
+msgctxt "OszaSchemeReply|"
+msgid "Description"
+msgstr "Опис"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:330
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Application version"
+msgctxt "OszaSchemeReply|"
+msgid "Application version"
+msgstr "Издање програма"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:337
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Qt version"
+msgctxt "OszaSchemeReply|"
+msgid "Qt version"
+msgstr "Издање Кут-а"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:338
+#, fuzzy
+#| msgctxt "AboutDialog|"
+#| msgid "<b>QtWebEngine version %1</b></p>"
+msgctxt "OszaSchemeReply|"
+msgid "QtWebEngine version"
+msgstr "<b>Кутов вебенџин, издање %1</b></p>"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:339
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Platform"
+msgctxt "OszaSchemeReply|"
+msgid "Platform"
+msgstr "Платформа"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:342
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Profile"
+msgctxt "OszaSchemeReply|"
+msgid "Profile"
+msgstr "Профил"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:343
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Settings"
+msgctxt "OszaSchemeReply|"
+msgid "Settings"
+msgstr "Подешавање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:344
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Saved session"
+msgctxt "OszaSchemeReply|"
+msgid "Saved session"
+msgstr "Сачуване сесије"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:345
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Data"
+msgctxt "OszaSchemeReply|"
+msgid "Data"
+msgstr "Подаци"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:346
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Themes"
+msgctxt "OszaSchemeReply|"
+msgid "Themes"
+msgstr "Теме"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:350
+#: lib/network/schemehandlers/oszaschemehandler.cpp:357
+#: lib/network/schemehandlers/oszaschemehandler.cpp:363
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "<b>Enabled</b>"
+msgctxt "OszaSchemeReply|"
+msgid "<b>Enabled</b>"
+msgstr "<b>укључено</b>"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:352
+#: lib/network/schemehandlers/oszaschemehandler.cpp:359
+#: lib/network/schemehandlers/oszaschemehandler.cpp:363
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Disabled"
+msgctxt "OszaSchemeReply|"
+msgid "Disabled"
+msgstr "искључено"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:366
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Debug build"
+msgctxt "OszaSchemeReply|"
+msgid "Debug build"
+msgstr "Проналажење грешака"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:368
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Windows 7 API"
+msgctxt "OszaSchemeReply|"
+msgid "Windows 7 API"
+msgstr "Виндоуз 7 АПИ"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:370
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Portable build"
+msgctxt "OszaSchemeReply|"
+msgid "Portable build"
+msgstr "Преносно издање"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:388
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "No available extensions."
+msgctxt "OszaSchemeReply|"
+msgid "No available extensions."
+msgstr "Нема доступних проширења."
+
+#: lib/network/sslerrordialog.cpp:32
+msgctxt "SslErrorDialog|"
+msgid "Only for this session"
+msgstr ""
+
+#: lib/network/sslerrordialog.ui:14
+msgctxt "SslErrorDialog|"
+msgid "SSL Certificate Error!"
+msgstr "Грешка ССЛ сертификата!"
+
+#: lib/network/sslerrordialog.ui:90
+msgctxt "SslErrorDialog|"
+msgid "Toggle Certificate Details"
+msgstr ""
+
+#: lib/notifications/desktopnotificationsfactory.cpp:124
+msgctxt "DesktopNotificationsFactory|"
+msgid "Preview"
+msgstr ""
+
+#: lib/notifications/desktopnotificationsfactory.cpp:124
+msgctxt "QObject|"
+msgid "Native System Notification"
+msgstr "Изворна системска обавештења"
+
+#: lib/opensearch/editsearchengine.ui:20
+msgctxt "EditSearchEngine|"
+msgid "Name:"
+msgstr "Име:"
+
+#: lib/opensearch/editsearchengine.ui:30
+msgctxt "EditSearchEngine|"
+msgid "URL:"
+msgstr ""
+
+#: lib/opensearch/editsearchengine.ui:44
+msgctxt "EditSearchEngine|"
+msgid "Post Data:"
+msgstr "ПОСТ подаци:"
+
+#: lib/opensearch/editsearchengine.ui:54
+#, fuzzy
+#| msgctxt "WebSearchBar|"
+#| msgid "Show suggestions"
+msgctxt "EditSearchEngine|"
+msgid "Suggestions URL:"
+msgstr "Приказуј предлоге"
+
+#: lib/opensearch/editsearchengine.ui:64
+msgctxt "EditSearchEngine|"
+msgid "Shortcut:"
+msgstr "Пречица:"
+
+#: lib/opensearch/editsearchengine.ui:74
+msgctxt "EditSearchEngine|"
+msgid "Icon:"
+msgstr "Икона:"
+
+#: lib/opensearch/editsearchengine.ui:103
+msgctxt "EditSearchEngine|"
+msgid "Change..."
+msgstr "Промени..."
+
+#: lib/opensearch/editsearchengine.ui:126
+#, fuzzy
+#| msgctxt "EditSearchEngine|"
+#| msgid "<b>Note: </b>%s in url or post data represent searched string"
+msgctxt "EditSearchEngine|"
+msgid "<b>Note: </b>%s in URLs and post data represent searched string"
+msgstr "<b>Напомена:</b> %s у УРЛ-у или ПОСТ подацима представља тражени израз"
+
+#: lib/opensearch/opensearchreader.cpp:105
+msgctxt "QObject|"
+msgid "The file is not an OpenSearch 1.1 file."
+msgstr "Овај фајл није OpenSearch 1.1 фајл."
+
+#: lib/opensearch/searchenginesdialog.cpp:52
+#: lib/opensearch/searchenginesmanager.cpp:314
+msgctxt "SearchEnginesDialog|"
+msgid "Add Search Engine"
+msgstr "Додај мотор претраге"
+
+#: lib/opensearch/searchenginesdialog.cpp:90
+msgctxt "SearchEnginesDialog|"
+msgid "Remove Engine"
+msgstr "Уклони"
+
+#: lib/opensearch/searchenginesdialog.cpp:91
+#, qt-format
+msgctxt "SearchEnginesDialog|"
+msgid ""
+"You can't remove the default search engine.<br>Set a different engine as "
+"default before removing %1."
+msgstr ""
+"Не можете да уклоните подразумевани мотор претраге.<br>Поставите други мотор "
+"као подразумеван пре уклањања %1."
+
+#: lib/opensearch/searchenginesdialog.cpp:108
+msgctxt "SearchEnginesDialog|"
+msgid "Edit Search Engine"
+msgstr "Уреди мотор претраге"
+
+#: lib/opensearch/searchenginesdialog.ui:14
+msgctxt "SearchEnginesDialog|"
+msgid "Manage Search Engines"
+msgstr "Менаџер мотора претраге"
+
+#: lib/opensearch/searchenginesdialog.ui:22
+msgctxt "SearchEnginesDialog|"
+msgid "Add..."
+msgstr "Додај..."
+
+#: lib/opensearch/searchenginesdialog.ui:29
+msgctxt "SearchEnginesDialog|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/opensearch/searchenginesdialog.ui:36
+msgctxt "SearchEnginesDialog|"
+msgid "Edit"
+msgstr "Уреди"
+
+#: lib/opensearch/searchenginesdialog.ui:56
+msgctxt "SearchEnginesDialog|"
+msgid "Set as default"
+msgstr "Подразумеван"
+
+#: lib/opensearch/searchenginesdialog.ui:63
+msgctxt "SearchEnginesDialog|"
+msgid "Up"
+msgstr "Горе"
+
+#: lib/opensearch/searchenginesdialog.ui:70
+msgctxt "SearchEnginesDialog|"
+msgid "Down"
+msgstr "Доле"
+
+#: lib/opensearch/searchenginesdialog.ui:89
+msgctxt "SearchEnginesDialog|"
+msgid "Search Engine"
+msgstr "Мотор претраге"
+
+#: lib/opensearch/searchenginesdialog.ui:94
+msgctxt "SearchEnginesDialog|"
+msgid "Shortcut"
+msgstr "Пречица"
+
+#: lib/opensearch/searchenginesdialog.ui:104
+msgctxt "SearchEnginesDialog|"
+msgid "Defaults"
+msgstr "Подразумевано"
+
+#: lib/opensearch/searchenginesmanager.cpp:401
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine Added"
+msgstr "Мотор претраге је додат"
+
+#: lib/opensearch/searchenginesmanager.cpp:401
+#, qt-format
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine \"%1\" has been successfully added."
+msgstr "Мотор претраге „%1“ је успешно додат."
+
+#: lib/opensearch/searchenginesmanager.cpp:408
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine is not valid!"
+msgstr "Мотор претраге није исправан!"
+
+#: lib/opensearch/searchenginesmanager.cpp:409
+msgctxt "SearchEnginesManager|"
+msgid "Error"
+msgstr "Грешка"
+
+#: lib/opensearch/searchenginesmanager.cpp:409
+#, qt-format
+msgctxt "SearchEnginesManager|"
+msgid "Error while adding Search Engine <br><b>Error Message: </b> %1"
+msgstr "Грешка приликом додавања мотора претраге <br><b>Порука грешке: </b> %1"
+
+#: lib/other/aboutdialog.cpp:52
+#, qt-format
+msgctxt "AboutDialog|"
+msgid "<p><b>Application version %1</b><br/>"
+msgstr "<p><b>Издање програма %1</b><br/>"
+
+#: lib/other/aboutdialog.cpp:59
+#, qt-format
+msgctxt "AboutDialog|"
+msgid "<b>QtWebEngine version %1</b></p>"
+msgstr "<b>Кутов вебенџин, издање %1</b></p>"
+
+#: lib/other/aboutdialog.ui:14
+msgctxt "AboutDialog|"
+msgid "About Osza"
+msgstr ""
+
+#: lib/other/browsinglibrary.cpp:55
+msgctxt "BrowsingLibrary|"
+msgid "History"
+msgstr "Историјат"
+
+#: lib/other/browsinglibrary.cpp:56
+msgctxt "BrowsingLibrary|"
+msgid "Bookmarks"
+msgstr "Обележивачи"
+
+#: lib/other/browsinglibrary.cpp:61
+msgctxt "BrowsingLibrary|"
+msgid "Import Bookmarks..."
+msgstr "Увези обележиваче..."
+
+#: lib/other/browsinglibrary.cpp:62
+msgctxt "BrowsingLibrary|"
+msgid "Export Bookmarks..."
+msgstr "Извези обележиваче..."
+
+#: lib/other/browsinglibrary.ui:14
+msgctxt "BrowsingLibrary|"
+msgid "Library"
+msgstr "Библиотека"
+
+#: lib/other/browsinglibrary.ui:64
+msgctxt "BrowsingLibrary|"
+msgid "Import and Export"
+msgstr "Увоз и извоз"
+
+#: lib/other/browsinglibrary.ui:84
+msgctxt "BrowsingLibrary|"
+msgid "Search..."
+msgstr "Тражи..."
+
+#: lib/other/clearprivatedata.cpp:155
+msgctxt "ClearPrivateData|"
+msgid "Done"
+msgstr "Завршено"
+
+#: lib/other/clearprivatedata.cpp:173
+msgctxt "ClearPrivateData|"
+msgid "Database Optimized"
+msgstr "База података је оптимизована"
+
+#: lib/other/clearprivatedata.cpp:173
+#, qt-format
+msgctxt "ClearPrivateData|"
+msgid ""
+"Database successfully optimized.<br/><br/><b>Database Size Before: </b>%1<br/"
+"><b>Database Size After: </b>%2"
+msgstr ""
+"База података је успешно оптимизована.<br/><br/><b>Величина базе пре: </b>"
+"%1<br/><b>Величина базе након: </b>%2"
+
+#: lib/other/clearprivatedata.ui:14
+msgctxt "ClearPrivateData|"
+msgid "Clear Recent History"
+msgstr "Брисање приватних података"
+
+#: lib/other/clearprivatedata.ui:20
+msgctxt "ClearPrivateData|"
+msgid "<b>Clear Recent History</b>"
+msgstr "<b>Обриши недавни историјат</b>"
+
+#: lib/other/clearprivatedata.ui:27
+msgctxt "ClearPrivateData|"
+msgid "Edit cookies"
+msgstr "Уреди колачиће"
+
+#: lib/other/clearprivatedata.ui:38
+msgctxt "ClearPrivateData|"
+msgid "Earlier Today"
+msgstr "раније данас"
+
+#: lib/other/clearprivatedata.ui:43
+msgctxt "ClearPrivateData|"
+msgid "Week"
+msgstr "недеље"
+
+#: lib/other/clearprivatedata.ui:48
+msgctxt "ClearPrivateData|"
+msgid "Month"
+msgstr "месеца"
+
+#: lib/other/clearprivatedata.ui:53
+msgctxt "ClearPrivateData|"
+msgid "All"
+msgstr "Све"
+
+#: lib/other/clearprivatedata.ui:61
+msgctxt "ClearPrivateData|"
+msgid "Visited pages history from:"
+msgstr "Историјат посећених страница:"
+
+#: lib/other/clearprivatedata.ui:71
+msgctxt "ClearPrivateData|"
+msgid "Checked items will be cleared upon clicking the Clear button."
+msgstr "Означене ставке ће бити обрисане кликом на дугме „Обриши“."
+
+#: lib/other/clearprivatedata.ui:78
+msgctxt "ClearPrivateData|"
+msgid "Local storage"
+msgstr "Локално складиште"
+
+#: lib/other/clearprivatedata.ui:94
+msgctxt "ClearPrivateData|"
+msgid "Clear"
+msgstr "Обриши"
+
+#: lib/other/clearprivatedata.ui:114
+msgctxt "ClearPrivateData|"
+msgid "Web databases"
+msgstr "Веб базе података"
+
+#: lib/other/clearprivatedata.ui:124
+msgctxt "ClearPrivateData|"
+msgid "Cache"
+msgstr "Кеш"
+
+#: lib/other/clearprivatedata.ui:134
+msgctxt "ClearPrivateData|"
+msgid "Optimize database"
+msgstr "Оптимизуј базу података"
+
+#: lib/other/clearprivatedata.ui:141
+msgctxt "ClearPrivateData|"
+msgid "Cookies"
+msgstr "Колачићи"
+
+#: lib/other/clearprivatedata.ui:158
+msgctxt "ClearPrivateData|"
+msgid "Database"
+msgstr "База података"
+
+#: lib/other/iconchooser.cpp:41
+msgctxt "IconChooser|"
+msgid "Image files"
+msgstr "Фајлови слика"
+
+#: lib/other/iconchooser.cpp:42 lib/other/iconchooser.ui:14
+msgctxt "IconChooser|"
+msgid "Choose icon..."
+msgstr "Изабери икону..."
+
+#: lib/other/iconchooser.ui:20
+msgctxt "IconChooser|"
+msgid "From file"
+msgstr "Из фајла"
+
+#: lib/other/iconchooser.ui:29
+msgctxt "IconChooser|"
+msgid "Image (.png, .jpg, .jpeg, .gif)"
+msgstr "Слика (.png, .jpg, .jpeg, .gif)"
+
+#: lib/other/iconchooser.ui:42
+msgctxt "IconChooser|"
+msgid "Choose file..."
+msgstr "Изабери фајл..."
+
+#: lib/other/iconchooser.ui:52
+msgctxt "IconChooser|"
+msgid "From database"
+msgstr "Из базе"
+
+#: lib/other/iconchooser.ui:61
+msgctxt "IconChooser|"
+msgid "Site Url:"
+msgstr "Урл сајта:"
+
+#: lib/other/licenseviewer.cpp:30
+msgctxt "LicenseViewer|"
+msgid "License Viewer"
+msgstr "Прегледач лиценце"
+
+#: lib/other/protocolhandlerdialog.ui:14
+msgctxt "ProtocolHandlerDialog|"
+msgid "Manage protocol handlers"
+msgstr ""
+
+#: lib/other/protocolhandlerdialog.ui:40
+msgctxt "ProtocolHandlerDialog|"
+msgid "Protocol"
+msgstr ""
+
+#: lib/other/protocolhandlerdialog.ui:45
+#, fuzzy
+#| msgctxt "UserAgentDialog|"
+#| msgid "Site"
+msgctxt "ProtocolHandlerDialog|"
+msgid "Site"
+msgstr "сајт"
+
+#: lib/other/protocolhandlerdialog.ui:68
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "ProtocolHandlerDialog|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/other/registerqappassociation.cpp:111
+msgctxt "RegisterQAppAssociation|"
+msgid "Warning!"
+msgstr "Упозорење!"
+
+#: lib/other/registerqappassociation.cpp:112
+#, fuzzy
+#| msgctxt "RegisterQAppAssociation|"
+#| msgid ""
+#| "There are some problems. Please, reinstall QupZilla.\n"
+#| "Maybe relaunch with administrator right do a magic for you! ;)"
+msgctxt "RegisterQAppAssociation|"
+msgid ""
+"There are some problems. Please, reinstall Osza.\n"
+"Maybe relaunch with administrator right do a magic for you! ;)"
+msgstr ""
+"Појавио се проблем. Поново инсталирајте Капзилу,\n"
+"или је покушајте покренути са административним привилегијама."
+
+#: lib/other/siteinfo.cpp:71
+msgctxt "SiteInfo|"
+msgid "<b>Connection is Encrypted.</b>"
+msgstr "<b>Веза је шифрована.</b>"
+
+#: lib/other/siteinfo.cpp:75
+msgctxt "SiteInfo|"
+msgid "Any certificate error is <b>permanently</b> ignored."
+msgstr ""
+
+#: lib/other/siteinfo.cpp:78
+msgctxt "SiteInfo|"
+msgid "The certificate error is <b>temporarily</b> ignored."
+msgstr ""
+
+#: lib/other/siteinfo.cpp:82
+msgctxt "SiteInfo|"
+msgid "Certificate was rejected."
+msgstr ""
+
+#: lib/other/siteinfo.cpp:89
+msgctxt "SiteInfo|"
+msgid "<b>Connection Not Encrypted.</b>"
+msgstr "<b>Веза није шифрована.</b>"
+
+#: lib/other/siteinfo.cpp:198
+msgctxt "SiteInfo|"
+msgid "Copy Image Location"
+msgstr "Копирај локацију слике"
+
+#: lib/other/siteinfo.cpp:199
+msgctxt "SiteInfo|"
+msgid "Copy Image Name"
+msgstr "Копирај име слике"
+
+#: lib/other/siteinfo.cpp:201
+msgctxt "SiteInfo|"
+msgid "Save Image to Disk"
+msgstr "Сачувај слику на диск"
+
+#: lib/other/siteinfo.cpp:213
+#, fuzzy
+#| msgctxt "HistoryManager|"
+#| msgid "Copy title"
+msgctxt "SiteInfo|"
+msgid "Copy Values"
+msgstr "Копирај наслов"
+
+#: lib/other/siteinfo.cpp:214
+#, fuzzy
+#| msgctxt "WebView|"
+#| msgid "Copy image ad&dress"
+msgctxt "SiteInfo|"
+msgid "Copy Tags and Values"
+msgstr "Копирај &адресу слике"
+
+#: lib/other/siteinfo.cpp:252 lib/other/siteinfo.cpp:271
+msgctxt "SiteInfo|"
+msgid "Error!"
+msgstr "Грешка!"
+
+#: lib/other/siteinfo.cpp:252
+msgctxt "SiteInfo|"
+msgid "This preview is not available!"
+msgstr "Овај преглед није доступан!"
+
+#: lib/other/siteinfo.cpp:263
+msgctxt "SiteInfo|"
+msgid "Save image..."
+msgstr "Сачувај слику..."
+
+#: lib/other/siteinfo.cpp:271
+msgctxt "SiteInfo|"
+msgid "Cannot write to file!"
+msgstr "Не могу да упишем у фајл!"
+
+#: lib/other/siteinfo.cpp:281
+msgctxt "SiteInfo|"
+msgid "Loading..."
+msgstr "Учитавам..."
+
+#: lib/other/siteinfo.cpp:294
+msgctxt "SiteInfo|"
+msgid "Preview not available"
+msgstr "Преглед није доступан"
+
+#: lib/other/siteinfo.ui:14
+msgctxt "SiteInfo|"
+msgid "Site Info"
+msgstr "Подаци о сајту"
+
+#: lib/other/siteinfo.ui:47
+msgctxt "SiteInfo|"
+msgid "General"
+msgstr "Опште"
+
+#: lib/other/siteinfo.ui:52
+msgctxt "SiteInfo|"
+msgid "Media"
+msgstr "Медији"
+
+#: lib/other/siteinfo.ui:57
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "HTML5 Permissions"
+msgctxt "SiteInfo|"
+msgid "Permissions"
+msgstr "ХТМЛ5 дозволе"
+
+#: lib/other/siteinfo.ui:89
+msgctxt "SiteInfo|"
+msgid "Site address:"
+msgstr "Адреса сајта:"
+
+#: lib/other/siteinfo.ui:118
+msgctxt "SiteInfo|"
+msgid "Encoding:"
+msgstr "Кодирање:"
+
+#: lib/other/siteinfo.ui:137
+msgctxt "SiteInfo|"
+msgid "Meta tags of site:"
+msgstr "Мета ознаке сајта:"
+
+#: lib/other/siteinfo.ui:154
+msgctxt "SiteInfo|"
+msgid "Tag"
+msgstr "ознака"
+
+#: lib/other/siteinfo.ui:159
+msgctxt "SiteInfo|"
+msgid "Value"
+msgstr "вредност"
+
+#: lib/other/siteinfo.ui:173
+msgctxt "SiteInfo|"
+msgid "<b>Security information</b>"
+msgstr "<b>Подаци о безбедности</b>"
+
+#: lib/other/siteinfo.ui:246
+msgctxt "SiteInfo|"
+msgid "Image"
+msgstr "слика"
+
+#: lib/other/siteinfo.ui:251
+msgctxt "SiteInfo|"
+msgid "Image address"
+msgstr "адреса слике"
+
+#: lib/other/siteinfo.ui:276
+msgctxt "SiteInfo|"
+msgid "<b>Preview</b>"
+msgstr "<b>Преглед</b>"
+
+#: lib/other/siteinfopermissionitem.ui:32
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Default"
+msgctxt "SiteInfoPermissionItem|"
+msgid "Default"
+msgstr "Подразумеван"
+
+#: lib/other/siteinfopermissionitem.ui:62
+msgctxt "SiteInfoPermissionItem|"
+msgid "Ask"
+msgstr ""
+
+#: lib/other/siteinfopermissionitem.ui:69
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Allow"
+msgctxt "SiteInfoPermissionItem|"
+msgid "Allow"
+msgstr "дозволи"
+
+#: lib/other/siteinfopermissionitem.ui:76
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Deny"
+msgctxt "SiteInfoPermissionItem|"
+msgid "Deny"
+msgstr "одбиј"
+
+#: lib/other/siteinfowidget.cpp:43
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "<b>Site %1<b/>"
+msgstr ""
+
+#: lib/other/siteinfowidget.cpp:52
+msgctxt "SiteInfoWidget|"
+msgid "Any certificate error is <b>permanently</b> ignored."
+msgstr ""
+
+#: lib/other/siteinfowidget.cpp:55
+msgctxt "SiteInfoWidget|"
+msgid "The certificate error is <b>temporarily</b> ignored."
+msgstr ""
+
+#: lib/other/siteinfowidget.cpp:58
+msgctxt "SiteInfoWidget|"
+msgid "Certificate was rejected."
+msgstr ""
+
+#: lib/other/siteinfowidget.cpp:67
+msgctxt "SiteInfoWidget|"
+msgid "Your connection to this site is <b>secured</b>."
+msgstr "Веза са овим сајтом је <b>безбедна</b>."
+
+#: lib/other/siteinfowidget.cpp:71
+msgctxt "SiteInfoWidget|"
+msgid "Your connection to this site is <b>unsecured</b>."
+msgstr "Веза са овим сајтом <b>није безбедна</b>."
+
+#: lib/other/siteinfowidget.cpp:86 lib/other/siteinfowidget.cpp:105
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "This is your <b>%1</b> visit of this site."
+msgstr "Ово је ваша <b>%1</b> посета овом сајту."
+
+#: lib/other/siteinfowidget.cpp:90
+msgctxt "SiteInfoWidget|"
+msgid "You have <b>never</b> visited this site before."
+msgstr "<b>Нисте</b> досад посећивали овај сајт."
+
+#: lib/other/siteinfowidget.cpp:97
+msgctxt "SiteInfoWidget|"
+msgid "first"
+msgstr "прва"
+
+#: lib/other/siteinfowidget.cpp:100
+msgctxt "SiteInfoWidget|"
+msgid "second"
+msgstr "друга"
+
+#: lib/other/siteinfowidget.cpp:103
+msgctxt "SiteInfoWidget|"
+msgid "third"
+msgstr "трећа"
+
+#: lib/other/siteinfowidget.cpp:128
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "Register as <b>%1</b> links handler"
+msgstr ""
+
+#: lib/other/siteinfowidget.cpp:129
+msgctxt "SiteInfoWidget|"
+msgid "Register"
+msgstr ""
+
+#: lib/other/siteinfowidget.ui:98
+msgctxt "SiteInfoWidget|"
+msgid "More..."
+msgstr "Више..."
+
+#: lib/other/sitesettingsmanager.cpp:324
+msgctxt "SiteSettingsManager|"
+msgid "Zoom level"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:326
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Cookies"
+msgctxt "SiteSettingsManager|"
+msgid "Cookies"
+msgstr "Колачићи"
+
+#: lib/other/sitesettingsmanager.cpp:329 lib/other/sitesettingsmanager.cpp:354
+#: lib/other/sitesettingsmanager.cpp:394 lib/other/sitesettingsmanager.cpp:411
+#, fuzzy
+#| msgctxt "DownloadItem|"
+#| msgid "Unknown size"
+msgctxt "SiteSettingsManager|"
+msgid "Unknown"
+msgstr "Величина није позната"
+
+#: lib/other/sitesettingsmanager.cpp:337
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Notifications"
+msgctxt "SiteSettingsManager|"
+msgid "Notifications"
+msgstr "Обавештења"
+
+#: lib/other/sitesettingsmanager.cpp:339
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Geolocation"
+msgctxt "SiteSettingsManager|"
+msgid "Geolocation"
+msgstr "Геолокација"
+
+#: lib/other/sitesettingsmanager.cpp:341
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Microphone"
+msgctxt "SiteSettingsManager|"
+msgid "Microphone"
+msgstr "Микрофон"
+
+#: lib/other/sitesettingsmanager.cpp:343
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Camera"
+msgctxt "SiteSettingsManager|"
+msgid "Camera"
+msgstr "Камера"
+
+#: lib/other/sitesettingsmanager.cpp:345
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Microphone and Camera"
+msgctxt "SiteSettingsManager|"
+msgid "Microphone and Camera"
+msgstr "Микрофон и камера"
+
+#: lib/other/sitesettingsmanager.cpp:347
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Hide Pointer"
+msgctxt "SiteSettingsManager|"
+msgid "Hide mouse pointer"
+msgstr "Сакриј показивач"
+
+#: lib/other/sitesettingsmanager.cpp:349
+msgctxt "SiteSettingsManager|"
+msgid "Screen capture"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:351
+msgctxt "SiteSettingsManager|"
+msgid "Screen capture with audio"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:362
+#, fuzzy
+#| msgctxt "WebPage|"
+#| msgid "Reload page"
+msgctxt "SiteSettingsManager|"
+msgid "Autoload images"
+msgstr "Поново учитај страницу"
+
+#: lib/other/sitesettingsmanager.cpp:365
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Allow JavaScript"
+msgctxt "SiteSettingsManager|"
+msgid "Enable JavaScript"
+msgstr "Дозволи Јаваскрипте"
+
+#: lib/other/sitesettingsmanager.cpp:367
+#, fuzzy
+#| msgctxt "JsOptions|"
+#| msgid "Open popup windows"
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Open popup windows"
+msgstr "отвори искачући прозор"
+
+#: lib/other/sitesettingsmanager.cpp:369
+#, fuzzy
+#| msgctxt "JsOptions|"
+#| msgid "Access clipboard"
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Access clipboard"
+msgstr "приступи клипборду"
+
+#: lib/other/sitesettingsmanager.cpp:371
+#, fuzzy
+#| msgctxt "JsOptions|"
+#| msgid "Access clipboard"
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Paste from clipboard"
+msgstr "приступи клипборду"
+
+#: lib/other/sitesettingsmanager.cpp:373
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "New &Private Window"
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Activate windows"
+msgstr "Нови п&риватни прозор"
+
+#: lib/other/sitesettingsmanager.cpp:376
+#, fuzzy
+#| msgctxt "ClearPrivateData|"
+#| msgid "Local storage"
+msgctxt "SiteSettingsManager|"
+msgid "Local storage"
+msgstr "Локално складиште"
+
+#: lib/other/sitesettingsmanager.cpp:378
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "&FullScreen"
+msgctxt "SiteSettingsManager|"
+msgid "FullScreen support"
+msgstr "&Цео екран"
+
+#: lib/other/sitesettingsmanager.cpp:380
+msgctxt "SiteSettingsManager|"
+msgid "Run insecure content"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:382
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Enable automatic searching from the address bar"
+msgctxt "SiteSettingsManager|"
+msgid "Automatic playing of videos"
+msgstr "Аутоматска претрага са траке адресе"
+
+#: lib/other/sitesettingsmanager.cpp:385
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Allow storing of cookies"
+msgctxt "SiteSettingsManager|"
+msgid "Allow reading from canvas"
+msgstr "Дозволи успремање колачића"
+
+#: lib/other/sitesettingsmanager.cpp:389
+msgctxt "SiteSettingsManager|"
+msgid "Force dark mode"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:402
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Allow"
+msgctxt "SiteSettingsManager|"
+msgid "Allow"
+msgstr "дозволи"
+
+#: lib/other/sitesettingsmanager.cpp:404
+msgctxt "SiteSettingsManager|"
+msgid "Ask"
+msgstr ""
+
+#: lib/other/sitesettingsmanager.cpp:406
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Deny"
+msgctxt "SiteSettingsManager|"
+msgid "Deny"
+msgstr "одбиј"
+
+#: lib/other/sitesettingsmanager.cpp:408
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Default"
+msgctxt "SiteSettingsManager|"
+msgid "Default"
+msgstr "Подразумеван"
+
+#: lib/other/statusbar.cpp:248
+msgctxt "StatusBar|"
+msgid "Hide"
+msgstr ""
+
+#: lib/other/updater.cpp:151
+msgctxt "Updater|"
+msgid "Update available"
+msgstr "Надоградња је доступна"
+
+#: lib/other/updater.cpp:151
+#, fuzzy
+#| msgctxt "Updater|"
+#| msgid "New version of QupZilla is ready to download."
+msgctxt "Updater|"
+msgid "New version of Osza is ready to download."
+msgstr "Ново издање Капзиле је спремно за преузимање."
+
+#: lib/other/updater.cpp:163
+msgctxt "Updater|"
+msgid "Update"
+msgstr "Ажурирај"
+
+#: lib/popupwindow/popupwebview.cpp:100
+msgctxt "PopupWebView|"
+msgid "Inspect Element"
+msgstr "Провери елемент"
+
+#: lib/popupwindow/popupwindow.cpp:83
+msgctxt "PopupWindow|"
+msgid "File"
+msgstr "Фајл"
+
+#: lib/popupwindow/popupwindow.cpp:84
+msgctxt "PopupWindow|"
+msgid "Send Link..."
+msgstr "Пошаљи везу..."
+
+#: lib/popupwindow/popupwindow.cpp:85
+msgctxt "PopupWindow|"
+msgid "&Print..."
+msgstr ""
+
+#: lib/popupwindow/popupwindow.cpp:87
+msgctxt "PopupWindow|"
+msgid "Close"
+msgstr "Затвори"
+
+#: lib/popupwindow/popupwindow.cpp:90
+msgctxt "PopupWindow|"
+msgid "Edit"
+msgstr "Уређивање"
+
+#: lib/popupwindow/popupwindow.cpp:99
+msgctxt "PopupWindow|"
+msgid "Find"
+msgstr "Нађи"
+
+#: lib/popupwindow/popupwindow.cpp:102
+msgctxt "PopupWindow|"
+msgid "View"
+msgstr "Приказ"
+
+#: lib/popupwindow/popupwindow.cpp:103
+msgctxt "PopupWindow|"
+msgid "&Stop"
+msgstr "&Заустави"
+
+#: lib/popupwindow/popupwindow.cpp:105
+msgctxt "PopupWindow|"
+msgid "&Reload"
+msgstr "&Учитај поново"
+
+#: lib/popupwindow/popupwindow.cpp:108
+msgctxt "PopupWindow|"
+msgid "Zoom &In"
+msgstr "У&величај"
+
+#: lib/popupwindow/popupwindow.cpp:109
+msgctxt "PopupWindow|"
+msgid "Zoom &Out"
+msgstr "У&мањи"
+
+#: lib/popupwindow/popupwindow.cpp:110
+msgctxt "PopupWindow|"
+msgid "Reset"
+msgstr "Стварна величина"
+
+#: lib/popupwindow/popupwindow.cpp:112
+msgctxt "PopupWindow|"
+msgid "&Page Source"
+msgstr "&Извор странице"
+
+#: lib/popupwindow/popupwindow.cpp:271
+#, qt-format
+msgctxt "PopupWindow|"
+msgid "%1 - Osza"
+msgstr ""
+
+#: lib/preferences/acceptlanguage.cpp:99 lib/preferences/acceptlanguage.cpp:164
+#, qt-format
+msgctxt "AcceptLanguage|"
+msgid "Personal [%1]"
+msgstr "Лично [%1]"
+
+#: lib/preferences/acceptlanguage.ui:14
+msgctxt "AcceptLanguage|"
+msgid "Preferred Languages"
+msgstr "Приоритетни језици"
+
+#: lib/preferences/acceptlanguage.ui:25
+msgctxt "AcceptLanguage|"
+msgid "Add..."
+msgstr "Додај..."
+
+#: lib/preferences/acceptlanguage.ui:32
+msgctxt "AcceptLanguage|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/acceptlanguage.ui:39
+msgctxt "AcceptLanguage|"
+msgid "Up"
+msgstr "Горе"
+
+#: lib/preferences/acceptlanguage.ui:46
+msgctxt "AcceptLanguage|"
+msgid "Down"
+msgstr "Доле"
+
+#: lib/preferences/addacceptlanguage.ui:14
+msgctxt "AddAcceptLanguage|"
+msgid "Add Language"
+msgstr "Додај језик"
+
+#: lib/preferences/addacceptlanguage.ui:20
+msgctxt "AddAcceptLanguage|"
+msgid "Choose preferred language for web sites"
+msgstr "Изаберите приоритетни језик за веб странице"
+
+#: lib/preferences/addacceptlanguage.ui:32
+msgctxt "AddAcceptLanguage|"
+msgid "Personal definition:"
+msgstr "Посебна дефиниција:"
+
+#: lib/preferences/autofillmanager.cpp:67
+msgctxt "AutoFillManager|"
+msgid "Import Passwords from File..."
+msgstr "Увези лозинке из фајла..."
+
+#: lib/preferences/autofillmanager.cpp:68
+msgctxt "AutoFillManager|"
+msgid "Export Passwords to File..."
+msgstr "Извези лозинке у фајл..."
+
+#: lib/preferences/autofillmanager.cpp:70
+msgctxt "AutoFillManager|"
+msgid "Search"
+msgstr "Тражи"
+
+#: lib/preferences/autofillmanager.cpp:82
+#: lib/preferences/autofillmanager.cpp:171
+#: lib/preferences/autofillmanager.cpp:179
+#: lib/preferences/autofillmanager.ui:140
+msgctxt "AutoFillManager|"
+msgid "Show Passwords"
+msgstr "Прикажи лозинке"
+
+#: lib/preferences/autofillmanager.cpp:130
+msgctxt "AutoFillManager|"
+msgid "Change backend..."
+msgstr "Промена позадине..."
+
+#: lib/preferences/autofillmanager.cpp:130
+msgctxt "AutoFillManager|"
+msgid "Change backend:"
+msgstr "За позадину користи:"
+
+#: lib/preferences/autofillmanager.cpp:179
+msgctxt "AutoFillManager|"
+msgid "Are you sure that you want to show all passwords?"
+msgstr "Желите ли заиста да прикажете све лозинке?"
+
+#: lib/preferences/autofillmanager.cpp:194
+msgctxt "AutoFillManager|"
+msgid "Hide Passwords"
+msgstr "Сакриј лозинке"
+
+#: lib/preferences/autofillmanager.cpp:232
+msgctxt "AutoFillManager|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/preferences/autofillmanager.cpp:233
+msgctxt "AutoFillManager|"
+msgid "Are you sure you want to delete all passwords on your computer?"
+msgstr "Желите ли заиста да обришете све лозинке са вашег рачунара?"
+
+#: lib/preferences/autofillmanager.cpp:252
+msgctxt "AutoFillManager|"
+msgid "Edit password"
+msgstr "Уреди лозинку"
+
+#: lib/preferences/autofillmanager.cpp:252
+msgctxt "AutoFillManager|"
+msgid "Change password:"
+msgstr "Измени лозинку:"
+
+#: lib/preferences/autofillmanager.cpp:302
+#: lib/preferences/autofillmanager.cpp:313
+msgctxt "AutoFillManager|"
+msgid "Choose file..."
+msgstr "Изабери фајл..."
+
+#: lib/preferences/autofillmanager.cpp:327
+msgctxt "AutoFillManager|"
+msgid "Cannot read file!"
+msgstr "Не могу да очитам фајл!"
+
+#: lib/preferences/autofillmanager.cpp:336
+msgctxt "AutoFillManager|"
+msgid "Successfully imported"
+msgstr "Успешно увезено"
+
+#: lib/preferences/autofillmanager.cpp:336
+msgctxt "AutoFillManager|"
+msgid "Error while importing!"
+msgstr "Грешка приликом увоза!"
+
+#: lib/preferences/autofillmanager.cpp:347
+msgctxt "AutoFillManager|"
+msgid "Cannot write to file!"
+msgstr "Не могу да упишем у фајл!"
+
+#: lib/preferences/autofillmanager.cpp:356
+msgctxt "AutoFillManager|"
+msgid "Successfully exported"
+msgstr "Успешно извезено"
+
+#: lib/preferences/autofillmanager.cpp:373
+msgctxt "AutoFillManager|"
+msgid "Copy Username"
+msgstr "Копирај корисничко име"
+
+#: lib/preferences/autofillmanager.cpp:374
+msgctxt "AutoFillManager|"
+msgid "Copy Password"
+msgstr "Копирај лозинку"
+
+#: lib/preferences/autofillmanager.cpp:376
+msgctxt "AutoFillManager|"
+msgid "Edit Password"
+msgstr "Уреди лозинку"
+
+#: lib/preferences/autofillmanager.ui:25
+msgctxt "AutoFillManager|"
+msgid "Passwords are stored in:"
+msgstr "Лозинке се смештају у:"
+
+#: lib/preferences/autofillmanager.ui:35
+msgctxt "AutoFillManager|"
+msgid "Change backend"
+msgstr "Промени позадину"
+
+#: lib/preferences/autofillmanager.ui:42
+msgctxt "AutoFillManager|"
+msgid "Backend options"
+msgstr "Опције позадине"
+
+#: lib/preferences/autofillmanager.ui:71
+msgctxt "AutoFillManager|"
+msgid "Passwords"
+msgstr "Лозинке"
+
+#: lib/preferences/autofillmanager.ui:87 lib/preferences/autofillmanager.ui:201
+msgctxt "AutoFillManager|"
+msgid "Server"
+msgstr "сајт"
+
+#: lib/preferences/autofillmanager.ui:92
+msgctxt "AutoFillManager|"
+msgid "Username"
+msgstr "корисничко име"
+
+#: lib/preferences/autofillmanager.ui:97
+msgctxt "AutoFillManager|"
+msgid "Password"
+msgstr "лозинка"
+
+#: lib/preferences/autofillmanager.ui:113
+msgctxt "AutoFillManager|"
+msgid "Import and Export"
+msgstr "Увоз и извоз"
+
+#: lib/preferences/autofillmanager.ui:154
+msgctxt "AutoFillManager|"
+msgid "Edit"
+msgstr "Уреди"
+
+#: lib/preferences/autofillmanager.ui:161
+#: lib/preferences/autofillmanager.ui:211
+msgctxt "AutoFillManager|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/autofillmanager.ui:168
+#: lib/preferences/autofillmanager.ui:218
+msgctxt "AutoFillManager|"
+msgid "Remove All"
+msgstr "Уклони све"
+
+#: lib/preferences/autofillmanager.ui:191
+msgctxt "AutoFillManager|"
+msgid "Exceptions"
+msgstr "Изузеци"
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:78
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add allowed scheme"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:78
+#: lib/preferences/autoopenprotocolsdialog.cpp:101
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Themes"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Scheme:"
+msgstr "Теме"
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:101
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add blocked scheme"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.ui:14
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Auto-Open Protocols"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.ui:20
+msgctxt "AutoOpenProtocolsDialog|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Auto Open</span></"
+"p></body></html>"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.ui:34
+#: lib/preferences/autoopenprotocolsdialog.ui:79
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Add"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add"
+msgstr "Додај"
+
+#: lib/preferences/autoopenprotocolsdialog.ui:41
+#: lib/preferences/autoopenprotocolsdialog.ui:86
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/autoopenprotocolsdialog.ui:65
+msgctxt "AutoOpenProtocolsDialog|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Blocked</span></p></"
+"body></html>"
+msgstr ""
+
+#: lib/preferences/certificatemanager.cpp:61
+msgctxt "CertificateManager|"
+msgid "Host: "
+msgstr ""
+
+#: lib/preferences/certificatemanager.cpp:65
+msgctxt "CertificateManager|"
+msgid "Add certificate exception"
+msgstr ""
+
+#: lib/preferences/certificatemanager.cpp:74
+#, qt-format
+msgctxt "CertificateManager|"
+msgid "Host %1 already in the list"
+msgstr ""
+
+#: lib/preferences/certificatemanager.cpp:83
+#, fuzzy
+#| msgctxt "Bookmarks|"
+#| msgid "Empty"
+msgctxt "CertificateManager|"
+msgid "Empty host"
+msgstr "Празно"
+
+#: lib/preferences/certificatemanager.ui:14
+msgctxt "CertificateManager|"
+msgid "Certificate exception manager"
+msgstr ""
+
+#: lib/preferences/certificatemanager.ui:22
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Add"
+msgctxt "CertificateManager|"
+msgid "Add"
+msgstr "Додај"
+
+#: lib/preferences/certificatemanager.ui:29
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "CertificateManager|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/certificatemanager.ui:69
+msgctxt "CertificateManager|"
+msgid "Removing an entry requires a restart"
+msgstr ""
+
+#: lib/preferences/jsoptions.ui:14
+msgctxt "JsOptions|"
+msgid "JavaScript Options"
+msgstr "Опције Јаваскрипти"
+
+#: lib/preferences/jsoptions.ui:20
+msgctxt "JsOptions|"
+msgid "Allow JavaScript to:"
+msgstr "Дозволи јаваскрипти да:"
+
+#: lib/preferences/jsoptions.ui:29
+msgctxt "JsOptions|"
+msgid "Open popup windows"
+msgstr "отвори искачући прозор"
+
+#: lib/preferences/jsoptions.ui:36
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "New &Private Window"
+msgctxt "JsOptions|"
+msgid "Activate windows"
+msgstr "Нови п&риватни прозор"
+
+#: lib/preferences/jsoptions.ui:43
+msgctxt "JsOptions|"
+msgid "Access clipboard"
+msgstr "приступи клипборду"
+
+#: lib/preferences/jsoptions.ui:50
+#, fuzzy
+#| msgctxt "JsOptions|"
+#| msgid "Access clipboard"
+msgctxt "JsOptions|"
+msgid "Paste from clipboard"
+msgstr "приступи клипборду"
+
+#: lib/preferences/pluginslist.ui:17
+#, fuzzy
+#| msgctxt "AutoFillManager|"
+#| msgid "Username"
+msgctxt "PluginsList|"
+msgid "Enter name"
+msgstr "корисничко име"
+
+#: lib/preferences/pluginslist.ui:51
+msgctxt "PluginsList|"
+msgid "Settings"
+msgstr "Подешавање"
+
+#: lib/preferences/pluginslist.ui:61
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "PluginsList|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/pluginslist.ui:81
+msgctxt "PluginsList|"
+msgid ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">Get more extensions...</a>"
+msgstr ""
+
+#: lib/preferences/pluginsmanager.cpp:201
+msgctxt "PluginsManager|"
+msgid "Error!"
+msgstr "Грешка!"
+
+#: lib/preferences/pluginsmanager.cpp:201
+msgctxt "PluginsManager|"
+msgid "Cannot load extension!"
+msgstr "Не могу да учитам проширење!"
+
+#: lib/preferences/pluginsmanager.cpp:240
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Confirmation"
+msgctxt "PluginsManager|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/preferences/pluginsmanager.cpp:241
+#, fuzzy, qt-format
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Are you sure you want to remove this speed dial?"
+msgctxt "PluginsManager|"
+msgid "Are you sure you want to remove '%1'?"
+msgstr "Желите ли заиста да уклоните ово брзо бирање?"
+
+#: lib/preferences/preferences.cpp:157 lib/preferences/preferences.cpp:685
+msgctxt "Preferences|"
+msgid "Default"
+msgstr "Подразумеван"
+
+#: lib/preferences/preferences.cpp:161
+msgctxt "Preferences|"
+msgid "Set as default"
+msgstr "Постави за подразумеван"
+
+#: lib/preferences/preferences.cpp:341
+#, fuzzy
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Auto"
+msgctxt "Preferences|"
+msgid "Auto"
+msgstr "Ауто"
+
+#: lib/preferences/preferences.cpp:343
+msgctxt "Preferences|"
+msgid "Light"
+msgstr ""
+
+#: lib/preferences/preferences.cpp:344
+msgctxt "Preferences|"
+msgid "Dark"
+msgstr ""
+
+#: lib/preferences/preferences.cpp:354
+#, qt-format
+msgctxt "Preferences|"
+msgid "%1%"
+msgstr ""
+
+#: lib/preferences/preferences.cpp:628
+msgctxt "Preferences|"
+msgid "Choose executable location..."
+msgstr "Одабир локације извршног фајла..."
+
+#: lib/preferences/preferences.cpp:671
+msgctxt "Preferences|"
+msgid "OSD Notification"
+msgstr "ОСД обавештење"
+
+#: lib/preferences/preferences.cpp:672
+msgctxt "Preferences|"
+msgid "Drag it on the screen to place it where you want."
+msgstr "Превуците га по екрану на жељени положај."
+
+#: lib/preferences/preferences.cpp:721
+msgctxt "Preferences|"
+msgid "Choose download location..."
+msgstr "Одабир одредишта за преузимање..."
+
+#: lib/preferences/preferences.cpp:735
+msgctxt "Preferences|"
+msgid "Choose stylesheet location..."
+msgstr "Одабир фајла описа стила..."
+
+#: lib/preferences/preferences.cpp:746
+msgctxt "Preferences|"
+msgid "Deleted"
+msgstr "Обрисано"
+
+#: lib/preferences/preferences.cpp:854
+msgctxt "Preferences|"
+msgid "Choose cache path..."
+msgstr "Одабир путање за кеш..."
+
+#: lib/preferences/preferences.cpp:885
+msgctxt "Preferences|"
+msgid "New Profile"
+msgstr "Нови профил"
+
+#: lib/preferences/preferences.cpp:885
+msgctxt "Preferences|"
+msgid "Enter the new profile's name:"
+msgstr "Унесите име новог профила:"
+
+#: lib/preferences/preferences.cpp:895 lib/preferences/preferences.cpp:900
+msgctxt "Preferences|"
+msgid "Error!"
+msgstr "Грешка!"
+
+#: lib/preferences/preferences.cpp:895
+msgctxt "Preferences|"
+msgid "This profile already exists!"
+msgstr "Овај профил већ постоји!"
+
+#: lib/preferences/preferences.cpp:900
+msgctxt "Preferences|"
+msgid "Cannot create profile directory!"
+msgstr "Не могу да направим директоријум профила!"
+
+#: lib/preferences/preferences.cpp:911
+msgctxt "Preferences|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/preferences/preferences.cpp:912
+#, qt-format
+msgctxt "Preferences|"
+msgid ""
+"Are you sure you want to permanently delete \"%1\" profile? This action "
+"cannot be undone!"
+msgstr ""
+"Желите ли заиста трајно да обришете профил „%1“? Ова радња не може да се "
+"поништи!"
+
+#: lib/preferences/preferences.cpp:927 lib/preferences/preferences.ui:245
+msgctxt "Preferences|"
+msgid "Note: You cannot delete active profile."
+msgstr "Напомена: Не можете обрисати активни профил."
+
+#: lib/preferences/preferences.ui:14
+msgctxt "Preferences|"
+msgid "Preferences"
+msgstr "Поставке"
+
+#: lib/preferences/preferences.ui:67 lib/preferences/preferences.ui:2241
+msgctxt "Preferences|"
+msgid "General"
+msgstr "Опште"
+
+#: lib/preferences/preferences.ui:72
+msgctxt "Preferences|"
+msgid "Appearance"
+msgstr "Изглед"
+
+#: lib/preferences/preferences.ui:77
+msgctxt "Preferences|"
+msgid "Tabs"
+msgstr "Језичци"
+
+#: lib/preferences/preferences.ui:82
+msgctxt "Preferences|"
+msgid "Browsing"
+msgstr "Прегледање"
+
+#: lib/preferences/preferences.ui:87
+msgctxt "Preferences|"
+msgid "Fonts"
+msgstr "Фонтови"
+
+#: lib/preferences/preferences.ui:92
+msgctxt "Preferences|"
+msgid "Keyboard Shortcuts"
+msgstr "Пречице тастатуре"
+
+#: lib/preferences/preferences.ui:97
+msgctxt "Preferences|"
+msgid "Downloads"
+msgstr "Преузимања"
+
+#: lib/preferences/preferences.ui:102
+msgctxt "Preferences|"
+msgid "Password Manager"
+msgstr "Менаџер лозинки"
+
+#: lib/preferences/preferences.ui:107
+msgctxt "Preferences|"
+msgid "Privacy"
+msgstr "Приватност"
+
+#: lib/preferences/preferences.ui:112
+msgctxt "Preferences|"
+msgid "Notifications"
+msgstr "Обавештења"
+
+#: lib/preferences/preferences.ui:117
+msgctxt "Preferences|"
+msgid "Extensions"
+msgstr "Проширења"
+
+#: lib/preferences/preferences.ui:122
+msgctxt "Preferences|"
+msgid "Spell Check"
+msgstr "Провера правописа"
+
+#: lib/preferences/preferences.ui:127
+msgctxt "Preferences|"
+msgid "Other"
+msgstr "Остало"
+
+#: lib/preferences/preferences.ui:214 lib/preferences/preferences.ui:365
+msgctxt "Preferences|"
+msgid "Use current"
+msgstr "Користи текућу"
+
+#: lib/preferences/preferences.ui:261
+msgctxt "Preferences|"
+msgid "Create New"
+msgstr "Направи нови"
+
+#: lib/preferences/preferences.ui:277
+msgctxt "Preferences|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/preferences/preferences.ui:303
+msgctxt "Preferences|"
+msgid "<b>Launching</b>"
+msgstr "<b>Покретање</b>"
+
+#: lib/preferences/preferences.ui:313
+msgctxt "Preferences|"
+msgid "After launch: "
+msgstr "По покретању: "
+
+#: lib/preferences/preferences.ui:321
+msgctxt "Preferences|"
+msgid "Open blank page"
+msgstr "отвори празну страницу"
+
+#: lib/preferences/preferences.ui:326 lib/preferences/preferences.ui:387
+msgctxt "Preferences|"
+msgid "Open homepage"
+msgstr "отвори домаћу страницу"
+
+#: lib/preferences/preferences.ui:331 lib/preferences/preferences.ui:392
+msgctxt "Preferences|"
+msgid "Open speed dial"
+msgstr "отвори брзо бирање"
+
+#: lib/preferences/preferences.ui:336
+msgctxt "Preferences|"
+msgid "Restore session"
+msgstr "обнови сесију"
+
+#: lib/preferences/preferences.ui:341
+msgctxt "Preferences|"
+msgid "Select session"
+msgstr ""
+
+#: lib/preferences/preferences.ui:349
+msgctxt "Preferences|"
+msgid "Homepage: "
+msgstr "Домаћа страница: "
+
+#: lib/preferences/preferences.ui:374
+msgctxt "Preferences|"
+msgid "On new tab: "
+msgstr "На новом језичку: "
+
+#: lib/preferences/preferences.ui:382
+msgctxt "Preferences|"
+msgid "Open blank tab"
+msgstr "отвори празан језичак"
+
+#: lib/preferences/preferences.ui:397
+msgctxt "Preferences|"
+msgid "Open other page..."
+msgstr "отвори другу страницу..."
+
+#: lib/preferences/preferences.ui:405
+msgctxt "Preferences|"
+msgid "<b>Profiles</b>"
+msgstr "<b>Профили</b>"
+
+#: lib/preferences/preferences.ui:412
+msgctxt "Preferences|"
+msgid "Startup profile:"
+msgstr "Почетни профил:"
+
+#: lib/preferences/preferences.ui:419
+msgctxt "Preferences|"
+msgid "Check for updates on start"
+msgstr "Потражи надоградње по покретању"
+
+#: lib/preferences/preferences.ui:426
+msgctxt "Preferences|"
+msgid "Active profile:"
+msgstr "Активни профил:"
+
+#: lib/preferences/preferences.ui:440
+msgctxt "Preferences|"
+msgid "Don't load tabs until selected"
+msgstr "Не учитавај језичке док не буду изабрани"
+
+#: lib/preferences/preferences.ui:462
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Check to see if QupZilla is the default browser on startup"
+msgctxt "Preferences|"
+msgid "Check to see if Osza is the default browser on startup"
+msgstr "Провера подразумеваног прегледача по старту"
+
+#: lib/preferences/preferences.ui:472
+msgctxt "Preferences|"
+msgid "Check Now"
+msgstr "Провери одмах"
+
+#: lib/preferences/preferences.ui:502
+msgctxt "Preferences|"
+msgid "Themes"
+msgstr "Теме"
+
+#: lib/preferences/preferences.ui:524
+msgctxt "Preferences|"
+msgid "Advanced options"
+msgstr "Напредне опције"
+
+#: lib/preferences/preferences.ui:532
+msgctxt "Preferences|"
+msgid "Show Bookmarks ToolBar on start"
+msgstr "Прикажи траку обележивача по покретању"
+
+#: lib/preferences/preferences.ui:539
+msgctxt "Preferences|"
+msgid "Default minimal sideBar width:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:546
+msgctxt "Preferences|"
+msgid "Show StatusBar on start"
+msgstr "Прикажи траку стања по покретању"
+
+#: lib/preferences/preferences.ui:553
+msgctxt "Preferences|"
+msgid "Show Navigation ToolBar on start"
+msgstr "Прикажи траку навигације по покретању"
+
+#: lib/preferences/preferences.ui:560
+msgctxt "Preferences|"
+msgid "Enable instant Bookmarks ToolBar"
+msgstr "Трака брзих обележивача"
+
+#: lib/preferences/preferences.ui:567
+msgctxt "Preferences|"
+msgid "px"
+msgstr ""
+
+#: lib/preferences/preferences.ui:577
+msgctxt "Preferences|"
+msgid "Show Profile Name in Window Title"
+msgstr ""
+
+#: lib/preferences/preferences.ui:586
+msgctxt "Preferences|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Web Page Background "
+"Colors</span></p></body></html>"
+msgstr ""
+
+#: lib/preferences/preferences.ui:611 lib/preferences/preferences.ui:625
+#: lib/preferences/preferences.ui:1134 lib/preferences/preferences.ui:1495
+#: lib/preferences/preferences.ui:2033 lib/preferences/preferences.ui:2133
+#: lib/preferences/preferences.ui:2812
+msgctxt "Preferences|"
+msgid "..."
+msgstr "..."
+
+#: lib/preferences/preferences.ui:618 lib/preferences/preferences.ui:632
+#: lib/preferences/preferences.ui:1141
+msgctxt "Preferences|"
+msgid "Reset"
+msgstr "Подразумевана"
+
+#: lib/preferences/preferences.ui:639
+msgctxt "Preferences|"
+msgid "Background color when loaded:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:646
+msgctxt "Preferences|"
+msgid "Background color while loading:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:653
+msgctxt "Preferences|miliseconds"
+msgid "ms"
+msgstr ""
+
+#: lib/preferences/preferences.ui:666
+msgctxt ""
+"Preferences|Time in milisencods which describes how long to wait after the "
+"page was initially loaded before switching the backgroung color to the "
+"loaded variant."
+msgid "Loaded state switch delay:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:675
+msgctxt "Preferences|"
+msgid "<b>Browser Window</b>"
+msgstr "<b>Прозор прегледача</b>"
+
+#: lib/preferences/preferences.ui:723
+msgctxt "Preferences|"
+msgid "Tabs behaviour"
+msgstr "Понашање језичака"
+
+#: lib/preferences/preferences.ui:729
+msgctxt "Preferences|"
+msgid "Hide tabs when there is only one tab"
+msgstr "Сакриј траку са језичцима када има само један"
+
+#: lib/preferences/preferences.ui:738
+msgctxt "Preferences|"
+msgid "When closing the active tab, activate:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:746
+msgctxt "Preferences|"
+msgid "Previous tab"
+msgstr ""
+
+#: lib/preferences/preferences.ui:751
+#, fuzzy
+#| msgctxt "TabWidget|"
+#| msgid "New tab"
+msgctxt "Preferences|"
+msgid "Next tab"
+msgstr "Нови језичак"
+
+#: lib/preferences/preferences.ui:756
+msgctxt "Preferences|"
+msgid "Previously active tab"
+msgstr ""
+
+#: lib/preferences/preferences.ui:782
+msgctxt "Preferences|"
+msgid "Open new tabs after active tab"
+msgstr "Отварај нове језичке после активног"
+
+#: lib/preferences/preferences.ui:789
+msgctxt "Preferences|"
+msgid "Open new empty tabs after active tab"
+msgstr "Отварај празне језичке после активног"
+
+#: lib/preferences/preferences.ui:796
+msgctxt "Preferences|"
+msgid "Reverse new tabs order"
+msgstr ""
+
+#: lib/preferences/preferences.ui:803
+msgctxt "Preferences|"
+msgid "Open popup windows in tabs"
+msgstr "Отварај искачуће прозоре у језичцима"
+
+#: lib/preferences/preferences.ui:810
+msgctxt "Preferences|"
+msgid "Block automatic popups"
+msgstr ""
+
+#: lib/preferences/preferences.ui:817
+msgctxt "Preferences|"
+msgid "Always switch between tabs with mouse wheel"
+msgstr "Увек пребацуј језичке точкићем миша"
+
+#: lib/preferences/preferences.ui:824
+msgctxt "Preferences|"
+msgid "Automatically switch to newly opened tab"
+msgstr "Аутоматски фокусирај новоотворени језичак"
+
+#: lib/preferences/preferences.ui:831
+msgctxt "Preferences|"
+msgid "Don't close window upon closing last tab"
+msgstr "Не затварај прозор по затварању последњег језичка"
+
+#: lib/preferences/preferences.ui:838
+msgctxt "Preferences|"
+msgid "Ask when closing multiple tabs"
+msgstr "Потврди затварање прозора са више језичака"
+
+#: lib/preferences/preferences.ui:845
+msgctxt "Preferences|"
+msgid "Show closed tabs button"
+msgstr "Прикажи дугме затворених језичака"
+
+#: lib/preferences/preferences.ui:854
+msgctxt "Preferences|"
+msgid "Show close buttons on inactive tabs:"
+msgstr "Дугме за затварање на неактивним језичцима:"
+
+#: lib/preferences/preferences.ui:862
+msgctxt "Preferences|"
+msgid "Automatic"
+msgstr "аутоматски"
+
+#: lib/preferences/preferences.ui:867
+msgctxt "Preferences|"
+msgid "Always"
+msgstr "увек"
+
+#: lib/preferences/preferences.ui:872
+msgctxt "Preferences|"
+msgid "Never"
+msgstr "никад"
+
+#: lib/preferences/preferences.ui:912
+msgctxt "Preferences|"
+msgid "Address Bar behaviour"
+msgstr "Понашање траке адресе"
+
+#: lib/preferences/preferences.ui:920
+msgctxt "Preferences|"
+msgid "Suggest when typing into address bar:"
+msgstr "При куцању у траци адресе предлажи:"
+
+#: lib/preferences/preferences.ui:934
+msgctxt "Preferences|"
+msgid "History and Bookmarks"
+msgstr "историјат и обележиваче"
+
+#: lib/preferences/preferences.ui:939
+msgctxt "Preferences|"
+msgid "History"
+msgstr "историјат"
+
+#: lib/preferences/preferences.ui:944
+msgctxt "Preferences|"
+msgid "Bookmarks"
+msgstr "обележиваче"
+
+#: lib/preferences/preferences.ui:949
+msgctxt "Preferences|"
+msgid "Nothing"
+msgstr "ништа"
+
+#: lib/preferences/preferences.ui:975
+msgctxt "Preferences|"
+msgid "Enable inline suggestions"
+msgstr "Предлози у линији"
+
+#: lib/preferences/preferences.ui:982
+msgctxt "Preferences|"
+msgid ""
+"Press \"Shift\" to not switch the tab but load the url in the current tab"
+msgstr "Притисните Shift тастер да учитате УРЛ у текућем језичку"
+
+#: lib/preferences/preferences.ui:985
+msgctxt "Preferences|"
+msgid "Propose to switch tab if completed url is already loaded"
+msgstr "Предлажи активирање језичка ако је УРЛ већ отворен"
+
+#: lib/preferences/preferences.ui:992
+msgctxt "Preferences|"
+msgid "Always show go icon"
+msgstr "Увек приказуј икону „иди на сајт“"
+
+#: lib/preferences/preferences.ui:999
+#, fuzzy
+#| msgctxt "WebView|"
+#| msgid "Show i&mage"
+msgctxt "Preferences|"
+msgid "Show zoom label"
+msgstr "П&рикажи слику"
+
+#: lib/preferences/preferences.ui:1006
+msgctxt "Preferences|"
+msgid "Select all text by double clicking in address bar"
+msgstr "Изабери сав текст двокликом у траци адресе"
+
+#: lib/preferences/preferences.ui:1013
+msgctxt "Preferences|"
+msgid "Select all text by clicking in address bar"
+msgstr "Изабери сав текст кликом у траци адресе"
+
+#: lib/preferences/preferences.ui:1020
+msgctxt "Preferences|"
+msgid "Enable automatic searching from the address bar"
+msgstr "Аутоматска претрага са траке адресе"
+
+#: lib/preferences/preferences.ui:1027
+msgctxt "Preferences|"
+msgid "Search with Default Engine"
+msgstr "Тражи помоћу подразумеваног мотора"
+
+#: lib/preferences/preferences.ui:1034
+msgctxt "Preferences|"
+msgid "Show search suggestions"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1041
+msgctxt "Preferences|"
+msgid "Expand suggestion popup to window width"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1064
+msgctxt "Preferences|"
+msgid "Show loading progress in address bar"
+msgstr "Прикажи напредак учитавања у траци адресе"
+
+#: lib/preferences/preferences.ui:1097
+msgctxt "Preferences|"
+msgid "Fill"
+msgstr "Испун"
+
+#: lib/preferences/preferences.ui:1102
+msgctxt "Preferences|"
+msgid "Bottom"
+msgstr "Дно"
+
+#: lib/preferences/preferences.ui:1107
+msgctxt "Preferences|"
+msgid "Top"
+msgstr "Врх"
+
+#: lib/preferences/preferences.ui:1115
+msgctxt "Preferences|"
+msgid "Custom color:"
+msgstr "Посебна боја:"
+
+#: lib/preferences/preferences.ui:1131
+msgctxt "Preferences|"
+msgid "Select color"
+msgstr "Изабери боју"
+
+#: lib/preferences/preferences.ui:1192
+msgctxt "Preferences|"
+msgid "Web Configuration"
+msgstr "Веб поставке"
+
+#: lib/preferences/preferences.ui:1200
+msgctxt "Preferences|"
+msgid "Enable Pepper plugin API (PPAPI)"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1207
+msgctxt "Preferences|"
+msgid "Use built-in PDF viewer (requires PPAPI)"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1214
+msgctxt "Preferences|"
+msgid "Allow JavaScript"
+msgstr "Дозволи Јаваскрипте"
+
+#: lib/preferences/preferences.ui:1221
+msgctxt "Preferences|"
+msgid "Include links in focus chain"
+msgstr "Укључи везе у ланац фокуса"
+
+#. when you are printing page (on printer), it determine whether to also print background (color, image) of html elements
+#: lib/preferences/preferences.ui:1228
+msgctxt "Preferences|"
+msgid "Print element background"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1235
+msgctxt "Preferences|"
+msgid "Animated scrolling"
+msgstr "Анимирано клизање"
+
+#: lib/preferences/preferences.ui:1242
+msgctxt "Preferences|"
+msgid "Enable spatial navigation"
+msgstr "Просторна навигација"
+
+#: lib/preferences/preferences.ui:1249
+msgctxt "Preferences|"
+msgid "Use native scrollbars"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1256
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Enable automatic searching from the address bar"
+msgctxt "Preferences|"
+msgid "Disable automatic playing of videos"
+msgstr "Аутоматска претрага са траке адресе"
+
+#: lib/preferences/preferences.ui:1263
+msgctxt "Preferences|"
+msgid "Prevent WebRTC from leaking local IP address"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1270
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Enable XSS Auditing"
+msgctxt "Preferences|"
+msgid "Enable DNS prefetching"
+msgstr "Укључи ИксСС проверавање"
+
+#: lib/preferences/preferences.ui:1277
+msgctxt "Preferences|"
+msgid "Enable screen capture"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1284
+msgctxt "Preferences|"
+msgid "Use hardware acceleration (requires restart)"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1291
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Allow storing of cookies"
+msgctxt "Preferences|"
+msgid "Allow reading from canvas"
+msgstr "Дозволи успремање колачића"
+
+#: lib/preferences/preferences.ui:1298
+msgctxt "Preferences|"
+msgid "Force dark mode"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1305
+msgctxt "Preferences|"
+msgid "Allow image animation"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1314
+msgctxt "Preferences|"
+msgid "Preferred color scheme:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1349
+msgctxt "Preferences|"
+msgid "Mouse wheel scrolls"
+msgstr "Точкић миша клиза"
+
+#: lib/preferences/preferences.ui:1369
+msgctxt "Preferences|"
+msgid "lines on page"
+msgstr "линија на страници"
+
+#: lib/preferences/preferences.ui:1380
+msgctxt "Preferences|"
+msgid "Default zoom on pages: "
+msgstr "Подразумевано увеличање страница:"
+
+#: lib/preferences/preferences.ui:1419
+msgctxt "Preferences|"
+msgid "Local Storage"
+msgstr "Локално складиште"
+
+#: lib/preferences/preferences.ui:1427
+msgctxt "Preferences|"
+msgid "Allow storing network cache on disk"
+msgstr "Дозволи смештање мрежног кеша на диск"
+
+#: lib/preferences/preferences.ui:1450
+msgctxt "Preferences|"
+msgid "Delete cache on close"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1457
+msgctxt "Preferences|"
+msgid "Maximum:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1464
+msgctxt "Preferences|"
+msgid " MB"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1480
+msgctxt "Preferences|"
+msgid "Store cache in:"
+msgstr "Смештај кеш у:"
+
+#: lib/preferences/preferences.ui:1508
+msgctxt "Preferences|"
+msgid "Allow saving history"
+msgstr "Дозволи чување историјата"
+
+#: lib/preferences/preferences.ui:1515
+msgctxt "Preferences|"
+msgid "Delete history on close"
+msgstr "Обриши историјат по затварању"
+
+#: lib/preferences/preferences.ui:1538
+msgctxt "Preferences|"
+msgid "Allow local storage of HTML5 web content"
+msgstr "Дозволи локално смештање ХТМЛ5 веб садржаја"
+
+#: lib/preferences/preferences.ui:1545
+msgctxt "Preferences|"
+msgid "Delete locally stored HTML5 web content on close"
+msgstr "Обриши локални ХТМЛ5 веб садржај по затварању"
+
+#: lib/preferences/preferences.ui:1571
+msgctxt "Preferences|"
+msgid "Delete now"
+msgstr "Обриши сада"
+
+#: lib/preferences/preferences.ui:1610
+msgctxt "Preferences|"
+msgid "Proxy Configuration"
+msgstr "Поставке проксија"
+
+#: lib/preferences/preferences.ui:1629
+msgctxt "Preferences|"
+msgid "System proxy configuration"
+msgstr "Системске поставке"
+
+#: lib/preferences/preferences.ui:1652
+msgctxt "Preferences|"
+msgid "Manual configuration"
+msgstr "Ручне поставке"
+
+#: lib/preferences/preferences.ui:1662
+msgctxt "Preferences|"
+msgid "HTTP"
+msgstr "ХТТП"
+
+#: lib/preferences/preferences.ui:1667
+msgctxt "Preferences|"
+msgid "SOCKS5"
+msgstr "СОЦКС5"
+
+#: lib/preferences/preferences.ui:1682
+msgctxt "Preferences|"
+msgid "Port:"
+msgstr "Порт:"
+
+#: lib/preferences/preferences.ui:1703
+msgctxt "Preferences|"
+msgid "Username:"
+msgstr "Корисничко име:"
+
+#: lib/preferences/preferences.ui:1713
+msgctxt "Preferences|"
+msgid "Password:"
+msgstr "Лозинка:"
+
+#: lib/preferences/preferences.ui:1742
+msgctxt "Preferences|"
+msgid "No proxy"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1757
+msgctxt "Preferences|"
+msgid "<b>Font Families</b>"
+msgstr "<b>Породице фонта</b>"
+
+#: lib/preferences/preferences.ui:1770
+msgctxt "Preferences|"
+msgid "Standard"
+msgstr "Стандардни"
+
+#: lib/preferences/preferences.ui:1777
+msgctxt "Preferences|"
+msgid "Fixed"
+msgstr "Фиксни"
+
+#: lib/preferences/preferences.ui:1787
+msgctxt "Preferences|"
+msgid "Serif"
+msgstr "Серифни"
+
+#: lib/preferences/preferences.ui:1797
+msgctxt "Preferences|"
+msgid "Sans Serif"
+msgstr "Бесерифни"
+
+#: lib/preferences/preferences.ui:1807
+msgctxt "Preferences|"
+msgid "Cursive"
+msgstr "Курзивни"
+
+#: lib/preferences/preferences.ui:1859
+msgctxt "Preferences|"
+msgid "Fantasy"
+msgstr "Фантазијски"
+
+#: lib/preferences/preferences.ui:1866
+msgctxt "Preferences|"
+msgid "<b>Font Sizes</b>"
+msgstr "<b>Величине фонта</b>"
+
+#: lib/preferences/preferences.ui:1875
+msgctxt "Preferences|"
+msgid "Fixed Font Size"
+msgstr "Фиксни фонт"
+
+#: lib/preferences/preferences.ui:1882
+msgctxt "Preferences|"
+msgid "Default Font Size"
+msgstr "Подразумевани фонт"
+
+#: lib/preferences/preferences.ui:1909
+msgctxt "Preferences|"
+msgid "Minimum Font Size"
+msgstr "Најмања величина"
+
+#: lib/preferences/preferences.ui:1916
+msgctxt "Preferences|"
+msgid "Minimum Logical Font Size"
+msgstr "Најмања могућа величина"
+
+#: lib/preferences/preferences.ui:1949
+msgctxt "Preferences|"
+msgid "<b>Shortcuts</b>"
+msgstr "<b>Пречице</b>"
+
+#: lib/preferences/preferences.ui:1956
+msgctxt "Preferences|"
+msgid "Switch to tabs with Alt + number of tab"
+msgstr "Активирај језичке са Alt + број језичка"
+
+#: lib/preferences/preferences.ui:1963
+msgctxt "Preferences|"
+msgid "Load speed dials with Ctrl + number of speed dial"
+msgstr "Учитавај брза бирања са Ctrl + број брзог бирања"
+
+#: lib/preferences/preferences.ui:1970
+msgctxt "Preferences|"
+msgid ""
+"Existing shortcuts:<br/><b>1</b> - previous tab<br/><b>2</b> - next tab<br/"
+"><b>/</b> - search on page"
+msgstr ""
+"Доступне пречице:<br/><b>1</b> - претходни језичак<br/><b>2</b> - следећи "
+"језичак<br/><b>/</b> - претрага"
+
+#: lib/preferences/preferences.ui:1973
+msgctxt "Preferences|"
+msgid "Use single key shortcuts"
+msgstr "Једнотастерске пречице"
+
+#: lib/preferences/preferences.ui:1980
+msgctxt "Preferences|"
+msgid ""
+"If unchecked, prevents accidental exit from the application if the Ctrl-W "
+"shortcut was intended."
+msgstr ""
+"Ако није означено, спречава случајан излаз из програма ако сте уместо Ctrl-W "
+"унели ову пречицу."
+
+#: lib/preferences/preferences.ui:1983
+msgctxt "Preferences|"
+msgid "Close application with Ctrl-Q"
+msgstr "Затвори програм са Ctrl-Q"
+
+#: lib/preferences/preferences.ui:2007
+msgctxt "Preferences|"
+msgid "<b>Download Location</b>"
+msgstr "<b>Одредиште преузимања</b>"
+
+#: lib/preferences/preferences.ui:2014
+msgctxt "Preferences|"
+msgid "Ask everytime for download location"
+msgstr "Питај сваки пут за одредиште"
+
+#: lib/preferences/preferences.ui:2021
+msgctxt "Preferences|"
+msgid "Use defined location: "
+msgstr "Користи одредиште: "
+
+#: lib/preferences/preferences.ui:2071
+msgctxt "Preferences|"
+msgid "<b>Download Options</b>"
+msgstr "<b>Опције преузимања</b>"
+
+#: lib/preferences/preferences.ui:2078
+msgctxt "Preferences|"
+msgid "Close download manager when downloading finishes"
+msgstr "Затвори менаџера преузимања када се преузимање заврши"
+
+#: lib/preferences/preferences.ui:2085
+msgctxt "Preferences|"
+msgid "<b>External download manager</b>"
+msgstr "<b>Спољашњи менаџер преузимања</b>"
+
+#: lib/preferences/preferences.ui:2092
+msgctxt "Preferences|"
+msgid "Use external download manager"
+msgstr "Користи спољашњи менаџер преузимања"
+
+#: lib/preferences/preferences.ui:2104
+msgctxt "Preferences|"
+msgid "Executable:"
+msgstr "Извршна:"
+
+#: lib/preferences/preferences.ui:2111
+msgctxt "Preferences|"
+msgid "Arguments:"
+msgstr "Аргументи:"
+
+#: lib/preferences/preferences.ui:2121
+msgctxt "Preferences|"
+msgid "Leave blank if unsure"
+msgstr "Оставите празно ако нисте сигурни"
+
+#: lib/preferences/preferences.ui:2142
+msgctxt "Preferences|"
+msgid "<b>%d</b> will be replaced with URL to be downloaded"
+msgstr "<b>%d</b> ће бити замењено адресом преузимања"
+
+#: lib/preferences/preferences.ui:2168
+msgctxt "Preferences|"
+msgid "<b>AutoFill options</b>"
+msgstr "<b>Опције аутоматске попуне</b>"
+
+#: lib/preferences/preferences.ui:2175
+msgctxt "Preferences|"
+msgid "Allow saving passwords from sites"
+msgstr "Дозволи успремање лозинки са сајтова"
+
+#: lib/preferences/preferences.ui:2226
+msgctxt "Preferences|"
+msgid "Automatically complete passwords on sites"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2247
+msgctxt "Preferences|"
+msgid "Manage Cookies"
+msgstr "Управљај колачићима"
+
+#: lib/preferences/preferences.ui:2260
+msgctxt "Preferences|"
+msgid "Cookies Manager"
+msgstr "Менаџер колачића"
+
+#: lib/preferences/preferences.ui:2283
+msgctxt "Preferences|"
+msgid "<b>JavaScript</b>"
+msgstr "<b>Јаваскрипте</b>"
+
+#: lib/preferences/preferences.ui:2296
+msgctxt "Preferences|"
+msgid "JavaScript options"
+msgstr "Подешавање јаваскрипти"
+
+#: lib/preferences/preferences.ui:2303
+msgctxt "Preferences|"
+msgid "Send Do Not Track header to servers"
+msgstr "Шаљи ДНТ (Не Прати Ме) заглавље серверима"
+
+#: lib/preferences/preferences.ui:2310
+msgctxt "Preferences|"
+msgid "<b>Cookies</b>"
+msgstr "<b>Колачићи</b>"
+
+#: lib/preferences/preferences.ui:2336
+msgctxt "Preferences|"
+msgid "Manage JavaScript privacy options"
+msgstr "Управљај поставкама приватности"
+
+#: lib/preferences/preferences.ui:2343
+msgctxt "Preferences|"
+msgid "<b>Other</b>"
+msgstr "<b>Разно</b>"
+
+#: lib/preferences/preferences.ui:2364
+msgctxt "Preferences|"
+msgid "HTML5 Permissions"
+msgstr "ХТМЛ5 дозволе"
+
+#: lib/preferences/preferences.ui:2374
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Settings"
+msgctxt "Preferences|"
+msgid "Site Settings"
+msgstr "Подешавање"
+
+#: lib/preferences/preferences.ui:2406
+msgctxt "Preferences|"
+msgid "Expiration timeout:"
+msgstr "Време истека:"
+
+#: lib/preferences/preferences.ui:2419
+msgctxt "Preferences|"
+msgid " seconds"
+msgstr " секунди"
+
+#: lib/preferences/preferences.ui:2441
+msgctxt "Preferences|"
+msgid "<b>Notifications</b>"
+msgstr "<b>Обавештења</b>"
+
+#: lib/preferences/preferences.ui:2464
+msgctxt "Preferences|"
+msgid "Use Native System Notifications (Linux only)"
+msgstr "Користи изворна системска обавештења (само за Линукс)"
+
+#: lib/preferences/preferences.ui:2471
+msgctxt "Preferences|"
+msgid "Do not use Notifications"
+msgstr "Не користи ОСД обавештења"
+
+#: lib/preferences/preferences.ui:2494
+msgctxt "Preferences|"
+msgid ""
+"<b>Note: </b>You can change position of OSD Notification by dragging it on "
+"the screen."
+msgstr ""
+"<b>Напомена: </b>Можете променити положај ОСД обавештења превлачењем по "
+"екрану."
+
+#: lib/preferences/preferences.ui:2520
+msgctxt "Preferences|"
+msgid "Use OSD Notifications"
+msgstr "Користи ОСД обавештења"
+
+#: lib/preferences/preferences.ui:2527
+msgctxt "Preferences|"
+msgid "Preview"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2624
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid ""
+#| "For more information about Spell Check, please see <a href=\"https://"
+#| "github.com/QupZilla/qupzilla/wiki/Spell-Check\">wiki</a>."
+msgctxt "Preferences|"
+msgid ""
+"For more information about Spell Check, please see <a href=\"https://"
+"userbase.kde.org/Osza#Spell_Check\">wiki</a>."
+msgstr ""
+"За више информација о провери правописа погледајте <a href=\"https://github."
+"com/QupZilla/qupzilla/wiki/Spell-Check\">вики</a>."
+
+#: lib/preferences/preferences.ui:2665
+msgctxt "Preferences|"
+msgid "<b>Dictionary directories</b>"
+msgstr "<b>Фасцикле речника</b>"
+
+#: lib/preferences/preferences.ui:2672
+msgctxt "Preferences|"
+msgid "No languages found"
+msgstr "Нема језика"
+
+#: lib/preferences/preferences.ui:2679
+msgctxt "Preferences|"
+msgid "<b>Spell Check options</b>"
+msgstr "<b>Опције провере правописа</b>"
+
+#: lib/preferences/preferences.ui:2686
+msgctxt "Preferences|"
+msgid "Enable Spell Check"
+msgstr "Укључи проверу правописа"
+
+#: lib/preferences/preferences.ui:2715
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Cookies Manager"
+msgctxt "Preferences|"
+msgid "Protocol Handlers Manager"
+msgstr "Менаџер колачића"
+
+#: lib/preferences/preferences.ui:2737
+msgctxt "Preferences|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Manage Auto Open "
+"protocols</span></p></body></html>"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2749
+msgctxt "Preferences|"
+msgid "Manage custom schemes"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2756
+msgctxt "Preferences|"
+msgid "<b>Change browser identification</b>"
+msgstr "<b>Промена идентификације прегледача</b>"
+
+#: lib/preferences/preferences.ui:2763
+msgctxt "Preferences|"
+msgid "<b>Manage search engines</b>"
+msgstr "<b>Управљај моторима претраге</b>"
+
+#: lib/preferences/preferences.ui:2770
+msgctxt "Preferences|"
+msgid "<b>Preferred language for web sites</b>"
+msgstr "<b>Приоритетни језик за веб странице</b>"
+
+#: lib/preferences/preferences.ui:2777
+msgctxt "Preferences|"
+msgid "<b>User Style Sheet</b>"
+msgstr "<b>Кориснички опис стила</b>"
+
+#: lib/preferences/preferences.ui:2784
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "<b>Manage search engines</b>"
+msgctxt "Preferences|"
+msgid "<b>Manage protocol handlers</b>"
+msgstr "<b>Управљај моторима претраге</b>"
+
+#: lib/preferences/preferences.ui:2839
+msgctxt "Preferences|"
+msgid "Certificate Exception Manager"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2879
+msgctxt "Preferences|"
+msgid "User Agent Manager"
+msgstr "Менаџер идентификације прегледача"
+
+#: lib/preferences/preferences.ui:2914
+msgctxt "Preferences|"
+msgid "Style Sheet automatically loaded with all websites: "
+msgstr "Опис стила који ће аутоматски бити учитан за све сајтове:"
+
+#: lib/preferences/preferences.ui:2939
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Cookies Manager"
+msgctxt "Preferences|"
+msgid "Custom Scheme Manager"
+msgstr "Менаџер колачића"
+
+#: lib/preferences/preferences.ui:2979
+msgctxt "Preferences|"
+msgid "Search Engines Manager"
+msgstr "Менаџер мотора претраге"
+
+#: lib/preferences/preferences.ui:3019
+msgctxt "Preferences|"
+msgid "Languages"
+msgstr "Језици"
+
+#: lib/preferences/preferences.ui:3054
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "<b>Notifications</b>"
+msgctxt "Preferences|"
+msgid "<b>Certificate manager</b>"
+msgstr "<b>Обавештења</b>"
+
+#: lib/preferences/preferences.ui:3079
+msgctxt "Preferences|"
+msgid "Auto Open protocols"
+msgstr ""
+
+#: lib/preferences/schememanager.cpp:84
+msgctxt "SchemeManager|"
+msgid "Add allowed scheme"
+msgstr ""
+
+#: lib/preferences/schememanager.cpp:84 lib/preferences/schememanager.cpp:119
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Themes"
+msgctxt "SchemeManager|"
+msgid "Scheme:"
+msgstr "Теме"
+
+#: lib/preferences/schememanager.cpp:119
+msgctxt "SchemeManager|"
+msgid "Add blocked scheme"
+msgstr ""
+
+#: lib/preferences/schememanager.ui:14
+msgctxt "SchemeManager|"
+msgid "Custom scheme manager"
+msgstr ""
+
+#: lib/preferences/schememanager.ui:26
+msgctxt "SchemeManager|"
+msgid "Allowed schemes"
+msgstr ""
+
+#: lib/preferences/schememanager.ui:33
+msgctxt "SchemeManager|"
+msgid "**Note:** Allowed schemes can be added by extensions."
+msgstr ""
+
+#: lib/preferences/schememanager.ui:54 lib/preferences/schememanager.ui:116
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Add"
+msgctxt "SchemeManager|"
+msgid "Add"
+msgstr "Додај"
+
+#: lib/preferences/schememanager.ui:61 lib/preferences/schememanager.ui:123
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "SchemeManager|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/schememanager.ui:68
+#, fuzzy
+#| msgctxt "AdBlockDialog|"
+#| msgid "AdBlock"
+msgctxt "SchemeManager|"
+msgid "Block"
+msgstr "Адблок"
+
+#: lib/preferences/schememanager.ui:98
+msgctxt "SchemeManager|"
+msgid "Blocked schemes"
+msgstr ""
+
+#: lib/preferences/schememanager.ui:147
+msgctxt "SchemeManager|"
+msgid "Changes will take effect after Osza restart."
+msgstr ""
+
+#: lib/preferences/sitesettingsattributesitem.ui:39
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Browsing"
+msgctxt "SiteSettingsAttributesItem|"
+msgid "Browse"
+msgstr "Прегледање"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:36
+#: lib/preferences/sitesettingsbrowsedialog.ui:99
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Ask"
+msgstr ""
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:37
+#: lib/preferences/sitesettingsbrowsedialog.ui:106
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Allow"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Allow"
+msgstr "дозволи"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:38
+#: lib/preferences/sitesettingsbrowsedialog.ui:113
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Deny"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Deny"
+msgstr "одбиј"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:39
+#: lib/preferences/sitesettingsbrowsedialog.ui:120
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Default"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Default"
+msgstr "Подразумеван"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:14
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "HTML5 Permissions"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Site Permissions"
+msgstr "ХТМЛ5 дозволе"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:22
+#, fuzzy
+#| msgctxt "EditSearchEngine|"
+#| msgid "Url:"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Url:"
+msgstr "Урл:"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:32
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "https://kde.org"
+msgstr ""
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:51
+msgctxt "SiteSettingsBrowseDialog|Add or Modify"
+msgid "Set"
+msgstr ""
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:68
+#, fuzzy
+#| msgctxt "UserAgentDialog|"
+#| msgid "Site"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Site"
+msgstr "сајт"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:73
+#, fuzzy
+#| msgctxt "HTML5PermissionsDialog|"
+#| msgid "Behaviour"
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Behaviour"
+msgstr "радња"
+
+#: lib/preferences/sitesettingshtml5item.ui:42
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Browsing"
+msgctxt "SiteSettingsHtml5Item|"
+msgid "Browse"
+msgstr "Прегледање"
+
+#: lib/preferences/thememanager.cpp:100
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Confirmation"
+msgctxt "ThemeManager|"
+msgid "Confirmation"
+msgstr "Потврда"
+
+#: lib/preferences/thememanager.cpp:101
+#, fuzzy, qt-format
+#| msgctxt "QupZillaSchemeReply|"
+#| msgid "Are you sure you want to remove this speed dial?"
+msgctxt "ThemeManager|"
+msgid "Are you sure you want to remove '%1'?"
+msgstr "Желите ли заиста да уклоните ово брзо бирање?"
+
+#: lib/preferences/thememanager.ui:51
+msgctxt "ThemeManager|"
+msgid "<b>Name:</b>"
+msgstr "<b>Име:</b>"
+
+#: lib/preferences/thememanager.ui:61
+msgctxt "ThemeManager|"
+msgid "<b>Author:</b>"
+msgstr "<b>Аутор:</b>"
+
+#: lib/preferences/thememanager.ui:84
+msgctxt "ThemeManager|"
+msgid "<b>Description:</b>"
+msgstr "<b>Опис:</b>"
+
+#: lib/preferences/thememanager.ui:128
+msgctxt "ThemeManager|"
+msgid "License"
+msgstr "Лиценца"
+
+#: lib/preferences/thememanager.ui:155
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "ThemeManager|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/thememanager.ui:175
+msgctxt "ThemeManager|"
+msgid ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">Get more themes...</a>"
+msgstr ""
+
+#: lib/preferences/useragentdialog.cpp:99
+msgctxt "UserAgentDialog|"
+msgid "Add new site"
+msgstr "Додавање новог сајта"
+
+#: lib/preferences/useragentdialog.cpp:141
+msgctxt "UserAgentDialog|"
+msgid "Edit site"
+msgstr "Уређивање сајта"
+
+#: lib/preferences/useragentdialog.cpp:227
+msgctxt "UserAgentDialog|"
+msgid "Site domain: "
+msgstr "Домен сајта: "
+
+#: lib/preferences/useragentdialog.cpp:228
+msgctxt "UserAgentDialog|"
+msgid "User Agent: "
+msgstr "Идентификација: "
+
+#: lib/preferences/useragentdialog.ui:14
+msgctxt "UserAgentDialog|"
+msgid "User Agent Manager"
+msgstr "Менаџер идентификације прегледача"
+
+#: lib/preferences/useragentdialog.ui:20
+msgctxt "UserAgentDialog|"
+msgid "Change global User Agent"
+msgstr "Промени идентификацију глобално"
+
+#: lib/preferences/useragentdialog.ui:48
+msgctxt "UserAgentDialog|"
+msgid "Use different User Agents for specified sites"
+msgstr "Користите различите идентификације за одређене сајтове"
+
+#: lib/preferences/useragentdialog.ui:92
+msgctxt "UserAgentDialog|"
+msgid "Site"
+msgstr "сајт"
+
+#: lib/preferences/useragentdialog.ui:97
+msgctxt "UserAgentDialog|"
+msgid "User Agent"
+msgstr "идентификација"
+
+#: lib/preferences/useragentdialog.ui:107
+msgctxt "UserAgentDialog|"
+msgid "Add"
+msgstr "Додај"
+
+#: lib/preferences/useragentdialog.ui:114
+msgctxt "UserAgentDialog|"
+msgid "Remove"
+msgstr "Уклони"
+
+#: lib/preferences/useragentdialog.ui:134
+msgctxt "UserAgentDialog|"
+msgid "Edit"
+msgstr "Уреди"
+
+#: lib/session/sessionmanager.cpp:127
+msgctxt "SessionManager|"
+msgid "_cloned"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:127
+msgctxt "SessionManager|"
+msgid "_renamed"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:128
+msgctxt "SessionManager|"
+msgid "Clone Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:128
+msgctxt "SessionManager|"
+msgid "Rename Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:129
+msgctxt "SessionManager|"
+msgid "Please enter a new name:"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:137 lib/session/sessionmanager.cpp:144
+#: lib/session/sessionmanager.cpp:149 lib/session/sessionmanager.cpp:171
+#: lib/session/sessionmanager.cpp:219
+msgctxt "SessionManager|"
+msgid "Error!"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:137 lib/session/sessionmanager.cpp:171
+#: lib/session/sessionmanager.cpp:219
+#, qt-format
+msgctxt "SessionManager|"
+msgid "The session file \"%1\" exists. Please enter another name."
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:144
+msgctxt "SessionManager|"
+msgid "An error occurred when cloning session file."
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:149
+msgctxt "SessionManager|"
+msgid "An error occurred when renaming session file."
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:162
+msgctxt "SessionManager|"
+msgid "Save Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:163
+msgctxt "SessionManager|"
+msgid "Please enter a name to save session:"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:164
+#, qt-format
+msgctxt "SessionManager|"
+msgid "Saved Session (%1)"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:181
+msgctxt "SessionManager|"
+msgid "Restore Backup"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:181
+msgctxt "SessionManager|"
+msgid "Are you sure you want to replace current session?"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:200
+msgctxt "SessionManager|"
+msgid "Delete Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:200
+#, qt-format
+msgctxt "SessionManager|"
+msgid "Are you sure you want to delete session '%1'?"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:210
+msgctxt "SessionManager|"
+msgid "New Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:211
+msgctxt "SessionManager|"
+msgid "Please enter a name to create new session:"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:212
+#, qt-format
+msgctxt "SessionManager|"
+msgid "New Session (%1)"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:244
+msgctxt "SessionManager|"
+msgid "Backup 1"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:251
+msgctxt "SessionManager|"
+msgid "Backup 2"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:291
+msgctxt "SessionManager|"
+msgid "Default Session"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:394
+msgctxt "SessionManager|"
+msgid "Please select the startup session:"
+msgstr ""
+
+#: lib/session/sessionmanager.cpp:413
+#, qt-format
+msgctxt "SessionManager|"
+msgid "%1 (last session)"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.cpp:140
+msgctxt "SessionManagerDialog|"
+msgid "Restore"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.cpp:140
+msgctxt "SessionManagerDialog|"
+msgid "Switch To"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:14
+msgctxt "SessionManagerDialog|"
+msgid "Session Manager"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:24
+msgctxt "SessionManagerDialog|"
+msgid "Session"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:29
+msgctxt "SessionManagerDialog|"
+msgid "Last Modified"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:39
+msgctxt "SessionManagerDialog|"
+msgid "New"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:46
+msgctxt "SessionManagerDialog|"
+msgid "Rename"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:53
+msgctxt "SessionManagerDialog|"
+msgid "Clone"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:60
+msgctxt "SessionManagerDialog|"
+msgid "Delete"
+msgstr ""
+
+#: lib/session/sessionmanagerdialog.ui:67
+msgctxt "SessionManagerDialog|"
+msgid "Switch to"
+msgstr ""
+
+#: lib/sidebar/bookmarkssidebar.cpp:113
+msgctxt "BookmarksSidebar|"
+msgid "Open in new tab"
+msgstr "Отвори у новом језичку"
+
+#: lib/sidebar/bookmarkssidebar.cpp:114
+msgctxt "BookmarksSidebar|"
+msgid "Open in new window"
+msgstr "Отвори у новом прозору"
+
+#: lib/sidebar/bookmarkssidebar.cpp:115
+msgctxt "BookmarksSidebar|"
+msgid "Open in new private window"
+msgstr "Отвори у приватном прозору"
+
+#: lib/sidebar/bookmarkssidebar.cpp:118
+msgctxt "BookmarksSidebar|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/sidebar/bookmarkssidebar.ui:41
+msgctxt "BookmarksSideBar|"
+msgid "Search..."
+msgstr "Тражи..."
+
+#: lib/sidebar/historysidebar.cpp:96
+msgctxt "HistorySideBar|"
+msgid "Open in new tab"
+msgstr "Отвори у новом језичку"
+
+#: lib/sidebar/historysidebar.cpp:97
+msgctxt "HistorySideBar|"
+msgid "Open in new window"
+msgstr "Отвори у новом прозору"
+
+#: lib/sidebar/historysidebar.cpp:98
+msgctxt "HistorySideBar|"
+msgid "Open in new private window"
+msgstr "Отвори у приватном прозору"
+
+#: lib/sidebar/historysidebar.cpp:101
+msgctxt "HistorySideBar|"
+msgid "Delete"
+msgstr "Обриши"
+
+#: lib/sidebar/historysidebar.ui:32
+msgctxt "HistorySideBar|"
+msgid "Search..."
+msgstr "Тражи..."
+
+#: lib/sidebar/sidebar.cpp:66 lib/sidebar/sidebar.cpp:110
+msgctxt "SideBar|"
+msgid "Bookmarks"
+msgstr "Обележивачи"
+
+#: lib/sidebar/sidebar.cpp:73 lib/sidebar/sidebar.cpp:117
+msgctxt "SideBar|"
+msgid "History"
+msgstr "Историјат"
+
+#: lib/tabwidget/tabbar.cpp:111
+msgctxt "BrowserWindow|"
+msgid "Close Tab"
+msgstr "Затвори језичак"
+
+#: lib/tabwidget/tabcontextmenu.cpp:63
+msgctxt "TabBar|"
+msgid "Don't ask again"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:80 lib/tabwidget/tabcontextmenu.cpp:91
+#: lib/tabwidget/tabcontextmenu.cpp:102
+msgctxt "TabContextMenu|"
+msgid "Close Tabs"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:80
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close other tabs?"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:88
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the right?"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:89
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the bottom?"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:99
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the left?"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:100
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the top?"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:117
+msgctxt "TabContextMenu|"
+msgid "&Stop Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:120
+msgctxt "TabContextMenu|"
+msgid "&Reload Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:123
+msgctxt "TabContextMenu|"
+msgid "&Duplicate Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:126
+msgctxt "TabContextMenu|"
+msgid "D&etach Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:129
+msgctxt "TabContextMenu|"
+msgid "Un&pin Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:129
+msgctxt "TabContextMenu|"
+msgid "&Pin Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:130
+msgctxt "TabContextMenu|"
+msgid "Un&mute Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:130
+msgctxt "TabContextMenu|"
+msgid "&Mute Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:133
+#, fuzzy
+#| msgctxt "HistoryMenu|"
+#| msgid "Closed Tabs"
+msgctxt "TabContextMenu|"
+msgid "Load Tab"
+msgstr "Затворени језичци"
+
+#: lib/tabwidget/tabcontextmenu.cpp:135
+msgctxt "TabContextMenu|"
+msgid "Unload Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:139
+msgctxt "TabContextMenu|"
+msgid "Re&load All Tabs"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:140 lib/tabwidget/tabcontextmenu.cpp:156
+msgctxt "TabContextMenu|"
+msgid "Bookmark &All Tabs"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:144
+msgctxt "TabContextMenu|"
+msgid "Close Ot&her Tabs"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:145
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Right"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:145
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Bottom"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:146
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Left"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:146
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Top"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:151
+msgctxt "TabContextMenu|"
+msgid "Cl&ose Tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:153
+msgctxt "TabContextMenu|"
+msgid "&New tab"
+msgstr ""
+
+#: lib/tabwidget/tabcontextmenu.cpp:155
+msgctxt "TabContextMenu|"
+msgid "Reloa&d All Tabs"
+msgstr ""
+
+#: lib/tabwidget/tabicon.cpp:169
+msgctxt "TabIcon|"
+msgid "Unmute Tab"
+msgstr "Укључи звук"
+
+#: lib/tabwidget/tabicon.cpp:169
+msgctxt "TabIcon|"
+msgid "Mute Tab"
+msgstr "Искључи звук"
+
+#: lib/tabwidget/tabwidget.cpp:51
+msgctxt "TabWidget|"
+msgid "New Tab"
+msgstr "Нови језичак"
+
+#: lib/tabwidget/tabwidget.cpp:126
+msgctxt "TabWidget|"
+msgid "Closed tabs"
+msgstr "Затворени језичци"
+
+#: lib/tabwidget/tabwidget.cpp:137
+msgctxt "TabWidget|"
+msgid "List of tabs"
+msgstr "Списак језичака"
+
+#: lib/tabwidget/tabwidget.cpp:297
+msgctxt "TabWidget|"
+msgid "Empty"
+msgstr "Празно"
+
+#: lib/tabwidget/tabwidget.cpp:301
+msgctxt "TabWidget|"
+msgid "Restore All Closed Tabs"
+msgstr "Врати све затворене језичке"
+
+#: lib/tabwidget/tabwidget.cpp:302
+msgctxt "TabWidget|"
+msgid "Clear list"
+msgstr "Очисти списак"
+
+#: lib/tabwidget/tabwidget.h:106
+msgctxt "TabWidget|"
+msgid "New tab"
+msgstr "Нови језичак"
+
+#: lib/tools/aesinterface.cpp:156
+msgctxt "AesInterface|"
+msgid "Warning!"
+msgstr "Упозорење!"
+
+#: lib/tools/aesinterface.cpp:156
+#, fuzzy
+#| msgctxt "AesInterface|"
+#| msgid ""
+#| "Data has been encrypted with a newer version of QupZilla.\n"
+#| "Please install latest version of QupZilla."
+msgctxt "AesInterface|"
+msgid ""
+"Data has been encrypted with a newer version of Osza.\n"
+"Please install latest version of Osza."
+msgstr ""
+"Подаци су шифровани новијим издањем Капзиле.\n"
+"Инсталирајте најновије издање."
+
+#: lib/tools/certificateinfowidget.cpp:300
+msgctxt "QObject|"
+msgid "<not set in certificate>"
+msgstr "<није постављено у сертификату>"
+
+#: lib/tools/certificateinfowidget.ui:17
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Issued To</b>"
+msgstr "<b>Издат за</b>"
+
+#: lib/tools/certificateinfowidget.ui:24 lib/tools/certificateinfowidget.ui:99
+msgctxt "CertificateInfoWidget|"
+msgid "Common Name (CN):"
+msgstr "Заједничко име (CN):"
+
+#: lib/tools/certificateinfowidget.ui:41 lib/tools/certificateinfowidget.ui:116
+msgctxt "CertificateInfoWidget|"
+msgid "Organization (O):"
+msgstr "Организација (O):"
+
+#: lib/tools/certificateinfowidget.ui:58 lib/tools/certificateinfowidget.ui:133
+msgctxt "CertificateInfoWidget|"
+msgid "Organizational Unit (OU):"
+msgstr "Организациона јединица (OU):"
+
+#: lib/tools/certificateinfowidget.ui:75
+msgctxt "CertificateInfoWidget|"
+msgid "Serial Number:"
+msgstr "Серијски број:"
+
+#: lib/tools/certificateinfowidget.ui:92
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Issued By</b>"
+msgstr "<b>Издавач</b>"
+
+#: lib/tools/certificateinfowidget.ui:150
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Validity</b>"
+msgstr "<b>Ваљаност</b>"
+
+#: lib/tools/certificateinfowidget.ui:157
+msgctxt "CertificateInfoWidget|"
+msgid "Issued On:"
+msgstr "Датум издавања:"
+
+#: lib/tools/certificateinfowidget.ui:174
+msgctxt "CertificateInfoWidget|"
+msgid "Expires On:"
+msgstr "Датум истека:"
+
+#: lib/tools/docktitlebarwidget.cpp:58
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "Close Window"
+msgctxt "DockTitleBarWidget|"
+msgid "&Close SideBar"
+msgstr "Затвори прозор"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:42
+msgctxt "HTML5PermissionsNotification|"
+msgid "this site"
+msgstr "овај сајт"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:46
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to show desktop notifications?"
+msgstr "Дозволи да %1 приказује обавештења на радној површи?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:50
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to locate your position?"
+msgstr "Дозволи да %1 пронађе ваш положај?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:54
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your microphone?"
+msgstr "Дозволи да %1 користи ваш микрофон?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:58
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your camera?"
+msgstr "Дозволи да %1 користи вашу камеру?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:62
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your microphone and camera?"
+msgstr "Дозволи да %1 користи ваш микрофон и камеру?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:66
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to hide your pointer?"
+msgstr "Дозволи да %1 сакрије показивач вашег миша?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:70
+#, fuzzy, qt-format
+#| msgctxt "HTML5PermissionsNotification|"
+#| msgid "Allow %1 to locate your position?"
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to capture your screen?"
+msgstr "Дозволи да %1 пронађе ваш положај?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:74
+#, fuzzy, qt-format
+#| msgctxt "HTML5PermissionsNotification|"
+#| msgid "Allow %1 to use your microphone and camera?"
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to capture your screen and audio?"
+msgstr "Дозволи да %1 користи ваш микрофон и камеру?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:43
+msgctxt "HTML5PermissionsNotification|"
+msgid "Remember"
+msgstr "Упамти"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:50
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow"
+msgstr "Дозволи"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:57
+msgctxt "HTML5PermissionsNotification|"
+msgid "Deny"
+msgstr "Одбиј"
+
+#: lib/tools/mactoolbutton.cpp:94
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Select Color"
+msgctxt "MacToolButton|"
+msgid "Select Color"
+msgstr "Одабир боје"
+
+#: lib/tools/qztools.cpp:379
+msgctxt "QObject|"
+msgid "Unknown size"
+msgstr "Величина није позната"
+
+#: lib/tools/qztools.cpp:386
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 kB"
+msgstr ""
+
+#: lib/tools/qztools.cpp:391
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 MB"
+msgstr ""
+
+#: lib/tools/qztools.cpp:395
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 GB"
+msgstr ""
+
+#: lib/tools/qztools.cpp:857
+msgctxt "QObject|"
+msgid "Executable: "
+msgstr "Извршна:"
+
+#: lib/tools/qztools.cpp:858
+msgctxt "QObject|"
+msgid "Arguments: "
+msgstr "Аргументи:"
+
+#: lib/tools/qztools.cpp:860
+msgctxt "QObject|"
+msgid "Cannot start external program"
+msgstr "Не могу да покренем спољашњи програм"
+
+#: lib/tools/qztools.cpp:861
+#, qt-format
+msgctxt "QObject|"
+msgid "Cannot start external program! %1"
+msgstr "Не могу да покренем спољашњи програм! %1"
+
+#: lib/webengine/jsalert.ui:125
+msgctxt "jsAlert|"
+msgid "Prevent this page from creating additional dialogs"
+msgstr "Не дозволи овој страници да прави још дијалога"
+
+#: lib/webengine/webpage.cpp:335
+#, fuzzy, qt-format
+#| msgctxt "WebPage|"
+#| msgid ""
+#| "QupZilla cannot handle <b>%1:</b> links. The requested link is <ul><li>"
+#| "%2</li></ul>Do you want QupZilla to try open this link in system "
+#| "application?"
+msgctxt "WebPage|"
+msgid ""
+"Osza cannot handle <b>%1:</b> links. The requested link is <ul><li>%2</"
+"li></ul>Do you want Osza to try open this link in system application?"
+msgstr ""
+"Капзила не може да рукује <b>%1:</b> везама. Захтевана веза је <ul><li>%2</"
+"li></ul>Желите ли да Капзила покуша да отвори ову везу помоћу системског "
+"програма?"
+
+#: lib/webengine/webpage.cpp:340
+msgctxt "WebPage|"
+msgid "Remember my choice for this protocol"
+msgstr "Запамти мој избор за за овај протокол"
+
+#: lib/webengine/webpage.cpp:341
+msgctxt "WebPage|"
+msgid "External Protocol Request"
+msgstr "Захтев за спољашњи протокол"
+
+#: lib/webengine/webpage.cpp:419 lib/webengine/webpage.cpp:420
+msgctxt "WebPage|"
+msgid "Failed loading page"
+msgstr "Неуспех учитавања странице"
+
+#: lib/webengine/webpage.cpp:421
+msgctxt "WebPage|"
+msgid "Something went wrong while loading this page."
+msgstr "Нешто је пошло како не треба приликом учитавања ове странице."
+
+#: lib/webengine/webpage.cpp:422
+msgctxt "WebPage|"
+msgid ""
+"Try reloading the page or closing some tabs to make more memory available."
+msgstr ""
+"Покушајте поново да учитате страницу или да затворите неке језичке да "
+"ослободите меморију."
+
+#: lib/webengine/webpage.cpp:423
+msgctxt "WebPage|"
+msgid "Reload page"
+msgstr "Поново учитај страницу"
+
+#: lib/webengine/webpage.cpp:598
+msgctxt "WebPage|"
+msgid "Choose file..."
+msgstr "Изабери фајл..."
+
+#: lib/webengine/webpage.cpp:602
+msgctxt "WebPage|"
+msgid "Choose files..."
+msgstr "Изабери фајлове..."
+
+#: lib/webengine/webpage.cpp:738
+msgctxt "WebPage|"
+msgid "JavaScript alert"
+msgstr "Јаваскрипт упозорење"
+
+#: lib/webengine/webpage.cpp:747
+msgctxt "WebPage|"
+msgid "Prevent this page from creating additional dialogs"
+msgstr "Не дозволи овој страници да прави још дијалога"
+
+#: lib/webengine/webview.cpp:127
+msgctxt "WebView|"
+msgid "Empty Page"
+msgstr "Празна страница"
+
+#: lib/webengine/webview.cpp:391
+#, fuzzy, qt-format
+#| msgctxt "DownloadItem|"
+#| msgid "Done - %1 (%2)"
+msgctxt "WebView|"
+msgid "Osza %1 (%2)"
+msgstr "Готово - %1 (%2)"
+
+#: lib/webengine/webview.cpp:705
+msgctxt "WebView|"
+msgid "No suggestions"
+msgstr "Нема предлога"
+
+#: lib/webengine/webview.cpp:756
+msgctxt "WebView|"
+msgid "&Back"
+msgstr "На&зад"
+
+#: lib/webengine/webview.cpp:760
+msgctxt "WebView|"
+msgid "&Forward"
+msgstr "На&пред"
+
+#: lib/webengine/webview.cpp:767
+msgctxt "WebView|"
+msgid "&Add New Page"
+msgstr "&Додај нову страницу"
+
+#: lib/webengine/webview.cpp:768
+msgctxt "WebView|"
+msgid "&Configure Speed Dial"
+msgstr "&Подеси брзо бирање"
+
+#: lib/webengine/webview.cpp:770
+msgctxt "WebView|"
+msgid "Reload All Dials"
+msgstr "Поново учитај сва брза бирања"
+
+#: lib/webengine/webview.cpp:789
+msgctxt "WebView|"
+msgid "Book&mark page"
+msgstr "&Обележи страницу"
+
+#: lib/webengine/webview.cpp:790
+msgctxt "WebView|"
+msgid "&Save page as..."
+msgstr "Сачувај с&лику као..."
+
+#: lib/webengine/webview.cpp:791
+msgctxt "WebView|"
+msgid "&Copy page link"
+msgstr "&Копирај везу странице"
+
+#: lib/webengine/webview.cpp:792
+msgctxt "WebView|"
+msgid "Send page link..."
+msgstr "Пошаљи везу странице..."
+
+#: lib/webengine/webview.cpp:794
+msgctxt "WebView|"
+msgid "Select &all"
+msgstr "Из&абери све"
+
+#: lib/webengine/webview.cpp:800
+msgctxt "WebView|"
+msgid "Show so&urce code"
+msgstr "Прикажи &изворни кôд"
+
+#: lib/webengine/webview.cpp:804
+msgctxt "WebView|"
+msgid "Show info ab&out site"
+msgstr "По&даци о сајту"
+
+#: lib/webengine/webview.cpp:810
+msgctxt "WebView|"
+msgid "Open link in new &tab"
+msgstr "Отвори везу у новом &језичку"
+
+#: lib/webengine/webview.cpp:815
+msgctxt "WebView|"
+msgid "Open link in new &window"
+msgstr "Отвори везу у &новом прозору"
+
+#: lib/webengine/webview.cpp:816
+msgctxt "WebView|"
+msgid "Open link in &private window"
+msgstr "Отвори везу у &приватном прозору"
+
+#: lib/webengine/webview.cpp:821
+msgctxt "WebView|"
+msgid "B&ookmark link"
+msgstr "&Обележи везу"
+
+#: lib/webengine/webview.cpp:823
+msgctxt "WebView|"
+msgid "&Save link as..."
+msgstr "&Сачувај везу као..."
+
+#: lib/webengine/webview.cpp:824
+msgctxt "WebView|"
+msgid "Send link..."
+msgstr "Пошаљи везу..."
+
+#: lib/webengine/webview.cpp:825
+msgctxt "WebView|"
+msgid "&Copy link address"
+msgstr "&Копирај везу"
+
+#: lib/webengine/webview.cpp:838
+msgctxt "WebView|"
+msgid "Show i&mage"
+msgstr "П&рикажи слику"
+
+#: lib/webengine/webview.cpp:844
+msgctxt "WebView|"
+msgid "Copy image"
+msgstr "Копирај слику"
+
+#: lib/webengine/webview.cpp:845
+msgctxt "WebView|"
+msgid "Copy image ad&dress"
+msgstr "Копирај &адресу слике"
+
+#: lib/webengine/webview.cpp:847
+msgctxt "WebView|"
+msgid "&Save image as..."
+msgstr "Сачувај с&лику као..."
+
+#: lib/webengine/webview.cpp:848
+msgctxt "WebView|"
+msgid "Send image..."
+msgstr "Пошаљи слику..."
+
+#: lib/webengine/webview.cpp:867
+msgctxt "WebView|"
+msgid "Send text..."
+msgstr "Пошаљи текст..."
+
+#: lib/webengine/webview.cpp:879
+msgctxt "WebView|"
+msgid "Go to &web address"
+msgstr "Иди на &веб адресу"
+
+#: lib/webengine/webview.cpp:893
+#, qt-format
+msgctxt "WebView|"
+msgid "Search \"%1 ..\" with %2"
+msgstr "Тражи „%1“ на %2"
+
+#: lib/webengine/webview.cpp:899
+msgctxt "WebView|"
+msgid "Search with..."
+msgstr "Тражи на..."
+
+#: lib/webengine/webview.cpp:921
+msgctxt "WebView|"
+msgid "&Play"
+msgstr "&Пусти"
+
+#: lib/webengine/webview.cpp:921
+msgctxt "WebView|"
+msgid "&Pause"
+msgstr "&Паузирај"
+
+#: lib/webengine/webview.cpp:922
+msgctxt "WebView|"
+msgid "Un&mute"
+msgstr "Вра&ти звук"
+
+#: lib/webengine/webview.cpp:922
+msgctxt "WebView|"
+msgid "&Mute"
+msgstr "У&тишај"
+
+#: lib/webengine/webview.cpp:924
+msgctxt "WebView|"
+msgid "&Copy Media Address"
+msgstr "&Копирај адресу медија"
+
+#: lib/webengine/webview.cpp:925
+msgctxt "WebView|"
+msgid "&Send Media Address"
+msgstr "П&ошаљи адресу медија"
+
+#: lib/webengine/webview.cpp:926
+msgctxt "WebView|"
+msgid "Save Media To &Disk"
+msgstr "&Сачувај медиј на диск"
+
+#: lib/webengine/webview.cpp:945
+msgctxt "WebView|"
+msgid "Create Search Engine"
+msgstr "Направи мотор претраге"
+
+#: lib/webengine/webview.cpp:986
+msgctxt "WebView|"
+msgid "&Undo"
+msgstr "&Опозови"
+
+#: lib/webengine/webview.cpp:992
+msgctxt "WebView|"
+msgid "&Redo"
+msgstr "&Понови"
+
+#: lib/webengine/webview.cpp:998
+msgctxt "WebView|"
+msgid "&Cut"
+msgstr "&Исеци"
+
+#: lib/webengine/webview.cpp:1004
+msgctxt "WebView|"
+msgid "&Copy"
+msgstr "&Копирај"
+
+#: lib/webengine/webview.cpp:1010
+msgctxt "WebView|"
+msgid "&Paste"
+msgstr "&Налепи"
+
+#: lib/webengine/webview.cpp:1016
+msgctxt "WebView|"
+msgid "Select All"
+msgstr "Изабери све"
+
+#: lib/webengine/webview.cpp:1022
+msgctxt "WebView|"
+msgid "&Reload"
+msgstr "&Учитај поново"
+
+#: lib/webengine/webview.cpp:1026
+msgctxt "WebView|"
+msgid "S&top"
+msgstr "Заус&тави"
+
+#: lib/webtab/searchtoolbar.cpp:151
+#, qt-format
+msgctxt "SearchToolBar|"
+msgid "%1 of %2"
+msgstr ""
+
+#: lib/webtab/searchtoolbar.ui:48
+#, fuzzy
+#| msgctxt "PopupWindow|"
+#| msgid "Find"
+msgctxt "SearchToolbar|"
+msgid "Find..."
+msgstr "Нађи"
+
+#: lib/webtab/searchtoolbar.ui:58
+msgctxt "SearchToolbar|"
+msgid "Find the next match for the current search phrase"
+msgstr ""
+
+#: lib/webtab/searchtoolbar.ui:61
+#, fuzzy
+#| msgctxt "BookmarksImportDialog|"
+#| msgid "Next >"
+msgctxt "SearchToolbar|"
+msgid "&Next"
+msgstr "Следеће >"
+
+#: lib/webtab/searchtoolbar.ui:74
+msgctxt "SearchToolbar|"
+msgid "Find the previous match for the current search phrase"
+msgstr ""
+
+#: lib/webtab/searchtoolbar.ui:77
+msgctxt "SearchToolbar|"
+msgid "&Previous"
+msgstr ""
+
+#: lib/webtab/searchtoolbar.ui:90
+msgctxt "SearchToolbar|"
+msgid "&Match Case"
+msgstr "&Поклапај величину"
+
+#: lib/webtab/tabbedwebview.cpp:194
+msgctxt "TabbedWebView|"
+msgid "Inspect Element"
+msgstr "Провери елемент"
+
+#: lib/webtab/webtab.cpp:624
+#, qt-format
+msgctxt "WebTab|"
+msgid "%1 - Osza"
+msgstr ""
+
+#~ msgctxt "EditSearchEngine|"
+#~ msgid "Url:"
+#~ msgstr "Урл:"
+
+#~ msgctxt "Preferences|"
+#~ msgid "Activate last tab when closing active tab"
+#~ msgstr "Активирај претходно коришћен језичак при затварању текућег"
+
+#~ msgctxt "BookmarksManager|"
+#~ msgid "Delete"
+#~ msgstr "Обриши"
+
+#~ msgctxt "AdBlockTreeWidget|"
+#~ msgid "%1 (recently updated)"
+#~ msgstr "%1 (недавно ажурирано)"
+
+#~ msgctxt "AdBlockTreeWidget|"
+#~ msgid "%1 (Error: %2)"
+#~ msgstr "%1 (Грешка: %2)"
+
+#~ msgctxt "Preferences|"
+#~ msgid "Enable XSS Auditing"
+#~ msgstr "Укључи ИксСС проверавање"
+
+#~ msgctxt "Preferences|"
+#~ msgid "Manage HTML5 permissions"
+#~ msgstr "Управљај ХТМЛ5 одобрењима"
+
+#~ msgctxt "Preferences|"
+#~ msgid "<b>HTML5 Permissions</b>"
+#~ msgstr "<b>ХТМЛ5 дозволе</b>"
+
+#~ msgctxt "HTML5PermissionsDialog|"
+#~ msgid "HTML5 Permissions"
+#~ msgstr "ХТМЛ5 дозволе"
+
+#~ msgctxt "HTML5PermissionsDialog|"
+#~ msgid "Remove"
+#~ msgstr "Уклони"
+
+#~ msgctxt "HTML5PermissionsDialog|"
+#~ msgid "Site"
+#~ msgstr "сајт"
+
+#~ msgctxt "HTML5PermissionsDialog|"
+#~ msgid "Permission for:"
+#~ msgstr "Дозвола за:"
+
+#~ msgctxt "HTML5PermissionsDialog|"
+#~ msgid "Notifications"
+#~ msgstr "Обавештења"
+
+#~ msgctxt "QObject|"
+#~ msgid "KB"
+#~ msgstr "KB"
+
+#~ msgctxt "QObject|"
+#~ msgid "MB"
+#~ msgstr "MB"
+
+#~ msgctxt "QObject|"
+#~ msgid "GB"
+#~ msgstr "GB"

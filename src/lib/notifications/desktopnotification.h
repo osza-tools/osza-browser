@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ namespace Ui
 class DesktopNotification;
 }
 
-class VEEX_EXPORT DesktopNotification : public QWidget
+class OSZA_EXPORT DesktopNotification : public QWidget
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2015-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 
 class UrlInterceptor;
 
-class VEEX_EXPORT NetworkUrlInterceptor : public QWebEngineUrlRequestInterceptor
+class OSZA_EXPORT NetworkUrlInterceptor : public QWebEngineUrlRequestInterceptor
 {
 public:
     explicit NetworkUrlInterceptor(QObject* parent = nullptr);

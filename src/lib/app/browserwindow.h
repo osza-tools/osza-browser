@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -54,7 +54,7 @@ class LocationBar;
 class TabModel;
 class TabMruModel;
 
-class VEEX_EXPORT BrowserWindow : public QMainWindow
+class OSZA_EXPORT BrowserWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -73,8 +73,8 @@ public:
         bool isValid() const;
         void clear();
 
-        friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedWindow &window);
-        friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, SavedWindow &window);
+        friend OSZA_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedWindow &window);
+        friend OSZA_EXPORT QDataStream &operator>>(QDataStream &stream, SavedWindow &window);
     };
 
     explicit BrowserWindow(Qz::BrowserWindowType type, const QList<QUrl> urls = {});

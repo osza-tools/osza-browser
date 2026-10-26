@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2016 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2020-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -108,7 +108,7 @@ void CommandLineOptions::parseActions()
     }
 
     if (parser.isSet(QSL("help-all"))) {
-        parser.process({QSL("veex"), QSL("--help-all")});
+        parser.process({QSL("osza"), QSL("--help-all")});
     }
 
     if (parser.isSet(versionOption)) {
@@ -135,7 +135,7 @@ void CommandLineOptions::parseActions()
 
     if (parser.isSet(profileOption)) {
         const QString profileName = parser.value(profileOption);
-        std::cout << "Veex: Starting with profile '" << profileName.toUtf8().data() << "'" << std::endl;
+        std::cout << "Osza: Starting with profile '" << profileName.toUtf8().data() << "'" << std::endl;
 
         ActionPair pair;
         pair.action = Qz::CL_StartWithProfile;

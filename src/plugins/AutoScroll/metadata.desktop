@@ -91,7 +91,7 @@ Comment[zh_TW]=提供使用滑鼠中鍵自動捲動的支援
 Icon=:autoscroll/data/scroll_all.png
 Type=Service
 
-X-Veex-Author=David Rosca
-X-Veex-Email=nowrep@gmail.com
-X-Veex-Version=1.0.1
-X-Veex-Settings=true
+X-Osza-Author=David Rosca
+X-Osza-Email=nowrep@gmail.com
+X-Osza-Version=1.0.1
+X-Osza-Settings=true

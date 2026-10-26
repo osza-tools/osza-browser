@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 class BrowserWindow;
 
-class VEEX_EXPORT MenuBar : public QMenuBar
+class OSZA_EXPORT MenuBar : public QMenuBar
 {
     Q_OBJECT
 public:

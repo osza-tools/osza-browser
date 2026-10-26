@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class PasswordBackend;
 class DatabasePasswordBackend;
 class DatabaseEncryptedPasswordBackend;
 
-struct VEEX_EXPORT PasswordEntry {
+struct OSZA_EXPORT PasswordEntry {
     QVariant id;
     QString host;
     QString username;
@@ -50,11 +50,11 @@ struct VEEX_EXPORT PasswordEntry {
         return updated > other.updated;
     }
 
-    friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const PasswordEntry &entry);
-    friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, PasswordEntry &entry);
+    friend OSZA_EXPORT QDataStream &operator<<(QDataStream &stream, const PasswordEntry &entry);
+    friend OSZA_EXPORT QDataStream &operator>>(QDataStream &stream, PasswordEntry &entry);
 };
 
-class VEEX_EXPORT PasswordManager : public QObject
+class OSZA_EXPORT PasswordManager : public QObject
 {
     Q_OBJECT
 public:

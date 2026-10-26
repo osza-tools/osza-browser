@@ -1,0 +1,306 @@
+/* ============================================================
+ * Osza - Qt web browser
+ * Shared stylesheet for the internal pages (osza:start,
+ * osza:restore, osza:about, osza:config and the tab crash page).
+ *
+ * The tokens are the same "Osza Cyber" design system introduced
+ * with the Speed Dial redesign (see speeddial.css — the token
+ * blocks are kept in sync by hand; speeddial.css stays
+ * self-contained on purpose).
+ *
+ * Copyright (C) 2026 Osza Tools contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * ============================================================
+ *
+ * NOTE: this file is served verbatim from the Qt resources, so it
+ * must NOT contain percent-wrapped placeholder tokens — dynamic
+ * values substituted by the C++ side (translated strings, icons,
+ * text direction, ...) live in the HTML documents only.
+ * ============================================================ */
+
+/* --- 1. Design tokens (mirror of speeddial.css) ------------------------- */
+:root {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --osza-bg-base: #0a0a0f;
+    --osza-bg-panel: rgba(18, 20, 29, 0.82);
+    --osza-card-bg: rgba(255, 255, 255, 0.06);
+    --osza-card-bg-hover: rgba(255, 255, 255, 0.10);
+    --osza-card-border: rgba(255, 255, 255, 0.10);
+    --osza-card-border-hover: rgba(0, 255, 209, 0.55);
+
+    /* Accent (neon cyan) + secondary (violet, background only) */
+    --osza-accent: #00ffd1;
+    --osza-accent-rgb: 0, 255, 209;
+    --osza-accent-dim: rgba(0, 255, 209, 0.14);
+    --osza-accent-soft: rgba(0, 255, 209, 0.35);
+    --osza-accent-alt-rgb: 124, 58, 237;
+
+    /* Text */
+    --osza-text: #e9edf5;
+    --osza-text-dim: #9aa3b5;
+    --osza-text-faint: #6b7386;
+
+    /* Glass */
+    --osza-blur: 16px;
+    --osza-saturate: 180%;
+    --osza-panel-blur: 24px;
+
+    /* Geometry */
+    --osza-radius: 16px;
+    --osza-radius-sm: 10px;
+
+    /* Typography */
+    --osza-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --osza-font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "Fira Code", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+    /* Motion */
+    --osza-ease: cubic-bezier(0.2, 0.8, 0.3, 1);
+    --osza-speed: 200ms;
+
+    /* Elevation */
+    --osza-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --osza-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.55);
+    --osza-glow: 0 0 24px rgba(var(--osza-accent-rgb), 0.30);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: light;
+        --osza-bg-base: #eef1f7;
+        --osza-bg-panel: rgba(255, 255, 255, 0.85);
+        --osza-card-bg: rgba(255, 255, 255, 0.55);
+        --osza-card-bg-hover: rgba(255, 255, 255, 0.75);
+        --osza-card-border: rgba(15, 23, 42, 0.10);
+        --osza-card-border-hover: rgba(0, 166, 133, 0.65);
+        --osza-accent: #009e7c;
+        --osza-accent-rgb: 0, 158, 124;
+        --osza-text: #171c28;
+        --osza-text-dim: #4b5566;
+        --osza-text-faint: #7d8698;
+        --osza-shadow-card: 0 10px 30px rgba(15, 23, 42, 0.12);
+        --osza-shadow-panel: 0 24px 80px rgba(15, 23, 42, 0.18);
+    }
+}
+
+/* --- 2. Base ------------------------------------------------------------- */
+* { box-sizing: border-box; }
+html { background: var(--osza-bg-base); }
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--osza-font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--osza-text);
+    background-color: var(--osza-bg-base);
+    background-image:
+        radial-gradient(ellipse 70% 55% at 12% 8%, rgba(var(--osza-accent-rgb), 0.10), transparent 60%),
+        radial-gradient(ellipse 55% 45% at 88% 14%, rgba(var(--osza-accent-alt-rgb), 0.13), transparent 65%),
+        radial-gradient(ellipse 65% 55% at 50% 108%, rgba(var(--osza-accent-rgb), 0.07), transparent 60%);
+    background-attachment: fixed;
+    -webkit-user-select: none;
+    user-select: none;
+}
+body * { margin: 0; font-size: 100%; }
+
+/* --- 3. Stage + glass panel ---------------------------------------------- */
+/* .vx-stage centers a page's content card on the viewport */
+.vx-stage { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(24px, 5vh, 56px) 20px; }
+
+.vx-card {
+    width: min(560px, 100%);
+    padding: clamp(28px, 4vh, 44px) clamp(28px, 4vw, 48px);
+    border: 1px solid var(--osza-card-border);
+    border-radius: 20px;
+    background: var(--osza-bg-panel);
+    -webkit-backdrop-filter: blur(var(--osza-panel-blur)) saturate(var(--osza-saturate));
+    backdrop-filter: blur(var(--osza-panel-blur)) saturate(var(--osza-saturate));
+    box-shadow: var(--osza-shadow-panel);
+    text-align: center;
+}
+
+/* Wider variant for information-dense pages (about / config) */
+.vx-card--wide { width: min(760px, 100%); text-align: start; }
+
+/* --- 4. Typography ------------------------------------------------------- */
+.vx-title {
+    margin-block-end: 6px;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--osza-text);
+}
+
+.vx-subtitle { color: var(--osza-text-dim); font-size: 14px; }
+
+/* Section headings — same "// " convention as the Speed Dial panels */
+.vx-h {
+    margin: 26px 0 10px;
+    padding-block-end: 10px;
+    border-block-end: 1px solid var(--osza-card-border);
+    font-family: var(--osza-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--osza-text-dim);
+}
+.vx-h::before { content: "// "; color: var(--osza-accent); }
+
+.vx-note { color: var(--osza-text-faint); font-size: 12.5px; }
+
+/* Pages ship paired light/dark artwork; show the matching one only */
+@media (prefers-color-scheme: light) {
+    .dark { display: none !important; }
+}
+@media (prefers-color-scheme: dark) {
+    .light { display: none !important; }
+}
+
+a { color: var(--osza-accent); text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
+
+dt { color: var(--osza-text-faint); font-family: var(--osza-font-mono); font-size: 12px; }
+dd { margin: 2px 0 10px; overflow-wrap: anywhere; }
+
+pre {
+    margin-block-start: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: var(--osza-radius-sm);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--osza-text-dim);
+    font-family: var(--osza-font-mono);
+    font-size: 11.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+@media (prefers-color-scheme: light) {
+    pre { background: rgba(15, 23, 42, 0.04); }
+}
+
+/* --- 5. Forms -------------------------------------------------------------- */
+.vx-input {
+    inline-size: 100%;
+    block-size: 46px;
+    padding-inline: 18px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    outline: none;
+    color: var(--osza-text);
+    font-family: var(--osza-font-sans);
+    font-size: 14.5px;
+    -webkit-user-select: auto;
+    user-select: auto;
+    transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease);
+}
+
+@media (prefers-color-scheme: light) {
+    .vx-input { background: rgba(255, 255, 255, 0.75); }
+}
+
+.vx-input:hover { border-color: rgba(255, 255, 255, 0.25); }
+.vx-input:focus { border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); }
+.vx-input::placeholder { color: var(--osza-text-dim); }
+
+/* Buttons */
+.vx-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 96px;
+    block-size: 38px;
+    padding-inline: 20px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: 999px;
+    background: var(--osza-card-bg);
+    color: var(--osza-text-dim);
+    font-family: var(--osza-font-sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: color var(--osza-speed) var(--osza-ease), border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), background-color var(--osza-speed) var(--osza-ease);
+}
+.vx-btn:hover, .vx-btn:focus-visible { color: var(--osza-text); border-color: rgba(255, 255, 255, 0.28); }
+.vx-btn:active { transform: translateY(1px); }
+.vx-btn:disabled { opacity: 0.5; cursor: default; }
+
+.vx-btn--primary {
+    background: rgba(var(--osza-accent-rgb), 0.16);
+    border-color: rgba(var(--osza-accent-rgb), 0.55);
+    color: var(--osza-accent);
+}
+.vx-btn--primary:hover, .vx-btn--primary:focus-visible {
+    background: rgba(var(--osza-accent-rgb), 0.26);
+    box-shadow: var(--osza-glow);
+    color: var(--osza-accent);
+}
+
+input[type="checkbox"] { accent-color: var(--osza-accent); inline-size: 15px; block-size: 15px; cursor: pointer; }
+
+/* --- 6. Tables (restore list, config info) -------------------------------- */
+.vx-table { inline-size: 100%; border-collapse: collapse; border-spacing: 0; -webkit-user-select: none; user-select: none; }
+
+.vx-table th {
+    padding: 10px 12px;
+    border-block-end: 1px solid var(--osza-card-border);
+    font-family: var(--osza-font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: start;
+    color: var(--osza-text-faint);
+}
+
+.vx-table td { padding: 9px 12px; border-block-end: 1px solid rgba(255, 255, 255, 0.05); overflow-wrap: anywhere; }
+
+@media (prefers-color-scheme: light) {
+    .vx-table td { border-block-end: 1px solid rgba(15, 23, 42, 0.06); }
+}
+
+.vx-table tbody tr:last-child td { border-block-end: none; }
+
+.vx-scroll { max-block-size: 280px; overflow-y: auto; border: 1px solid var(--osza-card-border); border-radius: var(--osza-radius-sm); background: rgba(0, 0, 0, 0.18); }
+
+@media (prefers-color-scheme: light) {
+    .vx-scroll { background: rgba(255, 255, 255, 0.45); }
+}
+
+/* --- 7. Scrollbars, focus, motion ----------------------------------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--osza-accent-rgb), 0.45); background-clip: content-box; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--osza-accent); outline-offset: 3px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

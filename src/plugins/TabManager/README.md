@@ -1,6 +1,6 @@
-TabManager extension for Veex
+TabManager extension for Osza
 -------------------------------------------------
-This extension adds the ability to manage tabs and windows in Veex.
+This extension adds the ability to manage tabs and windows in Osza.
 
 ![tbm3](http://i.imgur.com/Gh8bEXo.png)
 

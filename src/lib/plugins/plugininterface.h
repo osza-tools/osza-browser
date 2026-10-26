@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2016 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -66,6 +66,6 @@ public:
     virtual bool newWindowRequested(WebPage *page, QWebEngineNewWindowRequest &request) { Q_UNUSED(page) Q_UNUSED(request) return true; }
 };
 
-Q_DECLARE_INTERFACE(PluginInterface, "Veex.Browser.PluginInterface/2.5")
+Q_DECLARE_INTERFACE(PluginInterface, "Osza.Browser.PluginInterface/2.5")
 
 #endif // PLUGININTERFACE_H

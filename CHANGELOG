@@ -1,17 +1,31 @@
-Veex Browser - Changelog
+Osza Browser - Changelog
 ========================
+
+Unreleased
+-------------------
+Renamed the project to Osza Browser (repository: osza-tools/osza-browser).
+
+Changed:
+- Complete rename of every part of the project from Veex to Osza:
+  namespace, classes, identifiers, files, build targets, icons,
+  translation catalogs and application identity.
+- New application identity: org.osza.OszaBrowser, executable "osza".
+- QML module URI is now org.osza; Python plugin symbols are now
+  pyosza_load_plugin / pyosza_init_plugin.
+- Desktop, appstream, snap, flatpak, AppImage and CI packaging updated
+  to the new names, paths and osza-tools GitHub links.
 
 0.1.0  (2026-10-23)
 -------------------
-First public release of Veex Browser.
+First public release of Osza Browser.
 
 Changed:
 - Rebranded from Falkon (KDE) with a deep rename of the codebase:
   namespace, classes, identifiers, files, build targets and catalogs.
-- New application identity: org.veex.VeexBrowser, executable "veex".
+- New application identity: org.osza.OszaBrowser, executable "osza".
 - New temporary logo and icon set (gradient V on dark diamond).
-- Replaced upstream KDE service links with the Veex Tools GitHub project.
-- Default bookmarks and speed dial now point to Veex Tools resources.
+- Replaced upstream KDE service links with the Osza Tools GitHub project.
+- Default bookmarks and speed dial now point to Osza Tools resources.
 - Renamed the KDE Frameworks Integration plugin to System Integration.
 - Removed KDE CI configuration files.
 
@@ -29,6 +43,6 @@ Packaging:
 - Repository-local dependency installer: linux/install-build-deps.sh.
 
 Notes:
-- Veex Browser is based on Falkon, licensed under GPL-3.0-or-later.
+- Osza Browser is based on Falkon, licensed under GPL-3.0-or-later.
 - Original Falkon authors: David Rosca, Juraj Oravec and all
   Falkon/KDE contributors - thank you.

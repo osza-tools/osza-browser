@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -40,10 +40,10 @@ void QmlTabsApiTest::testTabsAPI()
     QTRY_COMPARE(mApp->getWindow()->tabCount(), 1);
 
     // Tab Insertion
-    QObject *qmlTabsObject = m_testHelper.evaluateQObject(QSL("Veex.Tabs"));
+    QObject *qmlTabsObject = m_testHelper.evaluateQObject(QSL("Osza.Tabs"));
     QVERIFY(qmlTabsObject);
     QSignalSpy qmlTabsInsertedSpy(qmlTabsObject, SIGNAL(tabInserted(QVariantMap)));
-    m_testHelper.evaluate(QL1S("Veex.Tabs.addTab({"
+    m_testHelper.evaluate(QL1S("Osza.Tabs.addTab({"
                      "    url: 'https://example.com/'"
                      "})"));
     QCOMPARE(qmlTabsInsertedSpy.count(), 1);
@@ -53,13 +53,13 @@ void QmlTabsApiTest::testTabsAPI()
     QCOMPARE(index1, 1);
     QCOMPARE(windowId1, 0);
 
-    QObject *qmlTabObject1 = m_testHelper.evaluateQObject(QSL("Veex.Tabs.get({index: 1})"));
+    QObject *qmlTabObject1 = m_testHelper.evaluateQObject(QSL("Osza.Tabs.get({index: 1})"));
     QVERIFY(qmlTabObject1);
     QCOMPARE(qmlTabObject1->property("index").toInt(), 1);
     QCOMPARE(qmlTabObject1->property("pinned").toBool(), false);
     QTRY_COMPARE(qmlTabObject1->property("url").toString(), QSL("https://example.com/"));
 
-    m_testHelper.evaluate(QL1S("Veex.Tabs.addTab({"
+    m_testHelper.evaluate(QL1S("Osza.Tabs.addTab({"
                      "    url: 'https://another-example.com/'"
                      "})"));
     QCOMPARE(qmlTabsInsertedSpy.count(), 2);
@@ -69,17 +69,17 @@ void QmlTabsApiTest::testTabsAPI()
     QCOMPARE(index2, 2);
     QCOMPARE(windowId2, 0);
 
-    bool pinnedTab = m_testHelper.evaluate(QSL("Veex.Tabs.pinTab({index: 2})")).toBool();
+    bool pinnedTab = m_testHelper.evaluate(QSL("Osza.Tabs.pinTab({index: 2})")).toBool();
     QVERIFY(pinnedTab);
-    QObject *qmlTabObject2 = m_testHelper.evaluateQObject(QSL("Veex.Tabs.get({index: 0})"));
+    QObject *qmlTabObject2 = m_testHelper.evaluateQObject(QSL("Osza.Tabs.get({index: 0})"));
     QVERIFY(qmlTabObject2);
     QCOMPARE(qmlTabObject2->property("index").toInt(), 0);
     QCOMPARE(qmlTabObject2->property("pinned").toBool(), true);
     QTRY_COMPARE(qmlTabObject2->property("url").toString(), QSL("https://another-example.com/"));
 
-    bool unpinnedTab = m_testHelper.evaluate(QSL("Veex.Tabs.unpinTab({index: 0})")).toBool();
+    bool unpinnedTab = m_testHelper.evaluate(QSL("Osza.Tabs.unpinTab({index: 0})")).toBool();
     QVERIFY(unpinnedTab);
-    QObject *qmlTabObject3 = m_testHelper.evaluateQObject(QSL("Veex.Tabs.get({index: 0})"));
+    QObject *qmlTabObject3 = m_testHelper.evaluateQObject(QSL("Osza.Tabs.get({index: 0})"));
     QVERIFY(qmlTabObject3);
     QCOMPARE(qmlTabObject3->property("url").toString(), QSL("https://another-example.com/"));
     QCOMPARE(qmlTabObject3->property("index").toInt(), 0);
@@ -87,36 +87,36 @@ void QmlTabsApiTest::testTabsAPI()
 
     // Next-Previous-Current
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 0);
-    m_testHelper.evaluate(QSL("Veex.Tabs.nextTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.nextTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 1);
-    m_testHelper.evaluate(QSL("Veex.Tabs.nextTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.nextTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 2);
-    m_testHelper.evaluate(QSL("Veex.Tabs.nextTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.nextTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 0);
-    m_testHelper.evaluate(QSL("Veex.Tabs.previousTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.previousTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 2);
-    m_testHelper.evaluate(QSL("Veex.Tabs.previousTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.previousTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 1);
-    m_testHelper.evaluate(QSL("Veex.Tabs.previousTab()"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.previousTab()"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 0);
-    m_testHelper.evaluate(QSL("Veex.Tabs.setCurrentIndex({index: 2})"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.setCurrentIndex({index: 2})"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 2);
-    m_testHelper.evaluate(QSL("Veex.Tabs.setCurrentIndex({index: 1})"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.setCurrentIndex({index: 1})"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 1);
-    m_testHelper.evaluate(QSL("Veex.Tabs.setCurrentIndex({index: 0})"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.setCurrentIndex({index: 0})"));
     QCOMPARE(mApp->getWindow()->tabWidget()->currentIndex(), 0);
 
     // Move Tab
     QSignalSpy qmlTabsMovedSpy(qmlTabsObject, SIGNAL(tabMoved(QVariantMap)));
-    m_testHelper.evaluate(QSL("Veex.Tabs.moveTab({from: 0, to:1, windowId: 0})"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.moveTab({from: 0, to:1, windowId: 0})"));
     QCOMPARE(qmlTabsMovedSpy.count(), 1);
 
     // Tab Removal
     QCOMPARE(mApp->getWindow()->tabCount(), 3);
     QSignalSpy qmlTabsRemovedSpy(qmlTabsObject, SIGNAL(tabRemoved(QVariantMap)));
-    m_testHelper.evaluate(QSL("Veex.Tabs.closeTab({index: 0})"));
+    m_testHelper.evaluate(QSL("Osza.Tabs.closeTab({index: 0})"));
     QCOMPARE(qmlTabsRemovedSpy.count(), 1);
     QCOMPARE(mApp->getWindow()->tabCount(), 2);
 }
 
-VEEXTEST_MAIN(QmlTabsApiTest)
+OSZATEST_MAIN(QmlTabsApiTest)

@@ -1,6 +1,6 @@
 /* ============================================================
- * Veex - Qt web browser
- * Copyright (C) 2026 Veex Tools
+ * Osza - Qt web browser
+ * Copyright (C) 2026 Osza Tools
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
                 2013-2014  Mladen Pejaković <pejakm@autistici.org>
 *

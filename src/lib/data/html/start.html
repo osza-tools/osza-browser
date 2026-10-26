@@ -5,10 +5,10 @@
 <meta name="color-scheme" content="dark light">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%TITLE%</title>
-<link rel="stylesheet" href="qrc:html/veexpage.css">
+<link rel="stylesheet" href="qrc:html/oszapage.css">
 <style>
 /* Page-specific rules. Dynamic values (icons, translated strings)
-   are substituted by VeexSchemeHandler in this document only. */
+   are substituted by OszaSchemeHandler in this document only. */
 body { direction: %DIRECTION%; }
 
 .vx-start__logo { inline-size: 250px; max-inline-size: 80%; block-size: auto; margin-block-end: 10px; }
@@ -18,14 +18,14 @@ body { direction: %DIRECTION%; }
     display: inline-block;
     margin-block: 4px 14px;
     padding: 6px 16px;
-    border: 1px solid rgba(var(--veex-accent-rgb), 0.45);
+    border: 1px solid rgba(var(--osza-accent-rgb), 0.45);
     border-radius: 999px;
-    background: var(--veex-accent-dim);
+    background: var(--osza-accent-dim);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--veex-accent);
+    color: var(--osza-accent);
 }
 
 /* Search pill: icon + input + primary action in one rounded control */
@@ -35,10 +35,10 @@ body { direction: %DIRECTION%; }
     gap: 8px;
     margin-block-start: 18px;
     padding: 6px 6px 6px 18px;
-    border: 1px solid var(--veex-card-border);
+    border: 1px solid var(--osza-card-border);
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.25);
-    transition: border-color var(--veex-speed) var(--veex-ease), box-shadow var(--veex-speed) var(--veex-ease);
+    transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease);
 }
 
 @media (prefers-color-scheme: light) {
@@ -46,9 +46,9 @@ body { direction: %DIRECTION%; }
 }
 
 .vx-search:hover { border-color: rgba(255, 255, 255, 0.25); }
-.vx-search:focus-within { border-color: var(--veex-card-border-hover); box-shadow: var(--veex-glow); }
+.vx-search:focus-within { border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); }
 
-.vx-search svg { flex: none; color: var(--veex-text-faint); }
+.vx-search svg { flex: none; color: var(--osza-text-faint); }
 
 .vx-search__input {
     flex: 1;
@@ -57,13 +57,13 @@ body { direction: %DIRECTION%; }
     border: none;
     outline: none;
     background: transparent;
-    color: var(--veex-text);
-    font-family: var(--veex-font-sans);
+    color: var(--osza-text);
+    font-family: var(--osza-font-sans);
     font-size: 14.5px;
     -webkit-user-select: auto;
     user-select: auto;
 }
-.vx-search__input::placeholder { color: var(--veex-text-dim); }
+.vx-search__input::placeholder { color: var(--osza-text-dim); }
 
 .vx-search__submit { flex: none; block-size: 38px; }
 
@@ -84,7 +84,7 @@ body { direction: %DIRECTION%; }
         <input class="vx-btn vx-btn--primary vx-search__submit" type="submit" value="%BUTTON-LABEL%">
     </form>
 
-    <p class="vx-note vx-start__footer">%SEARCH-BY% &middot; <a href="%WWW%">%ABOUT-VEEX%</a></p>
+    <p class="vx-note vx-start__footer">%SEARCH-BY% &middot; <a href="%WWW%">%ABOUT-OSZA%</a></p>
   </section>
 </main>
 </body>

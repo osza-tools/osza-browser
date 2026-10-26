@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -166,7 +166,7 @@ void TabWidget::loadSettings()
     settings.endGroup();
 
     settings.beginGroup(QSL("Web-URL-Settings"));
-    m_urlOnNewTab = settings.value(QSL("newTabUrl"), QSL("veex:speeddial")).toUrl();
+    m_urlOnNewTab = settings.value(QSL("newTabUrl"), QSL("osza:speeddial")).toUrl();
     settings.endGroup();
 
     WebTab::setAddChildBehavior(m_reverseNewTabsOrder ? WebTab::PrependChild : WebTab::AppendChild);

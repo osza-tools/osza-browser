@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ void TabIcon::updateIcon()
 {
     m_sitePixmap = m_tab->icon(/*allowNull*/ true).pixmap(16);
     if (m_sitePixmap.isNull()) {
-        if (m_tab->url().isEmpty() || m_tab->url().scheme() == QL1S("veex")) {
+        if (m_tab->url().isEmpty() || m_tab->url().scheme() == QL1S("osza")) {
             hide();
         } else {
             m_hideTimer->start();

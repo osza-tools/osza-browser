@@ -1,5 +1,5 @@
 /* ============================================================
-* AutoScroll - Autoscroll for Veex
+* AutoScroll - Autoscroll for Osza
 * Copyright (C) 2014-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify

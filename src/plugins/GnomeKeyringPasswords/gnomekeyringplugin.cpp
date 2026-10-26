@@ -1,5 +1,5 @@
 /* ============================================================
-* GnomeKeyringPasswords - gnome-keyring support plugin for Veex
+* GnomeKeyringPasswords - gnome-keyring support plugin for Osza
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -48,5 +48,5 @@ void GnomeKeyringPlugin::unload()
 bool GnomeKeyringPlugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }

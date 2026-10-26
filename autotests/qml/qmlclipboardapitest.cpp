@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,8 +30,8 @@ void QmlClipboardApiTest::cleanupTestCase()
 
 void QmlClipboardApiTest::testClipboard()
 {
-    m_testHelper.evaluate(QSL("Veex.Clipboard.copy('this text is copied')"));
+    m_testHelper.evaluate(QSL("Osza.Clipboard.copy('this text is copied')"));
     QCOMPARE(mApp->clipboard()->text(), QSL("this text is copied"));
 }
 
-VEEXTEST_MAIN(QmlClipboardApiTest)
+OSZATEST_MAIN(QmlClipboardApiTest)

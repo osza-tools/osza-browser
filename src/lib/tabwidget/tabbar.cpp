@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 #include <QHBoxLayout>
 #include <QDrag>
 
-#define MIMETYPE QSL("application/veex.tabbar.tab")
+#define MIMETYPE QSL("application/osza.tabbar.tab")
 
 class TabBarTabMetrics : public QWidget
 {

@@ -1,8 +1,8 @@
-import org.veex 1.0 as Veex
+import org.osza 1.0 as Osza
 import QtQuick.Controls 2.3
 import QtQuick 2.3
 
-Veex.PluginInterface {
+Osza.PluginInterface {
 
     QtObject {
         id: helloQmlObject
@@ -10,18 +10,18 @@ Veex.PluginInterface {
         signal clicked(int count)
     }
 
-    Veex.UserScript {
+    Osza.UserScript {
         id: testingHelloQmlUserScript
         name: 'testing-hello-qml'
         runsOnSubFrames: false
-        sourceCode: Veex.FileUtils.readAllFileContents('script.js')
-        injectionPoint: Veex.UserScript.DocumentReady
-        worldId: Veex.UserScript.ApplicationWorld
+        sourceCode: Osza.FileUtils.readAllFileContents('script.js')
+        injectionPoint: Osza.UserScript.DocumentReady
+        worldId: Osza.UserScript.ApplicationWorld
     }
 
     init: function(state, settingsPath){
         console.log(i18n('"Hello QML" plugin loaded'))
-        Veex.ExternalJsObject.registerExtraObject({
+        Osza.ExternalJsObject.registerExtraObject({
             id: 'helloQmlObject',
             object: helloQmlObject
         })
@@ -35,8 +35,8 @@ Veex.PluginInterface {
         console.log(i18n('Bye!'))
     }
 
-    // Point veex to extension://helloqml to see Hello World
-    Veex.ExtensionScheme {
+    // Point osza to extension://helloqml to see Hello World
+    Osza.ExtensionScheme {
         name: 'helloqml'
         onRequestStarted: {
             request.reply({
@@ -46,13 +46,13 @@ Veex.PluginInterface {
         }
     }
 
-    Veex.BrowserAction {
+    Osza.BrowserAction {
         name: 'helloqml-button'
         identity: 'helloqml-id'
         title: i18n('Testing QML Title')
         toolTip: i18n('Testing QML Tooltip')
         icon: 'extensions.svg'
-        location: Veex.BrowserAction.NavigationToolBar | Veex.BrowserAction.StatusBar
+        location: Osza.BrowserAction.NavigationToolBar | Osza.BrowserAction.StatusBar
         popup: Rectangle {
             property var borderMargin: 1
             property var imageWidth: 256
@@ -92,7 +92,7 @@ Veex.PluginInterface {
         }
     }
 
-    Veex.SideBar {
+    Osza.SideBar {
         name: 'helloqml-sidebar'
         title: i18n('Testing QML SideBar')
         icon: 'extensions.svg'
@@ -122,7 +122,7 @@ Veex.PluginInterface {
         })
 
         action.triggered.connect(function() {
-            Veex.Notifications.create({
+            Osza.Notifications.create({
                 heading: i18n('Hello QML'),
                 message: i18n('First qml plugin action works :-)'),
                 icon: 'extensions.svg'
@@ -130,7 +130,7 @@ Veex.PluginInterface {
         })
     }
 
-    Veex.Settings {
+    Osza.Settings {
         id: settings
         name: 'HelloQML'
     }

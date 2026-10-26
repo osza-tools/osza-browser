@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 void QzToolsTest::initTestCase()
 {
-    m_tmpPath = QDir::tempPath() + QL1S("/veex-test/qztoolstest");
+    m_tmpPath = QDir::tempPath() + QL1S("/osza-test/qztoolstest");
     QDir().mkpath(m_tmpPath);
 
     QVERIFY(QDir(m_tmpPath).exists());
@@ -172,7 +172,7 @@ public:
         QFile file(name);
 
         if (file.open(QFile::WriteOnly)) {
-            if (file.write(QByteArrayLiteral("veex-test")) == -1) {
+            if (file.write(QByteArrayLiteral("osza-test")) == -1) {
                 qFatal() << "Unable to write to a file '" << file.fileName() << "'.";
             }
             file.close();

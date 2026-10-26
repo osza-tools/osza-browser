@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include "qzcommon.h"
 #include "browserwindow.h"
 
-class VEEX_EXPORT ClosedWindowsManager : public QObject
+class OSZA_EXPORT ClosedWindowsManager : public QObject
 {
     Q_OBJECT
 

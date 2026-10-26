@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -196,7 +196,7 @@ void BookmarksManager::createContextMenu(const QPoint &pos)
 
     // Disable paste if clipboard is empty
     const QMimeData* clipboardData = QApplication::clipboard()->mimeData();
-    bool canPaste = clipboardData && clipboardData->hasFormat(QSL("application/veex.bookmarks"));
+    bool canPaste = clipboardData && clipboardData->hasFormat(QSL("application/osza.bookmarks"));
     if (!canPaste) {
         actPaste->setDisabled(true);
     }

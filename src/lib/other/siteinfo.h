@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ class QTreeWidget;
 class WebView;
 class CertificateInfoWidget;
 
-class VEEX_EXPORT SiteInfo : public QDialog
+class OSZA_EXPORT SiteInfo : public QDialog
 {
     Q_OBJECT
 

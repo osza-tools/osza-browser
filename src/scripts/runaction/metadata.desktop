@@ -91,9 +91,9 @@ Comment[zh_TW]=在網站上執行各種動作
 
 Icon=icon.svg
 Type=Service
-X-Veex-Type=Extension/Python
+X-Osza-Type=Extension/Python
 
-X-Veex-Author=David Rosca
-X-Veex-Email=nowrep@gmail.com
-X-Veex-Version=0.1.0
-X-Veex-Settings=true
+X-Osza-Author=David Rosca
+X-Osza-Email=nowrep@gmail.com
+X-Osza-Version=0.1.0
+X-Osza-Settings=true

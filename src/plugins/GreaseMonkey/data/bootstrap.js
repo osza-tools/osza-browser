@@ -12,7 +12,7 @@ var GM = {
             version: ""
         },
         scriptMetaStr: "",
-        scriptHandler: "Veex GreaseMonkey",
+        scriptHandler: "Osza GreaseMonkey",
         version: "4.0"
     }
 };

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -87,7 +87,7 @@ void DesktopNotificationsFactory::showNotification(const QPixmap &icon, const QS
     case DesktopNative:
 #if defined(Q_OS_UNIX) && !defined(DISABLE_DBUS)
         QString iconFileName = QL1S("");
-        QFile tmp(DataPaths::path(DataPaths::Temp) + QLatin1String("/veex_notif.png"));
+        QFile tmp(DataPaths::path(DataPaths::Temp) + QLatin1String("/osza_notif.png"));
         if (tmp.open(QFile::WriteOnly)) {
             if (icon.save(tmp.fileName())) {
                 iconFileName = tmp.fileName();
@@ -101,7 +101,7 @@ void DesktopNotificationsFactory::showNotification(const QPixmap &icon, const QS
 
         QDBusInterface dbus(QSL("org.freedesktop.Notifications"), QSL("/org/freedesktop/Notifications"), QSL("org.freedesktop.Notifications"), QDBusConnection::sessionBus());
         QVariantList args;
-        args.append(QLatin1String("Veex"));
+        args.append(QLatin1String("Osza"));
         args.append(m_uint);
         args.append(iconFileName);
         args.append(heading);

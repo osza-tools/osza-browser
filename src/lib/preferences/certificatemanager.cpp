@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2023 Javier Llorente <javier@opensuse.org>
 *
 * This program is free software: you can redistribute it and/or modify

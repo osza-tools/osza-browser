@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT AdBlockScripts
+class OSZA_EXPORT AdBlockScripts
 {
 public:
     static QString removeRulesScript(const QString &rules);

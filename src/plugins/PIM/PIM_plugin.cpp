@@ -1,5 +1,5 @@
 /* ============================================================
-* Personal Information Manager plugin for Veex
+* Personal Information Manager plugin for Osza
 * Copyright (C) 2012-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2012-2014  Mladen Pejaković <pejakm@autistici.org>
 *
@@ -51,7 +51,7 @@ void PIM_Plugin::unload()
 bool PIM_Plugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }
 
 void PIM_Plugin::showSettings(QWidget* parent)

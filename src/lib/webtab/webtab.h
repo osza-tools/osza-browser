@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -36,11 +36,11 @@ class TabIcon;
 class TabBar;
 class LoadRequest;
 
-class VEEX_EXPORT WebTab : public QWidget
+class OSZA_EXPORT WebTab : public QWidget
 {
     Q_OBJECT
 public:
-    struct VEEX_EXPORT SavedTab {
+    struct OSZA_EXPORT SavedTab {
         QString title;
         QUrl url;
         QIcon icon;
@@ -57,8 +57,8 @@ public:
         bool isValid() const;
         void clear();
 
-        friend VEEX_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedTab &tab);
-        friend VEEX_EXPORT QDataStream &operator>>(QDataStream &stream, SavedTab &tab);
+        friend OSZA_EXPORT QDataStream &operator<<(QDataStream &stream, const SavedTab &tab);
+        friend OSZA_EXPORT QDataStream &operator>>(QDataStream &stream, SavedTab &tab);
     };
 
     enum AddChildBehavior {

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 #include "passwordmanager.h"
 #include "sslerrordialog.h"
 #include "networkurlinterceptor.h"
-#include "schemehandlers/veexschemehandler.h"
+#include "schemehandlers/oszaschemehandler.h"
 #include "schemehandlers/extensionschemehandler.h"
 #include "webpage.h"
 
@@ -49,9 +49,9 @@ NetworkManager::NetworkManager(QObject *parent)
     // Create scheme handlers
     m_extensionScheme = new ExtensionSchemeManager(this);
 
-    mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("veex"), new VeexSchemeHandler(this));
+    mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("osza"), new OszaSchemeHandler(this));
     mApp->webProfile()->installUrlSchemeHandler(QByteArrayLiteral("extension"), m_extensionScheme);
-    WebPage::addSupportedScheme(QSL("veex"));
+    WebPage::addSupportedScheme(QSL("osza"));
     WebPage::addSupportedScheme(QSL("extension"));
 
     // Create url interceptor
@@ -386,10 +386,10 @@ QString NetworkManager::sslErrorDescription(const QWebEngineCertificateError::Ty
 // static
 void NetworkManager::registerSchemes()
 {
-    QWebEngineUrlScheme veexScheme("veex");
-    veexScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);
-    veexScheme.setSyntax(QWebEngineUrlScheme::Syntax::Path);
-    QWebEngineUrlScheme::registerScheme(veexScheme);
+    QWebEngineUrlScheme oszaScheme("osza");
+    oszaScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);
+    oszaScheme.setSyntax(QWebEngineUrlScheme::Syntax::Path);
+    QWebEngineUrlScheme::registerScheme(oszaScheme);
 
     QWebEngineUrlScheme extensionScheme("extension");
     extensionScheme.setFlags(QWebEngineUrlScheme::SecureScheme | QWebEngineUrlScheme::ContentSecurityPolicyIgnored);

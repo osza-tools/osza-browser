@@ -6,7 +6,7 @@ usage() {
     cat <<'EOF'
 Usage: ./linux/install-build-deps.sh [OPTIONS]
 
-Install build dependencies for Veex Browser on Ubuntu/Debian.
+Install build dependencies for Osza Browser on Ubuntu/Debian.
 
 Options:
   --with-kde-integration  Install optional KDE integration dependencies.
@@ -128,7 +128,7 @@ fi
 echo "Updating package lists..."
 "${APT[@]}" update
 
-echo "Installing Veex Browser build dependencies..."
+echo "Installing Osza Browser build dependencies..."
 "${APT[@]}" install -y --no-install-recommends "${packages[@]}"
 
 echo

@@ -9,7 +9,7 @@ set(SystemIntegration_SRCS
     downloadkjob.h
 )
 
-ecm_create_qm_loader(SystemIntegration_SRCS veex_systemintegration_qt)
+ecm_create_qm_loader(SystemIntegration_SRCS osza_systemintegration_qt)
 
 set(SystemIntegration_RSCS
     systemintegration.qrc
@@ -17,9 +17,9 @@ set(SystemIntegration_RSCS
 qt_add_resources(RSCS ${SystemIntegration_RSCS})
 
 add_library(SystemIntegration MODULE ${SystemIntegration_SRCS} ${RSCS})
-install(TARGETS SystemIntegration DESTINATION ${VEEX_INSTALL_PLUGINDIR})
+install(TARGETS SystemIntegration DESTINATION ${OSZA_INSTALL_PLUGINDIR})
 target_link_libraries(SystemIntegration
-    VeexPrivate
+    OszaPrivate
     KF6::Wallet
     KF6::KIOCore
     KF6::KIOWidgets

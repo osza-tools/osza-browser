@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -28,7 +28,7 @@ class AdBlockTreeModel;
 class AdBlockFilterModel;
 class AdBlockRule;
 
-class VEEX_EXPORT AdBlockTreeWidget : public QTreeView
+class OSZA_EXPORT AdBlockTreeWidget : public QTreeView
 {
     Q_OBJECT
 public:

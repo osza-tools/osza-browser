@@ -1,5 +1,5 @@
 /* ============================================================
-* Personal Information Manager plugin for Veex
+* Personal Information Manager plugin for Osza
 * Copyright (C) 2012-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2012-2014  Mladen Pejaković <pejakm@autistici.org>
 *

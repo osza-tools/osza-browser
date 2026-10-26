@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2013-2018  David Rosca <nowrep@gmail.com>
 *
@@ -27,7 +27,7 @@
 #include <QVector>
 #include <QMessageBox>
 
-#define INTERNAL_SERVER_ID QLatin1String("veex.internal")
+#define INTERNAL_SERVER_ID QLatin1String("osza.internal")
 
 DatabaseEncryptedPasswordBackend::DatabaseEncryptedPasswordBackend()
     : PasswordBackend()
@@ -578,7 +578,7 @@ void MasterPasswordDialog::reject()
         // master password not set
         QMessageBox::information(this, AutoFill::tr("Warning!"),
                                  AutoFill::tr("This backend needs a master password to be set! "
-                                              "Veex just switches to its default backend"));
+                                              "Osza just switches to its default backend"));
         // active default backend
         mApp->autoFill()->passwordManager()->switchBackend(QSL("database"));
         return;

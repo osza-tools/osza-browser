@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -47,8 +47,8 @@ class QmlSideBar : public QObject, public QQmlParserStatus
      * - Theme icon: if the icon is found as a theme icon, then it will
      *               be used even if the icon file with same name is present
      *               in the plugin directory
-     * - Veex resource: for the icons starting with ":", they are searched in
-     *               veex resource file
+     * - Osza resource: for the icons starting with ":", they are searched in
+     *               osza resource file
      * - Files in plugin directory: All other paths will be resolved relative to
      *               the plugin directory. If the icon path is outside the
      *               plugin directory, then it will be resolved as empty path.

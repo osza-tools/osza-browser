@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ namespace Ui
 class AcceptLanguage;
 }
 
-class VEEX_EXPORT AcceptLanguage : public QDialog
+class OSZA_EXPORT AcceptLanguage : public QDialog
 {
     Q_OBJECT
 

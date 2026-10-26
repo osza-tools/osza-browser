@@ -90,9 +90,9 @@ Comment[zh_TW]=簡易的 QML 外掛
 
 Icon=
 Type=Service
-X-Veex-Type=Extension/Qml
+X-Osza-Type=Extension/Qml
 
-X-Veex-Author=Anmol Gautam
-X-Veex-Email=tarptaeya@gmail.com
-X-Veex-Version=0.1.0
-X-Veex-Settings=true
+X-Osza-Author=Anmol Gautam
+X-Osza-Email=tarptaeya@gmail.com
+X-Osza-Version=0.1.0
+X-Osza-Settings=true

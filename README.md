@@ -1,23 +1,23 @@
 <p align="center">
-  <img src="logo.png" alt="Veex Browser" width="180" />
+  <img src="logo.png" alt="Osza Browser" width="180" />
 </p>
 
-<h1 align="center">Veex Browser</h1>
+<h1 align="center">Osza Browser</h1>
 
 <p align="center">
   <strong>A fast, secure and privacy-focused web browser built with Qt.</strong><br/>
-  Maintained by the <a href="https://github.com/veex-tools">Veex Tools</a> team.
+  Maintained by the <a href="https://github.com/osza-tools">Osza Tools</a> team.
 </p>
 
 ---
 
 ## About
 
-Veex Browser is a lightweight yet full-featured web browser powered by the
+Osza Browser is a lightweight yet full-featured web browser powered by the
 **QtWebEngine** rendering engine. It combines speed and privacy with a clean,
 familiar interface, and it runs on **Linux, Windows and macOS**.
 
-Veex Browser is a fork of [Falkon](https://www.falkon.org), deeply rebranded
+Osza Browser is a fork of [Falkon](https://www.falkon.org), deeply rebranded
 and evolved as an independent project. We are grateful to the original Falkon
 and KDE contributors for their work.
 
@@ -39,7 +39,7 @@ and KDE contributors for their work.
 
 Prebuilt packages are being prepared. In the meantime you can
 [build from source](#building) or watch the
-[releases page](https://github.com/veex-tools/veex-browser/releases).
+[releases page](https://github.com/osza-tools/osza-browser/releases).
 
 ## Building
 
@@ -62,30 +62,30 @@ make install
 
 ### Install to a custom prefix
 
-When installing Veex Browser to a custom prefix, you may need to adjust the
+When installing Osza Browser to a custom prefix, you may need to adjust the
 `XDG_DATA_DIRS` environment variable:
 
 ```sh
 # Build
-cmake -DCMAKE_INSTALL_PREFIX=$HOME/veex
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/osza
 
 # Run
-export XDG_DATA_DIRS="$HOME/veex/share:$XDG_DATA_DIRS"
-$HOME/veex/bin/veex
+export XDG_DATA_DIRS="$HOME/osza/share:$XDG_DATA_DIRS"
+$HOME/osza/bin/osza
 ```
 
 ## Contributing
 
 Want to contribute? Great!
 
-- Open an [issue](https://github.com/veex-tools/veex-browser/issues) for bugs
+- Open an [issue](https://github.com/osza-tools/osza-browser/issues) for bugs
   and feature requests.
 - Send pull requests against the `main` branch — keep changes focused and
   describe the *why* in the commit message.
 
 ## License
 
-Veex Browser is free software licensed under the
+Osza Browser is free software licensed under the
 **GNU General Public License version 3 or (at your option) any later version**
 (see [COPYING](COPYING)).
 

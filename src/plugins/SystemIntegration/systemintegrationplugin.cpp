@@ -1,5 +1,5 @@
 /* ============================================================
-* SystemIntegration - KDE support plugin for Veex
+* SystemIntegration - KDE support plugin for Osza
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -56,7 +56,7 @@ void SystemIntegrationPlugin::init(InitState state, const QString &settingsPath)
     m_settingsPath = settingsPath + QL1S("/SystemIntegration.ini");
 
     QSettings settings(m_settingsPath, QSettings::IniFormat);
-    m_lastVeexVersion = settings.value(QSL("General/LastVeexVersion"), QString::fromLatin1(Qz::VERSION)).toString();
+    m_lastOszaVersion = settings.value(QSL("General/LastOszaVersion"), QString::fromLatin1(Qz::VERSION)).toString();
 
     m_backend = new KWalletPasswordBackend(this);
     mApp->autoFill()->passwordManager()->registerBackend(QSL("KWallet"), m_backend);
@@ -116,18 +116,18 @@ void SystemIntegrationPlugin::init(InitState state, const QString &settingsPath)
     m_sharePageMenu->setTitle(tr("Share page"));
     m_sharePageMenu->setIcon(QIcon::fromTheme(QStringLiteral("document-share")));
     m_sharePageMenu->model()->setInputData(QJsonObject{
-        { QStringLiteral("urls"), QJsonArray {QJsonValue(QSL("veex"))} },
-        { QStringLiteral("title"), QJsonValue(QSL("veex")) }
+        { QStringLiteral("urls"), QJsonArray {QJsonValue(QSL("osza"))} },
+        { QStringLiteral("title"), QJsonValue(QSL("osza")) }
     });
     m_sharePageMenu->model()->setPluginType(QStringLiteral("ShareUrl"));
 
-    KAboutData aboutData(QSL("veex"), QSL("Veex"), QCoreApplication::applicationVersion());
+    KAboutData aboutData(QSL("osza"), QSL("Osza"), QCoreApplication::applicationVersion());
     KAboutData::setApplicationData(aboutData);
 
     KCrash::initialize();
     KCrash::setFlags(KCrash::KeepFDs);
 
-    settings.setValue(QSL("General/LastVeexVersion"), QString::fromLatin1(Qz::VERSION));
+    settings.setValue(QSL("General/LastOszaVersion"), QString::fromLatin1(Qz::VERSION));
 }
 
 void SystemIntegrationPlugin::unload()
@@ -160,10 +160,10 @@ void SystemIntegrationPlugin::populateWebViewMenu(QMenu *menu, WebView *view, co
 bool SystemIntegrationPlugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }
 
-QString SystemIntegrationPlugin::lastVeexVersion() const
+QString SystemIntegrationPlugin::lastOszaVersion() const
 {
-    return m_lastVeexVersion;
+    return m_lastOszaVersion;
 }

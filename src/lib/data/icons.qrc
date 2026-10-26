@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/veex.svg</file>
-        <file>icons/veex-black.svg</file>
-        <file>icons/veex-white.svg</file>
+        <file>icons/osza.svg</file>
+        <file>icons/osza-black.svg</file>
+        <file>icons/osza-white.svg</file>
         <file>icons/menu/history.svg</file>
         <file>icons/menu/history_entry.svg</file>
         <file>icons/menu/tab-new.svg</file>

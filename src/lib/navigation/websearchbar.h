@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ class SearchEnginesManager;
 class SearchEnginesDialog;
 class OpenSearchEngine;
 
-class VEEX_EXPORT WebSearchBar_Button : public ClickableLabel
+class OSZA_EXPORT WebSearchBar_Button : public ClickableLabel
 {
 public:
     explicit WebSearchBar_Button(QWidget* parent = nullptr);
@@ -44,7 +44,7 @@ private:
     void contextMenuEvent(QContextMenuEvent* event) override;
 };
 
-class VEEX_EXPORT WebSearchBar : public LineEdit
+class OSZA_EXPORT WebSearchBar : public LineEdit
 {
     Q_OBJECT
 

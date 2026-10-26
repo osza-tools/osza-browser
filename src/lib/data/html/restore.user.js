@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name     _veex_restore
+// @name     _osza_restore
 // @run-at   document-end
-// @include  veex:restore
+// @include  osza:restore
 // ==/UserScript==
 
 (function() {
@@ -174,10 +174,10 @@ function init()
 }
 
 // Initialize
-if (window._veex_external) {
+if (window._osza_external) {
     init();
 } else {
-    document.addEventListener("_veex_external_created", init);
+    document.addEventListener("_osza_external_created", init);
 }
 
 })();

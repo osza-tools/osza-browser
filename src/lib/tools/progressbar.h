@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2024 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT ProgressBar : public QProgressBar
+class OSZA_EXPORT ProgressBar : public QProgressBar
 {
     Q_OBJECT
 public:

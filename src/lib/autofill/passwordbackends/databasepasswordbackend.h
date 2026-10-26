@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 #include "passwordbackend.h"
 #include "qzcommon.h"
 
-class VEEX_EXPORT DatabasePasswordBackend : public PasswordBackend
+class OSZA_EXPORT DatabasePasswordBackend : public PasswordBackend
 {
 public:
     explicit DatabasePasswordBackend();

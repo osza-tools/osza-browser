@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2026 Pavel Sobolev <contact@paveloom.dev>
 *
 * This program is free software: you can redistribute it and/or modify

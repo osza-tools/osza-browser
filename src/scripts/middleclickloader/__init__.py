@@ -1,5 +1,5 @@
 # ============================================================
-# MiddleClickLoader - plugin for Veex
+# MiddleClickLoader - plugin for Osza
 # Copyright (C) 2018 Juraj Oravec <sgd.orava@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
 
-import Veex
+import Osza
 from PySide6 import QtCore
 from middleclickloader.mcl_handler import MCL_Handler
 
 
-class MCL_Plugin(Veex.PluginInterface, QtCore.QObject):
+class MCL_Plugin(Osza.PluginInterface, QtCore.QObject):
     handler = None
 
     def init(self, state, settingsPath):
-        plugins = Veex.MainApplication.instance().plugins()
-        plugins.registerAppEventHandler(Veex.PluginProxy.MousePressHandler, self)
+        plugins = Osza.MainApplication.instance().plugins()
+        plugins.registerAppEventHandler(Osza.PluginProxy.MousePressHandler, self)
 
         self.handler = MCL_Handler(settingsPath)
 
@@ -38,7 +38,7 @@ class MCL_Plugin(Veex.PluginInterface, QtCore.QObject):
         return True
 
     def mousePress(self, type, obj, event):
-        if type == Veex.Qz.ON_WebView:
+        if type == Osza.Qz.ON_WebView:
             return self.handler.mousePress(obj, event)
 
         return False
@@ -48,4 +48,4 @@ class MCL_Plugin(Veex.PluginInterface, QtCore.QObject):
         self.handler.showSettings(parent)
 
 
-Veex.registerPlugin(MCL_Plugin())
+Osza.registerPlugin(MCL_Plugin())

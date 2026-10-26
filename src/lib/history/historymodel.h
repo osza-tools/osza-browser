@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class QTimer;
 class History;
 class HistoryItem;
 
-class VEEX_EXPORT HistoryModel : public QAbstractItemModel
+class OSZA_EXPORT HistoryModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
@@ -84,7 +84,7 @@ private:
     History* m_history;
 };
 
-class VEEX_EXPORT HistoryFilterModel : public QSortFilterProxyModel
+class OSZA_EXPORT HistoryFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:

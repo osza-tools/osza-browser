@@ -1,0 +1,140 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: osza_verticaltabs_qt\n"
+"PO-Revision-Date: 2024-12-15 17:36+0530\n"
+"Last-Translator: Kali <EMAIL@ADDRESS>\n"
+"Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Qt-Contexts: true\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Unmute Tab"
+msgstr "नाराजगी टैब"
+
+#: tablistview.cpp:197
+msgctxt "TabListView|"
+msgid "Mute Tab"
+msgstr "म्यूट टैब"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Unmute Tab"
+msgstr "नाराजगी टैब"
+
+#: tabtreeview.cpp:314
+msgctxt "TabTreeView|"
+msgid "Mute Tab"
+msgstr "म्यूट टैब"
+
+#: tabtreeview.cpp:318
+msgctxt "TabTreeView|"
+msgid "Close Tab"
+msgstr "टैब बंद करें"
+
+#: tabtreeview.cpp:394
+msgctxt "TabTreeView|"
+msgid "Tab Tree"
+msgstr "टैब ट्री"
+
+#: tabtreeview.cpp:398
+msgctxt "TabTreeView|"
+msgid "Close Tree"
+msgstr "पेड़ बंद करें"
+
+#: tabtreeview.cpp:401
+msgctxt "TabTreeView|"
+msgid "Unload Tree"
+msgstr "पेड़ उतारो"
+
+#: tabtreeview.cpp:407
+msgctxt "TabTreeView|"
+msgid "Expand All"
+msgstr "सभी का विस्तार"
+
+#: tabtreeview.cpp:408
+msgctxt "TabTreeView|"
+msgid "Collapse All"
+msgstr "सभी को संकुचित करें"
+
+#: verticaltabscontroller.cpp:36
+msgctxt "VerticalTabsController|"
+msgid "Vertical Tabs"
+msgstr "ऊर्ध्वाधर टैब"
+
+#: verticaltabsschemehandler.cpp:47
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "Vertical Tabs"
+msgstr "ऊर्ध्वाधर टैब"
+
+#: verticaltabsschemehandler.cpp:57
+msgctxt "VerticalTabsSchemeHandler|"
+msgid "New Group"
+msgstr "नया समूह"
+
+#: verticaltabssettings.cpp:58
+msgctxt "VerticalTabsSettings|"
+msgid "Theme file"
+msgstr "थीम फ़ाइल"
+
+#: verticaltabssettings.cpp:83
+msgctxt "VerticalTabsSettings|"
+msgid "Custom..."
+msgstr "रिवाज़..."
+
+#: verticaltabssettings.ui:14
+msgctxt "VerticalTabsSettings|"
+msgid "Vertical Tabs Settings"
+msgstr "वर्टिकल टैब सेटिंग्स"
+
+#: verticaltabssettings.ui:20
+msgctxt "VerticalTabsSettings|"
+msgid "View"
+msgstr "देखना"
+
+#: verticaltabssettings.ui:26
+msgctxt "VerticalTabsSettings|"
+msgid "Tab List"
+msgstr "टैब सूची"
+
+#: verticaltabssettings.ui:33
+msgctxt "VerticalTabsSettings|"
+msgid "Tab Tree"
+msgstr "टैब ट्री"
+
+#: verticaltabssettings.ui:43
+msgctxt "VerticalTabsSettings|"
+msgid "Options"
+msgstr "विकल्प"
+
+#: verticaltabssettings.ui:49
+msgctxt "VerticalTabsSettings|"
+msgid "Theme:"
+msgstr "विषय:"
+
+#: verticaltabssettings.ui:62
+msgctxt "VerticalTabsSettings|"
+msgid "Use as replacement for main tab bar"
+msgstr "मुख्य टैब बार के प्रतिस्थापन के रूप में उपयोग करें"
+
+#: verticaltabswidget.cpp:59
+msgctxt "VerticalTabsWidget|"
+msgid "New Tab"
+msgstr "नया टैब"
+
+#: verticaltabswidget.cpp:247
+msgctxt "VerticalTabsWidget|"
+msgid "Add New Group..."
+msgstr "नया समूह जोड़ें..."
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the end of tab tree"
+#~ msgstr "टैब ट्री के अंत में नए चाइल्ड टैब जोड़ें"
+
+#~ msgctxt "VerticalTabsSettings|"
+#~ msgid "Add new child tabs to the beginning of tab tree"
+#~ msgstr "टैब ट्री के आरंभ में नए चाइल्ड टैब जोड़ें"

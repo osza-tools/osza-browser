@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
@@ -29,7 +29,7 @@
 #include <QHash>
 #include <QList>
 
-class VEEX_EXPORT AesInterface : public QObject
+class OSZA_EXPORT AesInterface : public QObject
 {
     Q_OBJECT
 

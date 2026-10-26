@@ -1,4 +1,4 @@
--- Veex browsedata.db
+-- Osza browsedata.db
 
 -- Tables
 CREATE TABLE autofill (

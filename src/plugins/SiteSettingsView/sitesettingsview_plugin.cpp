@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2024 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -62,5 +62,5 @@ void SiteSettingsView::unload()
 
 bool SiteSettingsView::testPlugin()
 {
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }

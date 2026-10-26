@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-VEEX_URL=$1
+OSZA_URL=$1
 RUNTIME_URL="https://github.com/AppImage/AppImageKit/releases/download/continuous/runtime-x86_64"
 
-if [ -z "$VEEX_URL" ]; then
+if [ -z "$OSZA_URL" ]; then
     echo "No url specified!"
     exit 1
 fi
@@ -15,9 +15,9 @@ cd /root
 
 wget $RUNTIME_URL -O runtime
 
-wget $VEEX_URL -O veex.tar.xz
-tar xf veex.tar.xz
-cd veex-*
+wget $OSZA_URL -O osza.tar.xz
+tar xf osza.tar.xz
+cd osza-*
 
 /root/build-appimage.sh \
     --sourcedir=`pwd` \

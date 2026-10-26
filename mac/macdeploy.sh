@@ -11,23 +11,23 @@ fi
 
 MACDEPLOYQT=$1
 QTDIR="`dirname $MACDEPLOYQT`/.."
-LIBRARY_NAME="libVeexPrivate.2.dylib"
-PLUGINS="Veex.app/Contents/Resources/plugins"
-QTPLUGINS="Veex.app/Contents/PlugIns"
+LIBRARY_NAME="libOszaPrivate.2.dylib"
+PLUGINS="Osza.app/Contents/Resources/plugins"
+QTPLUGINS="Osza.app/Contents/PlugIns"
 
 # cd to directory with bundle
 test -d bin || cd ..
 cd bin
 
-# copy libVeexPrivate into bundle
-cp $LIBRARY_NAME Veex.app/Contents/MacOS/
+# copy libOszaPrivate into bundle
+cp $LIBRARY_NAME Osza.app/Contents/MacOS/
 
-# copy all Veex plugins into bundle
+# copy all Osza plugins into bundle
 test -d $PLUGINS || mkdir $PLUGINS
 cp plugins/*.dylib $PLUGINS/
 
-# fix libVeex
-install_name_tool -change $LIBRARY_NAME @executable_path/$LIBRARY_NAME Veex.app/Contents/MacOS/Veex
+# fix libOsza
+install_name_tool -change $LIBRARY_NAME @executable_path/$LIBRARY_NAME Osza.app/Contents/MacOS/Osza
 
 # fix plugins
 for plugin in $PLUGINS/*.dylib
@@ -51,7 +51,7 @@ else
 fi
 
 # run macdeployqt
-$MACDEPLOYQT Veex.app -qmldir=$PWD/../src/lib/data/data
+$MACDEPLOYQT Osza.app -qmldir=$PWD/../src/lib/data/data
 
 # create final dmg image
 cd ../mac

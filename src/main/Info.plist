@@ -15,7 +15,7 @@
     <key>CFBundleExecutable</key>
     <string>@EXECUTABLE@</string>
     <key>CFBundleIdentifier</key>
-    <string>org.veex.VeexBrowser</string>
+    <string>org.osza.OszaBrowser</string>
 
     <key>CFBundleURLTypes</key>
     <array>
@@ -58,9 +58,9 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleName</key>
-    <string>Veex</string>
+    <string>Osza</string>
     <key>CFBundleDisplayName</key>
-    <string>Veex</string>
+    <string>Osza</string>
 
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>

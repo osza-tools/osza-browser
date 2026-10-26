@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #ifndef TESTPLUGIN_H
 #define TESTPLUGIN_H
 
-// Include plugininterface.h for your version of Veex
+// Include plugininterface.h for your version of Osza
 #include "plugininterface.h"
 
 #include <QLabel>
@@ -32,7 +32,7 @@ class TestPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.TestPlugin" FILE "testplugin.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.TestPlugin" FILE "testplugin.json")
 
 public:
     explicit TestPlugin();

@@ -1,5 +1,5 @@
 /* ============================================================
-* TabManager plugin for Veex
+* TabManager plugin for Osza
 * Copyright (C) 2013-2017  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ void TabManagerPlugin::unload()
 
 bool TabManagerPlugin::testPlugin()
 {
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }
 
 void TabManagerPlugin::showSettings(QWidget* parent)

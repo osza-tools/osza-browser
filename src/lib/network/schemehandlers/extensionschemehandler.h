@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT ExtensionSchemeHandler : public QObject
+class OSZA_EXPORT ExtensionSchemeHandler : public QObject
 {
 public:
     explicit ExtensionSchemeHandler(QObject *parent = nullptr) : QObject(parent) { }
@@ -32,7 +32,7 @@ protected:
     void setReply(QWebEngineUrlRequestJob *job, const QByteArray &contentType, const QByteArray &content);
 };
 
-class VEEX_EXPORT ExtensionSchemeManager : public QWebEngineUrlSchemeHandler
+class OSZA_EXPORT ExtensionSchemeManager : public QWebEngineUrlSchemeHandler
 {
 public:
     explicit ExtensionSchemeManager(QObject *parent = nullptr);

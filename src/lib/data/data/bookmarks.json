@@ -12,18 +12,18 @@
    "children": [
     {
      "description": "",
-     "keyword": "veex",
-     "name": "Veex Browser",
+     "keyword": "osza",
+     "name": "Osza Browser",
      "type": "url",
-     "url": "https://github.com/veex-tools/veex-browser/",
+     "url": "https://github.com/osza-tools/osza-browser/",
      "visit_count": 0
     },
     {
      "description": "",
      "keyword": "",
-     "name": "Veex Tools",
+     "name": "Osza Tools",
      "type": "url",
-     "url": "https://github.com/veex-tools/",
+     "url": "https://github.com/osza-tools/",
      "visit_count": 0
     },
     {

@@ -1,5 +1,5 @@
 /* ============================================================
- * Veex - Qt web browser
+ * Osza - Qt web browser
  * Copyright (C) 2022 Juraj Oravec <jurajoravec@mailo.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 class QUrl;
 
 
-class VEEX_EXPORT SiteSettingsManager : public QObject
+class OSZA_EXPORT SiteSettingsManager : public QObject
 {
     Q_OBJECT
 

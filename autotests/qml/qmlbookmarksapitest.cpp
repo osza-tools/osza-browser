@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -31,16 +31,16 @@ void QmlBookmarksApiTest::cleanupTestCase()
 
 void QmlBookmarksApiTest::testBookmarkTreeNodeType()
 {
-    auto type = BookmarkItem::Type(m_testHelper.evaluate(QSL("Veex.Bookmarks.rootItem().type")).toInt());
+    auto type = BookmarkItem::Type(m_testHelper.evaluate(QSL("Osza.Bookmarks.rootItem().type")).toInt());
     QCOMPARE(mApp->bookmarks()->rootItem()->type(), type);
 
-    type = BookmarkItem::Type(m_testHelper.evaluate(QSL("Veex.Bookmarks.toolbarFolder().type")).toInt());
+    type = BookmarkItem::Type(m_testHelper.evaluate(QSL("Osza.Bookmarks.toolbarFolder().type")).toInt());
     QCOMPARE(mApp->bookmarks()->toolbarFolder()->type(), type);
 }
 
 void QmlBookmarksApiTest::testBookmarkTreeNode()
 {
-    QObject *bookmark = m_testHelper.evaluateQObject(QSL("Veex.Bookmarks.toolbarFolder()"));
+    QObject *bookmark = m_testHelper.evaluateQObject(QSL("Osza.Bookmarks.toolbarFolder()"));
     QVERIFY(bookmark);
     auto toolbarFolder = mApp->bookmarks()->toolbarFolder();
 
@@ -60,7 +60,7 @@ void QmlBookmarksApiTest::testBookmarksCreation()
     item->setUrl(QUrl(QSL("https://example.com/")));
     item->setDescription(QSL("Testing bookmark description"));
 
-    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Veex.Bookmarks"));
+    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Osza.Bookmarks"));
     QVERIFY(qmlBookmarks);
 
     QSignalSpy qmlBookmarksSpy(qmlBookmarks, SIGNAL(created(QmlBookmarkTreeNode*)));
@@ -75,8 +75,8 @@ void QmlBookmarksApiTest::testBookmarksCreation()
     qRegisterMetaType<BookmarkItem*>();
     QSignalSpy bookmarksSpy(mApp->bookmarks(), &Bookmarks::bookmarkAdded);
 
-    auto out = m_testHelper.evaluate(QL1S("Veex.Bookmarks.create({"
-                                "    parent: Veex.Bookmarks.toolbarFolder(),"
+    auto out = m_testHelper.evaluate(QL1S("Osza.Bookmarks.create({"
+                                "    parent: Osza.Bookmarks.toolbarFolder(),"
                                 "    title: 'Example Plugin',"
                                 "    url: 'https://another-example.com'"
                                 "});"));
@@ -92,7 +92,7 @@ void QmlBookmarksApiTest::testBookmarksExistence()
 {
     // in continuation from testBookmarksCreation
 
-    auto result = m_testHelper.evaluate(QSL("Veex.Bookmarks.isBookmarked('https://example.com/')")).toBool();
+    auto result = m_testHelper.evaluate(QSL("Osza.Bookmarks.isBookmarked('https://example.com/')")).toBool();
     QVERIFY(result);
     QCOMPARE(mApp->bookmarks()->isBookmarked(QUrl(QSL("https://example.com/"))), result);
 }
@@ -101,7 +101,7 @@ void QmlBookmarksApiTest::testBookmarksModification()
 {
     // in continuation from testBookmarksExistence
 
-    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Veex.Bookmarks"));
+    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Osza.Bookmarks"));
     QVERIFY(qmlBookmarks);
 
     QSignalSpy qmlBookmarksSpy(qmlBookmarks, SIGNAL(changed(QmlBookmarkTreeNode*)));
@@ -118,7 +118,7 @@ void QmlBookmarksApiTest::testBookmarksModification()
     qRegisterMetaType<BookmarkItem*>();
     QSignalSpy bookmarksSpy(mApp->bookmarks(), &Bookmarks::bookmarkChanged);
 
-    auto out = m_testHelper.evaluate(QL1S("Veex.Bookmarks.update(Veex.Bookmarks.get('https://another-example.com'),{"
+    auto out = m_testHelper.evaluate(QL1S("Osza.Bookmarks.update(Osza.Bookmarks.get('https://another-example.com'),{"
                                 "    title: 'Modified Example Plugin'"
                                 "})"));
     QVERIFY(out.toBool());
@@ -133,7 +133,7 @@ void QmlBookmarksApiTest::testBookmarksRemoval()
 {
     // in continuation from testBookmarksModification
 
-    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Veex.Bookmarks"));
+    QObject *qmlBookmarks = m_testHelper.evaluateQObject(QSL("Osza.Bookmarks"));
     QVERIFY(qmlBookmarks);
 
     QSignalSpy qmlBookmarksSpy(qmlBookmarks, SIGNAL(removed(QmlBookmarkTreeNode*)));
@@ -149,7 +149,7 @@ void QmlBookmarksApiTest::testBookmarksRemoval()
     qRegisterMetaType<BookmarkItem*>();
     QSignalSpy bookmarksSpy(mApp->bookmarks(), &Bookmarks::bookmarkRemoved);
 
-    auto out = m_testHelper.evaluate(QSL("Veex.Bookmarks.remove(Veex.Bookmarks.get('https://another-example.com'))"));
+    auto out = m_testHelper.evaluate(QSL("Osza.Bookmarks.remove(Osza.Bookmarks.get('https://another-example.com'))"));
     QVERIFY(out.toBool());
 
     QCOMPARE(bookmarksSpy.count(), 1);
@@ -158,4 +158,4 @@ void QmlBookmarksApiTest::testBookmarksRemoval()
     QCOMPARE(removedItem->title(), QSL("Modified Example Plugin"));
 }
 
-VEEXTEST_MAIN(QmlBookmarksApiTest)
+OSZATEST_MAIN(QmlBookmarksApiTest)

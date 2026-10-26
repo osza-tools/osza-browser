@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2015-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 class QWebEngineView;
 
-class VEEX_EXPORT Scripts
+class OSZA_EXPORT Scripts
 {
 public:
     static QString setupWebChannel();

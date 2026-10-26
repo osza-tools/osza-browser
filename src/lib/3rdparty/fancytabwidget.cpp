@@ -469,7 +469,7 @@ void FancyTabBar::setCurrentIndex(int index)
 // FancyColorButton
 //////
 
-class VEEX_EXPORT FancyColorButton : public QWidget
+class OSZA_EXPORT FancyColorButton : public QWidget
 {
 public:
     FancyColorButton(QWidget* parent)

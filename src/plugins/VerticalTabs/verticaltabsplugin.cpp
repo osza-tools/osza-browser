@@ -1,5 +1,5 @@
 /* ============================================================
-* VerticalTabs plugin for Veex
+* VerticalTabs plugin for Osza
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ void VerticalTabsPlugin::unload()
 
 bool VerticalTabsPlugin::testPlugin()
 {
-    return (QString::fromLatin1(Qz::VERSION) == QSL(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QSL(OSZA_VERSION));
 }
 
 void VerticalTabsPlugin::showSettings(QWidget *parent)

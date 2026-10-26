@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class NetworkUrlInterceptor;
 class ExtensionSchemeManager;
 class ExtensionSchemeHandler;
 
-class VEEX_EXPORT NetworkManager : public QNetworkAccessManager
+class OSZA_EXPORT NetworkManager : public QNetworkAccessManager
 {
     Q_OBJECT
 

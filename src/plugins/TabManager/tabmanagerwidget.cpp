@@ -1,5 +1,5 @@
 /* ============================================================
-* TabManager plugin for Veex
+* TabManager plugin for Osza
 * Copyright (C) 2013-2017  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C)      2018 David Rosca <nowrep@gmail.com>
 *
@@ -110,8 +110,8 @@ QString TabManagerWidget::domainFromUrl(const QUrl &url, bool useHostName)
     if (url.scheme() == QSL("file")) {
         return tr("Local File System:");
     }
-    else if (url.scheme() == QSL("veex") || urlString.isEmpty()) {
-        return tr("Veex:");
+    else if (url.scheme() == QSL("osza") || urlString.isEmpty()) {
+        return tr("Osza:");
     }
     else if (url.scheme() == QSL("ftp")) {
         appendString.prepend(tr(" [FTP]"));
@@ -872,7 +872,7 @@ Qt::DropActions TabTreeWidget::supportedDropActions() const
     return Qt::MoveAction | Qt::CopyAction;
 }
 
-#define MIMETYPE QLatin1String("application/veex.tabs")
+#define MIMETYPE QLatin1String("application/osza.tabs")
 
 QStringList TabTreeWidget::mimeTypes() const
 {

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -97,4 +97,4 @@ void CookiesTest::listMatchesDomainTest()
     QCOMPARE(m_cookieJar->listMatchesDomain(list, cookieDomain), result);
 }
 
-VEEXTEST_MAIN(CookiesTest)
+OSZATEST_MAIN(CookiesTest)

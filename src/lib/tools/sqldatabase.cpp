@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -127,7 +127,7 @@ QSqlDatabase SqlDatabase::database()
     }
 
     if (!s_databases.hasLocalData()) {
-        const QString threadStr = QStringLiteral("Veex/%1").arg((quintptr) QThread::currentThread());
+        const QString threadStr = QStringLiteral("Osza/%1").arg((quintptr) QThread::currentThread());
         QSqlDatabase::removeDatabase(threadStr);
         QSqlDatabase db = QSqlDatabase::addDatabase(QSL("QSQLITE"), threadStr);
         db.setDatabaseName(m_databaseName);

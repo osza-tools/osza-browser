@@ -1,5 +1,5 @@
 /* ============================================================
-* SystemIntegration - KDE support plugin for Veex
+* SystemIntegration - KDE support plugin for Osza
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2021-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -31,7 +31,7 @@ namespace KWallet {
 class Wallet;
 }
 
-class VEEX_EXPORT KWalletPasswordBackend : public PasswordBackend
+class OSZA_EXPORT KWalletPasswordBackend : public PasswordBackend
 {
 public:
     explicit KWalletPasswordBackend(SystemIntegrationPlugin *plugin);

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -66,8 +66,8 @@ void SpeedDial::loadSettings()
     settings.endGroup();
 
     if (allPages.isEmpty()) {
-        allPages = QL1S("url:\"https://github.com/veex-tools/veex-browser\"|title:\"Veex Browser\";"
-                        "url:\"https://github.com/veex-tools\"|title:\"Veex Tools\";"
+        allPages = QL1S("url:\"https://github.com/osza-tools/osza-browser\"|title:\"Osza Browser\";"
+                        "url:\"https://github.com/osza-tools\"|title:\"Osza Tools\";"
                         "url:\"https://www.wikipedia.org\"|title:\"Wikipedia\";");
     }
     changed(allPages);

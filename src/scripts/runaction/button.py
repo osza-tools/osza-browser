@@ -1,5 +1,5 @@
 # ============================================================
-# RunAction plugin for Veex
+# RunAction plugin for Osza
 # Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,13 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # ============================================================
-import Veex
+import Osza
 import os
 from PySide6 import QtGui, QtWidgets
 from runaction.i18n import i18n
 
 
-class RunActionButton(Veex.AbstractButtonInterface):
+class RunActionButton(Osza.AbstractButtonInterface):
     def __init__(self, manager):
         super().__init__()
         self.manager = manager

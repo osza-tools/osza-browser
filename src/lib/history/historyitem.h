@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include "qzcommon.h"
 #include "history.h"
 
-class VEEX_EXPORT HistoryItem
+class OSZA_EXPORT HistoryItem
 {
 public:
     explicit HistoryItem(HistoryItem* parent = nullptr);

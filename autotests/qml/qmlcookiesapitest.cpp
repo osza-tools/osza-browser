@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ void QmlCookiesApiTest::cleanupTestCase()
 void QmlCookiesApiTest::testCookieAdditionRemoval()
 {
     QSignalSpy cookieAddSpy(mApp->cookieJar(), &CookieJar::cookieAdded);
-    m_testHelper.evaluate(QL1S("Veex.Cookies.set({"
+    m_testHelper.evaluate(QL1S("Osza.Cookies.set({"
                      "    name: 'Example',"
                      "    url: '.example.com',"
                      "    expirationDate: Date.now() + 60*1000"
@@ -41,7 +41,7 @@ void QmlCookiesApiTest::testCookieAdditionRemoval()
     QTRY_COMPARE(cookieAddSpy.count(), 1);
     QNetworkCookie netCookie = qvariant_cast<QNetworkCookie>(cookieAddSpy.at(0).at(0));
     QCOMPARE(netCookie.name(), QByteArrayLiteral("Example"));
-    QObject *object = m_testHelper.evaluateQObject(QSL("Veex.Cookies"));
+    QObject *object = m_testHelper.evaluateQObject(QSL("Osza.Cookies"));
     QVERIFY(object);
     QSignalSpy qmlCookieSpy(object, SIGNAL(changed(QVariantMap)));
     QNetworkCookie anotherNetCookie;
@@ -65,7 +65,7 @@ void QmlCookiesApiTest::testCookieAdditionRemoval()
     QCOMPARE(removed, true);
 
     QSignalSpy cookieRemoveSpy(mApp->cookieJar(), &CookieJar::cookieRemoved);
-    m_testHelper.evaluate(QL1S("Veex.Cookies.remove({"
+    m_testHelper.evaluate(QL1S("Osza.Cookies.remove({"
                      "    name: 'Hello',"
                      "    url: '.mydomain.com',"
                      "})"));
@@ -106,7 +106,7 @@ void QmlCookiesApiTest::testCookieGet()
         }
     }
 
-    QObject *mangoCookie = m_testHelper.evaluateQObject(QL1S("Veex.Cookies.get({"
+    QObject *mangoCookie = m_testHelper.evaluateQObject(QL1S("Osza.Cookies.get({"
                      "    name: 'Mango',"
                      "    url: '.mango-domain.com'"
                      "})"));
@@ -114,8 +114,8 @@ void QmlCookiesApiTest::testCookieGet()
     QCOMPARE(mangoCookie->property("name").toString(), QSL("Mango"));
     QCOMPARE(mangoCookie->property("expirationDate").toDateTime(), actualMangoCookie.expirationDate());
 
-    QList<QVariant> mangoCookies = m_testHelper.evaluate(QSL("Veex.Cookies.getAll({name: 'Mango'})")).toVariant().toList();
+    QList<QVariant> mangoCookies = m_testHelper.evaluate(QSL("Osza.Cookies.getAll({name: 'Mango'})")).toVariant().toList();
     QCOMPARE(mangoCookies.length(), 2);
 }
 
-VEEXTEST_MAIN(QmlCookiesApiTest)
+OSZATEST_MAIN(QmlCookiesApiTest)

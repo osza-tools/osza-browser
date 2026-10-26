@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 class BrowserWindow;
 class TabWidget;
 
-class VEEX_EXPORT TabContextMenu : public QMenu
+class OSZA_EXPORT TabContextMenu : public QMenu
 {
     Q_OBJECT
 

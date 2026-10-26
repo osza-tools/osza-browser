@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -213,7 +213,7 @@ QString LocationBar::convertUrlToText(const QUrl &url)
 
     QString stringUrl = QzTools::urlEncodeQueryString(url);
 
-    if (stringUrl == QL1S("veex:speeddial") || stringUrl == QL1S("about:blank")) {
+    if (stringUrl == QL1S("osza:speeddial") || stringUrl == QL1S("about:blank")) {
         stringUrl.clear();
     }
 

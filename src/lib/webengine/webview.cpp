@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -388,7 +388,7 @@ void WebView::printPage()
     Q_ASSERT(m_page);
 
     m_printer = new QPrinter();
-    m_printer->setCreator(tr("Veex %1 (%2)").arg(QString::fromLatin1(Qz::VERSION), QString::fromLatin1(Qz::WWWADDRESS)));
+    m_printer->setCreator(tr("Osza %1 (%2)").arg(QString::fromLatin1(Qz::VERSION), QString::fromLatin1(Qz::WWWADDRESS)));
     m_printer->setDocName(QzTools::filterCharsFromFilename(title()));
 
     auto *dialog = new QPrintDialog(m_printer, this);
@@ -554,7 +554,7 @@ void WebView::openActionUrl()
 void WebView::showSource()
 {
     // view-source: doesn't work on itself and custom schemes
-    if (url().scheme() == QL1S("view-source") || url().scheme() == QL1S("veex") || url().scheme() == QL1S("qrc")) {
+    if (url().scheme() == QL1S("view-source") || url().scheme() == QL1S("osza") || url().scheme() == QL1S("qrc")) {
         page()->toHtml([](const QString &html) {
             std::cout << html.toLocal8Bit().constData() << std::endl;
         });
@@ -762,7 +762,7 @@ void WebView::createPageContextMenu(QMenu* menu)
     action->setEnabled(history()->canGoForward());
 
     // Special menu for Speed Dial page
-    if (url().toString() == QL1S("veex:speeddial")) {
+    if (url().toString() == QL1S("osza:speeddial")) {
         menu->addSeparator();
         menu->addAction(QIcon::fromTheme(QSL("list-add")), tr("&Add New Page"), this, &WebView::addSpeedDial);
         menu->addAction(IconProvider::settingsIcon(), tr("&Configure Speed Dial"), this, &WebView::configureSpeedDial);

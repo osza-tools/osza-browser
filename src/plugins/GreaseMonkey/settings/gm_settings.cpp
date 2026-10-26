@@ -1,5 +1,5 @@
 /* ============================================================
-* GreaseMonkey plugin for Veex
+* GreaseMonkey plugin for Osza
 * Copyright (C) 2012-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -128,7 +128,7 @@ void GM_Settings::newScript()
 
     const QString script = QL1S("// ==UserScript== \n"
                                 "// @name        %1 \n"
-                                "// @namespace   veex.tools \n"
+                                "// @namespace   osza.tools \n"
                                 "// @description Script description \n"
                                 "// @include     * \n"
                                 "// @version     1.0.0 \n"

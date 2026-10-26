@@ -1,5 +1,5 @@
 /* ============================================================
-* GreaseMonkey plugin for Veex
+* GreaseMonkey plugin for Osza
 * Copyright (C) 2012-2013  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify

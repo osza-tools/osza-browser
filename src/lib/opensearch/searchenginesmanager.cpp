@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -181,7 +181,7 @@ void SearchEnginesManager::restoreDefaults()
     Engine google;
     google.name = QSL("Google");
     google.icon = QIcon(QSL(":icons/sites/google.png"));
-    google.url = QSL("https://www.google.com/search?client=veex&q=%s");
+    google.url = QSL("https://www.google.com/search?client=osza&q=%s");
     google.shortcut = QSL("g");
     google.suggestionsUrl = QSL("https://suggestqueries.google.com/complete/search?output=firefox&q=%s");
 

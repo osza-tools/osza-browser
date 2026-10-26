@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ class PluginsManager;
 class DesktopNotification;
 class ThemeManager;
 
-class VEEX_EXPORT Preferences : public QDialog
+class OSZA_EXPORT Preferences : public QDialog
 {
     Q_OBJECT
 
@@ -87,7 +87,7 @@ private Q_SLOTS:
 
     void showNotificationPreview();
 
-    void makeVeexDefault();
+    void makeOszaDefault();
 
 private:
     void closeEvent(QCloseEvent* event) override;

@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name     _veex_speeddial
+// @name     _osza_speeddial
 // @run-at   document-end
-// @include  veex:speeddial
+// @include  osza:speeddial
 // ==/UserScript==
 
 var scriptData = {};
@@ -318,8 +318,8 @@ function alignPage() {
 
     /* Layout is owned by CSS custom properties (see speeddial.css). */
     var root = document.documentElement.style;
-    root.setProperty('--veex-dial-w', dialWidth + 'px');
-    root.setProperty('--veex-grid-cols', String(maxBoxes));
+    root.setProperty('--osza-dial-w', dialWidth + 'px');
+    root.setProperty('--osza-grid-cols', String(maxBoxes));
 
     if (scriptData.sdCenter == "true") {
         enableCentering();
@@ -459,9 +459,9 @@ function init() {
        inline-blocks). Without this, dials in the same row could not be
        swapped by dragging. Presentation-only workaround. */
     if ($.ui && $.ui.sortable) {
-        var veexIsFloating = $.ui.sortable.prototype._isFloating;
+        var oszaIsFloating = $.ui.sortable.prototype._isFloating;
         $.ui.sortable.prototype._isFloating = function(item) {
-            return item.hasClass('entry') || veexIsFloating.call(this, item);
+            return item.hasClass('entry') || oszaIsFloating.call(this, item);
         };
     }
 
@@ -491,8 +491,8 @@ function init() {
 %JQUERY-UI%
 
 // Initialize
-if (window._veex_external) {
+if (window._osza_external) {
     init();
 } else {
-    document.addEventListener("_veex_external_created", init);
+    document.addEventListener("_osza_external_created", init);
 }

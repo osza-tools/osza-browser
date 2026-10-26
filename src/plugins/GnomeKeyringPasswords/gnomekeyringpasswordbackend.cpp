@@ -1,5 +1,5 @@
 /* ============================================================
-* GnomeKeyringPasswords - gnome-keyring support plugin for Veex
+* GnomeKeyringPasswords - gnome-keyring support plugin for Osza
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -67,7 +67,7 @@ static GnomeKeyringAttributeList* createAttributes(const PasswordEntry &entry)
 {
     GnomeKeyringAttributeList* attributes = gnome_keyring_attribute_list_new();
 
-    gnome_keyring_attribute_list_append_string(attributes, "application", "Veex");
+    gnome_keyring_attribute_list_append_string(attributes, "application", "Osza");
 
     QByteArray value = entry.username.toUtf8();
     gnome_keyring_attribute_list_append_string(attributes, "username", value.constData());
@@ -271,7 +271,7 @@ void GnomeKeyringPasswordBackend::initialize()
 
     GList* found;
     GnomeKeyringResult result = gnome_keyring_find_itemsv_sync(GNOME_KEYRING_ITEM_GENERIC_SECRET, &found,
-                                "application", GNOME_KEYRING_ATTRIBUTE_TYPE_STRING, "Veex",
+                                "application", GNOME_KEYRING_ATTRIBUTE_TYPE_STRING, "Osza",
                                 NULL);
 
     if (result != GNOME_KEYRING_RESULT_OK && result != GNOME_KEYRING_RESULT_NO_MATCH) {

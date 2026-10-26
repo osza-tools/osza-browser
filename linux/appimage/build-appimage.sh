@@ -1,6 +1,6 @@
 #!/bin/sh
 ###############################################################################
-# Compile Veex source and pack it as Appimage.
+# Compile Osza source and pack it as Appimage.
 ###############################################################################
 set -e
 
@@ -72,11 +72,11 @@ ${BLD1}--disable-dbus${BLD0}
 
 ${BLD1}--sourcedir=${BLD0}
 
-          Assuming this script is located in ${ITL1}veex/linux${ITL0},
+          Assuming this script is located in ${ITL1}osza/linux${ITL0},
           otherwise you must specify the path to
-          Veex source directory.
+          Osza source directory.
 
-               ${UDR1}example:--sourcedir="/home/build/veex"${UDR0}
+               ${UDR1}example:--sourcedir="/home/build/osza"${UDR0}
 
 ${BLD1}--outdir=${BLD0}
 
@@ -96,7 +96,7 @@ ${BLD1}--disable-debug | -D${BLD0}
 
 ${BLD1}--update-source | -U${BLD0}
 
-          Fetches the information from Veex online git repository
+          Fetches the information from Osza online git repository
           and merges it with your local copy
 
 
@@ -198,10 +198,10 @@ cmake ${NODEFOPT}                     \
 -DCMAKE_SKIP_INSTALL_RPATH:BOOL=NO       \
 -DQMAKE_EXECUTABLE:FILEPATH=${QMAKE}      \
 -DCMAKE_PREFIX_PATH=${QTFILESARETHERE}     \
--DVEEX_PLUGIN_PATH=""                     \
+-DOSZA_PLUGIN_PATH=""                     \
 -DKDE_INSTALL_LIBDIR:PATH="${LIBDIRPATH}" ..
 
-printf "Compiling Veex with the following settings:\n"
+printf "Compiling Osza with the following settings:\n"
 printConf
 
 make -j$NCPUS
@@ -210,7 +210,7 @@ make DESTDIR="${PWD}" install
 fi
 
 mv usr/local bundle_build_dir
-pushd bundle_build_dir/lib/plugins/veex
+pushd bundle_build_dir/lib/plugins/osza
 chrpath --replace '$ORIGIN/../..' *.so
 popd
 
@@ -272,7 +272,7 @@ cp -r ${QTFILESARETHERE}/resources bundle_build_dir
 cp -r ${TRANSLATIONSARETHERE}/qtwebengine_locales bundle_build_dir/translations
 cp ${LIBEXECSARETHERE}/QtWebEngineProcess bundle_build_dir
 
-CRYPTONEEDED="$(ldd 'bin/veex'| grep libcrypto | sed 's/.*=>//;s/(.*//')"
+CRYPTONEEDED="$(ldd 'bin/osza'| grep libcrypto | sed 's/.*=>//;s/(.*//')"
 LIBSSLNEEDED="$(echo "${CRYPTONEEDED}"  | sed 's/crypto/ssl/')"
 install ${CRYPTONEEDED} ${LIBSSLNEEDED} bundle_build_dir/lib
 
@@ -292,14 +292,14 @@ for LNKS in {libssl.so,libssl.so.10,libssl.so.1.0.0} ; do
   fi
 done
 
-cp ../linux/applications/org.veex.VeexBrowser.desktop bundle_build_dir
-cp ../linux/hicolor/128-apps-veex.png bundle_build_dir/veex.png
-ln -s veex.png bundle_build_dir/.DirIcon
+cp ../linux/applications/org.osza.OszaBrowser.desktop bundle_build_dir
+cp ../linux/hicolor/128-apps-osza.png bundle_build_dir/osza.png
+ln -s osza.png bundle_build_dir/.DirIcon
 
 pushd bundle_build_dir
-mv bin/veex ./ && rm -fr bin
-chrpath --replace '$ORIGIN' lib/libVeexPrivate.so.3.*
-chrpath --replace '$ORIGIN/lib' veex
+mv bin/osza ./ && rm -fr bin
+chrpath --replace '$ORIGIN' lib/libOszaPrivate.so.3.*
+chrpath --replace '$ORIGIN/lib' osza
 chrpath --replace '$ORIGIN/lib' QtWebEngineProcess
 
 cat <<EOQTCFG >qt.conf
@@ -315,24 +315,24 @@ cat <<EOF >AppRun
 
 set -e
 
-VEEX_DIR="\$(dirname "\$(readlink -f "\$0")")"
+OSZA_DIR="\$(dirname "\$(readlink -f "\$0")")"
 
-XDG_DATA_DIRS="\${VEEX_DIR}/share:\${XDG_DATA_DIRS}"
-VEEX_PLUGIN_PATH="\${VEEX_DIR}/lib/plugins/veex"
-export XDG_DATA_DIRS VEEX_PLUGIN_PATH
+XDG_DATA_DIRS="\${OSZA_DIR}/share:\${XDG_DATA_DIRS}"
+OSZA_PLUGIN_PATH="\${OSZA_DIR}/lib/plugins/osza"
+export XDG_DATA_DIRS OSZA_PLUGIN_PATH
 
-cd "\${VEEX_DIR}/"
-exec ./veex "\$@"
+cd "\${OSZA_DIR}/"
+exec ./osza "\$@"
 EOF
 chmod +x AppRun
 popd
 
 printf "Generating app image\n"
-mksquashfs bundle_build_dir veex.squashfs -root-owned -noappend
+mksquashfs bundle_build_dir osza.squashfs -root-owned -noappend
 
-cat "${RUNTIME_BINARY}" >bin/Veex.AppImage
-cat veex.squashfs >>bin/Veex.AppImage
-chmod a+x bin/Veex.AppImage
+cat "${RUNTIME_BINARY}" >bin/Osza.AppImage
+cat osza.squashfs >>bin/Osza.AppImage
+chmod a+x bin/Osza.AppImage
 }
 
 varAssign $*
@@ -343,7 +343,7 @@ exit 1
 fi
 
 if [[ ! -d "${SOURCE_DIR}/src" ]]; then
-printf "Please install ${UDR1}$0${UDR0} in „${BLD1}scripts${BLD0}“ ${ITL1}(a sub folder in Veex source directory)${ITL0},
+printf "Please install ${UDR1}$0${UDR0} in „${BLD1}scripts${BLD0}“ ${ITL1}(a sub folder in Osza source directory)${ITL0},
 or specify the source path with ${BLD1}--sourcedir=${BLD0}full/path!\n"
 exit 1
 fi
@@ -368,11 +368,11 @@ fi
 
 nowBldImg
 
-if [[ $? == 0 ]] && [[ -x bin/Veex.AppImage ]]; then
+if [[ $? == 0 ]] && [[ -x bin/Osza.AppImage ]]; then
  printf "\\033c"
  printf "Done!\nThe compiled files are in "${PWD}"/bin\n"
  if [ ! -z "$OUT_DIR" ]; then
-     cp bin/Veex.AppImage "$OUT_DIR"
+     cp bin/Osza.AppImage "$OUT_DIR"
  fi
 fi
 

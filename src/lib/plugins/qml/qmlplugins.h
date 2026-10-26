@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #pragma once
 #include "browserwindow.h"
 
-class VEEX_EXPORT QmlPlugins
+class OSZA_EXPORT QmlPlugins
 {
 public:
     static void registerQmlTypes();

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -101,8 +101,8 @@ void DataPaths::init()
 {
     m_paths[AppData].append(QStandardPaths::standardLocations(QStandardPaths::AppDataLocation));
 
-#ifdef VEEX_PLUGIN_PATH
-    m_paths[Plugins].append(QStringLiteral(VEEX_PLUGIN_PATH));
+#ifdef OSZA_PLUGIN_PATH
+    m_paths[Plugins].append(QStringLiteral(OSZA_PLUGIN_PATH));
 #endif
 
     for (const QString &location : std::as_const(m_paths[AppData])) {
@@ -110,7 +110,7 @@ void DataPaths::init()
     }
 
     if (MainApplication::isTestModeEnabled()) {
-        m_paths[Config].append(QDir::tempPath() + QSL("/Veex-test"));
+        m_paths[Config].append(QDir::tempPath() + QSL("/Osza-test"));
     } else {
         m_paths[Config].append(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
     }
@@ -119,8 +119,8 @@ void DataPaths::init()
     // We also allow to load data from Config path
     initAssetsIn(m_paths[Config].at(0));
 
-    // If VEEX_PLUGIN_PATH is set, only load plugins from there
-    const QByteArray pluginPath = qgetenv("VEEX_PLUGIN_PATH");
+    // If OSZA_PLUGIN_PATH is set, only load plugins from there
+    const QByteArray pluginPath = qgetenv("OSZA_PLUGIN_PATH");
     if (!pluginPath.isNull()) {
         m_paths[Plugins] = QStringList{QString::fromLocal8Bit(pluginPath)};
     }

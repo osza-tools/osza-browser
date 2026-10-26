@@ -29,10 +29,10 @@ function GM_setValue(aKey, aVal) {
 
 // GreaseMonkey 4.0 support
 var asyncCall = (func) => {
-    if (window._veex_external) {
+    if (window._osza_external) {
         func();
     } else {
-        document.addEventListener("_veex_external_created", func);
+        document.addEventListener("_osza_external_created", func);
     }
 };
 

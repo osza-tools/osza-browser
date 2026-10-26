@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -121,14 +121,14 @@ MainApplication::MainApplication(int &argc, char** argv)
 {
     setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
-    setApplicationName(QStringLiteral("veex"));
-    setOrganizationDomain(QStringLiteral("org.veex"));
+    setApplicationName(QStringLiteral("osza"));
+    setOrganizationDomain(QStringLiteral("org.osza"));
 #if defined(Q_OS_WIN)
     QIcon::setFallbackThemeName(QStringLiteral("breeze"));
     setStyle(QStringLiteral("breeze"));
 #endif
-    setWindowIcon(QIcon::fromTheme(QSL("veex"), QIcon(QSL(":icons/veex.svg"))));
-    setDesktopFileName(QSL("org.veex.VeexBrowser"));
+    setWindowIcon(QIcon::fromTheme(QSL("osza"), QIcon(QSL(":icons/osza.svg"))));
+    setDesktopFileName(QSL("org.osza.OszaBrowser"));
 
 #ifdef GIT_REVISION
     setApplicationVersion(QSL("%1 (%2)").arg(QString::fromLatin1(Qz::VERSION), GIT_REVISION));
@@ -225,18 +225,18 @@ MainApplication::MainApplication(int &argc, char** argv)
     }
 
     if (!isPortable()) {
-        QSettings veexConf(QSL("%1/veex.conf").arg(applicationDirPath()), QSettings::IniFormat);
-        m_isPortable = veexConf.value(QSL("Config/Portable")).toBool();
+        QSettings oszaConf(QSL("%1/osza.conf").arg(applicationDirPath()), QSettings::IniFormat);
+        m_isPortable = oszaConf.value(QSL("Config/Portable")).toBool();
     }
 
     if (isPortable()) {
-        std::cout << "Veex: Running in Portable Mode." << std::endl;
+        std::cout << "Osza: Running in Portable Mode." << std::endl;
         DataPaths::setPortableVersion();
     }
 
     // Don't start single application in private browsing
     if (!isPrivate()) {
-        QString appId = QStringLiteral("org.veex.VeexBrowser");
+        QString appId = QStringLiteral("org.osza.OszaBrowser");
 
         if (isPortable()) {
             appId.append(QLatin1String(".Portable"));
@@ -1200,8 +1200,8 @@ void MainApplication::checkDefaultWebBrowser()
     if (!associationManager()->isDefaultForAllCapabilities()) {
         CheckBoxDialog dialog(QMessageBox::Yes | QMessageBox::No, getWindow());
         dialog.setDefaultButton(QMessageBox::Yes);
-        dialog.setText(tr("Veex is not currently your default browser. Would you like to make it your default browser?"));
-        dialog.setCheckBoxText(tr("Always perform this check when starting Veex."));
+        dialog.setText(tr("Osza is not currently your default browser. Would you like to make it your default browser?"));
+        dialog.setCheckBoxText(tr("Always perform this check when starting Osza."));
         dialog.setDefaultCheckState(Qt::Checked);
         dialog.setWindowTitle(tr("Default Browser"));
         dialog.setIcon(QMessageBox::Warning);
@@ -1260,28 +1260,28 @@ void MainApplication::setupUserScripts()
 {
     // WebChannel for SafeJsWorld
     QWebEngineScript script;
-    script.setName(QSL("_veex_webchannel"));
+    script.setName(QSL("_osza_webchannel"));
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
     script.setWorldId(WebPage::SafeJsWorld);
     script.setRunsOnSubFrames(true);
     script.setSourceCode(Scripts::setupWebChannel());
     m_webProfile->scripts()->insert(script);
 
-    // veex:restore
-    QWebEngineScript veexRestore;
-    veexRestore.setWorldId(WebPage::SafeJsWorld);
-    veexRestore.setSourceCode(QzTools::readAllFileContents(QSL(":html/restore.user.js")));
-    m_webProfile->scripts()->insert(veexRestore);
+    // osza:restore
+    QWebEngineScript oszaRestore;
+    oszaRestore.setWorldId(WebPage::SafeJsWorld);
+    oszaRestore.setSourceCode(QzTools::readAllFileContents(QSL(":html/restore.user.js")));
+    m_webProfile->scripts()->insert(oszaRestore);
 
-    // veex:speeddial
-    QWebEngineScript veexSpeedDial;
-    veexSpeedDial.setWorldId(WebPage::SafeJsWorld);
-    veexSpeedDial.setSourceCode(Scripts::setupSpeedDial());
-    m_webProfile->scripts()->insert(veexSpeedDial);
+    // osza:speeddial
+    QWebEngineScript oszaSpeedDial;
+    oszaSpeedDial.setWorldId(WebPage::SafeJsWorld);
+    oszaSpeedDial.setSourceCode(Scripts::setupSpeedDial());
+    m_webProfile->scripts()->insert(oszaSpeedDial);
 
     // document.window object addons
     QWebEngineScript documentWindowAddons;
-    documentWindowAddons.setName(QSL("_veex_window_object"));
+    documentWindowAddons.setName(QSL("_osza_window_object"));
     documentWindowAddons.setInjectionPoint(QWebEngineScript::DocumentCreation);
     documentWindowAddons.setWorldId(WebPage::UnsafeJsWorld);
     documentWindowAddons.setRunsOnSubFrames(true);
@@ -1310,7 +1310,7 @@ void MainApplication::setUserStyleSheet(const QString &filePath)
 
     userCss += QzTools::readAllFileContents(filePath).remove(QLatin1Char('\n'));
 
-    const QString name = QStringLiteral("_veex_userstylesheet");
+    const QString name = QStringLiteral("_osza_userstylesheet");
     for (const QWebEngineScript &oldScript : m_webProfile->scripts()->find(name)) {
         m_webProfile->scripts()->remove(oldScript);
     }
@@ -1329,23 +1329,23 @@ void MainApplication::setUserStyleSheet(const QString &filePath)
 
 void MainApplication::initPulseSupport()
 {
-    qputenv("PULSE_PROP_OVERRIDE_application.name", "Veex");
-    qputenv("PULSE_PROP_OVERRIDE_application.icon_name", "veex");
-    qputenv("PULSE_PROP_OVERRIDE_media.icon_name", "veex");
+    qputenv("PULSE_PROP_OVERRIDE_application.name", "Osza");
+    qputenv("PULSE_PROP_OVERRIDE_application.icon_name", "osza");
+    qputenv("PULSE_PROP_OVERRIDE_media.icon_name", "osza");
 }
 
 #if defined(Q_OS_WIN) && !defined(Q_OS_OS2)
 RegisterQAppAssociation* MainApplication::associationManager()
 {
     if (!m_registerQAppAssociation) {
-        QString desc = tr("Veex is a new and very fast Qt web browser. Veex is licensed under GPL version 3 or (at your option) any later version. It is based on QtWebEngine and Qt Framework.");
+        QString desc = tr("Osza is a new and very fast Qt web browser. Osza is licensed under GPL version 3 or (at your option) any later version. It is based on QtWebEngine and Qt Framework.");
         QString fileIconPath = QApplication::applicationFilePath() + QSL(",1");
         QString appIconPath = QApplication::applicationFilePath() + QSL(",0");
-        m_registerQAppAssociation = new RegisterQAppAssociation(QSL("Veex"), QApplication::applicationFilePath(), appIconPath, desc, this);
-        m_registerQAppAssociation->addCapability(QSL(".html"), QSL("VeexHTML"), QSL("Veex HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
-        m_registerQAppAssociation->addCapability(QSL(".htm"), QSL("VeexHTML"), QSL("Veex HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
-        m_registerQAppAssociation->addCapability(QSL("http"), QSL("VeexURL"), QSL("Veex URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
-        m_registerQAppAssociation->addCapability(QSL("https"), QSL("VeexURL"), QSL("Veex URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
+        m_registerQAppAssociation = new RegisterQAppAssociation(QSL("Osza"), QApplication::applicationFilePath(), appIconPath, desc, this);
+        m_registerQAppAssociation->addCapability(QSL(".html"), QSL("OszaHTML"), QSL("Osza HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
+        m_registerQAppAssociation->addCapability(QSL(".htm"), QSL("OszaHTML"), QSL("Osza HTML Document"), fileIconPath, RegisterQAppAssociation::FileAssociation);
+        m_registerQAppAssociation->addCapability(QSL("http"), QSL("OszaURL"), QSL("Osza URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
+        m_registerQAppAssociation->addCapability(QSL("https"), QSL("OszaURL"), QSL("Osza URL"), appIconPath, RegisterQAppAssociation::UrlAssociation);
     }
     return m_registerQAppAssociation;
 }

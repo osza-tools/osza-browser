@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -887,7 +887,7 @@ void QzTools::setWmClass(const QString &name, const QWidget* widget)
     }
 
     const QByteArray nameData = name.toUtf8();
-    const QByteArray classData = mApp->wmClass().isEmpty() ? QByteArrayLiteral("Veex") : mApp->wmClass();
+    const QByteArray classData = mApp->wmClass().isEmpty() ? QByteArrayLiteral("Osza") : mApp->wmClass();
 
     uint32_t class_len = nameData.length() + 1 + classData.length() + 1;
     char *class_hint = (char*) malloc(class_len);

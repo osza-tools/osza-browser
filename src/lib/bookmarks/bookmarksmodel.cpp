@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2017 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -184,7 +184,7 @@ Qt::DropActions BookmarksModel::supportedDropActions() const
     return Qt::CopyAction | Qt::MoveAction;
 }
 
-#define MIMETYPE QLatin1String("application/veex.bookmarks")
+#define MIMETYPE QLatin1String("application/osza.bookmarks")
 
 QStringList BookmarksModel::mimeTypes() const
 {
@@ -381,5 +381,5 @@ QStringList BookmarksButtonMimeData::formats() const
 
 QString BookmarksButtonMimeData::mimeType()
 {
-    return QSL("application/veex.bookmarktoolbutton.bookmarkitem");
+    return QSL("application/osza.bookmarktoolbutton.bookmarkitem");
 }

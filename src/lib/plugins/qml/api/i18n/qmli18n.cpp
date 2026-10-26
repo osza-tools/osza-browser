@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ QmlI18n::QmlI18n(const QString &pluginName, QObject *parent)
 
 void QmlI18n::initTranslations()
 {
-    m_domain = QString(QSL("veex_%1")).arg(m_pluginName);
+    m_domain = QString(QSL("osza_%1")).arg(m_pluginName);
     const QString localeDir = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QSL("locale"), QStandardPaths::LocateDirectory);
     const bool isLanguageSet = qEnvironmentVariableIsSet("LANGUAGE");
     const QByteArray language = qgetenv("LANGUAGE");

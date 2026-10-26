@@ -1,5 +1,5 @@
 /* ============================================================
-* GnomeKeyringPasswords - gnome-keyring support plugin for Veex
+* GnomeKeyringPasswords - gnome-keyring support plugin for Osza
 * Copyright (C) 2013-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class GnomeKeyringPlugin : public QObject, public PluginInterface
 {
     Q_OBJECT
     Q_INTERFACES(PluginInterface)
-    Q_PLUGIN_METADATA(IID "Veex.Browser.plugin.GnomeKeyringPasswords" FILE "gnomekeyringpasswords.json")
+    Q_PLUGIN_METADATA(IID "Osza.Browser.plugin.GnomeKeyringPasswords" FILE "gnomekeyringpasswords.json")
 
 public:
     explicit GnomeKeyringPlugin();

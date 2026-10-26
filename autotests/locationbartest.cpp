@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -75,9 +75,9 @@ void LocationBarTest::loadActionBasicTest()
     action = LocationBar::loadAction(QSL("not url with spaces"));
     QCOMPARE(action.type, LocationBar::LoadAction::Search);
 
-    action = LocationBar::loadAction(QSL("veex:about"));
+    action = LocationBar::loadAction(QSL("osza:about"));
     QCOMPARE(action.type, LocationBar::LoadAction::Url);
-    QCOMPARE(action.loadRequest.url(), QUrl(QSL("veex:about")));
+    QCOMPARE(action.loadRequest.url(), QUrl(QSL("osza:about")));
 }
 
 void LocationBarTest::loadActionBookmarksTest()
@@ -161,9 +161,9 @@ void LocationBarTest::loadActionSpecialSchemesTest()
     QCOMPARE(action.type, LocationBar::LoadAction::Url);
     QCOMPARE(action.loadRequest.url(), QUrl(QSL("data:image/png;base64,xxxxx")));
 
-    action = LocationBar::loadAction(QSL("veex:about"));
+    action = LocationBar::loadAction(QSL("osza:about"));
     QCOMPARE(action.type, LocationBar::LoadAction::Url);
-    QCOMPARE(action.loadRequest.url(), QUrl(QSL("veex:about")));
+    QCOMPARE(action.loadRequest.url(), QUrl(QSL("osza:about")));
 
     action = LocationBar::loadAction(QSL("file:test.html"));
     QCOMPARE(action.type, LocationBar::LoadAction::Url);
@@ -269,4 +269,4 @@ void LocationBarTest::suggestSearchEngineTest()
     QCOMPARE(s.searchString, QSL("x test"));
 }
 
-VEEXTEST_MAIN(LocationBarTest)
+OSZATEST_MAIN(LocationBarTest)

@@ -7,7 +7,7 @@ set( FlashCookieManager_SRCS
         fcm_notification.h
         )
 
-ecm_create_qm_loader( FlashCookieManager_SRCS veex_flashcookiemanager_qt )
+ecm_create_qm_loader( FlashCookieManager_SRCS osza_flashcookiemanager_qt )
 
 set( FlashCookieManager_UIS
 	fcm_dialog.ui
@@ -21,6 +21,6 @@ set( FlashCookieManager_RSCS
 qt_add_resources(RSCS ${FlashCookieManager_RSCS})
 
 add_library(FlashCookieManager MODULE ${FlashCookieManager_SRCS} ${UIS} ${RSCS})
-install(TARGETS FlashCookieManager DESTINATION ${VEEX_INSTALL_PLUGINDIR})
-target_link_libraries(FlashCookieManager VeexPrivate)
+install(TARGETS FlashCookieManager DESTINATION ${OSZA_INSTALL_PLUGINDIR})
+target_link_libraries(FlashCookieManager OszaPrivate)
 

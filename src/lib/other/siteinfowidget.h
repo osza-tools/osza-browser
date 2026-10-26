@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ class SiteInfoWidget;
 
 class BrowserWindow;
 
-class VEEX_EXPORT SiteInfoWidget : public LocationBarPopup
+class OSZA_EXPORT SiteInfoWidget : public LocationBarPopup
 {
     Q_OBJECT
 public:

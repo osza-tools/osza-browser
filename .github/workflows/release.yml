@@ -1,4 +1,4 @@
-# Builds Veex Browser packages for every supported platform on a version tag
+# Builds Osza Browser packages for every supported platform on a version tag
 # and attaches them to the corresponding GitHub release.
 #
 # Jobs are independent on purpose: one failing platform never blocks the
@@ -46,12 +46,12 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           tar -C dist --sort=name --numeric-owner --owner=0 --group=0 \
-            -czf "Veex-Browser-${VERSION}-linux-x86_64.tar.gz" usr
+            -czf "Osza-Browser-${VERSION}-linux-x86_64.tar.gz" usr
 
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: Veex-Browser-*-linux-x86_64.tar.gz
+          files: Osza-Browser-*-linux-x86_64.tar.gz
           fail_on_unmatched_patterns: true
           overwrite_files: true
           retries: 3
@@ -106,7 +106,7 @@ jobs:
         run: |
           set -u
           APP="$BUNDLE"
-          LIB_FILE=$(ls build/bin/libVeexPrivate*.dylib | head -n 1)
+          LIB_FILE=$(ls build/bin/libOszaPrivate*.dylib | head -n 1)
           LIB=$(basename "$LIB_FILE")
           cp "$LIB_FILE" "$APP/Contents/MacOS/"
           mkdir -p "$APP/Contents/Resources/plugins"
@@ -121,9 +121,9 @@ jobs:
           OLDID=$(otool -D "$APP/Contents/MacOS/$LIB" | tail -n 1 | awk '{print $1}')
           targets=$(find "$APP/Contents/MacOS" "$APP/Contents/Resources/plugins" -type f \( -name '*.dylib' -o -perm -u+x \))
           for f in $targets; do
-            if otool -L "$f" 2>/dev/null | grep -q libVeexPrivate; then
+            if otool -L "$f" 2>/dev/null | grep -q libOszaPrivate; then
               install_name_tool -change "$OLDID" "@executable_path/$LIB" "$f" 2>/dev/null || true
-              install_name_tool -change "libVeexPrivate.2.dylib" "@executable_path/$LIB" "$f" 2>/dev/null || true
+              install_name_tool -change "libOszaPrivate.2.dylib" "@executable_path/$LIB" "$f" 2>/dev/null || true
             fi
           done
           echo "targets_export=$targets" >> "$GITHUB_ENV"
@@ -174,17 +174,17 @@ jobs:
       - name: Assemble and create DMG
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          STAGE="$(mktemp -d)/Veex"
+          STAGE="$(mktemp -d)/Osza"
           mkdir -p "$STAGE"
           cp -R "$BUNDLE" "$STAGE/"
           ln -s /Applications "$STAGE/Applications"
-          hdiutil create -volname Veex -srcfolder "$STAGE" -ov -format UDZO \
-            "Veex-Browser-${VERSION}-macos-arm64.dmg"
+          hdiutil create -volname Osza -srcfolder "$STAGE" -ov -format UDZO \
+            "Osza-Browser-${VERSION}-macos-arm64.dmg"
 
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: Veex-Browser-*-macos-arm64.dmg
+          files: Osza-Browser-*-macos-arm64.dmg
           fail_on_unmatched_patterns: true
           overwrite_files: true
           retries: 3
@@ -231,7 +231,7 @@ jobs:
             cmake --install "deps/$proj-build"
           }
 
-      - name: Configure Veex
+      - name: Configure Osza
         shell: pwsh
         run: |
           cmake -S . -B build -G Ninja `
@@ -243,7 +243,7 @@ jobs:
             -DBUILD_KEYRING=OFF `
             -DBUILD_TRANSLATIONS=OFF
 
-      - name: Build Veex
+      - name: Build Osza
         shell: pwsh
         run: cmake --build build
 
@@ -255,7 +255,7 @@ jobs:
             $qtRoot = ((Get-Command qmake.exe).Source | Split-Path | Split-Path)
           }
           $qtBin = "$qtRoot\bin"
-          windeployqt --release --compiler-runtime --qmldir src/lib/data/data build/bin/veex.exe
+          windeployqt --release --compiler-runtime --qmldir src/lib/data/data build/bin/osza.exe
           foreach ($src in @("$qtBin\QtWebEngineProcess.exe", "$qtBin\Qt6WebEngineCore.dll", "$qtBin\Qt6WebEngine.dll", "$qtBin\Qt6WebEngineWidgets.dll")) {
             if (Test-Path $src) { Copy-Item $src 'build\bin' -Force }
           }
@@ -273,12 +273,12 @@ jobs:
           Get-ChildItem $vcpkgBin -Filter *.dll | Where-Object { $_.Name -match '^(libssl|libcrypto|zlib)' } |
             Copy-Item -Destination 'build\bin' -Force
           $version = $env:GITHUB_REF_NAME -replace '^v',''
-          Compress-Archive -Path build\bin\* -DestinationPath "Veex-Browser-$version-windows-x64.zip"
+          Compress-Archive -Path build\bin\* -DestinationPath "Osza-Browser-$version-windows-x64.zip"
 
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: Veex-Browser-*-windows-x64.zip
+          files: Osza-Browser-*-windows-x64.zip
           fail_on_unmatched_patterns: true
           overwrite_files: true
           retries: 3

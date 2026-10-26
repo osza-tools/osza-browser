@@ -1,14 +1,14 @@
 # CMake version required. This must be the very first line, because it sets default policies affecting everything else
 cmake_minimum_required(VERSION 3.18)
 
-# Veex Browser version
-set(VEEX_VERSION_MAJOR "0")
-set(VEEX_VERSION_MINOR "1")
-set(VEEX_VERSION_MICRO "0")
-set(VEEX_VERSION "${VEEX_VERSION_MAJOR}.${VEEX_VERSION_MINOR}.${VEEX_VERSION_MICRO}")
+# Osza Browser version
+set(OSZA_VERSION_MAJOR "0")
+set(OSZA_VERSION_MINOR "1")
+set(OSZA_VERSION_MICRO "0")
+set(OSZA_VERSION "${OSZA_VERSION_MAJOR}.${OSZA_VERSION_MINOR}.${OSZA_VERSION_MICRO}")
 
 # Project name and version
-project(Veex VERSION ${VEEX_VERSION})
+project(Osza VERSION ${OSZA_VERSION})
 
 set(KF_MAJOR_VERSION "6")
 set(QT_MIN_VERSION "6.4.0")
@@ -37,17 +37,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if (UNIX AND NOT APPLE)
-    set(VEEX_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}/veex")
+    set(OSZA_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}/osza")
 else()
-    set(VEEX_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}")
+    set(OSZA_INSTALL_PLUGINDIR "${KDE_INSTALL_PLUGINDIR}")
 endif()
-if (IS_ABSOLUTE ${VEEX_INSTALL_PLUGINDIR})
-    set(PLUGIN_PATH "${VEEX_INSTALL_PLUGINDIR}")
+if (IS_ABSOLUTE ${OSZA_INSTALL_PLUGINDIR})
+    set(PLUGIN_PATH "${OSZA_INSTALL_PLUGINDIR}")
 else()
-    set(PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/${VEEX_INSTALL_PLUGINDIR}")
+    set(PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/${OSZA_INSTALL_PLUGINDIR}")
 endif()
 if (NOT WIN32)
-    set(VEEX_PLUGIN_PATH "${PLUGIN_PATH}" CACHE PATH "Default plugin search path")
+    set(OSZA_PLUGIN_PATH "${PLUGIN_PATH}" CACHE PATH "Default plugin search path")
 endif()
 
 # Defines that are always set
@@ -168,7 +168,7 @@ if (EXISTS "${CMAKE_SOURCE_DIR}/.git")
       OUTPUT_VARIABLE GIT_REVISION
     )
     string(REGEX REPLACE "\n" "" GIT_REVISION "${GIT_REVISION}")
-    set(VEEX_GIT_REVISION "${GIT_REVISION}")
+    set(OSZA_GIT_REVISION "${GIT_REVISION}")
   else()
     message(STATUS "Git revision could not be determined")
   endif()

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -202,7 +202,7 @@ BrowserWindow::BrowserWindow(Qz::BrowserWindowType type, const QList<QUrl> start
     setAttribute(Qt::WA_DontCreateNativeAncestors);
 
     setObjectName(QSL("mainwindow"));
-    setWindowTitle(tr("Veex"));
+    setWindowTitle(tr("Osza"));
     setProperty("private", mApp->isPrivate());
 
     setupUi();
@@ -218,10 +218,10 @@ BrowserWindow::BrowserWindow(Qz::BrowserWindowType type, const QList<QUrl> start
     QTimer::singleShot(0, this, &BrowserWindow::postLaunch);
 
     if (mApp->isPrivate()) {
-        QzTools::setWmClass(QSL("Veex Browser (Private Window)"), this);
+        QzTools::setWmClass(QSL("Osza Browser (Private Window)"), this);
     }
     else {
-        QzTools::setWmClass(QSL("Veex Browser"), this);
+        QzTools::setWmClass(QSL("Osza Browser"), this);
     }
 }
 
@@ -259,7 +259,7 @@ void BrowserWindow::postLaunch()
         break;
 
     case MainApplication::OpenSpeedDial:
-        startUrl = QUrl(QSL("veex:speeddial"));
+        startUrl = QUrl(QSL("osza:speeddial"));
         break;
 
     case MainApplication::OpenHomePage:
@@ -281,7 +281,7 @@ void BrowserWindow::postLaunch()
         if (mApp->isStartingAfterCrash()) {
             addTab = false;
             startUrl.clear();
-            m_tabWidget->addView(QUrl(QSL("veex:restore")), Qz::NT_CleanSelectedTabAtTheEnd);
+            m_tabWidget->addView(QUrl(QSL("osza:restore")), Qz::NT_CleanSelectedTabAtTheEnd);
         }
         else if (mApp->afterLaunch() == MainApplication::SelectSession || mApp->afterLaunch() == MainApplication::RestoreSession) {
             addTab = m_tabWidget->count() <= 0;
@@ -321,7 +321,7 @@ void BrowserWindow::postLaunch()
             m_tabWidget->addView(url, Qz::NT_NotSelectedTab);
         }
 
-        if (startUrl.isEmpty() || startUrl.toString() == QLatin1String("veex:speeddial")) {
+        if (startUrl.isEmpty() || startUrl.toString() == QLatin1String("osza:speeddial")) {
             locationBar()->setFocus();
         }
     }
@@ -580,7 +580,7 @@ void BrowserWindow::loadSettings()
 
     //Url settings
     settings.beginGroup(QSL("Web-URL-Settings"));
-    m_homepage = settings.value(QSL("homepage"), QSL("veex:start")).toUrl();
+    m_homepage = settings.value(QSL("homepage"), QSL("osza:start")).toUrl();
     settings.endGroup();
 
     //Browser Window settings
@@ -1011,9 +1011,9 @@ void BrowserWindow::currentTabChanged()
 
     const QString title = view->webTab()->title(/*allowEmpty*/true);
     if (title.isEmpty()) {
-        setWindowTitle(tr("Veex"));
+        setWindowTitle(tr("Osza"));
     } else {
-        setWindowTitle(tr("%1 - Veex").arg(title));
+        setWindowTitle(tr("%1 - Osza").arg(title));
     }
     m_ipLabel->setText(view->getIp());
     view->setFocus();

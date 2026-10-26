@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ class HistoryMenu;
 class BookmarksMenu;
 class BrowserWindow;
 
-class VEEX_EXPORT MainMenu : public QMenu
+class OSZA_EXPORT MainMenu : public QMenu
 {
     Q_OBJECT
 

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2015  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 class QUrl;
 class WebPage;
 
-class VEEX_EXPORT HTML5PermissionsManager : public QObject
+class OSZA_EXPORT HTML5PermissionsManager : public QObject
 {
 public:
     explicit HTML5PermissionsManager(QObject* parent);

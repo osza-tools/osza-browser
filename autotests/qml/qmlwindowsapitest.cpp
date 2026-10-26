@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -32,13 +32,13 @@ void QmlWindowsApiTest::cleanupTestCase()
 
 void QmlWindowsApiTest::testWindowsAPI()
 {
-    QObject *currentWindowObject = m_testHelper.evaluateQObject(QSL("Veex.Windows.getCurrent()"));
+    QObject *currentWindowObject = m_testHelper.evaluateQObject(QSL("Osza.Windows.getCurrent()"));
     QVERIFY(currentWindowObject);
     QCOMPARE(currentWindowObject->property("title").toString(), mApp->getWindow()->windowTitle());
     QCOMPARE(currentWindowObject->property("type").toInt(), (int)mApp->getWindow()->windowType());
     QCOMPARE(currentWindowObject->property("tabs").toList().length(), mApp->getWindow()->tabCount());
 
-    QObject *windowObject = m_testHelper.evaluateQObject(QSL("Veex.Windows"));
+    QObject *windowObject = m_testHelper.evaluateQObject(QSL("Osza.Windows"));
     QVERIFY(windowObject);
     QSignalSpy qmlWindowCreatedSignal(windowObject, SIGNAL(created(QmlWindow*)));
     qRegisterMetaType<BrowserWindow*>();
@@ -48,7 +48,7 @@ void QmlWindowsApiTest::testWindowsAPI()
     QTRY_COMPARE(qmlWindowCreatedSignal.count(), 1);
     QTRY_COMPARE(windowCreatedSingal.count(), 1);
 
-    QObject *newQmlWindow = m_testHelper.evaluateQObject(QSL("Veex.Windows.create({})"));
+    QObject *newQmlWindow = m_testHelper.evaluateQObject(QSL("Osza.Windows.create({})"));
     QVERIFY(newQmlWindow);
     QCOMPARE(mApp->windowCount(), 2);
 
@@ -60,13 +60,13 @@ void QmlWindowsApiTest::testWindowsAPI()
     QVERIFY(newQmlSignalWindow);
     QCOMPARE(newQmlWindow->property("id").toInt(), newQmlSignalWindow->property("id").toInt());
 
-    int qmlWindowCount = m_testHelper.evaluate(QSL("Veex.Windows.getAll().length")).toInt();
+    int qmlWindowCount = m_testHelper.evaluate(QSL("Osza.Windows.getAll().length")).toInt();
     QCOMPARE(qmlWindowCount, mApp->windowCount());
 
     QSignalSpy qmlWindowRemovedSignal(windowObject, SIGNAL(removed(QmlWindow*)));
     int newQmlWindowId = newQmlSignalWindow->property("id").toInt();
-    m_testHelper.evaluate(QString(QSL("Veex.Windows.remove(%1)")).arg(newQmlWindowId));
+    m_testHelper.evaluate(QString(QSL("Osza.Windows.remove(%1)")).arg(newQmlWindowId));
     QTRY_COMPARE(qmlWindowRemovedSignal.count(), 1);
 }
 
-VEEXTEST_MAIN(QmlWindowsApiTest)
+OSZATEST_MAIN(QmlWindowsApiTest)

@@ -93,8 +93,8 @@ Comment[zh_TW]=適用於 Linux 的預設簡單主題，使用原生元件樣式�
 
 Icon=theme.png
 Type=Service
-X-Veex-Type=Theme
+X-Osza-Type=Theme
 
-X-Veex-Author=David Rosca
-X-Veex-Email=nowrep@gmail.com
-X-Veex-License=GPLv3
+X-Osza-Author=David Rosca
+X-Osza-Email=nowrep@gmail.com
+X-Osza-License=GPLv3

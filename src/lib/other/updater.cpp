@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -148,7 +148,7 @@ void Updater::downCompleted()
         Version updated(html);
 
         if (current.isValid && updated.isValid && current < updated) {
-            mApp->desktopNotifications()->showNotification(QIcon(QSL(":icons/veex.svg")).pixmap(48), tr("Update available"), tr("New version of Veex is ready to download."));
+            mApp->desktopNotifications()->showNotification(QIcon(QSL(":icons/osza.svg")).pixmap(48), tr("Update available"), tr("New version of Osza is ready to download."));
         }
     }
 

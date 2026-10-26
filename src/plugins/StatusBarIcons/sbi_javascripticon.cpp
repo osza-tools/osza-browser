@@ -1,5 +1,5 @@
 /* ============================================================
-* StatusBarIcons - Extra icons in statusbar for Veex
+* StatusBarIcons - Extra icons in statusbar for Osza
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -58,8 +58,8 @@ void SBI_JavaScriptIcon::showMenu(const QPoint &point)
         menu.addAction(tr("Enable JavaScript (temporarily)"), this, &SBI_JavaScriptIcon::toggleJavaScript);
     }
 
-    // JavaScript needs to be always enabled for veex: sites
-    if (currentPage() && currentPage()->url().scheme() == QLatin1String("veex")) {
+    // JavaScript needs to be always enabled for osza: sites
+    if (currentPage() && currentPage()->url().scheme() == QLatin1String("osza")) {
         menu.actions().at(1)->setEnabled(false);
     }
 

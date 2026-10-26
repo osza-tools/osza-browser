@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class BookmarksExportDialog;
 
 class BookmarksExporter;
 
-class VEEX_EXPORT BookmarksExportDialog : public QDialog
+class OSZA_EXPORT BookmarksExportDialog : public QDialog
 {
     Q_OBJECT
 

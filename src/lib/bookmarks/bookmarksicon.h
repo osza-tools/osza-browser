@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 class WebView;
 class BookmarkItem;
 
-class VEEX_EXPORT BookmarksIcon : public ClickableLabel
+class OSZA_EXPORT BookmarksIcon : public ClickableLabel
 {
     Q_OBJECT
 public:

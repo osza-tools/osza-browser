@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2014  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,13 +27,13 @@ class QUrl;
 
 class BrowserWindow;
 
-class VEEX_EXPORT Updater : public QObject
+class OSZA_EXPORT Updater : public QObject
 {
     Q_OBJECT
 public:
     explicit Updater(BrowserWindow* window, QObject* parent = nullptr);
 
-    struct VEEX_EXPORT Version {
+    struct OSZA_EXPORT Version {
         bool isValid;
         int majorVersion;
         int minorVersion;

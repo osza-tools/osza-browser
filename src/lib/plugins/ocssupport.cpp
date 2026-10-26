@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2019 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -70,11 +70,11 @@ bool OcsSupport::handleUrl(const QUrl &url)
         }
     }
 
-    if (!fileType.startsWith(QL1S("veex_"))) {
+    if (!fileType.startsWith(QL1S("osza_"))) {
         return false;
     }
 
-    if (fileType != QL1S("veex_themes") && fileType != QL1S("veex_extensions")) {
+    if (fileType != QL1S("osza_themes") && fileType != QL1S("osza_extensions")) {
         qWarning() << "Unsupported type" << fileType;
         return false;
     }
@@ -101,9 +101,9 @@ bool OcsSupport::handleUrl(const QUrl &url)
             return;
         }
         QString notifyMessage;
-        if (fileType == QL1S("veex_themes")) {
+        if (fileType == QL1S("osza_themes")) {
             installTheme(zip.directory());
-        } else if (fileType == QL1S("veex_extensions")) {
+        } else if (fileType == QL1S("osza_extensions")) {
             installExtension(zip.directory());
         }
     });
@@ -180,7 +180,7 @@ void OcsSupport::installExtension(const KArchiveDirectory *directory)
     }
 
     const DesktopFile metaData = readMetaData(static_cast<const KArchiveDirectory*>(entry));
-    const QString extensionType = metaData.value(QSL("X-Veex-Type")).toString();
+    const QString extensionType = metaData.value(QSL("X-Osza-Type")).toString();
 
     QString type;
     if (extensionType == QL1S("Extension/Python")) {

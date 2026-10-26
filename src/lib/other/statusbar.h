@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class QTimer;
 class BrowserWindow;
 class AbstractButtonInterface;
 
-class VEEX_EXPORT TipLabel : public SqueezeLabelV1
+class OSZA_EXPORT TipLabel : public SqueezeLabelV1
 {
     Q_OBJECT
 
@@ -46,7 +46,7 @@ private:
     QTimer* m_timer;
 };
 
-class VEEX_EXPORT StatusBar : public QStatusBar
+class OSZA_EXPORT StatusBar : public QStatusBar
 {
     Q_OBJECT
 

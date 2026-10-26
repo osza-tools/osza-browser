@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2014  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 * Copyright (C) 2018       David Rosca <nowrep@gmail.com>
 *
@@ -29,7 +29,7 @@ class QStackedWidget;
 class QVBoxLayout;
 
 
-class VEEX_EXPORT TabStackedWidget : public QWidget
+class OSZA_EXPORT TabStackedWidget : public QWidget
 {
     Q_OBJECT
 public:

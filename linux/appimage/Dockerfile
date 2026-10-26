@@ -1,7 +1,7 @@
 # Build:
-#   docker build -t veex-appimage-build .
+#   docker build -t osza-appimage-build .
 # Run:
-#   docker run -v $OUT_DIRECTORY:/out -it veex-appimage-build $VEEX_TARBALL_URL
+#   docker run -v $OUT_DIRECTORY:/out -it osza-appimage-build $OSZA_TARBALL_URL
 
 FROM centos:7
 

@@ -47,8 +47,8 @@
     "Name[x-test]": "xxMouse Gesturesxx",
     "Name[zh_CN]": "鼠标手势",
     "Name[zh_TW]": "滑鼠手勢",
-    "X-Veex-Author": "David Rosca",
-    "X-Veex-Email": "nowrep@gmail.com",
-    "X-Veex-Settings": "true",
-    "X-Veex-Version": "0.5.0"
+    "X-Osza-Author": "David Rosca",
+    "X-Osza-Email": "nowrep@gmail.com",
+    "X-Osza-Settings": "true",
+    "X-Osza-Version": "0.5.0"
 }

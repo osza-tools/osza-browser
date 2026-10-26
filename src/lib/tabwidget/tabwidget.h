@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ class BrowserWindow;
 class TabbedWebView;
 class ClosedTabsManager;
 
-class VEEX_EXPORT AddTabButton : public ToolButton
+class OSZA_EXPORT AddTabButton : public ToolButton
 {
 public:
     explicit AddTabButton(TabWidget* tabWidget, TabBar* tabBar);
@@ -49,7 +49,7 @@ private:
     TabWidget* m_tabWidget;
 };
 
-class VEEX_EXPORT MenuTabs : public QMenu
+class OSZA_EXPORT MenuTabs : public QMenu
 {
     Q_OBJECT
 public:
@@ -62,7 +62,7 @@ private:
     void mouseReleaseEvent(QMouseEvent* event) override;
 };
 
-class VEEX_EXPORT TabWidget : public TabStackedWidget
+class OSZA_EXPORT TabWidget : public TabStackedWidget
 {
     Q_OBJECT
 public:

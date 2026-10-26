@@ -5,9 +5,9 @@ set( GnomeKeyringPasswords_SRCS
 	gnomekeyringpasswordbackend.cpp
 	)
 
-ecm_create_qm_loader( GnomeKeyringPasswords_SRCS veex_gnomekeyringpasswords_qt )
+ecm_create_qm_loader( GnomeKeyringPasswords_SRCS osza_gnomekeyringpasswords_qt )
 
 add_library(GnomeKeyringPasswords MODULE ${GnomeKeyringPasswords_SRCS} ${RSCS})
-install(TARGETS GnomeKeyringPasswords DESTINATION ${VEEX_INSTALL_PLUGINDIR})
-target_link_libraries(GnomeKeyringPasswords PkgConfig::GNOME_KEYRING VeexPrivate)
+install(TARGETS GnomeKeyringPasswords DESTINATION ${OSZA_INSTALL_PLUGINDIR})
+target_link_libraries(GnomeKeyringPasswords PkgConfig::GNOME_KEYRING OszaPrivate)
 

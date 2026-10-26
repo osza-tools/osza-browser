@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ class AutoFillJsObject;
 
 class QWebChannel;
 
-class VEEX_EXPORT ExternalJsObject : public QObject
+class OSZA_EXPORT ExternalJsObject : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QObject* speedDial READ speedDial CONSTANT)

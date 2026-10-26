@@ -144,7 +144,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Changes will take effect after Veex restart.</string>
+      <string>Changes will take effect after Osza restart.</string>
      </property>
     </widget>
    </item>

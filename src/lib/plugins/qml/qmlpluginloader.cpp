@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 Anmol Gautam <tarptaeya@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -67,9 +67,9 @@ void QmlPluginLoader::initEngineAndComponent()
     m_engine->setExtensionName(m_name);
 #if HAVE_LIBINTL
     auto i18n = new QmlI18n(m_name);
-    m_engine->globalObject().setProperty(QSL("__veex_i18n"), m_engine->newQObject(i18n));
-    m_engine->evaluate(QSL("i18n = function (s) { return __veex_i18n.i18n(s) };"));
-    m_engine->evaluate(QSL("i18np = function (s1, s2) { return __veex_i18n.i18np(s1, s2) }"));
+    m_engine->globalObject().setProperty(QSL("__osza_i18n"), m_engine->newQObject(i18n));
+    m_engine->evaluate(QSL("i18n = function (s) { return __osza_i18n.i18n(s) };"));
+    m_engine->evaluate(QSL("i18np = function (s1, s2) { return __osza_i18n.i18np(s1, s2) }"));
 #else
     m_engine->evaluate(QSL("i18n = function (s) { return s; };"));
     m_engine->evaluate(QSL("i18np = function (s1, s2) { return s1; }"));

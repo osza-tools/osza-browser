@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -379,7 +379,7 @@ void DownloadManager::downloadFinished(bool success)
 
     if (downloadingAllFilesFinished) {
         if (success && qApp->activeWindow() != this) {
-            mApp->desktopNotifications()->showNotification(QIcon::fromTheme(QSL("download"), QIcon(QSL(":icons/other/download.svg"))).pixmap(48), tr("Veex: Download Finished"), tr("All files have been successfully downloaded."));
+            mApp->desktopNotifications()->showNotification(QIcon::fromTheme(QSL("download"), QIcon(QSL(":icons/other/download.svg"))).pixmap(48), tr("Osza: Download Finished"), tr("All files have been successfully downloaded."));
             if (!m_closeOnFinish) {
                 raise();
                 activateWindow();

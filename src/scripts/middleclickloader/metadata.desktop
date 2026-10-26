@@ -90,9 +90,9 @@ Comment[zh_TW]=將選取區域剪貼板的文字載入成網址
 
 Icon=
 Type=Service
-X-Veex-Type=Extension/Python
+X-Osza-Type=Extension/Python
 
-X-Veex-Author=Juraj Oravec
-X-Veex-Email=sgd.orava@gmail.com
-X-Veex-Version=0.2.0
-X-Veex-Settings=true
+X-Osza-Author=Juraj Oravec
+X-Osza-Email=sgd.orava@gmail.com
+X-Osza-Version=0.2.0
+X-Osza-Settings=true

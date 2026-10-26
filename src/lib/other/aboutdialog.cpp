@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2020-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -50,8 +50,8 @@ void AboutDialog::showAbout()
     QString aboutHtml;
     aboutHtml += QSL("<div style='margin:0px 20px;'>");
     aboutHtml += tr("<p><b>Application version %1</b><br/>").arg(
-#ifdef VEEX_GIT_REVISION
-                       QString(QSL("%1 (%2)")).arg(QString::fromLatin1(Qz::VERSION), QL1S(VEEX_GIT_REVISION))
+#ifdef OSZA_GIT_REVISION
+                       QString(QSL("%1 (%2)")).arg(QString::fromLatin1(Qz::VERSION), QL1S(OSZA_GIT_REVISION))
 #else
                        QString::fromLatin1(Qz::VERSION)
 #endif

@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ void ProfileManager::initConfigDir()
         return;
     }
 
-    std::cout << "Veex: Creating new profile directory" << std::endl;
+    std::cout << "Osza: Creating new profile directory" << std::endl;
 
     if (!dir.exists()) {
         dir.mkpath(dir.absolutePath());
@@ -217,7 +217,7 @@ void ProfileManager::updateProfile(const QString &current, const QString &profil
     }
 
     if (prof < Updater::Version(QStringLiteral("1.9.0"))) {
-        std::cout << "Veex: Using profile from QupZilla " << qPrintable(profile) << " is not supported!" << std::endl;
+        std::cout << "Osza: Using profile from QupZilla " << qPrintable(profile) << " is not supported!" << std::endl;
         return;
     }
 
@@ -327,7 +327,7 @@ void ProfileManager::copyDataToProfile()
 
         const QString text = QSL("Incompatible profile version has been detected. To avoid losing your profile data, they were "
                              "backed up in following file:<br/><br/><b>") + browseDataBackup + QSL("<br/></b>");
-        QMessageBox::warning(nullptr, QStringLiteral("Veex: Incompatible profile version"), text);
+        QMessageBox::warning(nullptr, QStringLiteral("Osza: Incompatible profile version"), text);
     }
 }
 
@@ -349,7 +349,7 @@ void ProfileManager::migrateFromQupZilla()
         return;
     }
 
-    std::cout << "Veex: Migrating config from QupZilla..." << std::endl;
+    std::cout << "Osza: Migrating config from QupZilla..." << std::endl;
 
     QzTools::copyRecursively(qzConfig, DataPaths::path(DataPaths::Config));
 }
@@ -415,13 +415,13 @@ void ProfileManager::updateDatabase()
 
     /* Do not try to update database of too old profile */
     if (prof < Updater::Version(QStringLiteral("1.9.0"))) {
-        std::cout << "Veex: Using profile from QupZilla " << qPrintable(profileVersion) << " is not supported!" << std::endl;
+        std::cout << "Osza: Using profile from QupZilla " << qPrintable(profileVersion) << " is not supported!" << std::endl;
         return;
     }
 
     /* Update in 24.08.00 */
     if (prof < Updater::Version(QStringLiteral("24.07.70"))) {
-        std::cout << "Veex: Updating database to version " << qPrintable(QString::fromLatin1(Qz::VERSION)) << std::endl;
+        std::cout << "Osza: Updating database to version " << qPrintable(QString::fromLatin1(Qz::VERSION)) << std::endl;
 
         SqlDatabase::instance()->database().transaction();
 

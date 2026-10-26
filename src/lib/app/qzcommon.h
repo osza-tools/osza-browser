@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2020-2025 Juraj Oravec <jurajoravec@mailo.com>
 *
@@ -24,10 +24,10 @@
 #include <QList>
 #include <QtWebEngineCore/QtWebEngineCoreVersion>
 
-#ifdef VEEX_SHAREDLIBRARY
-#define VEEX_EXPORT Q_DECL_EXPORT
+#ifdef OSZA_SHAREDLIBRARY
+#define OSZA_EXPORT Q_DECL_EXPORT
 #else
-#define VEEX_EXPORT Q_DECL_IMPORT
+#define OSZA_EXPORT Q_DECL_IMPORT
 #endif
 
 #ifndef Q_UNLIKELY
@@ -55,13 +55,13 @@ namespace Qz
 // Version of session.dat file
 extern const int sessionVersion;
 
-VEEX_EXPORT extern const char *APPNAME;
-VEEX_EXPORT extern const char *VERSION;
-VEEX_EXPORT extern const char *AUTHOR;
-VEEX_EXPORT extern const char *COPYRIGHT;
-VEEX_EXPORT extern const char *WWWADDRESS;
-VEEX_EXPORT extern const char *BUGSADDRESS;
-VEEX_EXPORT extern const char *WIKIADDRESS;
+OSZA_EXPORT extern const char *APPNAME;
+OSZA_EXPORT extern const char *VERSION;
+OSZA_EXPORT extern const char *AUTHOR;
+OSZA_EXPORT extern const char *COPYRIGHT;
+OSZA_EXPORT extern const char *WWWADDRESS;
+OSZA_EXPORT extern const char *BUGSADDRESS;
+OSZA_EXPORT extern const char *WIKIADDRESS;
 ;
 struct AuthorInfo
 {

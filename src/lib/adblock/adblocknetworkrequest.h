@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2025 Juraj Oravec <jurajoravec@mailo.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 class QWebEngineNewWindowRequest;
 
-class VEEX_EXPORT AdBlockNeworkRequest
+class OSZA_EXPORT AdBlockNeworkRequest
 {
 public:
     explicit AdBlockNeworkRequest(const QWebEngineUrlRequestInfo &request);

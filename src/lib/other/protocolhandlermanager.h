@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2019 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "qzcommon.h"
 
-class VEEX_EXPORT ProtocolHandlerManager : public QObject
+class OSZA_EXPORT ProtocolHandlerManager : public QObject
 {
     Q_OBJECT
 

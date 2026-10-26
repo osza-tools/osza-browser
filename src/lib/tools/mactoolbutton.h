@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2017 David Rosca <nowrep@gmail.com>
 * Copyright (C) 2013-2014 S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
 *
@@ -24,7 +24,7 @@
 #ifdef Q_OS_MACOS
 #include <QPushButton>
 
-class VEEX_EXPORT MacToolButton : public QPushButton
+class OSZA_EXPORT MacToolButton : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY(bool autoRaise READ autoRaise WRITE setAutoRaise)
@@ -62,7 +62,7 @@ private:
 #else
 #include <QToolButton>
 
-class VEEX_EXPORT MacToolButton : public QToolButton
+class OSZA_EXPORT MacToolButton : public QToolButton
 {
     Q_OBJECT
     Q_PROPERTY(QColor iconColor READ iconColor WRITE setIconColor NOTIFY iconColorChanged)

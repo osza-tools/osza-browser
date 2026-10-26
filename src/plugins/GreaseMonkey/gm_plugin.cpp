@@ -1,5 +1,5 @@
 /* ============================================================
-* GreaseMonkey plugin for Veex
+* GreaseMonkey plugin for Osza
 * Copyright (C) 2012-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ void GM_Plugin::unload()
 bool GM_Plugin::testPlugin()
 {
     // Require the version that the plugin was built with
-    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(VEEX_VERSION));
+    return (QString::fromLatin1(Qz::VERSION) == QLatin1String(OSZA_VERSION));
 }
 
 void GM_Plugin::showSettings(QWidget* parent)

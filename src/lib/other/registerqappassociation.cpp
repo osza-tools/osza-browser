@@ -1,6 +1,6 @@
 /* ============================================================
 * Copyright (C) 2012-2017  S. Razi Alavizadeh <s.r.alavizadeh@gmail.com>
-* This file is part of Veex - Qt web browser 2010-2014
+* This file is part of Osza - Qt web browser 2010-2014
 * by  David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -109,7 +109,7 @@ bool RegisterQAppAssociation::registerAppCapabilities()
 
         if (capabilitiesKey.isEmpty()) {
             QMessageBox::warning(mApp->getWindow(), tr("Warning!"),
-                                 tr("There are some problems. Please, reinstall Veex.\n"
+                                 tr("There are some problems. Please, reinstall Osza.\n"
                                     "Maybe relaunch with administrator right do a magic for you! ;)"));
             return false;
         }

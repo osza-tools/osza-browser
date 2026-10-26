@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2014-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -63,8 +63,8 @@ void ExternalJsObject::unregisterExtraObject(QObject *object)
 
 QObject *ExternalJsObject::speedDial() const
 {
-    if (m_page->url().toString() != QL1S("veex:speeddial")
-      && (m_page->requestedUrl().toString() != QL1S("veex:speeddial") && !m_page->url().toString().isEmpty())) {
+    if (m_page->url().toString() != QL1S("osza:speeddial")
+      && (m_page->requestedUrl().toString() != QL1S("osza:speeddial") && !m_page->url().toString().isEmpty())) {
         return nullptr;
     }
 
@@ -78,7 +78,7 @@ QObject *ExternalJsObject::autoFill() const
 
 QObject *ExternalJsObject::recovery() const
 {
-    if (!mApp->restoreManager() || m_page->url().toString() != QL1S("veex:restore"))
+    if (!mApp->restoreManager() || m_page->url().toString() != QL1S("osza:restore"))
         return nullptr;
 
     return mApp->restoreManager()->recoveryObject(m_page);

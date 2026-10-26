@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 
 #include <QtTest/QtTest>
 
-#define VEEXTEST_MAIN(Test) \
+#define OSZATEST_MAIN(Test) \
     int main(int argc, char **argv) \
     { \
-        QzTools::removeRecursively(QDir::tempPath() + QSL("/Veex-test")); \
+        QzTools::removeRecursively(QDir::tempPath() + QSL("/Osza-test")); \
         MainApplication::setTestModeEnabled(true); \
         MainApplication app(argc, argv); \
         Test test; \

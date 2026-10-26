@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2013-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 class QWidget;
 
-class VEEX_EXPORT PasswordBackend
+class OSZA_EXPORT PasswordBackend
 {
 public:
     explicit PasswordBackend();

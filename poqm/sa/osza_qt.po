@@ -1,0 +1,6493 @@
+# SPDX-FileCopyrightText: 2024 kali <skkalwar999@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2024-12-29 22:54+0530\n"
+"Last-Translator: kali <shreekantkalwar@gmail.com>\n"
+"Language-Team: Sanskrit <kde-i18n-doc@kde.org>\n"
+"Language: sa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+"X-Qt-Contexts: true\n"
+"X-Generator: Lokalize 24.08.2\n"
+
+#: lib/3rdparty/lineedit.cpp:102
+msgctxt "LineEdit|"
+msgid "&Undo"
+msgstr "&Undo"
+
+#: lib/3rdparty/lineedit.cpp:107
+msgctxt "LineEdit|"
+msgid "&Redo"
+msgstr "&पुनः करो"
+
+#: lib/3rdparty/lineedit.cpp:112
+msgctxt "LineEdit|"
+msgid "Cu&t"
+msgstr "सह&ट"
+
+#: lib/3rdparty/lineedit.cpp:117
+msgctxt "LineEdit|"
+msgid "&Copy"
+msgstr "&प्रतिलिपि"
+
+#: lib/3rdparty/lineedit.cpp:122
+msgctxt "LineEdit|"
+msgid "&Paste"
+msgstr "&पेस्ट"
+
+#: lib/3rdparty/lineedit.cpp:131
+msgctxt "LineEdit|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/3rdparty/lineedit.cpp:134
+msgctxt "LineEdit|"
+msgid "Clear All"
+msgstr "सर्वं स्वच्छं कुर्वन्तु"
+
+#: lib/3rdparty/lineedit.cpp:137
+msgctxt "LineEdit|"
+msgid "Select All"
+msgstr "All इति चिनोतु"
+
+#: lib/3rdparty/squeezelabelv2.cpp:64
+msgctxt "SqueezeLabelV2|"
+msgid "Copy"
+msgstr "प्रतिलिपि"
+
+#: lib/adblock/adblockaddsubscriptiondialog.cpp:40
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Other..."
+msgstr "इतर..."
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:14
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Add Subscription"
+msgstr "सदस्यता योजयतु"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:23
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Title:"
+msgstr "शीर्षक:"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:33
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Address:"
+msgstr "पत्रसङ्केतः:"
+
+#: lib/adblock/adblockaddsubscriptiondialog.ui:53
+msgctxt "AdBlockAddSubscriptionDialog|"
+msgid "Add new subscription to AdBlock:"
+msgstr "AdBlock मध्ये नूतनं सदस्यतां योजयन्तु:"
+
+#: lib/adblock/adblockdialog.cpp:50
+msgctxt "AdBlockDialog|"
+msgid "Add Rule"
+msgstr "नियमं योजयतु"
+
+#: lib/adblock/adblockdialog.cpp:51
+msgctxt "AdBlockDialog|"
+msgid "Remove Rule"
+msgstr "नियमं निष्कासयतु"
+
+#: lib/adblock/adblockdialog.cpp:53
+msgctxt "AdBlockDialog|"
+msgid "Add Subscription"
+msgstr "सदस्यता योजयतु"
+
+#: lib/adblock/adblockdialog.cpp:54
+msgctxt "AdBlockDialog|"
+msgid "Remove Subscription"
+msgstr "सदस्यतां निष्कासयन्तु"
+
+#: lib/adblock/adblockdialog.cpp:55
+msgctxt "AdBlockDialog|"
+msgid "Update Subscriptions"
+msgstr "सदस्यता अद्यतन करें"
+
+#: lib/adblock/adblockdialog.cpp:57
+msgctxt "AdBlockDialog|"
+msgid "Learn about writing rules..."
+msgstr "लेखननियमानां विषये ज्ञातव्यम्..."
+
+#: lib/adblock/adblockdialog.ui:14
+msgctxt "AdBlockDialog|"
+msgid "AdBlock Configuration"
+msgstr "AdBlock विन्यासः"
+
+#: lib/adblock/adblockdialog.ui:20
+msgctxt "AdBlockDialog|"
+msgid "Enable AdBlock"
+msgstr "AdBlock सक्षमं कुर्वन्तु"
+
+#: lib/adblock/adblockdialog.ui:32
+msgctxt "AdBlockDialog|"
+msgid "Search..."
+msgstr "अन्वेषण..."
+
+#: lib/adblock/adblockdialog.ui:77
+msgctxt "AdBlockDialog|"
+msgid "Options"
+msgstr "विकल्पाः"
+
+#: lib/adblock/adblockdialog.ui:107
+msgctxt "AdBlockDialog|"
+msgid "AdBlock"
+msgstr "AdBlock इति"
+
+#: lib/adblock/adblockicon.cpp:34
+msgctxt "AdBlockIcon|"
+msgid "AdBlock"
+msgstr "AdBlock इति"
+
+#: lib/adblock/adblockicon.cpp:52
+msgctxt "AdBlockIcon|"
+msgid "AdBlock Icon"
+msgstr "AdBlock चिह्न"
+
+#: lib/adblock/adblockicon.cpp:86
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is disabled"
+msgstr "AdBlock अक्षमम् अस्ति"
+
+#: lib/adblock/adblockicon.cpp:92
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is disabled on this site "
+msgstr "अस्मिन् साइट् मध्ये AdBlock अक्षमम् अस्ति "
+
+#: lib/adblock/adblockicon.cpp:98
+msgctxt "AdBlockIcon|"
+msgid "AdBlock is active"
+msgstr "AdBlock सक्रियः अस्ति"
+
+#: lib/adblock/adblockicon.cpp:146
+#, fuzzy
+#| msgctxt "AdBlockDialog|"
+#| msgid "Enable AdBlock"
+msgctxt "AdBlockIcon|"
+msgid "&Enable AdBlock"
+msgstr "AdBlock सक्षमं कुर्वन्तु"
+
+#: lib/adblock/adblockicon.cpp:151
+msgctxt "AdBlockIcon|"
+msgid "Show AdBlock &Settings"
+msgstr "AdBlock &Settings दर्शयतु"
+
+#: lib/adblock/adblockicon.cpp:159
+#, qt-format
+msgctxt "AdBlockIcon|"
+msgid "Disable on %1"
+msgstr "%1 इत्यत्र निष्क्रियं कुर्वन्तु"
+
+#: lib/adblock/adblockicon.cpp:165
+msgctxt "AdBlockIcon|"
+msgid "Disable only on this page"
+msgstr "केवलम् अस्मिन् पृष्ठे अक्षमम्"
+
+#: lib/adblock/adblockmanager.cpp:186
+#, qt-format
+msgctxt "AdBlockManager|"
+msgid "Do you want to add <b>%1</b> subscription?"
+msgstr "<b>%1</b> सदस्यतां योजयितुम् इच्छति वा?"
+
+#: lib/adblock/adblockmanager.cpp:188
+msgctxt "AdBlockManager|"
+msgid "AdBlock Subscription"
+msgstr "AdBlock सदस्यता"
+
+#: lib/adblock/adblockmanager.cpp:319
+msgctxt "AdBlockManager|"
+msgid "EasyList"
+msgstr "EasyList इति"
+
+#: lib/adblock/adblockmanager.cpp:324
+msgctxt "AdBlockManager|"
+msgid "NoCoin List"
+msgstr "NoCoin सूची"
+
+#: lib/adblock/adblocksubscription.cpp:176
+msgctxt "AdBlockSubscription|"
+msgid "Cannot load subscription!"
+msgstr "सदस्यतां लोड् कर्तुं न शक्यते!"
+
+#: lib/adblock/adblocksubscription.cpp:289
+msgctxt "AdBlockCustomList|"
+msgid "Custom Rules"
+msgstr "कस्टम नियम"
+
+#: lib/adblock/adblocktreemodel.cpp:108
+#, qt-format
+msgctxt "AdBlockTreeModel|"
+msgid "%1 - %2"
+msgstr ""
+
+#: lib/adblock/adblocktreewidget.cpp:88
+msgctxt "AdBlockTreeWidget|"
+msgid "Add Rule"
+msgstr "नियमं योजयतु"
+
+#: lib/adblock/adblocktreewidget.cpp:90
+msgctxt "AdBlockTreeWidget|"
+msgid "Remove Rule"
+msgstr "नियमं निष्कासयतु"
+
+#: lib/adblock/adblocktreewidget.cpp:110
+msgctxt "AdBlockTreeWidget|"
+msgid "Add Custom Rule"
+msgstr "Custom Rule योजयन्तु"
+
+#: lib/adblock/adblocktreewidget.cpp:110
+msgctxt "AdBlockTreeWidget|"
+msgid "Please write your rule here:"
+msgstr "कृपया अत्र स्वस्य नियमं लिखन्तु :"
+
+#: lib/adblock/adblockurlinterceptor.cpp:44
+msgctxt "AdBlockUrlInterceptor|"
+msgid "Blocked content"
+msgstr "अवरुद्धा सामग्री"
+
+#: lib/adblock/adblockurlinterceptor.cpp:45
+#, qt-format
+msgctxt "AdBlockUrlInterceptor|"
+msgid "Blocked by <i>%1 (%2)</i>"
+msgstr "<i>%1 (%2)</i> द्वारा अवरुद्धम् ।"
+
+#: lib/app/browserwindow.cpp:205 lib/app/browserwindow.cpp:1014
+msgctxt "BrowserWindow|"
+msgid "Osza"
+msgstr "बाजः"
+
+#: lib/app/browserwindow.cpp:400
+msgctxt "BrowserWindow|"
+msgid "IP Address of current page"
+msgstr "वर्तमान पृष्ठस्य IP पता"
+
+#: lib/app/browserwindow.cpp:757
+msgctxt "BrowserWindow|"
+msgid " ["
+msgstr ""
+
+#: lib/app/browserwindow.cpp:760
+msgctxt "BrowserWindow|"
+msgid " (Private Browsing)"
+msgstr " (निजी ब्राउजिंग्)"
+
+#: lib/app/browserwindow.cpp:1016
+#, qt-format
+msgctxt "BrowserWindow|"
+msgid "%1 - Osza"
+msgstr "%1 - बाजः"
+
+#: lib/app/browserwindow.cpp:1082
+msgctxt "BrowserWindow|"
+msgid "&Menu Bar"
+msgstr "& मेनू बार"
+
+#: lib/app/browserwindow.cpp:1087
+msgctxt "BrowserWindow|"
+msgid "&Navigation Toolbar"
+msgstr "&नेविगेशन टूलबार"
+
+#: lib/app/browserwindow.cpp:1091
+msgctxt "BrowserWindow|"
+msgid "&Bookmarks Toolbar"
+msgstr "&बुकमार्क टूलबार"
+
+#: lib/app/browserwindow.cpp:1097
+msgctxt "BrowserWindow|"
+msgid "&Tabs on Top"
+msgstr "&Tabs on Top इति"
+
+#: lib/app/browserwindow.cpp:1150
+msgctxt "BrowserWindow|"
+msgid "Other"
+msgstr "इतर"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "HTML files"
+msgstr "HTML सञ्चिकाः"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "Image files"
+msgstr "चित्रसञ्चिकाः"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "Text files"
+msgstr "पाठसञ्चिकाः"
+
+#: lib/app/browserwindow.cpp:1192
+msgctxt "BrowserWindow|"
+msgid "All files"
+msgstr "सर्वाणि सञ्चिकानि"
+
+#: lib/app/browserwindow.cpp:1194
+msgctxt "BrowserWindow|"
+msgid "Open file..."
+msgstr "सञ्चिकां उद्घाटयन्तु..."
+
+#: lib/app/browserwindow.cpp:1531
+#, qt-format
+msgctxt "BrowserWindow|"
+msgid ""
+"There are still %n open tabs and your session won't be stored.\n"
+"Are you sure you want to close this window?"
+msgid_plural ""
+"There are still %n open tabs and your session won't be stored.\n"
+"Are you sure you want to close this window?"
+msgstr[0] ""
+"अद्यापि %n उद्घाटिताः ट्याब्स् सन्ति तथा च भवतः सत्रं न संगृहीतं भविष्यति ।\n"
+"किं भवन्तः निश्चयेन एतत् विण्डो पिधातुम् इच्छन्ति?"
+msgstr[1] ""
+"अद्यापि %n उद्घाटिताः ट्याब्स् सन्ति तथा च भवतः सत्रं न संगृहीतं भविष्यति ।\n"
+"किं भवन्तः निश्चयेन एतत् विण्डो पिधातुम् इच्छन्ति?"
+
+#: lib/app/browserwindow.cpp:1532
+msgctxt "BrowserWindow|"
+msgid "Don't ask again"
+msgstr "पुनः मा पृच्छतु"
+
+#: lib/app/browserwindow.cpp:1533
+msgctxt "BrowserWindow|"
+msgid "There are still open tabs"
+msgstr "अद्यापि उद्घाटिताः ट्याब्स् सन्ति"
+
+#: lib/app/mainapplication.cpp:1203
+msgctxt "MainApplication|"
+msgid ""
+"Osza is not currently your default browser. Would you like to make it your "
+"default browser?"
+msgstr ""
+"Osza सम्प्रति भवतः पूर्वनिर्धारितं ब्राउजर् नास्ति । किं भवन्तः तत् स्वस्य पूर्वनिर्धारितं "
+"ब्राउजर् कर्तुम् इच्छन्ति?"
+
+#: lib/app/mainapplication.cpp:1204
+msgctxt "MainApplication|"
+msgid "Always perform this check when starting Osza."
+msgstr "Osza इत्यस्य आरम्भे सर्वदा एतत् जाँचं कुर्वन्तु ।"
+
+#: lib/app/mainapplication.cpp:1206
+msgctxt "MainApplication|"
+msgid "Default Browser"
+msgstr "पूर्वनिर्धारित ब्राउज़र"
+
+#: lib/app/mainapplication.cpp:1341
+msgctxt "MainApplication|"
+msgid ""
+"Osza is a new and very fast Qt web browser. Osza is licensed under GPL "
+"version 3 or (at your option) any later version. It is based on QtWebEngine "
+"and Qt Framework."
+msgstr ""
+"Osza इति नूतनं अतीव द्रुतं च Qt जालपुटम् अस्ति । Osza GPL संस्करण 3 अथवा (भवतः "
+"विकल्पे) परवर्ती संस्करणस्य अन्तर्गतं अनुज्ञापत्रं प्राप्तवान् अस्ति । इदं QtWebEngine तथा Qt "
+"Framework इत्येतयोः आधारेण अस्ति ।"
+
+#: lib/app/mainmenu.cpp:84 lib/app/mainmenu.cpp:502
+msgctxt "MainMenu|"
+msgid "Sessions"
+msgstr "सत्रम्"
+
+#: lib/app/mainmenu.cpp:472
+msgctxt "MainMenu|"
+msgid "&About Osza"
+msgstr "&बाजस्य विषये"
+
+#: lib/app/mainmenu.cpp:477
+msgctxt "MainMenu|"
+msgid "Pr&eferences"
+msgstr "प्राधान्यानि"
+
+#: lib/app/mainmenu.cpp:483
+msgctxt "MainMenu|"
+msgid "Quit"
+msgstr "परिजहातु"
+
+#: lib/app/mainmenu.cpp:490
+msgctxt "MainMenu|"
+msgid "&File"
+msgstr "&संचिका"
+
+#: lib/app/mainmenu.cpp:493
+msgctxt "MainMenu|"
+msgid "New Tab"
+msgstr "नवीन ट्याब्"
+
+#: lib/app/mainmenu.cpp:494
+msgctxt "MainMenu|"
+msgid "&New Window"
+msgstr "&नवीन विण्डो"
+
+#: lib/app/mainmenu.cpp:495
+msgctxt "MainMenu|"
+msgid "New &Private Window"
+msgstr "नवीन &निजी खिडकी"
+
+#: lib/app/mainmenu.cpp:496
+msgctxt "MainMenu|"
+msgid "Open Location"
+msgstr "स्थानं उद्घाटयतु"
+
+#: lib/app/mainmenu.cpp:497
+msgctxt "MainMenu|"
+msgid "Open &File..."
+msgstr "&File उद्घाटयतु..."
+
+#: lib/app/mainmenu.cpp:498
+msgctxt "MainMenu|"
+msgid "Close Window"
+msgstr "विण्डो बन्दं कुर्वन्तु"
+
+#: lib/app/mainmenu.cpp:505
+msgctxt "MainMenu|"
+msgid "Session Manager"
+msgstr "सत्र प्रबन्धक"
+
+#: lib/app/mainmenu.cpp:512
+msgctxt "MainMenu|"
+msgid "&Save Page As..."
+msgstr "&पृष्ठं रक्षन्तु यथा..."
+
+#: lib/app/mainmenu.cpp:513
+msgctxt "MainMenu|"
+msgid "Send Link..."
+msgstr "Send Link..."
+
+#: lib/app/mainmenu.cpp:514
+msgctxt "MainMenu|"
+msgid "&Print..."
+msgstr "&मुद्रण..."
+
+#: lib/app/mainmenu.cpp:519
+msgctxt "MainMenu|"
+msgid "&Edit"
+msgstr "&सम्पादन"
+
+#: lib/app/mainmenu.cpp:522
+msgctxt "MainMenu|"
+msgid "&Undo"
+msgstr "&Undo"
+
+#: lib/app/mainmenu.cpp:524
+msgctxt "MainMenu|"
+msgid "&Redo"
+msgstr "&पुनः करो"
+
+#: lib/app/mainmenu.cpp:527
+msgctxt "MainMenu|"
+msgid "&Cut"
+msgstr "&छिन्न"
+
+#: lib/app/mainmenu.cpp:529
+msgctxt "MainMenu|"
+msgid "C&opy"
+msgstr "C&opy"
+
+#: lib/app/mainmenu.cpp:531
+msgctxt "MainMenu|"
+msgid "&Paste"
+msgstr "&पेस्ट"
+
+#: lib/app/mainmenu.cpp:534
+msgctxt "MainMenu|"
+msgid "Select &All"
+msgstr "&All इति चयनं कुर्वन्तु"
+
+#: lib/app/mainmenu.cpp:536
+msgctxt "MainMenu|"
+msgid "&Find"
+msgstr "&अन्वेषय"
+
+#: lib/app/mainmenu.cpp:541
+msgctxt "MainMenu|"
+msgid "&View"
+msgstr "&दृश्यं"
+
+#: lib/app/mainmenu.cpp:544
+msgctxt "MainMenu|"
+msgid "Toolbars"
+msgstr "साधनपट्टिकाः"
+
+#: lib/app/mainmenu.cpp:546
+msgctxt "MainMenu|"
+msgid "Sidebar"
+msgstr "पार्श्वपट्टिका"
+
+#: lib/app/mainmenu.cpp:548
+msgctxt "MainMenu|"
+msgid "Character &Encoding"
+msgstr "वर्ण &एन्कोडिंग"
+
+#: lib/app/mainmenu.cpp:557
+msgctxt "MainMenu|"
+msgid "Sta&tus Bar"
+msgstr "Sta&tus Bar"
+
+#: lib/app/mainmenu.cpp:559
+msgctxt "MainMenu|"
+msgid "&Stop"
+msgstr "&विरमतु"
+
+#: lib/app/mainmenu.cpp:560
+msgctxt "MainMenu|"
+msgid "&Reload"
+msgstr "&पुनः भार"
+
+#: lib/app/mainmenu.cpp:562
+msgctxt "MainMenu|"
+msgid "Zoom &In"
+msgstr "जूम &In"
+
+#: lib/app/mainmenu.cpp:563
+msgctxt "MainMenu|"
+msgid "Zoom &Out"
+msgstr "जूम &आउट"
+
+#: lib/app/mainmenu.cpp:564
+msgctxt "MainMenu|"
+msgid "Reset"
+msgstr "पुनः सेट् करें"
+
+#: lib/app/mainmenu.cpp:568
+msgctxt "MainMenu|"
+msgid "&Page Source"
+msgstr "&पृष्ठ स्रोत"
+
+#: lib/app/mainmenu.cpp:570
+msgctxt "MainMenu|"
+msgid "&FullScreen"
+msgstr "&पूर्णपर्दे"
+
+#: lib/app/mainmenu.cpp:573
+msgctxt "MainMenu|"
+msgid "&Tools"
+msgstr "&उपकरणाः"
+
+#: lib/app/mainmenu.cpp:576
+msgctxt "MainMenu|"
+msgid "&Web Search"
+msgstr "&जाल अन्वेषण"
+
+#: lib/app/mainmenu.cpp:577
+msgctxt "MainMenu|"
+msgid "Site &Info"
+msgstr "साइट &सूचना"
+
+#: lib/app/mainmenu.cpp:580
+msgctxt "MainMenu|"
+msgid "&Download Manager"
+msgstr "&डाउनलोड प्रबन्धक"
+
+#: lib/app/mainmenu.cpp:581
+msgctxt "MainMenu|"
+msgid "&Cookies Manager"
+msgstr "&कुकीज प्रबन्धक"
+
+#: lib/app/mainmenu.cpp:582
+msgctxt "MainMenu|"
+msgid "Web In&spector"
+msgstr "Web In&spector"
+
+#: lib/app/mainmenu.cpp:583
+msgctxt "MainMenu|"
+msgid "Clear Recent &History"
+msgstr "Clear हाले &इतिहास"
+
+#: lib/app/mainmenu.cpp:588
+msgctxt "MainMenu|"
+msgid "&Extensions"
+msgstr "&विस्तार"
+
+#: lib/app/mainmenu.cpp:594
+msgctxt "MainMenu|"
+msgid "&Help"
+msgstr "&साहाय्यम्‌"
+
+#: lib/app/mainmenu.cpp:597
+msgctxt "MainMenu|"
+msgid "About &Qt"
+msgstr "विषये &Qt"
+
+#: lib/app/mainmenu.cpp:602
+msgctxt "MainMenu|"
+msgid "Information about application"
+msgstr "आवेदनस्य विषये सूचना"
+
+#: lib/app/mainmenu.cpp:603
+msgctxt "MainMenu|"
+msgid "Configuration Information"
+msgstr "विन्यास सूचना"
+
+#: lib/app/mainmenu.cpp:604
+msgctxt "MainMenu|"
+msgid "Report &Issue"
+msgstr "प्रतिवेदन &मुद्दा"
+
+#: lib/app/mainmenu.cpp:617
+msgctxt "MainMenu|"
+msgid "Restore &Closed Tab"
+msgstr "पुनर्स्थापितं &Closed Tab"
+
+#: lib/autofill/autofillicon.cpp:29
+msgctxt "AutoFillWidget|"
+msgid "Choose username to login"
+msgstr "प्रवेशार्थं उपयोक्तृनाम चिनोतु"
+
+#: lib/autofill/autofillnotification.cpp:39
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "on %1"
+msgstr "%1 इत्यत्र"
+
+#: lib/autofill/autofillnotification.cpp:43
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "for <b>%1</b>"
+msgstr "<b>%1</b> कृते"
+
+#: lib/autofill/autofillnotification.cpp:47
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "Do you want Osza to update saved password %1?"
+msgstr "किं भवान् इच्छति यत् Osza रक्षितं गुप्तशब्दं %1 अद्यतनं करोतु?"
+
+#: lib/autofill/autofillnotification.cpp:53
+#, qt-format
+msgctxt "AutoFillNotification|"
+msgid "Do you want Osza to remember the password %1 %2?"
+msgstr "किं भवान् इच्छति यत् Osza %1 %2 इति गुप्तशब्दं स्मरेत्?"
+
+#: lib/autofill/autofillnotification.ui:69
+msgctxt "AutoFillNotification|"
+msgid "Update"
+msgstr "अद्यतन"
+
+#: lib/autofill/autofillnotification.ui:85
+msgctxt "AutoFillNotification|"
+msgid "Remember"
+msgstr "स्मरतु"
+
+#: lib/autofill/autofillnotification.ui:101
+msgctxt "AutoFillNotification|"
+msgid "Never For This Site"
+msgstr "कदापि अस्य साइट् कृते न"
+
+#: lib/autofill/autofillnotification.ui:117
+msgctxt "AutoFillNotification|"
+msgid "Not Now"
+msgstr "न खलु"
+
+#: lib/autofill/autofillwidget.ui:11
+msgctxt "AutoFillWidget|"
+msgid "Login as:"
+msgstr "यथा प्रवेशं कुर्वन्तु:"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:258
+msgctxt "AutoFill|"
+msgid "Database (encrypted)"
+msgstr "दत्तांशकोशः (गुप्तः)"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:547
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:552
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:601
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:644
+msgctxt "MasterPasswordDialog|"
+msgid "Warning!"
+msgstr "चेतवानी!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:547
+msgctxt "MasterPasswordDialog|"
+msgid "You entered a wrong password!"
+msgstr "भवता गलत् गुप्तशब्दः प्रविष्टः!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:552
+msgctxt "MasterPasswordDialog|"
+msgid "New/Confirm password fields do not match!"
+msgstr "नवीन/गुप्तशब्दपुष्टिक्षेत्राणि न मेलन्ति!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:579
+msgctxt "AutoFill|"
+msgid "Warning!"
+msgstr "चेतवानी!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:580
+msgctxt "AutoFill|"
+msgid ""
+"This backend needs a master password to be set! Osza just switches to its "
+"default backend"
+msgstr ""
+"अस्य पृष्ठभागस्य सेट् कर्तुं मुख्यगुप्तशब्दस्य आवश्यकता अस्ति! Osza केवलं स्वस्य "
+"पूर्वनिर्धारितपृष्ठभागं प्रति स्विच करोति"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:601
+msgctxt "MasterPasswordDialog|"
+msgid "Are you sure you want to clear master password and decrypt data?"
+msgstr ""
+"किं भवान् निश्चितः अस्ति यत् भवान् मुख्यगुप्तशब्दं स्वच्छं कर्तुम् इच्छति तथा च दत्तांशं विगुप्तं "
+"कर्तुम् इच्छति?"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:644
+msgctxt "MasterPasswordDialog|"
+msgid "Some data has not been decrypted. The master password was not cleared!"
+msgstr "केचन दत्तांशाः विगुप्ताः न कृताः । मुख्यगुप्तशब्दः न स्वच्छः अभवत्!"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:670
+msgctxt "AutoFill|"
+msgid "Enter Master Password"
+msgstr "Master Password इति प्रविष्टं कुर्वन्तु"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:674
+msgctxt "AutoFill|"
+msgid "Permission is required, please enter Master Password:"
+msgstr "अनुमतिः आवश्यकी अस्ति, कृपया Master Password इति प्रविष्टं कुर्वन्तु:"
+
+#: lib/autofill/passwordbackends/databaseencryptedpasswordbackend.cpp:680
+msgctxt "AutoFill|"
+msgid "Entered password is wrong!"
+msgstr "प्रविष्टः गुप्तशब्दः गलतः अस्ति!"
+
+#: lib/autofill/passwordbackends/databasepasswordbackend.cpp:32
+msgctxt "AutoFill|"
+msgid "Database (plaintext)"
+msgstr "दत्तांशकोशः (सादा पाठः)"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:20
+msgctxt "MasterPasswordDialog|"
+msgid "Encrypted DataBase Settings"
+msgstr "एन्क्रिप्टेड् डाटाबेस सेटिंग्स्"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:33
+msgctxt "MasterPasswordDialog|"
+msgid "Set/Change Master Password..."
+msgstr "मास्टर पासवर्ड सेट्/परिवर्तनं..."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:36
+msgctxt "MasterPasswordDialog|"
+msgid "This backend does not work without a master password."
+msgstr "एषः पृष्ठभागः मुख्यगुप्तशब्दं विना कार्यं न करोति ।"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:43
+msgctxt "MasterPasswordDialog|"
+msgid "Clear Master Password..."
+msgstr "मुख्यगुप्तशब्दं स्वच्छं कुर्वन्तु..."
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:46
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"This option clears the master password and moves all encrypted data to the "
+"\"DataBase (Plain Text)\" backend, and switches to it."
+msgstr ""
+"एषः विकल्पः मुख्यगुप्तशब्दं स्वच्छं करोति तथा च सर्वान् एन्क्रिप्टेड् दत्तांशं \"DataBase (Plain "
+"Text)\" पृष्ठभागे स्थानान्तरयति, तस्मिन् च स्विच करोति ।"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:64
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"The Master Password is used to protect site passwords and form data. If you "
+"set a Master Password you will be asked to enter it once per session."
+msgstr ""
+"साइट् गुप्तशब्दानां रक्षणाय, दत्तांशरूपस्य च कृते Master Password इत्यस्य उपयोगः भवति । "
+"यदि भवान् Master Password सेट् करोति तर्हि प्रतिसत्रं एकवारं प्रविष्टुं प्रार्थयिष्यते ।"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:76
+msgctxt "MasterPasswordDialog|"
+msgid "Current Password:"
+msgstr "वर्तमान गुप्तशब्दः :"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:83
+msgctxt "MasterPasswordDialog|"
+msgid "New Password:"
+msgstr "नवीनः गुप्तशब्दः :"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:90
+msgctxt "MasterPasswordDialog|"
+msgid "Confirm Password:"
+msgstr "गुप्तशब्दस्य पुष्टिः कुर्वन्तु:"
+
+#: lib/autofill/passwordbackends/masterpassworddialog.ui:120
+msgctxt "MasterPasswordDialog|"
+msgid ""
+"<b>Note:</b> The Master Password is not resettable. Do not forget it, please."
+msgstr "<b>नोटः-</b> Master Password पुनः सेट् कर्तुं न शक्यते । मा विस्मरन्तु कृपया ।"
+
+#: lib/bookmarks/bookmarks.cpp:208
+msgctxt "Bookmarks|"
+msgid "Bookmarks Toolbar"
+msgstr "बुकमार्क टूलबार"
+
+#: lib/bookmarks/bookmarks.cpp:209
+msgctxt "Bookmarks|"
+msgid "Bookmarks located in Bookmarks Toolbar"
+msgstr "Bookmarks Toolbar इत्यत्र स्थिताः बुकमार्काः"
+
+#: lib/bookmarks/bookmarks.cpp:212
+msgctxt "Bookmarks|"
+msgid "Bookmarks Menu"
+msgstr "बुकमार्क मेनू"
+
+#: lib/bookmarks/bookmarks.cpp:213
+msgctxt "Bookmarks|"
+msgid "Bookmarks located in Bookmarks Menu"
+msgstr "Bookmarks Menu इत्यत्र स्थिताः बुकमार्काः"
+
+#: lib/bookmarks/bookmarks.cpp:216
+msgctxt "Bookmarks|"
+msgid "Unsorted Bookmarks"
+msgstr "अक्रमित बुकमार्क"
+
+#: lib/bookmarks/bookmarks.cpp:217
+msgctxt "Bookmarks|"
+msgid "All other bookmarks"
+msgstr "अन्ये सर्वे पुस्तकचिह्नानि"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.cpp:64
+msgctxt "BookmarksExportDialog|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:14
+msgctxt "BookmarksExportDialog|"
+msgid "Export Bookmarks"
+msgstr "निर्यात बुकमार्क्स"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:20
+msgctxt "BookmarksExportDialog|"
+msgid "<b>Export Bookmarks</b>"
+msgstr "<b>निर्यात बुकमार्क्स</b>"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:27
+msgctxt "BookmarksExportDialog|"
+msgid "Export options"
+msgstr "निर्यातविकल्पाः"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:42
+msgctxt "BookmarksExportDialog|"
+msgid "Choose..."
+msgstr "चिनोतु..."
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:73
+msgctxt "BookmarksExportDialog|"
+msgid "Output File:"
+msgstr "आउटपुट् सञ्चिका :"
+
+#: lib/bookmarks/bookmarksexport/bookmarksexportdialog.ui:89
+msgctxt "BookmarksExportDialog|"
+msgid "Format:"
+msgstr "प्रारूपः :"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:31
+msgctxt "BookmarksExporter|"
+msgid "HTML File"
+msgstr "HTML सञ्चिका"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:37
+msgctxt "BookmarksExporter|"
+msgid "HTML Bookmarks"
+msgstr "HTML बुकमार्क्स"
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:38
+msgctxt "BookmarksExporter|"
+msgid "Choose file..."
+msgstr "सञ्चिकां चिनोतु..."
+
+#: lib/bookmarks/bookmarksexport/htmlexporter.cpp:47
+msgctxt "BookmarksExporter|"
+msgid "Cannot open file for writing!"
+msgstr "लेखनार्थं सञ्चिकां उद्घाटयितुं न शक्यते!"
+
+#: lib/bookmarks/bookmarksicon.cpp:37 lib/bookmarks/bookmarksicon.cpp:108
+msgctxt "BookmarksIcon|"
+msgid "Bookmark this Page"
+msgstr "एतत् पृष्ठं बुकमार्कं कुर्वन्तु"
+
+#: lib/bookmarks/bookmarksicon.cpp:100
+msgctxt "BookmarksIcon|"
+msgid "Edit this bookmark"
+msgstr "एतत् पुस्तकचिह्नं सम्पादयन्तु"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:113
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:118
+msgctxt "BookmarksImportDialog|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:118
+msgctxt "BookmarksImportDialog|"
+msgid "No bookmarks were found."
+msgstr "न कोऽपि पुस्तकचिह्नः प्राप्तः ।"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:125
+msgctxt "BookmarksImportDialog|"
+msgid "Finish"
+msgstr "समापन"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:157
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:270
+msgctxt "BookmarksImportDialog|"
+msgid "Next >"
+msgstr "अनन्तरम् >"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.cpp:186
+#, qt-format
+msgctxt "BookmarksImportDialog|"
+msgid "<b>Importing from %1</b>"
+msgstr "<b>%1 तः आयातम्</b>"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:20
+msgctxt "BookmarksImportDialog|"
+msgid "Import Bookmarks"
+msgstr "आयात बुकमार्क"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:26
+msgctxt "BookmarksImportDialog|"
+msgid "<b>Import Bookmarks</b>"
+msgstr "<b>आयात बुकमार्क</b>"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:74
+msgctxt "BookmarksImportDialog|"
+msgid "Internet Explorer"
+msgstr "इन्टरनेट् एक्स्प्लोरर्"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:83
+msgctxt "BookmarksImportDialog|"
+msgid "Html File"
+msgstr "Html सञ्चिका"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:95
+msgctxt "BookmarksImportDialog|"
+msgid "Choose from which you want to import bookmarks:"
+msgstr "यस्मात् भवन्तः पुस्तकचिह्नानि आयातुम् इच्छन्ति इति चिनोतु:"
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:125
+msgctxt "BookmarksImportDialog|"
+msgid "Choose..."
+msgstr "चिनोतु..."
+
+#: lib/bookmarks/bookmarksimport/bookmarksimportdialog.ui:257
+msgctxt "BookmarksImportDialog|"
+msgid "< Back"
+msgstr "< पृष्ठतः"
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Google Chrome stores its bookmarks in <b>Bookmarks</b> text file. This file "
+"is usually located in"
+msgstr ""
+"गूगल क्रोम् स्वस्य बुकमार्क्स् <b>Bookmarks</b> पाठसञ्चिकायां संगृह्णाति । इयं सञ्चिका प्रायः"
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:50
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:57
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:44
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:44
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:48
+msgctxt "BookmarksImporter|"
+msgid "Choose file..."
+msgstr "सञ्चिकां चिनोतु..."
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:59
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:53
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:57
+msgctxt "BookmarksImporter|"
+msgid "Unable to open file."
+msgstr "सञ्चिकां उद्घाटयितुं असमर्थः।"
+
+#: lib/bookmarks/bookmarksimport/chromeimporter.cpp:76
+msgctxt "BookmarksImporter|"
+msgid "Cannot parse JSON file!"
+msgstr "JSON सञ्चिकां विश्लेषणं कर्तुं न शक्यते!"
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:42
+msgctxt "BookmarksImporter|"
+msgid ""
+"Mozilla Firefox stores its bookmarks in <b>places.sqlite</b> SQLite "
+"database. This file is usually located in"
+msgstr ""
+"Mozilla Firefox स्वस्य बुकमार्कं <b>places.sqlite</b> SQLite database इत्यत्र "
+"संगृह्णाति । इयं सञ्चिका प्रायः"
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:70
+msgctxt "BookmarksImportDialog|"
+msgid "File does not exist."
+msgstr "सञ्चिका नास्ति ।"
+
+#: lib/bookmarks/bookmarksimport/firefoximporter.cpp:77
+msgctxt "BookmarksImportDialog|"
+msgid "Unable to open database. Is Firefox running?"
+msgstr "दत्तांशकोशं उद्घाटयितुं असमर्थः। Firefox चाल्यते वा ?"
+
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:32
+msgctxt "BookmarksImporter|"
+msgid ""
+"You can import bookmarks from any browser that supports HTML exporting. This "
+"file has usually these suffixes"
+msgstr ""
+"HTML निर्यातस्य समर्थनं कुर्वन्तः कस्मात् अपि ब्राउजर् तः बुकमार्क् आयातुं शक्नुवन्ति । अस्मिन् "
+"सञ्चिकायां प्रायः एते प्रत्ययाः सन्ति"
+
+#: lib/bookmarks/bookmarksimport/htmlimporter.cpp:43
+msgctxt "BookmarksImporter|"
+msgid "HTML Bookmarks"
+msgstr "HTML बुकमार्क्स"
+
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Internet Explorer stores its bookmarks in <b>Favorites</b> folder. This "
+"folder is usually located in"
+msgstr ""
+"Internet Explorer स्वस्य बुकमार्कं <b>Favorites</b> समुच्चय मध्ये संगृह्णाति । इदं पुटं "
+"प्रायः अत्र स्थितम् अस्ति"
+
+#: lib/bookmarks/bookmarksimport/ieimporter.cpp:52
+msgctxt "BookmarksImporter|"
+msgid "Directory does not exist."
+msgstr "निर्देशिका नास्ति।"
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:33
+msgctxt "BookmarksImporter|"
+msgid ""
+"Opera stores its bookmarks in <b>bookmarks.adr</b> text file. This file is "
+"usually located in"
+msgstr ""
+"Opera स्वस्य पुस्तकचिह्नानि <b>bookmarks.adr</b> पाठसञ्चिकायां संगृह्णाति । इयं सञ्चिका "
+"प्रायः"
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:64
+msgctxt "BookmarksImporter|"
+msgid "File is not valid Opera bookmarks file!"
+msgstr "सञ्चिका वैधः नास्ति Opera bookmarks सञ्चिका!"
+
+#: lib/bookmarks/bookmarksimport/operaimporter.cpp:69
+msgctxt "BookmarksImporter|"
+msgid "Only UTF-8 encoded Opera bookmarks file is supported!"
+msgstr "केवलं UTF-8 एन्कोडेड् Opera bookmarks सञ्चिका समर्थिता अस्ति!"
+
+#: lib/bookmarks/bookmarksmanager.cpp:106
+msgctxt "BookmarksManager|"
+msgid "Open in new tab"
+msgstr "नूतन ट्याब् मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarksmanager.cpp:107
+msgctxt "BookmarksManager|"
+msgid "Open in new window"
+msgstr "नूतनविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarksmanager.cpp:108
+msgctxt "BookmarksManager|"
+msgid "Open in new private window"
+msgstr "नूतने निजविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarksmanager.cpp:111
+#: lib/bookmarks/bookmarksmanager.cpp:246
+msgctxt "BookmarksManager|"
+msgid "New Bookmark"
+msgstr "नवीनं पुस्तकचिह्नम्"
+
+#: lib/bookmarks/bookmarksmanager.cpp:112
+#: lib/bookmarks/bookmarksmanager.cpp:254
+msgctxt "BookmarksManager|"
+msgid "New Folder"
+msgstr "नवीनं पुटम्"
+
+#: lib/bookmarks/bookmarksmanager.cpp:113
+msgctxt "BookmarksManager|"
+msgid "New Separator"
+msgstr "नवीन विभाजक"
+
+#: lib/bookmarks/bookmarksmanager.cpp:117
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "Cu&t"
+msgctxt "BookmarksManager|"
+msgid "Cu&t"
+msgstr "सह&ट"
+
+#: lib/bookmarks/bookmarksmanager.cpp:118
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "&Copy"
+msgctxt "BookmarksManager|"
+msgid "&Copy"
+msgstr "&प्रतिलिपि"
+
+#: lib/bookmarks/bookmarksmanager.cpp:119
+#, fuzzy
+#| msgctxt "LineEdit|"
+#| msgid "&Paste"
+msgctxt "BookmarksManager|"
+msgid "&Paste"
+msgstr "&पेस्ट"
+
+#: lib/bookmarks/bookmarksmanager.cpp:121
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "BookmarksManager|"
+msgid "&Remove"
+msgstr "अपाकरोति"
+
+#: lib/bookmarks/bookmarksmanager.ui:14
+msgctxt "BookmarksManager|"
+msgid "Bookmarks"
+msgstr "बुकमार्क्स"
+
+#: lib/bookmarks/bookmarksmanager.ui:32
+msgctxt "BookmarksManager|"
+msgid "Title:"
+msgstr "शीर्षक:"
+
+#: lib/bookmarks/bookmarksmanager.ui:42
+msgctxt "BookmarksManager|"
+msgid "Address:"
+msgstr "पत्रसङ्केतः:"
+
+#: lib/bookmarks/bookmarksmanager.ui:52
+msgctxt "BookmarksManager|"
+msgid "Keyword:"
+msgstr "कीवर्ड :"
+
+#: lib/bookmarks/bookmarksmanager.ui:62
+msgctxt "BookmarksManager|"
+msgid "Description"
+msgstr "वर्णनम्‌"
+
+#: lib/bookmarks/bookmarksmenu.cpp:172
+msgctxt "BookmarksMenu|"
+msgid "&Bookmarks"
+msgstr "&पुस्तकचिह्न"
+
+#: lib/bookmarks/bookmarksmenu.cpp:174
+msgctxt "BookmarksMenu|"
+msgid "Bookmark &This Page"
+msgstr "बुकमार्क &This Page"
+
+#: lib/bookmarks/bookmarksmenu.cpp:175
+msgctxt "BookmarksMenu|"
+msgid "Bookmark &All Tabs"
+msgstr "बुकमार्क &All Tabs"
+
+#: lib/bookmarks/bookmarksmenu.cpp:176
+msgctxt "BookmarksMenu|"
+msgid "Organize &Bookmarks"
+msgstr "&Bookmarks व्यवस्थित करें"
+
+#: lib/bookmarks/bookmarksmodel.cpp:148
+msgctxt "BookmarksModel|"
+msgid "Title"
+msgstr "शीर्षक"
+
+#: lib/bookmarks/bookmarksmodel.cpp:150
+msgctxt "BookmarksModel|"
+msgid "Address"
+msgstr "पत्रसङ्केतः"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:73
+msgctxt "BookmarksToolbar|"
+msgid "Open in new tab"
+msgstr "नूतन ट्याब् मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:74
+msgctxt "BookmarksToolbar|"
+msgid "Open in new window"
+msgstr "नूतनविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:75
+msgctxt "BookmarksToolbar|"
+msgid "Open in new private window"
+msgstr "नूतने निजविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:77 lib/bookmarks/bookmarkstoolbar.cpp:197
+msgctxt "BookmarksToolbar|"
+msgid "New Folder"
+msgstr "नवीनं पुटम्"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:78
+msgctxt "BookmarksToolbar|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:79
+msgctxt "BookmarksToolbar|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:83
+msgctxt "BookmarksToolbar|"
+msgid "Show Only Icons"
+msgstr "केवलं चिह्नानि दर्शयतु"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:88
+msgctxt "BookmarksToolbar|"
+msgid "Show Only Text"
+msgstr "केवलं पाठं दर्शयतु"
+
+#: lib/bookmarks/bookmarkstoolbar.cpp:197
+msgctxt "BookmarksToolbar|"
+msgid "Enter Folder Name:"
+msgstr "पुटस्य नाम प्रविष्टं कुर्वन्तु:"
+
+#: lib/bookmarks/bookmarkstools.cpp:77
+#, qt-format
+msgctxt "BookmarksFoldersMenu|"
+msgid "Choose %1"
+msgstr "%1 चिनोतु"
+
+#: lib/bookmarks/bookmarkstools.cpp:154
+msgctxt "Bookmarks|"
+msgid "Choose name and location of this bookmark."
+msgstr "अस्य पुस्तकचिह्नस्य नाम स्थानं च चिनोतु ।"
+
+#: lib/bookmarks/bookmarkstools.cpp:158
+msgctxt "Bookmarks|"
+msgid "Add New Bookmark"
+msgstr "New Bookmark योजयतु"
+
+#: lib/bookmarks/bookmarkstools.cpp:198
+msgctxt "Bookmarks|"
+msgid "Choose folder for bookmarks:"
+msgstr "पुस्तकचिह्नानां कृते पुटं चिनोतु:"
+
+#: lib/bookmarks/bookmarkstools.cpp:199
+msgctxt "Bookmarks|"
+msgid "Bookmark All Tabs"
+msgstr "सर्वाणि ट्याब्स् बुकमार्कं कुर्वन्तु"
+
+#: lib/bookmarks/bookmarkstools.cpp:240
+msgctxt "Bookmarks|"
+msgid "Title:"
+msgstr "शीर्षक:"
+
+#: lib/bookmarks/bookmarkstools.cpp:243
+msgctxt "Bookmarks|"
+msgid "Address:"
+msgstr "पत्रसङ्केतः:"
+
+#: lib/bookmarks/bookmarkstools.cpp:245
+msgctxt "Bookmarks|"
+msgid "Keyword:"
+msgstr "कीवर्ड :"
+
+#: lib/bookmarks/bookmarkstools.cpp:248
+msgctxt "Bookmarks|"
+msgid "Description:"
+msgstr "वर्णनम्‌:"
+
+#: lib/bookmarks/bookmarkstools.cpp:253
+msgctxt "Bookmarks|"
+msgid "Edit Bookmark"
+msgstr "बुकमार्क सम्पादयतु"
+
+#: lib/bookmarks/bookmarkstools.cpp:345
+msgctxt "Bookmarks|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/bookmarks/bookmarkstools.cpp:346
+#, qt-format
+msgctxt "Bookmarks|"
+msgid "Are you sure you want to open all bookmarks from '%1' folder in tabs?"
+msgstr "किं भवान् निश्चयेन '%1' पुटतः सर्वाणि पुस्तकचिह्नानि ट्याब्-मध्ये उद्घाटयितुम् इच्छति?"
+
+#: lib/bookmarks/bookmarkstools.cpp:456
+msgctxt "Bookmarks|"
+msgid "Empty"
+msgstr "रिक्तम्‌"
+
+#: lib/bookmarks/bookmarkswidget.cpp:98
+msgctxt "BookmarksWidget|"
+msgid "Update Bookmark"
+msgstr "बुकमार्क अद्यतन करें"
+
+#: lib/bookmarks/bookmarkswidget.cpp:112 lib/bookmarks/bookmarkswidget.ui:33
+msgctxt "BookmarksWidget|"
+msgid "Add to Speed Dial"
+msgstr "Speed Dial मध्ये योजयतु"
+
+#: lib/bookmarks/bookmarkswidget.cpp:116
+msgctxt "BookmarksWidget|"
+msgid "Remove from Speed Dial"
+msgstr "Speed Dial तः निष्कासयन्तु"
+
+#: lib/bookmarks/bookmarkswidget.cpp:121
+msgctxt "BookmarksWidget|"
+msgid "Remove from Bookmarks"
+msgstr "Bookmarks तः निष्कासयन्तु"
+
+#: lib/bookmarks/bookmarkswidget.ui:20
+msgctxt "BookmarksWidget|"
+msgid "Add to Bookmarks"
+msgstr "बुकमार्क्स् मध्ये योजयतु"
+
+#: lib/cookies/cookiemanager.cpp:78
+msgctxt "CookieManager|"
+msgid "Search"
+msgstr "अन्वेषण"
+
+#: lib/cookies/cookiemanager.cpp:133
+msgctxt "CookieManager|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/cookies/cookiemanager.cpp:134
+msgctxt "CookieManager|"
+msgid "Are you sure you want to delete all cookies on your computer?"
+msgstr "किं भवान् निश्चयेन स्वसङ्गणके सर्वाणि कुकीजं विलोपयितुम् इच्छति?"
+
+#: lib/cookies/cookiemanager.cpp:179 lib/cookies/cookiemanager.cpp:180
+#: lib/cookies/cookiemanager.cpp:181 lib/cookies/cookiemanager.cpp:182
+#: lib/cookies/cookiemanager.cpp:183 lib/cookies/cookiemanager.cpp:184
+#: lib/cookies/cookiemanager.ui:154 lib/cookies/cookiemanager.ui:164
+#: lib/cookies/cookiemanager.ui:174 lib/cookies/cookiemanager.ui:184
+#: lib/cookies/cookiemanager.ui:194 lib/cookies/cookiemanager.ui:204
+msgctxt "CookieManager|"
+msgid "<cookie not selected>"
+msgstr "<कुकी न चयनिता>"
+
+#: lib/cookies/cookiemanager.cpp:186 lib/cookies/cookiemanager.cpp:196
+#: lib/cookies/cookiemanager.ui:245
+msgctxt "CookieManager|"
+msgid "Remove cookies"
+msgstr "कुकीजं निष्कासयन्तु"
+
+#: lib/cookies/cookiemanager.cpp:189 lib/cookies/cookiemanager.cpp:190
+#: lib/cookies/cookiemanager.cpp:191 lib/cookies/cookiemanager.cpp:192
+#: lib/cookies/cookiemanager.cpp:193 lib/cookies/cookiemanager.cpp:194
+msgctxt "CookieManager|"
+msgid "<multiple cookies selected>"
+msgstr "<बहुविधाः कुकीजाः चयनिताः>"
+
+#: lib/cookies/cookiemanager.cpp:206
+msgctxt "CookieManager|"
+msgid "Secure only"
+msgstr "केवलं सुरक्षितम्"
+
+#: lib/cookies/cookiemanager.cpp:206
+msgctxt "CookieManager|"
+msgid "All connections"
+msgstr "सर्वे संयोगाः"
+
+#: lib/cookies/cookiemanager.cpp:207
+msgctxt "CookieManager|"
+msgid "Session cookie"
+msgstr "सत्र कुकी"
+
+#: lib/cookies/cookiemanager.cpp:209
+msgctxt "CookieManager|"
+msgid "Remove cookie"
+msgstr "कुकी निष्कासयन्तु"
+
+#: lib/cookies/cookiemanager.cpp:214 lib/cookies/cookiemanager.cpp:245
+#: lib/cookies/cookiemanager.ui:126
+msgctxt "CookieManager|"
+msgid "Server:"
+msgstr "सर्वरः :"
+
+#: lib/cookies/cookiemanager.cpp:214
+msgctxt "CookieManager|"
+msgid "Add to whitelist"
+msgstr "श्वेतसूचौ योजयन्तु"
+
+#: lib/cookies/cookiemanager.cpp:221
+msgctxt "CookieManager|"
+msgid "Already blacklisted!"
+msgstr "पूर्वमेव कालासूचीकृतम्!"
+
+#: lib/cookies/cookiemanager.cpp:221
+#, qt-format
+msgctxt "CookieManager|"
+msgid "The server \"%1\" is already in blacklist, please remove it first."
+msgstr "\"%1\" सर्वरः पूर्वमेव कालासूचौ अस्ति, कृपया प्रथमं तत् निष्कासयन्तु ।"
+
+#: lib/cookies/cookiemanager.cpp:245
+msgctxt "CookieManager|"
+msgid "Add to blacklist"
+msgstr "कृष्णसूचौ योजयन्तु"
+
+#: lib/cookies/cookiemanager.cpp:256
+msgctxt "CookieManager|"
+msgid "Already whitelisted!"
+msgstr "पूर्वमेव श्वेतसूचीकृतम्!"
+
+#: lib/cookies/cookiemanager.cpp:256
+#, qt-format
+msgctxt "CookieManager|"
+msgid "The server \"%1\" is already in whitelist, please remove it first."
+msgstr "\"%1\" सर्वरः पूर्वमेव श्वेतसूचौ अस्ति, कृपया प्रथमं तत् निष्कासयन्तु ।"
+
+#: lib/cookies/cookiemanager.ui:14
+msgctxt "CookieManager|"
+msgid "Cookies"
+msgstr "कुकीज"
+
+#: lib/cookies/cookiemanager.ui:36
+msgctxt "CookieManager|"
+msgid "Stored Cookies"
+msgstr "संगृहीत कुकीज"
+
+#: lib/cookies/cookiemanager.ui:42
+msgctxt "CookieManager|"
+msgid "Find: "
+msgstr "अन्वेषय: "
+
+#: lib/cookies/cookiemanager.ui:52
+msgctxt "CookieManager|"
+msgid "These cookies are stored on your computer:"
+msgstr "एतानि कुकीजं भवतः सङ्गणके संगृहीताः सन्ति:"
+
+#: lib/cookies/cookiemanager.ui:66
+msgctxt "CookieManager|"
+msgid "Server"
+msgstr "सर्वर"
+
+#: lib/cookies/cookiemanager.ui:71
+msgctxt "CookieManager|"
+msgid "Cookie name"
+msgstr "कुकी नाम"
+
+#: lib/cookies/cookiemanager.ui:109
+msgctxt "CookieManager|"
+msgid "Name:"
+msgstr "नामः:"
+
+#: lib/cookies/cookiemanager.ui:119
+msgctxt "CookieManager|"
+msgid "Value:"
+msgstr "मूल्यम्‌:"
+
+#: lib/cookies/cookiemanager.ui:133
+msgctxt "CookieManager|"
+msgid "Path:"
+msgstr "पथं:"
+
+#: lib/cookies/cookiemanager.ui:140
+msgctxt "CookieManager|"
+msgid "Secure:"
+msgstr "उरुष्य:"
+
+#: lib/cookies/cookiemanager.ui:147
+msgctxt "CookieManager|"
+msgid "Expiration:"
+msgstr "अवधिः समाप्तः :"
+
+#: lib/cookies/cookiemanager.ui:238
+msgctxt "CookieManager|"
+msgid "Remove all cookies"
+msgstr "सर्वाणि कुकीजं निष्कासयन्तु"
+
+#: lib/cookies/cookiemanager.ui:269
+msgctxt "CookieManager|"
+msgid "Cookie Filtering"
+msgstr "कुकी फ़िल्टरिंग"
+
+#: lib/cookies/cookiemanager.ui:275
+msgctxt "CookieManager|"
+msgid "<b>Cookie whitelist</b>"
+msgstr "<b>कुकी श्वेतसूची</b>"
+
+#: lib/cookies/cookiemanager.ui:282
+msgctxt "CookieManager|"
+msgid ""
+"Cookies from these servers will ALWAYS be accepted (even if you have "
+"disabled saving cookies)"
+msgstr ""
+"एतेभ्यः सर्वरेभ्यः कुकीजः सर्वदा स्वीकृताः भविष्यन्ति (यद्यपि भवान् कुकीजं रक्षणं निष्क्रियं "
+"कृतवान् अस्ति)"
+
+#: lib/cookies/cookiemanager.ui:307 lib/cookies/cookiemanager.ui:361
+msgctxt "CookieManager|"
+msgid "Add"
+msgstr "संयोजयति"
+
+#: lib/cookies/cookiemanager.ui:314 lib/cookies/cookiemanager.ui:368
+msgctxt "CookieManager|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/cookies/cookiemanager.ui:326
+msgctxt "CookieManager|"
+msgid "<b>Cookie blacklist</b>"
+msgstr "<b>कुकी कालासूची</b>"
+
+#: lib/cookies/cookiemanager.ui:333
+msgctxt "CookieManager|"
+msgid "Cookies from these servers will NEVER be accepted"
+msgstr "एतेभ्यः सर्वरेभ्यः कुकीजः कदापि न स्वीकृताः भविष्यन्ति"
+
+#: lib/cookies/cookiemanager.ui:385
+msgctxt "CookieManager|"
+msgid "Settings"
+msgstr "सेटिंग्स्"
+
+#: lib/cookies/cookiemanager.ui:407
+msgctxt "CookieManager|"
+msgid "Filter 3rd party cookies"
+msgstr "तृतीयपक्षस्य कुकीजं छानयन्तु"
+
+#: lib/cookies/cookiemanager.ui:414
+msgctxt "CookieManager|"
+msgid "<b>Cookie Settings</b>"
+msgstr "<b>कुकी सेटिंग्स्</b>"
+
+#: lib/cookies/cookiemanager.ui:421
+msgctxt "CookieManager|"
+msgid "Allow storing of cookies"
+msgstr "कुकीजस्य भण्डारणस्य अनुमतिं ददातु"
+
+#: lib/cookies/cookiemanager.ui:428
+msgctxt "CookieManager|"
+msgid "Filter tracking cookies"
+msgstr "अनुसरणं कुकीजं छानयन्तु"
+
+#: lib/cookies/cookiemanager.ui:435
+msgctxt "CookieManager|"
+msgid "Delete cookies on close"
+msgstr "क्लोज् इत्यत्र कुकीजं विलोपयन्तु"
+
+#: lib/downloads/downloaditem.cpp:77
+msgctxt "DownloadItem|"
+msgid "Remaining time unavailable"
+msgstr "अवशिष्टः समयः अनुपलब्धः"
+
+#: lib/downloads/downloaditem.cpp:133
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Done - %1 (%2)"
+msgstr "कृतम् - %1 (%2) ."
+
+#: lib/downloads/downloaditem.cpp:137
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Error - %1"
+msgstr "त्रुटिः - %1"
+
+#: lib/downloads/downloaditem.cpp:141 lib/downloads/downloaditem.cpp:284
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Cancelled - %1"
+msgstr "रद्दं कृतम् - %1"
+
+#: lib/downloads/downloaditem.cpp:192 lib/downloads/downloaditem.cpp:328
+msgctxt "DownloadItem|"
+msgid "Cancelled"
+msgstr "रद्दं कृतम्"
+
+#: lib/downloads/downloaditem.cpp:198
+msgctxt "DownloadItem|"
+msgid "few seconds"
+msgstr "कतिपयसेकेण्ड्"
+
+#: lib/downloads/downloaditem.cpp:203
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n seconds"
+msgid_plural "%n seconds"
+msgstr[0] "%n सेकण्ड्"
+msgstr[1] "%n सेकण्ड्"
+
+#: lib/downloads/downloaditem.cpp:208
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n minutes"
+msgid_plural "%n minutes"
+msgstr[0] "%n निमेषाः"
+msgstr[1] "%n निमेषाः"
+
+#: lib/downloads/downloaditem.cpp:213
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%n hours"
+msgid_plural "%n hours"
+msgstr[0] "%n घण्टा"
+msgstr[1] "%n घण्टा"
+
+#: lib/downloads/downloaditem.cpp:220
+msgctxt "DownloadItem|"
+msgid "Unknown speed"
+msgstr "अज्ञातवेग"
+
+#: lib/downloads/downloaditem.cpp:226
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%1 kB/s"
+msgstr "%1 केबी/सेकंड"
+
+#: lib/downloads/downloaditem.cpp:231
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%1 MB/s"
+msgstr "%1 MB/s"
+
+#: lib/downloads/downloaditem.cpp:235
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%1 GB/s"
+msgstr "%1 GB/s"
+
+#: lib/downloads/downloaditem.cpp:263
+msgctxt "DownloadItem|"
+msgid "Unknown size"
+msgstr "अज्ञात आकार"
+
+#: lib/downloads/downloaditem.cpp:264
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "%2 - unknown size (%3)"
+msgstr "%2 - अज्ञात आकारः (%3) ."
+
+#: lib/downloads/downloaditem.cpp:267
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Remaining %1 - %2 of %3 (%4)"
+msgstr "शेषः %1 - %2 %3 (%4) "
+
+#: lib/downloads/downloaditem.cpp:299
+#, qt-format
+msgctxt "DownloadItem|"
+msgid "Paused - %1"
+msgstr "विरामितः - %1"
+
+#: lib/downloads/downloaditem.cpp:312
+msgctxt "DownloadItem|"
+msgid "Open File"
+msgstr "सञ्चिकां उद्घाटयन्तु"
+
+#: lib/downloads/downloaditem.cpp:314
+msgctxt "DownloadItem|"
+msgid "Open Folder"
+msgstr "Folder उद्घाटयन्तु"
+
+#: lib/downloads/downloaditem.cpp:316
+msgctxt "DownloadItem|"
+msgid "Copy Download Link"
+msgstr "प्रतिलिपि डाउनलोड लिंक"
+
+#: lib/downloads/downloaditem.cpp:318
+msgctxt "DownloadItem|"
+msgid "Cancel downloading"
+msgstr "डाउनलोड् करणं रद्दं कुर्वन्तु"
+
+#: lib/downloads/downloaditem.cpp:321
+msgctxt "DownloadItem|"
+msgid "Resume downloading"
+msgstr "पुनः डाउनलोड् करणं आरभत"
+
+#: lib/downloads/downloaditem.cpp:323
+msgctxt "DownloadItem|"
+msgid "Pause downloading"
+msgstr "डाउनलोड् करणं विरामयतु"
+
+#: lib/downloads/downloaditem.cpp:326
+msgctxt "DownloadItem|"
+msgid "Remove From List"
+msgstr "Remove From List इति"
+
+#: lib/downloads/downloaditem.cpp:328
+msgctxt "DownloadItem|"
+msgid "Error"
+msgstr "त्रुटि"
+
+#: lib/downloads/downloaditem.cpp:354
+msgctxt "DownloadItem|"
+msgid "Not found"
+msgstr "न लभ्यते"
+
+#: lib/downloads/downloaditem.cpp:354
+#, qt-format
+msgctxt "DownloadItem|"
+msgid ""
+"Sorry, the file \n"
+" %1 \n"
+" was not found!"
+msgstr ""
+"क्षम्यतां, सञ्चिका \n"
+" %1 \n"
+" न लब्धवान्!"
+
+#: lib/downloads/downloadmanager.cpp:166 lib/downloads/downloadmanager.cpp:389
+#: lib/downloads/downloadmanager.ui:20
+msgctxt "DownloadManager|"
+msgid "Download Manager"
+msgstr "डाउनलोड प्रबन्धक"
+
+#: lib/downloads/downloadmanager.cpp:200
+#, qt-format
+msgctxt "DownloadManager|"
+msgid "%1% of %2 files (%3) %4 remaining"
+msgstr "%2 सञ्चिकानां %1% (%3) %4 अवशिष्टम्"
+
+#: lib/downloads/downloadmanager.cpp:203
+#, qt-format
+msgctxt "DownloadManager|"
+msgid "%1% - Download Manager"
+msgstr "%1% - डाउनलोड् प्रबन्धकः"
+
+#: lib/downloads/downloadmanager.cpp:269
+msgctxt "DownloadManager|"
+msgid "Save file as..."
+msgstr "सञ्चिकां रक्षन्तु यथा..."
+
+#: lib/downloads/downloadmanager.cpp:279
+msgctxt "DownloadManager|"
+msgid "MIME HTML Archive (*.mhtml)"
+msgstr "MIME HTML संग्रह (*.mhtml)"
+
+#: lib/downloads/downloadmanager.cpp:280
+msgctxt "DownloadManager|"
+msgid "HTML Page, single (*.html)"
+msgstr "एचटीएमएल पृष्ठ, एकल (*.html)"
+
+#: lib/downloads/downloadmanager.cpp:281
+msgctxt "DownloadManager|"
+msgid "HTML Page, complete (*.html)"
+msgstr "HTML पृष्ठम्, सम्पूर्णम् (*.html)"
+
+#: lib/downloads/downloadmanager.cpp:285
+msgctxt "DownloadManager|"
+msgid "Save page as..."
+msgstr "पृष्ठं रक्षन्तु यथा..."
+
+#: lib/downloads/downloadmanager.cpp:382
+msgctxt "DownloadManager|"
+msgid "Osza: Download Finished"
+msgstr "Oszaः - डाउनलोड् समाप्तम्"
+
+#: lib/downloads/downloadmanager.cpp:382
+msgctxt "DownloadManager|"
+msgid "All files have been successfully downloaded."
+msgstr "सर्वाणि सञ्चिकाः सफलतया अवतरणं कृतम् अस्ति ।"
+
+#: lib/downloads/downloadmanager.cpp:426
+msgctxt "DownloadManager|"
+msgid "Warning"
+msgstr "चेतवानी"
+
+#: lib/downloads/downloadmanager.cpp:427
+msgctxt "DownloadManager|"
+msgid ""
+"Are you sure you want to quit? All uncompleted downloads will be cancelled!"
+msgstr "किं त्वं निश्चयेन त्यक्तुम् इच्छसि ? सर्वाणि अपूर्णानि डाउनलोड् रद्दानि भविष्यन्ति!"
+
+#: lib/downloads/downloadmanager.ui:69
+msgctxt "DownloadManager|"
+msgid "Clear"
+msgstr "स्पष्टः"
+
+#: lib/downloads/downloadoptionsdialog.cpp:49
+#, qt-format
+msgctxt "DownloadOptionsDialog|"
+msgid "Opening %1"
+msgstr "%1 उद्घाटयति"
+
+#: lib/downloads/downloadoptionsdialog.cpp:112
+msgctxt "DownloadOptionsDialog|"
+msgid "Download link copied."
+msgstr "डाउनलोड लिङ्क प्रतिलिपिकृत।"
+
+#: lib/downloads/downloadoptionsdialog.ui:25
+msgctxt "DownloadOptionsDialog|"
+msgid "What should Osza do with this file?"
+msgstr "Osza इत्यनेन एतया सञ्चिकायाः किं कर्तव्यम् ?"
+
+#: lib/downloads/downloadoptionsdialog.ui:47
+msgctxt "DownloadOptionsDialog|"
+msgid "Open..."
+msgstr "उद्घाटित..."
+
+#: lib/downloads/downloadoptionsdialog.ui:54
+msgctxt "DownloadOptionsDialog|"
+msgid "Save File"
+msgstr "सञ्चिकां रक्षतु"
+
+#: lib/downloads/downloadoptionsdialog.ui:64
+msgctxt "DownloadOptionsDialog|"
+msgid "Download with External Manager"
+msgstr "बाह्यप्रबन्धकेन सह डाउनलोड् कुर्वन्तु"
+
+#: lib/downloads/downloadoptionsdialog.ui:165
+msgctxt "DownloadOptionsDialog|"
+msgid "which is:"
+msgstr "यत् अस्ति :"
+
+#: lib/downloads/downloadoptionsdialog.ui:215
+msgctxt "DownloadOptionsDialog|"
+msgid "from:"
+msgstr "इत्यस्मात्‌:"
+
+#: lib/downloads/downloadoptionsdialog.ui:241
+msgctxt "DownloadOptionsDialog|"
+msgid "Copy download link"
+msgstr "प्रतिलिपि डाउनलोड लिङ्क्"
+
+#: lib/downloads/downloadoptionsdialog.ui:256
+msgctxt "DownloadOptionsDialog|"
+msgid "You have chosen to open"
+msgstr "भवता उद्घाटनं चितम्"
+
+#: lib/downloads/downloadsbutton.cpp:27 lib/downloads/downloadsbutton.cpp:43
+msgctxt "DownloadsButton|"
+msgid "Downloads"
+msgstr "डाउनलोड्स्"
+
+#: lib/downloads/downloadsbutton.cpp:28
+msgctxt "DownloadsButton|"
+msgid "Open Download Manager"
+msgstr "डाउनलोड् प्रबन्धकं उद्घाटयन्तु"
+
+#: lib/history/history.cpp:83
+msgctxt "History|"
+msgid "Empty Page"
+msgstr "रिक्त पृष्ठ"
+
+#: lib/history/history.cpp:273
+msgctxt "History|"
+msgid "January"
+msgstr "जनवरी"
+
+#: lib/history/history.cpp:275
+msgctxt "History|"
+msgid "February"
+msgstr "फरवरी माह"
+
+#: lib/history/history.cpp:277
+msgctxt "History|"
+msgid "March"
+msgstr "प्रयाण"
+
+#: lib/history/history.cpp:279
+msgctxt "History|"
+msgid "April"
+msgstr "अप्रैल-माह"
+
+#: lib/history/history.cpp:281
+msgctxt "History|"
+msgid "May"
+msgstr "स्यात्‌"
+
+#: lib/history/history.cpp:283
+msgctxt "History|"
+msgid "June"
+msgstr "जूनं माह"
+
+#: lib/history/history.cpp:285
+msgctxt "History|"
+msgid "July"
+msgstr "जुलाईमाह"
+
+#: lib/history/history.cpp:287
+msgctxt "History|"
+msgid "August"
+msgstr "अगस्त माह"
+
+#: lib/history/history.cpp:289
+msgctxt "History|"
+msgid "September"
+msgstr "सितंबरं माह"
+
+#: lib/history/history.cpp:291
+msgctxt "History|"
+msgid "October"
+msgstr "अक्टूबर माह"
+
+#: lib/history/history.cpp:293
+msgctxt "History|"
+msgid "November"
+msgstr "नवंबर: माह"
+
+#: lib/history/history.cpp:295
+msgctxt "History|"
+msgid "December"
+msgstr "दिसंबरं माह"
+
+#: lib/history/historymanager.cpp:78
+msgctxt "HistoryManager|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/history/historymanager.cpp:79
+msgctxt "HistoryManager|"
+msgid "Are you sure you want to delete all history?"
+msgstr "किं भवन्तः निश्चयेन सर्वान् इतिहासान् विलोपयितुम् इच्छन्ति?"
+
+#: lib/history/historymanager.cpp:145
+msgctxt "HistoryManager|"
+msgid "Open in new tab"
+msgstr "नूतन ट्याब् मध्ये उद्घाटयन्तु"
+
+#: lib/history/historymanager.cpp:146
+msgctxt "HistoryManager|"
+msgid "Open in new window"
+msgstr "नूतनविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/history/historymanager.cpp:147
+msgctxt "HistoryManager|"
+msgid "Open in new private window"
+msgstr "नूतने निजविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/history/historymanager.cpp:150
+msgctxt "HistoryManager|"
+msgid "Copy url"
+msgstr "url प्रतिलिपि कुर्वन्तु"
+
+#: lib/history/historymanager.cpp:151
+msgctxt "HistoryManager|"
+msgid "Copy title"
+msgstr "शीर्षकं प्रतिलिपितु"
+
+#: lib/history/historymanager.cpp:154 lib/history/historymanager.ui:20
+msgctxt "HistoryManager|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/history/historymanager.ui:14
+msgctxt "HistoryManager|"
+msgid "History"
+msgstr "इतिहास"
+
+#: lib/history/historymanager.ui:27
+msgctxt "HistoryManager|"
+msgid "Clear All History"
+msgstr "सर्वं इतिहासं स्वच्छं कुर्वन्तु"
+
+#: lib/history/historymenu.cpp:146 lib/history/historymenu.cpp:168
+#: lib/history/historymenu.cpp:197
+msgctxt "HistoryMenu|"
+msgid "Empty"
+msgstr "रिक्तम्‌"
+
+#: lib/history/historymenu.cpp:172
+msgctxt "HistoryMenu|"
+msgid "Restore All Closed Tabs"
+msgstr "सर्वाणि बन्द ट्याब्स् पुनः स्थापयन्तु"
+
+#: lib/history/historymenu.cpp:173 lib/history/historymenu.cpp:201
+msgctxt "HistoryMenu|"
+msgid "Clear list"
+msgstr "सूचीं स्पष्टं कुर्वन्तु"
+
+#: lib/history/historymenu.cpp:200
+msgctxt "HistoryMenu|"
+msgid "Restore All Closed Windows"
+msgstr "सर्वाणि बन्दं विण्डोजं पुनः स्थापयन्तु"
+
+#: lib/history/historymenu.cpp:252
+msgctxt "HistoryMenu|"
+msgid "Hi&story"
+msgstr "इतिहास"
+
+#: lib/history/historymenu.cpp:254
+msgctxt "HistoryMenu|"
+msgid "&Back"
+msgstr "&पृष्ठभागः"
+
+#: lib/history/historymenu.cpp:257
+msgctxt "HistoryMenu|"
+msgid "&Forward"
+msgstr "&अग्रतः"
+
+#: lib/history/historymenu.cpp:260
+msgctxt "HistoryMenu|"
+msgid "&Home"
+msgstr "&गृहम्‌"
+
+#: lib/history/historymenu.cpp:263
+msgctxt "HistoryMenu|"
+msgid "Show &All History"
+msgstr "&All इतिहासं दर्शयतु"
+
+#: lib/history/historymenu.cpp:271
+msgctxt "HistoryMenu|"
+msgid "Most Visited"
+msgstr "सर्वाधिकं भ्रमणं कृतम्"
+
+#: lib/history/historymenu.cpp:275
+msgctxt "HistoryMenu|"
+msgid "Closed Tabs"
+msgstr "बन्द ट्याब्स्"
+
+#: lib/history/historymenu.cpp:278
+msgctxt "HistoryMenu|"
+msgid "Closed Windows"
+msgstr "विण्डोजः बन्दः"
+
+#: lib/history/historymodel.cpp:57
+msgctxt "HistoryModel|"
+msgid "Title"
+msgstr "शीर्षक"
+
+#: lib/history/historymodel.cpp:59
+msgctxt "HistoryModel|"
+msgid "Address"
+msgstr "पत्रसङ्केतः"
+
+#: lib/history/historymodel.cpp:61
+msgctxt "HistoryModel|"
+msgid "Visit Date"
+msgstr "भ्रमण तिथि"
+
+#: lib/history/historymodel.cpp:63
+msgctxt "HistoryModel|"
+msgid "Visit Count"
+msgstr "विजिट काउंट"
+
+#: lib/history/historymodel.cpp:341 lib/history/historymodel.cpp:472
+msgctxt "HistoryModel|"
+msgid "Today"
+msgstr "अद्य"
+
+#: lib/history/historymodel.cpp:477
+msgctxt "HistoryModel|"
+msgid "This Week"
+msgstr "अस्मिन् सप्ताहे"
+
+#: lib/history/historymodel.cpp:482
+msgctxt "HistoryModel|"
+msgid "This Month"
+msgstr "अस्मिन् मासे"
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:158
+msgctxt "LocationCompleterDelegate|"
+msgid "Visit"
+msgstr "उपयाति"
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:165
+#: lib/navigation/completer/locationcompleterdelegate.cpp:172
+#, qt-format
+msgctxt "LocationCompleterDelegate|"
+msgid "Search with %1"
+msgstr "%1 इत्यनेन अन्वेषणं कुर्वन्तु"
+
+#: lib/navigation/completer/locationcompleterdelegate.cpp:206
+msgctxt "LocationCompleterDelegate|"
+msgid "Switch to tab"
+msgstr "ट्याब् प्रति स्विच् कुर्वन्तु"
+
+#: lib/navigation/completer/locationcompleterview.cpp:73
+msgctxt "LocationCompleterView|"
+msgid "Manage Search Engines"
+msgstr "अन्वेषणयन्त्राणां प्रबन्धनं कुर्वन्तु"
+
+#: lib/navigation/completer/locationcompleterview.cpp:78
+msgctxt "LocationCompleterView|"
+msgid "Search with:"
+msgstr "अन्वेषणं कुर्वन्तु:"
+
+#: lib/navigation/locationbar.cpp:96
+msgctxt "LocationBar|"
+msgid "Paste And &Go"
+msgstr "पेस्ट And &Go"
+
+#: lib/navigation/locationbar.cpp:171
+#, qt-format
+msgctxt "LocationBar|"
+msgid "Enter address or search with %1"
+msgstr "पता प्रविशतु अथवा %1 इत्यनेन अन्वेषणं कुर्वन्तु"
+
+#: lib/navigation/locationbar.cpp:173
+msgctxt "LocationBar|"
+msgid "Enter address"
+msgstr "पता प्रविशतु"
+
+#: lib/navigation/navigationbar.cpp:50
+msgctxt "NavigationBar|"
+msgid "Empty Page"
+msgstr "रिक्त पृष्ठ"
+
+#: lib/navigation/navigationbar.cpp:78
+msgctxt "NavigationBar|"
+msgid "Back"
+msgstr "पृष्ठभागः"
+
+#: lib/navigation/navigationbar.cpp:88
+msgctxt "NavigationBar|"
+msgid "Forward"
+msgstr "अग्रतः"
+
+#: lib/navigation/navigationbar.cpp:108
+msgctxt "NavigationBar|"
+msgid "Home"
+msgstr "गृहम्‌"
+
+#: lib/navigation/navigationbar.cpp:116
+msgctxt "NavigationBar|"
+msgid "New Tab"
+msgstr "नवीन ट्याब्"
+
+#: lib/navigation/navigationbar.cpp:136
+msgctxt "NavigationBar|"
+msgid "Tools"
+msgstr "उपकरणाः"
+
+#: lib/navigation/navigationbar.cpp:149
+msgctxt "NavigationBar|"
+msgid "Main Menu"
+msgstr "मुख्य मेनू"
+
+#: lib/navigation/navigationbar.cpp:166
+msgctxt "NavigationBar|"
+msgid "Exit Fullscreen"
+msgstr "Fullscreen इत्यस्मात् निर्गच्छन्तु"
+
+#: lib/navigation/navigationbar.cpp:192
+msgctxt "NavigationBar|"
+msgid "Back and Forward buttons"
+msgstr "Back and Forward इति बटन्"
+
+#: lib/navigation/navigationbar.cpp:193
+msgctxt "NavigationBar|"
+msgid "Reload button"
+msgstr "पुनः लोड बटन"
+
+#: lib/navigation/navigationbar.cpp:194
+msgctxt "NavigationBar|"
+msgid "Home button"
+msgstr "गृह बटन"
+
+#: lib/navigation/navigationbar.cpp:195
+msgctxt "NavigationBar|"
+msgid "Add tab button"
+msgstr "ट्याब् बटनं योजयतु"
+
+#: lib/navigation/navigationbar.cpp:196
+msgctxt "NavigationBar|"
+msgid "Address and Search bar"
+msgstr "पता तथा अन्वेषणपट्टिका"
+
+#: lib/navigation/navigationbar.cpp:197
+msgctxt "NavigationBar|"
+msgid "Tools button"
+msgstr "साधनानि बटनम्"
+
+#: lib/navigation/navigationbar.cpp:198
+msgctxt "NavigationBar|"
+msgid "Exit Fullscreen button"
+msgstr "Fullscreen बटनतः निर्गच्छन्तु"
+
+#: lib/navigation/navigationbar.cpp:399 lib/navigation/navigationbar.cpp:438
+msgctxt "NavigationBar|"
+msgid "Clear history"
+msgstr "इतिहासं स्पष्टं कुरुत"
+
+#: lib/navigation/navigationbar.cpp:447
+msgctxt "NavigationBar|"
+msgid "Toolbars"
+msgstr "साधनपट्टिकाः"
+
+#: lib/navigation/navigationbar.cpp:448
+msgctxt "NavigationBar|"
+msgid "Sidebar"
+msgstr "पार्श्वपट्टिका"
+
+#: lib/navigation/navigationbar.cpp:463 lib/navigation/navigationbar.cpp:477
+msgctxt "NavigationBar|"
+msgid "Configure Toolbar"
+msgstr "टूलबार विन्यस्तं कुर्वन्तु"
+
+#: lib/navigation/navigationbarconfigdialog.ui:14
+msgctxt "NavigationBarConfigDialog|"
+msgid "Configure Toolbar"
+msgstr "टूलबार विन्यस्तं कुर्वन्तु"
+
+#: lib/navigation/navigationbarconfigdialog.ui:62
+msgctxt "NavigationBarConfigDialog|"
+msgid "Show search bar"
+msgstr "अन्वेषणपट्टिकां दर्शयतु"
+
+#: lib/navigation/navigationbarconfigdialog.ui:82
+msgctxt "NavigationBarConfigDialog|"
+msgid "Available items:"
+msgstr "उपलब्धानि वस्तूनि :"
+
+#: lib/navigation/navigationbarconfigdialog.ui:89
+msgctxt "NavigationBarConfigDialog|"
+msgid "Current items:"
+msgstr "वर्तमान वस्तूनि :"
+
+#: lib/navigation/reloadstopbutton.cpp:57
+msgctxt "ReloadStopButton|"
+msgid "Stop"
+msgstr "विरमतु"
+
+#: lib/navigation/reloadstopbutton.cpp:61
+msgctxt "ReloadStopButton|"
+msgid "Reload"
+msgstr "पुनः लोड करें"
+
+#: lib/navigation/siteicon.cpp:40
+msgctxt "LocationBar|"
+msgid "Show information about this page"
+msgstr "अस्य पृष्ठस्य विषये सूचनां दर्शयतु"
+
+#: lib/navigation/websearchbar.cpp:97
+msgctxt "WebSearchBar|"
+msgid "Paste And &Search"
+msgstr "पेस्ट करें एवं &सर्च करें"
+
+#: lib/navigation/websearchbar.cpp:127
+#, qt-format
+msgctxt "WebSearchBar|"
+msgid "Add %1 ..."
+msgstr "%1 योजयन्तु ..."
+
+#: lib/navigation/websearchbar.cpp:131
+msgctxt "WebSearchBar|"
+msgid "Manage Search Engines"
+msgstr "अन्वेषणयन्त्राणां प्रबन्धनं कुर्वन्तु"
+
+#: lib/navigation/websearchbar.cpp:261
+msgctxt "WebSearchBar|"
+msgid "Show suggestions"
+msgstr "सुझावः दर्शयतु"
+
+#: lib/navigation/websearchbar.cpp:266
+msgctxt "WebSearchBar|"
+msgid "Search when engine changed"
+msgstr "यदा इञ्जिनं परिवर्तितं तदा अन्वेषणं कुर्वन्तु"
+
+#: lib/navigation/zoomlabel.cpp:36
+msgctxt "ZoomLabel|"
+msgid "Reset zoom level"
+msgstr "जूम स्तरं पुनः सेट् कुर्वन्तु"
+
+#: lib/navigation/zoomlabel.cpp:61
+#, qt-format
+msgctxt "ZoomLabel|"
+msgid "%1%"
+msgstr "%1%"
+
+#: lib/network/networkmanager.cpp:91
+msgctxt "NetworkManager|"
+msgid "SSL Certificate Error!"
+msgstr "SSL प्रमाणपत्रदोषः!"
+
+#: lib/network/networkmanager.cpp:92
+#, fuzzy, qt-format
+#| msgctxt "NetworkManager|"
+#| msgid ""
+#| "The page you are trying to access has the following errors in the SSL "
+#| "certificate:"
+msgctxt "NetworkManager|"
+msgid ""
+"The page <strong>%1</strong> you are trying to access has the following "
+"errors in the SSL certificate:"
+msgstr "यस्मिन् पृष्ठे भवान् अभिगन्तुं प्रयतते तस्मिन् SSL प्रमाणपत्रे निम्नलिखितदोषाः सन्ति ।"
+
+#: lib/network/networkmanager.cpp:93
+msgctxt "NetworkManager|"
+msgid "Would you like to make an exception for this certificate?"
+msgstr "अस्य प्रमाणपत्रस्य अपवादं कर्तुम् इच्छति वा?"
+
+#: lib/network/networkmanager.cpp:125
+msgctxt "NetworkManager|"
+msgid "Authorization required"
+msgstr "प्राधिकरण आवश्यक"
+
+#: lib/network/networkmanager.cpp:132 lib/network/networkmanager.cpp:218
+msgctxt "NetworkManager|"
+msgid "Username: "
+msgstr "उपयोक्तृनाम : "
+
+#: lib/network/networkmanager.cpp:133 lib/network/networkmanager.cpp:219
+msgctxt "NetworkManager|"
+msgid "Password: "
+msgstr "समाभाष्: "
+
+#: lib/network/networkmanager.cpp:139
+msgctxt "NetworkManager|"
+msgid "Save username and password for this site"
+msgstr "अस्य साइट् कृते उपयोक्तृनाम गुप्तशब्दं च रक्षन्तु"
+
+#: lib/network/networkmanager.cpp:147
+#, qt-format
+msgctxt "NetworkManager|"
+msgid ""
+"A username and password are being requested by %1. The site says: \"%2\""
+msgstr "%1 द्वारा उपयोक्तृनाम गुप्तशब्दश्च प्रार्थ्यते । साइट् वदति: \"%2\" इति ।"
+
+#: lib/network/networkmanager.cpp:211
+msgctxt "NetworkManager|"
+msgid "Proxy authorization required"
+msgstr "प्रॉक्सी प्राधिकरणम् आवश्यकम्"
+
+#: lib/network/networkmanager.cpp:231
+#, qt-format
+msgctxt "NetworkManager|"
+msgid "A username and password are being requested by proxy %1. "
+msgstr "उपयोक्तृनाम गुप्तशब्दं च प्रॉक्सी %1 द्वारा अनुरोधितं भवति । "
+
+#: lib/network/networkmanager.cpp:345
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate did not match the built-in public keys pinned for the host "
+"name."
+msgstr ""
+"प्रमाणपत्रं होस्ट्-नामस्य कृते पिन-कृतैः अन्तःनिर्मित-सार्वजनिक-कुंजीभिः सह न मेलति स्म ।"
+
+#: lib/network/networkmanager.cpp:347
+msgctxt "NetworkManager|"
+msgid "The certificate's common name did not match the host name."
+msgstr "प्रमाणपत्रस्य सामान्यनाम होस्ट्-नाम्ना सह न मेलति स्म ।"
+
+#: lib/network/networkmanager.cpp:349
+msgctxt "NetworkManager|"
+msgid "The certificate is not valid at the current date and time."
+msgstr "प्रमाणपत्रं वर्तमानतिथिसमये वैधं नास्ति ।"
+
+#: lib/network/networkmanager.cpp:351
+msgctxt "NetworkManager|"
+msgid "The certificate is not signed by a trusted authority."
+msgstr "प्रमाणपत्रे विश्वसनीयेन प्राधिकारिणा हस्ताक्षरं न भवति।"
+
+#: lib/network/networkmanager.cpp:353
+msgctxt "NetworkManager|"
+msgid "The certificate contains errors."
+msgstr "प्रमाणपत्रे त्रुटयः सन्ति ।"
+
+#: lib/network/networkmanager.cpp:355
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate has no mechanism for determining if it has been revoked."
+msgstr "प्रमाणपत्रे निरस्तं कृतम् अस्ति वा इति निर्धारयितुं तन्त्रं नास्ति ।"
+
+#: lib/network/networkmanager.cpp:357
+msgctxt "NetworkManager|"
+msgid "Revocation information for the certificate is not available."
+msgstr "प्रमाणपत्रस्य निरसनसूचना उपलब्धा नास्ति।"
+
+#: lib/network/networkmanager.cpp:359
+msgctxt "NetworkManager|"
+msgid "The certificate has been revoked."
+msgstr "प्रमाणपत्रं निरस्तं कृतम् अस्ति।"
+
+#: lib/network/networkmanager.cpp:361
+msgctxt "NetworkManager|"
+msgid "The certificate is invalid."
+msgstr "प्रमाणपत्रम् अमान्यम् अस्ति।"
+
+#: lib/network/networkmanager.cpp:363
+msgctxt "NetworkManager|"
+msgid "The certificate is signed using a weak signature algorithm."
+msgstr "प्रमाणपत्रं दुर्बलहस्ताक्षर-अल्गोरिदम् इत्यस्य उपयोगेन हस्ताक्षरितम् अस्ति ।"
+
+#: lib/network/networkmanager.cpp:365
+msgctxt "NetworkManager|"
+msgid "The host name specified in the certificate is not unique."
+msgstr "प्रमाणपत्रे निर्दिष्टं होस्ट्-नाम अद्वितीयं नास्ति ।"
+
+#: lib/network/networkmanager.cpp:367
+msgctxt "NetworkManager|"
+msgid "The certificate contains a weak key."
+msgstr "प्रमाणपत्रे दुर्बलं कुञ्जी अस्ति ।"
+
+#: lib/network/networkmanager.cpp:369
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate claimed DNS names that are in violation of name constraints."
+msgstr "प्रमाणपत्रेण नामप्रतिबन्धानां उल्लङ्घनेन DNS-नामानि दावितम् ।"
+
+#: lib/network/networkmanager.cpp:371
+msgctxt "NetworkManager|"
+msgid "The certificate has a validity period that is too long."
+msgstr "प्रमाणपत्रस्य वैधताकालः अतीव दीर्घः भवति ।"
+
+#: lib/network/networkmanager.cpp:373
+msgctxt "NetworkManager|"
+msgid ""
+"Certificate Transparency was required for this connection, but the server "
+"did not provide CT information that complied with the policy."
+msgstr ""
+"अस्य संयोजनस्य कृते प्रमाणपत्रपारदर्शिता आवश्यकी आसीत्, परन्तु सर्वरेण नीतेः अनुपालनं कृत्वा CT "
+"सूचना न दत्ता ।"
+
+#: lib/network/networkmanager.cpp:375
+msgctxt "NetworkManager|"
+msgid ""
+"The certificate is known to be used for interception by an entity other the "
+"device owner."
+msgstr "प्रमाणपत्रं यन्त्रस्वामिना अन्येन सत्तायाः अवरोधाय उपयुज्यते इति ज्ञायते ।"
+
+#: lib/network/networkmanager.cpp:377
+msgctxt "NetworkManager|"
+msgid "The connection uses an obsolete version of SSL/TLS"
+msgstr "संयोजनं SSL/TLS इत्यस्य अप्रचलितसंस्करणस्य उपयोगं करोति"
+
+#: lib/network/networkmanager.cpp:379
+msgctxt "NetworkManager|"
+msgid "The certificate is a legacy Symantec one that's no longer valid."
+msgstr "प्रमाणपत्रं विरासतां Symantec अस्ति यत् अधुना वैधं नास्ति।"
+
+#: lib/network/networkmanager.cpp:382
+msgctxt "NetworkManager|"
+msgid "Unknown error"
+msgstr "अज्ञातदोषः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:163
+msgctxt "OszaSchemeReply|"
+msgid "Start Page"
+msgstr "पृष्ठ प्रारंभ"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:164
+msgctxt "OszaSchemeReply|"
+msgid "Search on Web"
+msgstr "जालपुटे अन्वेषणं कुर्वन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:165
+msgctxt "OszaSchemeReply|"
+msgid "Search results provided by DuckDuckGo"
+msgstr "DuckDuckGo द्वारा प्रदत्तं अन्वेषणपरिणामम्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:167
+#: lib/network/schemehandlers/oszaschemehandler.cpp:184
+#: lib/network/schemehandlers/oszaschemehandler.cpp:185
+msgctxt "OszaSchemeReply|"
+msgid "About Osza"
+msgstr "बाजस्य विषये"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:168
+msgctxt "OszaSchemeReply|"
+msgid "<h1>Private Browsing</h1>"
+msgstr "<h1>निजी ब्राउजिंग</h1>"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:186
+#: lib/network/schemehandlers/oszaschemehandler.cpp:303
+msgctxt "OszaSchemeReply|"
+msgid "Information about version"
+msgstr "संस्करणस्य विषये सूचना"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:187
+msgctxt "OszaSchemeReply|"
+msgid "Copyright"
+msgstr "प्रतिलिपि अधिकार"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:190
+#: lib/network/schemehandlers/oszaschemehandler.cpp:313
+msgctxt "OszaSchemeReply|"
+msgid "Version"
+msgstr "संस्करण"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:197
+msgctxt "OszaSchemeReply|"
+msgid "Main developer"
+msgstr "मुख्य विकासक"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:224
+msgctxt "OszaSchemeReply|"
+msgid "Speed Dial"
+msgstr "स्पीड डायल"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:225
+msgctxt "OszaSchemeReply|"
+msgid "Add New Page"
+msgstr "नूतनं पृष्ठं योजयतु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:226
+msgctxt "OszaSchemeReply|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:227
+msgctxt "OszaSchemeReply|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:228
+msgctxt "OszaSchemeReply|"
+msgid "Reload"
+msgstr "पुनः लोड करें"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:229
+msgctxt "OszaSchemeReply|"
+msgid "Are you sure you want to remove this speed dial?"
+msgstr "किं भवन्तः निश्चयेन एतत् स्पीडडायलं हर्तुं इच्छन्ति?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:230
+msgctxt "OszaSchemeReply|"
+msgid "Are you sure you want to reload all speed dials?"
+msgstr "किं भवान् निश्चिन्तः अस्ति यत् भवान् सर्वाणि स्पीड् डायल्स् पुनः लोड् कर्तुम् इच्छति?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:231
+msgctxt "OszaSchemeReply|"
+msgid "Load title from page"
+msgstr "पृष्ठतः शीर्षकं लोड् कुर्वन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:232
+msgctxt "OszaSchemeReply|"
+msgid "SpeedDial requires enabled JavaScript."
+msgstr "SpeedDial इत्यस्य कृते सक्षमं जावास्क्रिप्ट् आवश्यकम् ।"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:233
+msgctxt "OszaSchemeReply|"
+msgid "Url"
+msgstr "उर्ल्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:234
+msgctxt "OszaSchemeReply|"
+msgid "Title"
+msgstr "शीर्षक"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:235
+msgctxt "OszaSchemeReply|"
+msgid "Apply"
+msgstr "आचरतु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:236
+msgctxt "OszaSchemeReply|"
+msgid "Cancel"
+msgstr "निरसयतु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:237
+msgctxt "OszaSchemeReply|"
+msgid "New Page"
+msgstr "New Page"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:238
+msgctxt "OszaSchemeReply|"
+msgid "Speed Dial settings"
+msgstr "स्पीड डायल सेटिंग्स्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:239
+msgctxt "OszaSchemeReply|"
+msgid "Placement: "
+msgstr "स्थापनम् : "
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:240
+msgctxt "OszaSchemeReply|"
+msgid "Auto"
+msgstr "ऑटो"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:241
+msgctxt "OszaSchemeReply|"
+msgid "Cover"
+msgstr "आवरणं"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:242
+msgctxt "OszaSchemeReply|"
+msgid "Fit"
+msgstr "योग्यः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:243
+msgctxt "OszaSchemeReply|"
+msgid "Fit Width"
+msgstr "फिट चौड़ाई"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:244
+msgctxt "OszaSchemeReply|"
+msgid "Fit Height"
+msgstr "फिट हाइट"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:245
+msgctxt "OszaSchemeReply|"
+msgid "Use custom wallpaper"
+msgstr "कस्टम वॉलपेपरस्य उपयोगं कुर्वन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:246
+msgctxt "OszaSchemeReply|"
+msgid "Click to select image"
+msgstr "चित्रं चिन्वन्तु इति क्लिक् कुर्वन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:247
+msgctxt "OszaSchemeReply|"
+msgid "Maximum pages in a row:"
+msgstr "पङ्क्तौ अधिकतमानि पृष्ठानि :"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:248
+msgctxt "OszaSchemeReply|"
+msgid "Change size of pages:"
+msgstr "पृष्ठानां आकारं परिवर्तयन्तु :"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:249
+msgctxt "OszaSchemeReply|"
+msgid "Center speed dials"
+msgstr "केन्द्र गति डायल"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:250
+msgctxt "OszaSchemeReply|"
+msgid "Lock the position of SpeedDial entries."
+msgstr "SpeedDial प्रविष्टीनां स्थानं ताडयन्तु ।"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:276
+msgctxt "OszaSchemeReply|"
+msgid "Restore Session"
+msgstr "सत्रं पुनर्स्थापयन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:277
+msgctxt "OszaSchemeReply|"
+msgid "Oops, Osza crashed."
+msgstr "उफ्, Oszaः दुर्घटनाग्रस्तः अभवत्।"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:278
+msgctxt "OszaSchemeReply|"
+msgid "We apologize for this. Would you like to restore the last saved state?"
+msgstr "अस्य कृते वयं क्षमायाचनां कुर्मः। अन्तिमं रक्षितां अवस्थां पुनः स्थापयितुम् इच्छति वा?"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:279
+msgctxt "OszaSchemeReply|"
+msgid "Try removing one or more tabs that you think cause troubles"
+msgstr "एकं वा अधिकं वा ट्याब् अपसारयितुं प्रयतस्व यत् भवन्तः मन्यन्ते यत् ते कष्टं जनयन्ति"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:280
+msgctxt "OszaSchemeReply|"
+msgid "Or you can start completely new session"
+msgstr "अथवा भवन्तः सम्पूर्णतया नूतनं सत्रं आरभुं शक्नुवन्ति"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:281
+msgctxt "OszaSchemeReply|"
+msgid "Window"
+msgstr "कोष्ठ"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:282
+msgctxt "OszaSchemeReply|"
+msgid "Windows and Tabs"
+msgstr "विण्डोज तथा ट्याब्स्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:283
+msgctxt "OszaSchemeReply|"
+msgid "Start New Session"
+msgstr "नूतनं सत्रं आरभत"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:284
+msgctxt "OszaSchemeReply|"
+msgid "Restore"
+msgstr "निर्यत्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:285
+msgctxt "OszaSchemeReply|"
+msgid "Requires enabled JavaScript."
+msgstr "सक्षमं जावास्क्रिप्ट् आवश्यकम् ।"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:301
+#: lib/network/schemehandlers/oszaschemehandler.cpp:302
+msgctxt "OszaSchemeReply|"
+msgid "Configuration Information"
+msgstr "विन्यास सूचना"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:304
+msgctxt "OszaSchemeReply|"
+msgid ""
+"This page contains information about Osza's current configuration - "
+"relevant for troubleshooting. Please include this information when "
+"submitting bug reports."
+msgstr ""
+"अस्मिन् पृष्ठे Osza इत्यस्य वर्तमानविन्यासस्य विषये सूचनाः सन्ति - समस्यानिवारणाय "
+"प्रासंगिकाः । कृपया दोषप्रतिवेदनानि प्रस्तूयन्ते सति एतां सूचनां समावेशयन्तु ।"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:305
+msgctxt "OszaSchemeReply|"
+msgid "Browser Identification"
+msgstr "ब्राउज़र पहिचान"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:306
+msgctxt "OszaSchemeReply|"
+msgid "Paths"
+msgstr "पथाः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:307
+msgctxt "OszaSchemeReply|"
+msgid "Build Configuration"
+msgstr "विन्यासस्य निर्माणं कुर्वन्तु"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:308
+msgctxt "OszaSchemeReply|"
+msgid "Preferences"
+msgstr "प्राधान्यानि"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:309
+msgctxt "OszaSchemeReply|"
+msgid "Option"
+msgstr "विकल्प"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:310
+msgctxt "OszaSchemeReply|"
+msgid "Value"
+msgstr "मूल्यम्‌"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:311
+#: lib/network/schemehandlers/oszaschemehandler.cpp:347
+msgctxt "OszaSchemeReply|"
+msgid "Extensions"
+msgstr "विस्तारः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:312
+msgctxt "OszaSchemeReply|"
+msgid "Name"
+msgstr "नामः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:314
+msgctxt "OszaSchemeReply|"
+msgid "Author"
+msgstr "लेखकः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:315
+msgctxt "OszaSchemeReply|"
+msgid "Description"
+msgstr "वर्णनम्‌"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:330
+msgctxt "OszaSchemeReply|"
+msgid "Application version"
+msgstr "अनुप्रयोगसंस्करणम्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:337
+msgctxt "OszaSchemeReply|"
+msgid "Qt version"
+msgstr "Qt संस्करणम्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:338
+msgctxt "OszaSchemeReply|"
+msgid "QtWebEngine version"
+msgstr "QtWebEngine संस्करण"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:339
+msgctxt "OszaSchemeReply|"
+msgid "Platform"
+msgstr "तमङ्गः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:342
+msgctxt "OszaSchemeReply|"
+msgid "Profile"
+msgstr "रूपरेखा"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:343
+msgctxt "OszaSchemeReply|"
+msgid "Settings"
+msgstr "सेटिंग्स्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:344
+msgctxt "OszaSchemeReply|"
+msgid "Saved session"
+msgstr "रक्षित सत्र"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:345
+msgctxt "OszaSchemeReply|"
+msgid "Data"
+msgstr "दत्तांश"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:346
+msgctxt "OszaSchemeReply|"
+msgid "Themes"
+msgstr "विषयाः"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:350
+#: lib/network/schemehandlers/oszaschemehandler.cpp:357
+#: lib/network/schemehandlers/oszaschemehandler.cpp:363
+msgctxt "OszaSchemeReply|"
+msgid "<b>Enabled</b>"
+msgstr "<b>सक्षमम्</b>"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:352
+#: lib/network/schemehandlers/oszaschemehandler.cpp:359
+#: lib/network/schemehandlers/oszaschemehandler.cpp:363
+msgctxt "OszaSchemeReply|"
+msgid "Disabled"
+msgstr "अक्षमित"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:366
+msgctxt "OszaSchemeReply|"
+msgid "Debug build"
+msgstr "बिल्ड् डिबग्"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:368
+msgctxt "OszaSchemeReply|"
+msgid "Windows 7 API"
+msgstr "विण्डोज 7 एपिआइ"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:370
+msgctxt "OszaSchemeReply|"
+msgid "Portable build"
+msgstr "पोर्टेबल बिल्ड"
+
+#: lib/network/schemehandlers/oszaschemehandler.cpp:388
+msgctxt "OszaSchemeReply|"
+msgid "No available extensions."
+msgstr "विस्ताराः उपलब्धाः नास्ति।"
+
+#: lib/network/sslerrordialog.cpp:32
+msgctxt "SslErrorDialog|"
+msgid "Only for this session"
+msgstr "केवलम् अस्य सत्रस्य कृते"
+
+#: lib/network/sslerrordialog.ui:14
+msgctxt "SslErrorDialog|"
+msgid "SSL Certificate Error!"
+msgstr "SSL प्रमाणपत्रदोषः!"
+
+#: lib/network/sslerrordialog.ui:90
+#, fuzzy
+#| msgctxt "NetworkManager|"
+#| msgid "The certificate contains errors."
+msgctxt "SslErrorDialog|"
+msgid "Toggle Certificate Details"
+msgstr "प्रमाणपत्रे त्रुटयः सन्ति ।"
+
+#: lib/notifications/desktopnotificationsfactory.cpp:124
+msgctxt "DesktopNotificationsFactory|"
+msgid "Preview"
+msgstr "पूर्वावलोकन"
+
+#: lib/notifications/desktopnotificationsfactory.cpp:124
+msgctxt "QObject|"
+msgid "Native System Notification"
+msgstr "देशी प्रणाली अधिसूचना"
+
+#: lib/opensearch/editsearchengine.ui:20
+msgctxt "EditSearchEngine|"
+msgid "Name:"
+msgstr "नामः:"
+
+#: lib/opensearch/editsearchengine.ui:30
+msgctxt "EditSearchEngine|"
+msgid "URL:"
+msgstr ""
+
+#: lib/opensearch/editsearchengine.ui:44
+msgctxt "EditSearchEngine|"
+msgid "Post Data:"
+msgstr "पददत्तांशः :"
+
+#: lib/opensearch/editsearchengine.ui:54
+#, fuzzy
+#| msgctxt "WebSearchBar|"
+#| msgid "Show suggestions"
+msgctxt "EditSearchEngine|"
+msgid "Suggestions URL:"
+msgstr "सुझावः दर्शयतु"
+
+#: lib/opensearch/editsearchengine.ui:64
+msgctxt "EditSearchEngine|"
+msgid "Shortcut:"
+msgstr "लघुमार्गः :"
+
+#: lib/opensearch/editsearchengine.ui:74
+msgctxt "EditSearchEngine|"
+msgid "Icon:"
+msgstr "चिह्नम् :"
+
+#: lib/opensearch/editsearchengine.ui:103
+msgctxt "EditSearchEngine|"
+msgid "Change..."
+msgstr "परिवर्तय..."
+
+#: lib/opensearch/editsearchengine.ui:126
+#, fuzzy
+#| msgctxt "EditSearchEngine|"
+#| msgid "<b>Note: </b>%s in url or post data represent searched string"
+msgctxt "EditSearchEngine|"
+msgid "<b>Note: </b>%s in URLs and post data represent searched string"
+msgstr "<b>नोट्:</b> url अथवा post data मध्ये %s अन्वेषितं स्ट्रिंग् प्रतिनिधियति"
+
+#: lib/opensearch/opensearchreader.cpp:105
+msgctxt "QObject|"
+msgid "The file is not an OpenSearch 1.1 file."
+msgstr "सञ्चिका OpenSearch 1.1 सञ्चिका नास्ति ।"
+
+#: lib/opensearch/searchenginesdialog.cpp:52
+#: lib/opensearch/searchenginesmanager.cpp:314
+msgctxt "SearchEnginesDialog|"
+msgid "Add Search Engine"
+msgstr "अन्वेषणयन्त्रं योजयतु"
+
+#: lib/opensearch/searchenginesdialog.cpp:90
+msgctxt "SearchEnginesDialog|"
+msgid "Remove Engine"
+msgstr "इञ्जिनं निष्कासयन्तु"
+
+#: lib/opensearch/searchenginesdialog.cpp:91
+#, qt-format
+msgctxt "SearchEnginesDialog|"
+msgid ""
+"You can't remove the default search engine.<br>Set a different engine as "
+"default before removing %1."
+msgstr ""
+"पूर्वनिर्धारितं अन्वेषणयन्त्रं हर्तुं न शक्नुथ ।<br> %1 निष्कासनात् पूर्वं पूर्वनिर्धारितरूपेण भिन्नं "
+"इञ्जिनं सेट् कुर्वन्तु ।"
+
+#: lib/opensearch/searchenginesdialog.cpp:108
+msgctxt "SearchEnginesDialog|"
+msgid "Edit Search Engine"
+msgstr "सर्च इञ्जिन सम्पादयतु"
+
+#: lib/opensearch/searchenginesdialog.ui:14
+msgctxt "SearchEnginesDialog|"
+msgid "Manage Search Engines"
+msgstr "अन्वेषणयन्त्राणां प्रबन्धनं कुर्वन्तु"
+
+#: lib/opensearch/searchenginesdialog.ui:22
+msgctxt "SearchEnginesDialog|"
+msgid "Add..."
+msgstr "संयोजयति..."
+
+#: lib/opensearch/searchenginesdialog.ui:29
+msgctxt "SearchEnginesDialog|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/opensearch/searchenginesdialog.ui:36
+msgctxt "SearchEnginesDialog|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/opensearch/searchenginesdialog.ui:56
+msgctxt "SearchEnginesDialog|"
+msgid "Set as default"
+msgstr "पूर्वनिर्धारितरूपेण सेट् कुर्वन्तु"
+
+#: lib/opensearch/searchenginesdialog.ui:63
+msgctxt "SearchEnginesDialog|"
+msgid "Up"
+msgstr "उपरि"
+
+#: lib/opensearch/searchenginesdialog.ui:70
+msgctxt "SearchEnginesDialog|"
+msgid "Down"
+msgstr "अधः"
+
+#: lib/opensearch/searchenginesdialog.ui:89
+msgctxt "SearchEnginesDialog|"
+msgid "Search Engine"
+msgstr "अन्वेषणयन्त्रम्"
+
+#: lib/opensearch/searchenginesdialog.ui:94
+msgctxt "SearchEnginesDialog|"
+msgid "Shortcut"
+msgstr "शॉर्टकट"
+
+#: lib/opensearch/searchenginesdialog.ui:104
+msgctxt "SearchEnginesDialog|"
+msgid "Defaults"
+msgstr "पूर्वनिर्धारितम्"
+
+#: lib/opensearch/searchenginesmanager.cpp:401
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine Added"
+msgstr "अन्वेषणयन्त्रं योजितम्"
+
+#: lib/opensearch/searchenginesmanager.cpp:401
+#, qt-format
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine \"%1\" has been successfully added."
+msgstr "अन्वेषणयन्त्रं \"%1\" सफलतया योजितम् अस्ति ।"
+
+#: lib/opensearch/searchenginesmanager.cpp:408
+msgctxt "SearchEnginesManager|"
+msgid "Search Engine is not valid!"
+msgstr "Search Engine वैधं नास्ति!"
+
+#: lib/opensearch/searchenginesmanager.cpp:409
+msgctxt "SearchEnginesManager|"
+msgid "Error"
+msgstr "त्रुटि"
+
+#: lib/opensearch/searchenginesmanager.cpp:409
+#, qt-format
+msgctxt "SearchEnginesManager|"
+msgid "Error while adding Search Engine <br><b>Error Message: </b> %1"
+msgstr "Search Engine योजयन् त्रुटिः<br> <b>त्रुटिसन्देशः</b> %1"
+
+#: lib/other/aboutdialog.cpp:52
+#, qt-format
+msgctxt "AboutDialog|"
+msgid "<p><b>Application version %1</b><br/>"
+msgstr "<p><b>अनुप्रयोगसंस्करणं %1</b><br/>"
+
+#: lib/other/aboutdialog.cpp:59
+#, qt-format
+msgctxt "AboutDialog|"
+msgid "<b>QtWebEngine version %1</b></p>"
+msgstr "<b>QtWebEngine संस्करण %1</b></p>"
+
+#: lib/other/aboutdialog.ui:14
+msgctxt "AboutDialog|"
+msgid "About Osza"
+msgstr "बाजस्य विषये"
+
+#: lib/other/browsinglibrary.cpp:55
+msgctxt "BrowsingLibrary|"
+msgid "History"
+msgstr "इतिहास"
+
+#: lib/other/browsinglibrary.cpp:56
+msgctxt "BrowsingLibrary|"
+msgid "Bookmarks"
+msgstr "बुकमार्क्स"
+
+#: lib/other/browsinglibrary.cpp:61
+msgctxt "BrowsingLibrary|"
+msgid "Import Bookmarks..."
+msgstr "आयात बुकमार्क..."
+
+#: lib/other/browsinglibrary.cpp:62
+msgctxt "BrowsingLibrary|"
+msgid "Export Bookmarks..."
+msgstr "निर्यात बुकमार्क..."
+
+#: lib/other/browsinglibrary.ui:14
+msgctxt "BrowsingLibrary|"
+msgid "Library"
+msgstr "पुस्तकालय"
+
+#: lib/other/browsinglibrary.ui:64
+msgctxt "BrowsingLibrary|"
+msgid "Import and Export"
+msgstr "आयातः निर्यातश्च"
+
+#: lib/other/browsinglibrary.ui:84
+msgctxt "BrowsingLibrary|"
+msgid "Search..."
+msgstr "अन्वेषण..."
+
+#: lib/other/clearprivatedata.cpp:155
+msgctxt "ClearPrivateData|"
+msgid "Done"
+msgstr "कृतम्‌"
+
+#: lib/other/clearprivatedata.cpp:173
+msgctxt "ClearPrivateData|"
+msgid "Database Optimized"
+msgstr "डाटाबेस अनुकूलित"
+
+#: lib/other/clearprivatedata.cpp:173
+#, qt-format
+msgctxt "ClearPrivateData|"
+msgid ""
+"Database successfully optimized.<br/><br/><b>Database Size Before: </b>%1<br/"
+"><b>Database Size After: </b>%2"
+msgstr ""
+"दत्तांशकोशः सफलतया अनुकूलितः।<br/><br/> <b>दत्तांशकोशस्य आकारः पूर्वं:</b> %1<br/> "
+"<b>दत्तांशकोशस्य आकारः पश्चात्:</b> %2"
+
+#: lib/other/clearprivatedata.ui:14
+msgctxt "ClearPrivateData|"
+msgid "Clear Recent History"
+msgstr "अद्यतनः इतिहासः स्पष्टः भवतु"
+
+#: lib/other/clearprivatedata.ui:20
+msgctxt "ClearPrivateData|"
+msgid "<b>Clear Recent History</b>"
+msgstr "<b>अद्यतनः इतिहासः स्पष्टः भवतु</b>"
+
+#: lib/other/clearprivatedata.ui:27
+msgctxt "ClearPrivateData|"
+msgid "Edit cookies"
+msgstr "कुकीज सम्पादयतु"
+
+#: lib/other/clearprivatedata.ui:38
+msgctxt "ClearPrivateData|"
+msgid "Earlier Today"
+msgstr "पूर्वं अद्य"
+
+#: lib/other/clearprivatedata.ui:43
+msgctxt "ClearPrivateData|"
+msgid "Week"
+msgstr "सप्ताहः"
+
+#: lib/other/clearprivatedata.ui:48
+msgctxt "ClearPrivateData|"
+msgid "Month"
+msgstr "माह"
+
+#: lib/other/clearprivatedata.ui:53
+msgctxt "ClearPrivateData|"
+msgid "All"
+msgstr "सर्वे"
+
+#: lib/other/clearprivatedata.ui:61
+msgctxt "ClearPrivateData|"
+msgid "Visited pages history from:"
+msgstr "भ्रमणं कृतवन्तः पृष्ठानां इतिहासः तः:"
+
+#: lib/other/clearprivatedata.ui:71
+msgctxt "ClearPrivateData|"
+msgid "Checked items will be cleared upon clicking the Clear button."
+msgstr "Clear बटन् नुत्वा चेक् कृतानि वस्तूनि स्वच्छानि भविष्यन्ति ।"
+
+#: lib/other/clearprivatedata.ui:78
+msgctxt "ClearPrivateData|"
+msgid "Local storage"
+msgstr "स्थानीय भण्डारण"
+
+#: lib/other/clearprivatedata.ui:94
+msgctxt "ClearPrivateData|"
+msgid "Clear"
+msgstr "स्पष्टः"
+
+#: lib/other/clearprivatedata.ui:114
+msgctxt "ClearPrivateData|"
+msgid "Web databases"
+msgstr "जालदत्तांशकोशाः"
+
+#: lib/other/clearprivatedata.ui:124
+msgctxt "ClearPrivateData|"
+msgid "Cache"
+msgstr "संग्रहणम्"
+
+#: lib/other/clearprivatedata.ui:134
+msgctxt "ClearPrivateData|"
+msgid "Optimize database"
+msgstr "दत्तांशकोशस्य अनुकूलनं कुर्वन्तु"
+
+#: lib/other/clearprivatedata.ui:141
+msgctxt "ClearPrivateData|"
+msgid "Cookies"
+msgstr "कुकीज"
+
+#: lib/other/clearprivatedata.ui:158
+msgctxt "ClearPrivateData|"
+msgid "Database"
+msgstr "दत्तांशकोश"
+
+#: lib/other/iconchooser.cpp:41
+msgctxt "IconChooser|"
+msgid "Image files"
+msgstr "चित्रसञ्चिकाः"
+
+#: lib/other/iconchooser.cpp:42 lib/other/iconchooser.ui:14
+msgctxt "IconChooser|"
+msgid "Choose icon..."
+msgstr "चिह्नं चिनोतु..."
+
+#: lib/other/iconchooser.ui:20
+msgctxt "IconChooser|"
+msgid "From file"
+msgstr "सञ्चिकातः"
+
+#: lib/other/iconchooser.ui:29
+msgctxt "IconChooser|"
+msgid "Image (.png, .jpg, .jpeg, .gif)"
+msgstr "चित्रम् (.png, .jpg, .jpeg, .gif)"
+
+#: lib/other/iconchooser.ui:42
+msgctxt "IconChooser|"
+msgid "Choose file..."
+msgstr "सञ्चिकां चिनोतु..."
+
+#: lib/other/iconchooser.ui:52
+msgctxt "IconChooser|"
+msgid "From database"
+msgstr "दत्तांशकोशात्"
+
+#: lib/other/iconchooser.ui:61
+msgctxt "IconChooser|"
+msgid "Site Url:"
+msgstr "साइट् यूआरएल:"
+
+#: lib/other/licenseviewer.cpp:30
+msgctxt "LicenseViewer|"
+msgid "License Viewer"
+msgstr "अनुज्ञापत्रदर्शकः"
+
+#: lib/other/protocolhandlerdialog.ui:14
+msgctxt "ProtocolHandlerDialog|"
+msgid "Manage protocol handlers"
+msgstr "प्रोटोकॉल-सञ्चालकानां प्रबन्धनं कुर्वन्तु"
+
+#: lib/other/protocolhandlerdialog.ui:40
+msgctxt "ProtocolHandlerDialog|"
+msgid "Protocol"
+msgstr "प्रोटोकॉल"
+
+#: lib/other/protocolhandlerdialog.ui:45
+msgctxt "ProtocolHandlerDialog|"
+msgid "Site"
+msgstr "क्षेत्र"
+
+#: lib/other/protocolhandlerdialog.ui:68
+msgctxt "ProtocolHandlerDialog|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/other/registerqappassociation.cpp:111
+msgctxt "RegisterQAppAssociation|"
+msgid "Warning!"
+msgstr "चेतवानी!"
+
+#: lib/other/registerqappassociation.cpp:112
+msgctxt "RegisterQAppAssociation|"
+msgid ""
+"There are some problems. Please, reinstall Osza.\n"
+"Maybe relaunch with administrator right do a magic for you! ;)"
+msgstr ""
+"तत्र काश्चन समस्याः सन्ति। कृपया, Osza पुनः संस्थापयन्तु।\n"
+"कदाचित् प्रशासकेन सह पुनः प्रक्षेपणं सम्यक् भवतः कृते जादू करोति! ;)"
+
+#: lib/other/siteinfo.cpp:71
+msgctxt "SiteInfo|"
+msgid "<b>Connection is Encrypted.</b>"
+msgstr "<b>संयोजनं एन्क्रिप्टेड् अस्ति।</b>"
+
+#: lib/other/siteinfo.cpp:75
+msgctxt "SiteInfo|"
+msgid "Any certificate error is <b>permanently</b> ignored."
+msgstr "यत्किमपि प्रमाणपत्रदोषः <b>स्थायिरूपेण</b> उपेक्षितः भवति ।"
+
+#: lib/other/siteinfo.cpp:78
+msgctxt "SiteInfo|"
+msgid "The certificate error is <b>temporarily</b> ignored."
+msgstr "प्रमाणपत्रदोषः <b>अस्थायीरूपेण</b> उपेक्षितः भवति ।"
+
+#: lib/other/siteinfo.cpp:82
+msgctxt "SiteInfo|"
+msgid "Certificate was rejected."
+msgstr "प्रमाणपत्रं अङ्गीकृतम्।"
+
+#: lib/other/siteinfo.cpp:89
+msgctxt "SiteInfo|"
+msgid "<b>Connection Not Encrypted.</b>"
+msgstr "<b>संयोजनं एन्क्रिप्टेड् नास्ति।</b>"
+
+#: lib/other/siteinfo.cpp:198
+msgctxt "SiteInfo|"
+msgid "Copy Image Location"
+msgstr "प्रतिलिपि चित्रस्थानम्"
+
+#: lib/other/siteinfo.cpp:199
+msgctxt "SiteInfo|"
+msgid "Copy Image Name"
+msgstr "प्रतिलिपि चित्रनाम"
+
+#: lib/other/siteinfo.cpp:201
+msgctxt "SiteInfo|"
+msgid "Save Image to Disk"
+msgstr "चित्रं डिस्क मध्ये रक्षन्तु"
+
+#: lib/other/siteinfo.cpp:213
+msgctxt "SiteInfo|"
+msgid "Copy Values"
+msgstr "प्रतिलिपि मूल्यानि"
+
+#: lib/other/siteinfo.cpp:214
+msgctxt "SiteInfo|"
+msgid "Copy Tags and Values"
+msgstr "टैग्स् तथा मूल्यानि प्रतिलिख्यताम्"
+
+#: lib/other/siteinfo.cpp:252 lib/other/siteinfo.cpp:271
+msgctxt "SiteInfo|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/other/siteinfo.cpp:252
+msgctxt "SiteInfo|"
+msgid "This preview is not available!"
+msgstr "एतत् पूर्वावलोकनं उपलब्धं नास्ति!"
+
+#: lib/other/siteinfo.cpp:263
+msgctxt "SiteInfo|"
+msgid "Save image..."
+msgstr "चित्रं रक्षतु..."
+
+#: lib/other/siteinfo.cpp:271
+msgctxt "SiteInfo|"
+msgid "Cannot write to file!"
+msgstr "सञ्चिकायां लिखितुं न शक्यते!"
+
+#: lib/other/siteinfo.cpp:281
+msgctxt "SiteInfo|"
+msgid "Loading..."
+msgstr "लोडिंग..."
+
+#: lib/other/siteinfo.cpp:294
+msgctxt "SiteInfo|"
+msgid "Preview not available"
+msgstr "पूर्वावलोकनं उपलब्धं नास्ति"
+
+#: lib/other/siteinfo.ui:14
+msgctxt "SiteInfo|"
+msgid "Site Info"
+msgstr "साइट इन्फो"
+
+#: lib/other/siteinfo.ui:47
+msgctxt "SiteInfo|"
+msgid "General"
+msgstr "सामान्य"
+
+#: lib/other/siteinfo.ui:52
+msgctxt "SiteInfo|"
+msgid "Media"
+msgstr "मीडिया"
+
+#: lib/other/siteinfo.ui:57
+msgctxt "SiteInfo|"
+msgid "Permissions"
+msgstr "अनुमतिः"
+
+#: lib/other/siteinfo.ui:89
+msgctxt "SiteInfo|"
+msgid "Site address:"
+msgstr "साइट्-सङ्केतः :"
+
+#: lib/other/siteinfo.ui:118
+msgctxt "SiteInfo|"
+msgid "Encoding:"
+msgstr "एन्कोडिंग् :"
+
+#: lib/other/siteinfo.ui:137
+msgctxt "SiteInfo|"
+msgid "Meta tags of site:"
+msgstr "साइट् इत्यस्य मेटा टैग्स् :"
+
+#: lib/other/siteinfo.ui:154
+msgctxt "SiteInfo|"
+msgid "Tag"
+msgstr "सूचकपत्त्र"
+
+#: lib/other/siteinfo.ui:159
+msgctxt "SiteInfo|"
+msgid "Value"
+msgstr "मूल्यम्‌"
+
+#: lib/other/siteinfo.ui:173
+msgctxt "SiteInfo|"
+msgid "<b>Security information</b>"
+msgstr "<b>सुरक्षासूचना</b>"
+
+#: lib/other/siteinfo.ui:246
+msgctxt "SiteInfo|"
+msgid "Image"
+msgstr "छवि"
+
+#: lib/other/siteinfo.ui:251
+msgctxt "SiteInfo|"
+msgid "Image address"
+msgstr "चित्रसङ्केतः"
+
+#: lib/other/siteinfo.ui:276
+msgctxt "SiteInfo|"
+msgid "<b>Preview</b>"
+msgstr "<b>पूर्वावलोकन</b>"
+
+#: lib/other/siteinfopermissionitem.ui:32
+msgctxt "SiteInfoPermissionItem|"
+msgid "Default"
+msgstr "मूलभूतम्‌"
+
+#: lib/other/siteinfopermissionitem.ui:62
+msgctxt "SiteInfoPermissionItem|"
+msgid "Ask"
+msgstr "पृच्छतु"
+
+#: lib/other/siteinfopermissionitem.ui:69
+msgctxt "SiteInfoPermissionItem|"
+msgid "Allow"
+msgstr "अनुमन्यताम्‌"
+
+#: lib/other/siteinfopermissionitem.ui:76
+msgctxt "SiteInfoPermissionItem|"
+msgid "Deny"
+msgstr "अपह्नुते"
+
+#: lib/other/siteinfowidget.cpp:43
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "<b>Site %1<b/>"
+msgstr "<b>साइट् %1<b/></b>"
+
+#: lib/other/siteinfowidget.cpp:52
+msgctxt "SiteInfoWidget|"
+msgid "Any certificate error is <b>permanently</b> ignored."
+msgstr "यत्किमपि प्रमाणपत्रदोषः <b>स्थायिरूपेण</b> उपेक्षितः भवति ।"
+
+#: lib/other/siteinfowidget.cpp:55
+msgctxt "SiteInfoWidget|"
+msgid "The certificate error is <b>temporarily</b> ignored."
+msgstr "प्रमाणपत्रदोषः <b>अस्थायीरूपेण</b> उपेक्षितः भवति ।"
+
+#: lib/other/siteinfowidget.cpp:58
+msgctxt "SiteInfoWidget|"
+msgid "Certificate was rejected."
+msgstr "प्रमाणपत्रं अङ्गीकृतम्।"
+
+#: lib/other/siteinfowidget.cpp:67
+msgctxt "SiteInfoWidget|"
+msgid "Your connection to this site is <b>secured</b>."
+msgstr "अस्मिन् स्थले भवतः सम्पर्कः <b>सुरक्षितः</b> अस्ति ."
+
+#: lib/other/siteinfowidget.cpp:71
+msgctxt "SiteInfoWidget|"
+msgid "Your connection to this site is <b>unsecured</b>."
+msgstr "अस्मिन् स्थले भवतः सम्पर्कः <b>असुरक्षितः</b> अस्ति ."
+
+#: lib/other/siteinfowidget.cpp:86 lib/other/siteinfowidget.cpp:105
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "This is your <b>%1</b> visit of this site."
+msgstr "एतत् भवतः <b>%1</b> अस्य साइट्-भ्रमणम् अस्ति ।"
+
+#: lib/other/siteinfowidget.cpp:90
+msgctxt "SiteInfoWidget|"
+msgid "You have <b>never</b> visited this site before."
+msgstr "भवन्तः पूर्वं कदापि एतत् स्थलं <b>न</b> गतवन्तः।"
+
+#: lib/other/siteinfowidget.cpp:97
+msgctxt "SiteInfoWidget|"
+msgid "first"
+msgstr "प्रथमः"
+
+#: lib/other/siteinfowidget.cpp:100
+msgctxt "SiteInfoWidget|"
+msgid "second"
+msgstr "क्षण"
+
+#: lib/other/siteinfowidget.cpp:103
+msgctxt "SiteInfoWidget|"
+msgid "third"
+msgstr "तृतीयं"
+
+#: lib/other/siteinfowidget.cpp:128
+#, qt-format
+msgctxt "SiteInfoWidget|"
+msgid "Register as <b>%1</b> links handler"
+msgstr "<b>%1</b> लिङ्क्स् हन्डलर् इति पञ्जीकरणं कुर्वन्तु"
+
+#: lib/other/siteinfowidget.cpp:129
+msgctxt "SiteInfoWidget|"
+msgid "Register"
+msgstr "पंजीकर्"
+
+#: lib/other/siteinfowidget.ui:98
+msgctxt "SiteInfoWidget|"
+msgid "More..."
+msgstr "अधिकः..."
+
+#: lib/other/sitesettingsmanager.cpp:324
+msgctxt "SiteSettingsManager|"
+msgid "Zoom level"
+msgstr "जूम स्तर"
+
+#: lib/other/sitesettingsmanager.cpp:326
+msgctxt "SiteSettingsManager|"
+msgid "Cookies"
+msgstr "कुकीज"
+
+#: lib/other/sitesettingsmanager.cpp:329 lib/other/sitesettingsmanager.cpp:354
+#: lib/other/sitesettingsmanager.cpp:394 lib/other/sitesettingsmanager.cpp:411
+msgctxt "SiteSettingsManager|"
+msgid "Unknown"
+msgstr "अज्ञात"
+
+#: lib/other/sitesettingsmanager.cpp:337
+msgctxt "SiteSettingsManager|"
+msgid "Notifications"
+msgstr "अधिसूचना"
+
+#: lib/other/sitesettingsmanager.cpp:339
+msgctxt "SiteSettingsManager|"
+msgid "Geolocation"
+msgstr "भू-स्थानम्"
+
+#: lib/other/sitesettingsmanager.cpp:341
+msgctxt "SiteSettingsManager|"
+msgid "Microphone"
+msgstr "माइक्रोफोन"
+
+#: lib/other/sitesettingsmanager.cpp:343
+msgctxt "SiteSettingsManager|"
+msgid "Camera"
+msgstr "कॅमेरा"
+
+#: lib/other/sitesettingsmanager.cpp:345
+msgctxt "SiteSettingsManager|"
+msgid "Microphone and Camera"
+msgstr "माइक्रोफोन तथा कॅमेरा"
+
+#: lib/other/sitesettingsmanager.cpp:347
+msgctxt "SiteSettingsManager|"
+msgid "Hide mouse pointer"
+msgstr "मूषकसूचकं गोपयन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:349
+msgctxt "SiteSettingsManager|"
+msgid "Screen capture"
+msgstr "स्क्रीन कैप्चर"
+
+#: lib/other/sitesettingsmanager.cpp:351
+msgctxt "SiteSettingsManager|"
+msgid "Screen capture with audio"
+msgstr "श्रव्यसहितं स्क्रीनकॅप्चर"
+
+#: lib/other/sitesettingsmanager.cpp:362
+msgctxt "SiteSettingsManager|"
+msgid "Autoload images"
+msgstr "चित्राणि स्वतः लोड् कुर्वन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:365
+msgctxt "SiteSettingsManager|"
+msgid "Enable JavaScript"
+msgstr "जावास्क्रिप्ट् सक्षमं कुर्वन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:367
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Open popup windows"
+msgstr "जावास्क्रिप्ट्: पॉपअप विण्डोज उद्घाटयन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:369
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Access clipboard"
+msgstr "जावास्क्रिप्ट्: अभिगमन क्लिपबोर्ड"
+
+#: lib/other/sitesettingsmanager.cpp:371
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Paste from clipboard"
+msgstr "जावास्क्रिप्ट्: क्लिप्बोर्डतः पेस्ट् कुर्वन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:373
+msgctxt "SiteSettingsManager|"
+msgid "JavaScript: Activate windows"
+msgstr "जावास्क्रिप्ट्: विण्डोज सक्रियं कुर्वन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:376
+msgctxt "SiteSettingsManager|"
+msgid "Local storage"
+msgstr "स्थानीय भण्डारण"
+
+#: lib/other/sitesettingsmanager.cpp:378
+msgctxt "SiteSettingsManager|"
+msgid "FullScreen support"
+msgstr "FullScreen समर्थनम्"
+
+#: lib/other/sitesettingsmanager.cpp:380
+msgctxt "SiteSettingsManager|"
+msgid "Run insecure content"
+msgstr "असुरक्षितसामग्री चालयन्तु"
+
+#: lib/other/sitesettingsmanager.cpp:382
+msgctxt "SiteSettingsManager|"
+msgid "Automatic playing of videos"
+msgstr "स्वचालितं विडियो वादनम्"
+
+#: lib/other/sitesettingsmanager.cpp:385
+msgctxt "SiteSettingsManager|"
+msgid "Allow reading from canvas"
+msgstr "कैनवासतः पठनस्य अनुमतिं ददातु"
+
+#: lib/other/sitesettingsmanager.cpp:389
+msgctxt "SiteSettingsManager|"
+msgid "Force dark mode"
+msgstr "बल अन्धकारविधा"
+
+#: lib/other/sitesettingsmanager.cpp:402
+msgctxt "SiteSettingsManager|"
+msgid "Allow"
+msgstr "अनुमन्यताम्‌"
+
+#: lib/other/sitesettingsmanager.cpp:404
+msgctxt "SiteSettingsManager|"
+msgid "Ask"
+msgstr "पृच्छतु"
+
+#: lib/other/sitesettingsmanager.cpp:406
+msgctxt "SiteSettingsManager|"
+msgid "Deny"
+msgstr "अपह्नुते"
+
+#: lib/other/sitesettingsmanager.cpp:408
+msgctxt "SiteSettingsManager|"
+msgid "Default"
+msgstr "मूलभूतम्‌"
+
+#: lib/other/statusbar.cpp:248
+msgctxt "StatusBar|"
+msgid "Hide"
+msgstr "गोपयतु"
+
+#: lib/other/updater.cpp:151
+msgctxt "Updater|"
+msgid "Update available"
+msgstr "अद्यतनं उपलब्धम्"
+
+#: lib/other/updater.cpp:151
+msgctxt "Updater|"
+msgid "New version of Osza is ready to download."
+msgstr "Oszaस्य नूतनं संस्करणं डाउनलोड् कर्तुं सज्जम् अस्ति।"
+
+#: lib/other/updater.cpp:163
+msgctxt "Updater|"
+msgid "Update"
+msgstr "अद्यतन"
+
+#: lib/popupwindow/popupwebview.cpp:100
+msgctxt "PopupWebView|"
+msgid "Inspect Element"
+msgstr "तत्वस्य निरीक्षणं कुर्वन्तु"
+
+#: lib/popupwindow/popupwindow.cpp:83
+msgctxt "PopupWindow|"
+msgid "File"
+msgstr "सञ्चिका"
+
+#: lib/popupwindow/popupwindow.cpp:84
+msgctxt "PopupWindow|"
+msgid "Send Link..."
+msgstr "Send Link..."
+
+#: lib/popupwindow/popupwindow.cpp:85
+msgctxt "PopupWindow|"
+msgid "&Print..."
+msgstr "&मुद्रण..."
+
+#: lib/popupwindow/popupwindow.cpp:87
+msgctxt "PopupWindow|"
+msgid "Close"
+msgstr "पिधानं करोतु"
+
+#: lib/popupwindow/popupwindow.cpp:90
+msgctxt "PopupWindow|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/popupwindow/popupwindow.cpp:99
+msgctxt "PopupWindow|"
+msgid "Find"
+msgstr "अन्वेषय"
+
+#: lib/popupwindow/popupwindow.cpp:102
+msgctxt "PopupWindow|"
+msgid "View"
+msgstr "दृश्यं"
+
+#: lib/popupwindow/popupwindow.cpp:103
+msgctxt "PopupWindow|"
+msgid "&Stop"
+msgstr "&विरमतु"
+
+#: lib/popupwindow/popupwindow.cpp:105
+msgctxt "PopupWindow|"
+msgid "&Reload"
+msgstr "&पुनः भार"
+
+#: lib/popupwindow/popupwindow.cpp:108
+msgctxt "PopupWindow|"
+msgid "Zoom &In"
+msgstr "जूम &In"
+
+#: lib/popupwindow/popupwindow.cpp:109
+msgctxt "PopupWindow|"
+msgid "Zoom &Out"
+msgstr "जूम &आउट"
+
+#: lib/popupwindow/popupwindow.cpp:110
+msgctxt "PopupWindow|"
+msgid "Reset"
+msgstr "पुनः सेट् करें"
+
+#: lib/popupwindow/popupwindow.cpp:112
+msgctxt "PopupWindow|"
+msgid "&Page Source"
+msgstr "&पृष्ठ स्रोत"
+
+#: lib/popupwindow/popupwindow.cpp:271
+#, qt-format
+msgctxt "PopupWindow|"
+msgid "%1 - Osza"
+msgstr "%1 - बाजः"
+
+#: lib/preferences/acceptlanguage.cpp:99 lib/preferences/acceptlanguage.cpp:164
+#, qt-format
+msgctxt "AcceptLanguage|"
+msgid "Personal [%1]"
+msgstr "व्यक्तिगत [%1] ."
+
+#: lib/preferences/acceptlanguage.ui:14
+msgctxt "AcceptLanguage|"
+msgid "Preferred Languages"
+msgstr "प्राधान्य भाषा"
+
+#: lib/preferences/acceptlanguage.ui:25
+msgctxt "AcceptLanguage|"
+msgid "Add..."
+msgstr "संयोजयति..."
+
+#: lib/preferences/acceptlanguage.ui:32
+msgctxt "AcceptLanguage|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/acceptlanguage.ui:39
+msgctxt "AcceptLanguage|"
+msgid "Up"
+msgstr "उपरि"
+
+#: lib/preferences/acceptlanguage.ui:46
+msgctxt "AcceptLanguage|"
+msgid "Down"
+msgstr "अधः"
+
+#: lib/preferences/addacceptlanguage.ui:14
+msgctxt "AddAcceptLanguage|"
+msgid "Add Language"
+msgstr "भाषा योजयतु"
+
+#: lib/preferences/addacceptlanguage.ui:20
+msgctxt "AddAcceptLanguage|"
+msgid "Choose preferred language for web sites"
+msgstr "जालस्थलानां कृते प्राधान्यभाषा चिनोतु"
+
+#: lib/preferences/addacceptlanguage.ui:32
+msgctxt "AddAcceptLanguage|"
+msgid "Personal definition:"
+msgstr "व्यक्तिगत परिभाषा :"
+
+#: lib/preferences/autofillmanager.cpp:67
+msgctxt "AutoFillManager|"
+msgid "Import Passwords from File..."
+msgstr "सञ्चिकातः गुप्तशब्दान् आयातयन्तु..."
+
+#: lib/preferences/autofillmanager.cpp:68
+msgctxt "AutoFillManager|"
+msgid "Export Passwords to File..."
+msgstr "सञ्चिकायां गुप्तशब्दान् निर्यातयन्तु..."
+
+#: lib/preferences/autofillmanager.cpp:70
+msgctxt "AutoFillManager|"
+msgid "Search"
+msgstr "अन्वेषण"
+
+#: lib/preferences/autofillmanager.cpp:82
+#: lib/preferences/autofillmanager.cpp:171
+#: lib/preferences/autofillmanager.cpp:179
+#: lib/preferences/autofillmanager.ui:140
+msgctxt "AutoFillManager|"
+msgid "Show Passwords"
+msgstr "गुप्तशब्दान् दर्शयतु"
+
+#: lib/preferences/autofillmanager.cpp:130
+msgctxt "AutoFillManager|"
+msgid "Change backend..."
+msgstr "पृष्ठभागं परिवर्तयन्तु..."
+
+#: lib/preferences/autofillmanager.cpp:130
+msgctxt "AutoFillManager|"
+msgid "Change backend:"
+msgstr "पृष्ठभागं परिवर्तयन्तु :"
+
+#: lib/preferences/autofillmanager.cpp:179
+msgctxt "AutoFillManager|"
+msgid "Are you sure that you want to show all passwords?"
+msgstr "किं भवन्तः निश्चिन्ताः सन्ति यत् भवन्तः सर्वाणि गुप्तशब्दानि दर्शयितुम् इच्छन्ति?"
+
+#: lib/preferences/autofillmanager.cpp:194
+msgctxt "AutoFillManager|"
+msgid "Hide Passwords"
+msgstr "गुप्तशब्दाः गोपयन्तु"
+
+#: lib/preferences/autofillmanager.cpp:232
+msgctxt "AutoFillManager|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/preferences/autofillmanager.cpp:233
+msgctxt "AutoFillManager|"
+msgid "Are you sure you want to delete all passwords on your computer?"
+msgstr "किं भवान् निश्चयेन स्वसङ्गणके सर्वाणि गुप्तशब्दानि विलोपयितुम् इच्छति?"
+
+#: lib/preferences/autofillmanager.cpp:252
+msgctxt "AutoFillManager|"
+msgid "Edit password"
+msgstr "गुप्तशब्द सम्पादयतु"
+
+#: lib/preferences/autofillmanager.cpp:252
+msgctxt "AutoFillManager|"
+msgid "Change password:"
+msgstr "गुप्तशब्दं परिवर्तयन्तु :"
+
+#: lib/preferences/autofillmanager.cpp:302
+#: lib/preferences/autofillmanager.cpp:313
+msgctxt "AutoFillManager|"
+msgid "Choose file..."
+msgstr "सञ्चिकां चिनोतु..."
+
+#: lib/preferences/autofillmanager.cpp:327
+msgctxt "AutoFillManager|"
+msgid "Cannot read file!"
+msgstr "सञ्चिकां पठितुं न शक्यते!"
+
+#: lib/preferences/autofillmanager.cpp:336
+msgctxt "AutoFillManager|"
+msgid "Successfully imported"
+msgstr "सफलतया आयातितम्"
+
+#: lib/preferences/autofillmanager.cpp:336
+msgctxt "AutoFillManager|"
+msgid "Error while importing!"
+msgstr "आयातकाले त्रुटिः!"
+
+#: lib/preferences/autofillmanager.cpp:347
+msgctxt "AutoFillManager|"
+msgid "Cannot write to file!"
+msgstr "सञ्चिकायां लिखितुं न शक्यते!"
+
+#: lib/preferences/autofillmanager.cpp:356
+msgctxt "AutoFillManager|"
+msgid "Successfully exported"
+msgstr "सफलतया निर्यातितम्"
+
+#: lib/preferences/autofillmanager.cpp:373
+msgctxt "AutoFillManager|"
+msgid "Copy Username"
+msgstr "उपयोक्तृनाम प्रतिलिपि कुर्वन्तु"
+
+#: lib/preferences/autofillmanager.cpp:374
+msgctxt "AutoFillManager|"
+msgid "Copy Password"
+msgstr "गुप्तशब्दं प्रतिलिख्यताम्"
+
+#: lib/preferences/autofillmanager.cpp:376
+msgctxt "AutoFillManager|"
+msgid "Edit Password"
+msgstr "गुप्तशब्द सम्पादयतु"
+
+#: lib/preferences/autofillmanager.ui:25
+msgctxt "AutoFillManager|"
+msgid "Passwords are stored in:"
+msgstr "गुप्तशब्दाः अत्र संगृह्यन्ते:"
+
+#: lib/preferences/autofillmanager.ui:35
+msgctxt "AutoFillManager|"
+msgid "Change backend"
+msgstr "पृष्ठभागं परिवर्तयन्तु"
+
+#: lib/preferences/autofillmanager.ui:42
+msgctxt "AutoFillManager|"
+msgid "Backend options"
+msgstr "पृष्ठभागविकल्पाः"
+
+#: lib/preferences/autofillmanager.ui:71
+msgctxt "AutoFillManager|"
+msgid "Passwords"
+msgstr "गुप्तशब्दाः"
+
+#: lib/preferences/autofillmanager.ui:87 lib/preferences/autofillmanager.ui:201
+msgctxt "AutoFillManager|"
+msgid "Server"
+msgstr "सर्वर"
+
+#: lib/preferences/autofillmanager.ui:92
+msgctxt "AutoFillManager|"
+msgid "Username"
+msgstr "उपयोक्तृनाम"
+
+#: lib/preferences/autofillmanager.ui:97
+msgctxt "AutoFillManager|"
+msgid "Password"
+msgstr "समाभाष्"
+
+#: lib/preferences/autofillmanager.ui:113
+msgctxt "AutoFillManager|"
+msgid "Import and Export"
+msgstr "आयातं निर्यातं च"
+
+#: lib/preferences/autofillmanager.ui:154
+msgctxt "AutoFillManager|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/preferences/autofillmanager.ui:161
+#: lib/preferences/autofillmanager.ui:211
+msgctxt "AutoFillManager|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/autofillmanager.ui:168
+#: lib/preferences/autofillmanager.ui:218
+msgctxt "AutoFillManager|"
+msgid "Remove All"
+msgstr "सर्वं निष्कासयतु"
+
+#: lib/preferences/autofillmanager.ui:191
+msgctxt "AutoFillManager|"
+msgid "Exceptions"
+msgstr "अपवादाः"
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:78
+#, fuzzy
+#| msgctxt "SchemeManager|"
+#| msgid "Add allowed scheme"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add allowed scheme"
+msgstr "अनुमत योजनां योजयन्तु"
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:78
+#: lib/preferences/autoopenprotocolsdialog.cpp:101
+#, fuzzy
+#| msgctxt "SchemeManager|"
+#| msgid "Scheme:"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Scheme:"
+msgstr "योजना :"
+
+#: lib/preferences/autoopenprotocolsdialog.cpp:101
+#, fuzzy
+#| msgctxt "SchemeManager|"
+#| msgid "Add blocked scheme"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add blocked scheme"
+msgstr "अवरुद्ध योजनां योजयन्तु"
+
+#: lib/preferences/autoopenprotocolsdialog.ui:14
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Auto-Open Protocols"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.ui:20
+msgctxt "AutoOpenProtocolsDialog|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Auto Open</span></"
+"p></body></html>"
+msgstr ""
+
+#: lib/preferences/autoopenprotocolsdialog.ui:34
+#: lib/preferences/autoopenprotocolsdialog.ui:79
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Add"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Add"
+msgstr "संयोजयति"
+
+#: lib/preferences/autoopenprotocolsdialog.ui:41
+#: lib/preferences/autoopenprotocolsdialog.ui:86
+#, fuzzy
+#| msgctxt "CookieManager|"
+#| msgid "Remove"
+msgctxt "AutoOpenProtocolsDialog|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/autoopenprotocolsdialog.ui:65
+msgctxt "AutoOpenProtocolsDialog|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Blocked</span></p></"
+"body></html>"
+msgstr ""
+
+#: lib/preferences/certificatemanager.cpp:61
+msgctxt "CertificateManager|"
+msgid "Host: "
+msgstr "निमन्त्रकः: "
+
+#: lib/preferences/certificatemanager.cpp:65
+msgctxt "CertificateManager|"
+msgid "Add certificate exception"
+msgstr "प्रमाणपत्र अपवादं योजयन्तु"
+
+#: lib/preferences/certificatemanager.cpp:74
+#, qt-format
+msgctxt "CertificateManager|"
+msgid "Host %1 already in the list"
+msgstr "सूचीयां पूर्वमेव %1 होस्ट् कुर्वन्तु"
+
+#: lib/preferences/certificatemanager.cpp:83
+msgctxt "CertificateManager|"
+msgid "Empty host"
+msgstr "रिक्त मेजबान"
+
+#: lib/preferences/certificatemanager.ui:14
+msgctxt "CertificateManager|"
+msgid "Certificate exception manager"
+msgstr "प्रमाणपत्र अपवाद प्रबन्धक"
+
+#: lib/preferences/certificatemanager.ui:22
+msgctxt "CertificateManager|"
+msgid "Add"
+msgstr "संयोजयति"
+
+#: lib/preferences/certificatemanager.ui:29
+msgctxt "CertificateManager|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/certificatemanager.ui:69
+msgctxt "CertificateManager|"
+msgid "Removing an entry requires a restart"
+msgstr "प्रविष्टिं निष्कासयितुं पुनः आरम्भस्य आवश्यकता भवति"
+
+#: lib/preferences/jsoptions.ui:14
+msgctxt "JsOptions|"
+msgid "JavaScript Options"
+msgstr "जावास्क्रिप्ट् विकल्पाः"
+
+#: lib/preferences/jsoptions.ui:20
+msgctxt "JsOptions|"
+msgid "Allow JavaScript to:"
+msgstr "जावास्क्रिप्ट् इत्यस्य अनुमतिं ददातु:"
+
+#: lib/preferences/jsoptions.ui:29
+msgctxt "JsOptions|"
+msgid "Open popup windows"
+msgstr "पॉपअप विण्डोज उद्घाटयन्तु"
+
+#: lib/preferences/jsoptions.ui:36
+msgctxt "JsOptions|"
+msgid "Activate windows"
+msgstr "विण्डोज सक्रियं कुर्वन्तु"
+
+#: lib/preferences/jsoptions.ui:43
+msgctxt "JsOptions|"
+msgid "Access clipboard"
+msgstr "क्लिपबोर्डं अभिगम्यताम्"
+
+#: lib/preferences/jsoptions.ui:50
+msgctxt "JsOptions|"
+msgid "Paste from clipboard"
+msgstr "क्लिपबोर्डतः पेस्ट् कुर्वन्तु"
+
+#: lib/preferences/pluginslist.ui:17
+msgctxt "PluginsList|"
+msgid "Enter name"
+msgstr "नाम प्रविशतु"
+
+#: lib/preferences/pluginslist.ui:51
+msgctxt "PluginsList|"
+msgid "Settings"
+msgstr "सेटिंग्स्"
+
+#: lib/preferences/pluginslist.ui:61
+msgctxt "PluginsList|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/pluginslist.ui:81
+msgctxt "PluginsList|"
+msgid ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">Get more extensions...</a>"
+msgstr ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">अधिकानि विस्ताराणि "
+"प्राप्नुवन्तु...</a>"
+
+#: lib/preferences/pluginsmanager.cpp:201
+msgctxt "PluginsManager|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/preferences/pluginsmanager.cpp:201
+msgctxt "PluginsManager|"
+msgid "Cannot load extension!"
+msgstr "विस्तारं लोड् कर्तुं न शक्नोति!"
+
+#: lib/preferences/pluginsmanager.cpp:240
+msgctxt "PluginsManager|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/preferences/pluginsmanager.cpp:241
+#, qt-format
+msgctxt "PluginsManager|"
+msgid "Are you sure you want to remove '%1'?"
+msgstr "किं भवान् निश्चयेन '%1' अपसारयितुम् इच्छति?"
+
+#: lib/preferences/preferences.cpp:157 lib/preferences/preferences.cpp:685
+msgctxt "Preferences|"
+msgid "Default"
+msgstr "मूलभूतम्‌"
+
+#: lib/preferences/preferences.cpp:161
+msgctxt "Preferences|"
+msgid "Set as default"
+msgstr "पूर्वनिर्धारितरूपेण सेट् कुर्वन्तु"
+
+#: lib/preferences/preferences.cpp:341
+msgctxt "Preferences|"
+msgid "Auto"
+msgstr "स्वतः"
+
+#: lib/preferences/preferences.cpp:343
+msgctxt "Preferences|"
+msgid "Light"
+msgstr "प्रकाशमयः"
+
+#: lib/preferences/preferences.cpp:344
+msgctxt "Preferences|"
+msgid "Dark"
+msgstr "तमोमयः"
+
+#: lib/preferences/preferences.cpp:354
+#, qt-format
+msgctxt "Preferences|"
+msgid "%1%"
+msgstr "%1%"
+
+#: lib/preferences/preferences.cpp:628
+msgctxt "Preferences|"
+msgid "Choose executable location..."
+msgstr "कार्यान्वयनीयस्थानं चिनोतु..."
+
+#: lib/preferences/preferences.cpp:671
+msgctxt "Preferences|"
+msgid "OSD Notification"
+msgstr "ओएसडी अधिसूचना"
+
+#: lib/preferences/preferences.cpp:672
+msgctxt "Preferences|"
+msgid "Drag it on the screen to place it where you want."
+msgstr "यत्र इच्छसि तत्र स्थापयितुं पर्दायां कर्षन्तु ।"
+
+#: lib/preferences/preferences.cpp:721
+msgctxt "Preferences|"
+msgid "Choose download location..."
+msgstr "डाउनलोड् स्थानं चिनोतु..."
+
+#: lib/preferences/preferences.cpp:735
+msgctxt "Preferences|"
+msgid "Choose stylesheet location..."
+msgstr "शैलीपत्रकस्थानं चिनोतु..."
+
+#: lib/preferences/preferences.cpp:746
+msgctxt "Preferences|"
+msgid "Deleted"
+msgstr "विलोपितम्"
+
+#: lib/preferences/preferences.cpp:854
+msgctxt "Preferences|"
+msgid "Choose cache path..."
+msgstr "कैश मार्गं चिनोतु..."
+
+#: lib/preferences/preferences.cpp:885
+msgctxt "Preferences|"
+msgid "New Profile"
+msgstr "New Profile"
+
+#: lib/preferences/preferences.cpp:885
+msgctxt "Preferences|"
+msgid "Enter the new profile's name:"
+msgstr "नूतनस्य प्रोफाइलस्य नाम प्रविशतु:"
+
+#: lib/preferences/preferences.cpp:895 lib/preferences/preferences.cpp:900
+msgctxt "Preferences|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/preferences/preferences.cpp:895
+msgctxt "Preferences|"
+msgid "This profile already exists!"
+msgstr "इदं प्रोफाइल पूर्वमेव विद्यते!"
+
+#: lib/preferences/preferences.cpp:900
+msgctxt "Preferences|"
+msgid "Cannot create profile directory!"
+msgstr "प्रोफाइल निर्देशिका निर्मातुं न शक्यते!"
+
+#: lib/preferences/preferences.cpp:911
+msgctxt "Preferences|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/preferences/preferences.cpp:912
+#, qt-format
+msgctxt "Preferences|"
+msgid ""
+"Are you sure you want to permanently delete \"%1\" profile? This action "
+"cannot be undone!"
+msgstr ""
+"किं भवान् निश्चितरूपेण \"%1\" प्रोफाइलं स्थायिरूपेण विलोपयितुम् इच्छति? एतत् कर्म न "
+"निवर्तयितुं शक्यते!"
+
+#: lib/preferences/preferences.cpp:927 lib/preferences/preferences.ui:245
+msgctxt "Preferences|"
+msgid "Note: You cannot delete active profile."
+msgstr "नोटः- सक्रिय-प्रोफाइलं विलोपयितुं न शक्नुथ ।"
+
+#: lib/preferences/preferences.ui:14
+msgctxt "Preferences|"
+msgid "Preferences"
+msgstr "प्राधान्यानि"
+
+#: lib/preferences/preferences.ui:67 lib/preferences/preferences.ui:2241
+msgctxt "Preferences|"
+msgid "General"
+msgstr "सामान्य"
+
+#: lib/preferences/preferences.ui:72
+msgctxt "Preferences|"
+msgid "Appearance"
+msgstr "स्वरूपम्‌"
+
+#: lib/preferences/preferences.ui:77
+msgctxt "Preferences|"
+msgid "Tabs"
+msgstr "टब्स्"
+
+#: lib/preferences/preferences.ui:82
+msgctxt "Preferences|"
+msgid "Browsing"
+msgstr "ब्राउजिंग्"
+
+#: lib/preferences/preferences.ui:87
+msgctxt "Preferences|"
+msgid "Fonts"
+msgstr "फॉन्ट्"
+
+#: lib/preferences/preferences.ui:92
+msgctxt "Preferences|"
+msgid "Keyboard Shortcuts"
+msgstr "कीबोर्ड शॉर्टकट"
+
+#: lib/preferences/preferences.ui:97
+msgctxt "Preferences|"
+msgid "Downloads"
+msgstr "डाउनलोड्स्"
+
+#: lib/preferences/preferences.ui:102
+msgctxt "Preferences|"
+msgid "Password Manager"
+msgstr "गुप्तशब्दप्रबन्धकः"
+
+#: lib/preferences/preferences.ui:107
+msgctxt "Preferences|"
+msgid "Privacy"
+msgstr "निजता"
+
+#: lib/preferences/preferences.ui:112
+msgctxt "Preferences|"
+msgid "Notifications"
+msgstr "अधिसूचना"
+
+#: lib/preferences/preferences.ui:117
+msgctxt "Preferences|"
+msgid "Extensions"
+msgstr "विस्तारः"
+
+#: lib/preferences/preferences.ui:122
+msgctxt "Preferences|"
+msgid "Spell Check"
+msgstr "वर्तनीपरीक्षा"
+
+#: lib/preferences/preferences.ui:127
+msgctxt "Preferences|"
+msgid "Other"
+msgstr "इतर"
+
+#: lib/preferences/preferences.ui:214 lib/preferences/preferences.ui:365
+msgctxt "Preferences|"
+msgid "Use current"
+msgstr "वर्तमानस्य उपयोगं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:261
+msgctxt "Preferences|"
+msgid "Create New"
+msgstr "New रचयतु"
+
+#: lib/preferences/preferences.ui:277
+msgctxt "Preferences|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/preferences/preferences.ui:303
+msgctxt "Preferences|"
+msgid "<b>Launching</b>"
+msgstr "<b>प्रक्षेपणम्</b>"
+
+#: lib/preferences/preferences.ui:313
+msgctxt "Preferences|"
+msgid "After launch: "
+msgstr "प्रक्षेपणानन्तरं : "
+
+#: lib/preferences/preferences.ui:321
+msgctxt "Preferences|"
+msgid "Open blank page"
+msgstr "रिक्तं पृष्ठं उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:326 lib/preferences/preferences.ui:387
+msgctxt "Preferences|"
+msgid "Open homepage"
+msgstr "मुखपृष्ठं उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:331 lib/preferences/preferences.ui:392
+msgctxt "Preferences|"
+msgid "Open speed dial"
+msgstr "स्पीड डायल उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:336
+msgctxt "Preferences|"
+msgid "Restore session"
+msgstr "सत्रं पुनर्स्थापयन्तु"
+
+#: lib/preferences/preferences.ui:341
+msgctxt "Preferences|"
+msgid "Select session"
+msgstr "सत्रं चिनोतु"
+
+#: lib/preferences/preferences.ui:349
+msgctxt "Preferences|"
+msgid "Homepage: "
+msgstr "मुखपृष्ठम् : "
+
+#: lib/preferences/preferences.ui:374
+msgctxt "Preferences|"
+msgid "On new tab: "
+msgstr "नूतने ट्याब् मध्ये : "
+
+#: lib/preferences/preferences.ui:382
+msgctxt "Preferences|"
+msgid "Open blank tab"
+msgstr "रिक्तं ट्याब् उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:397
+msgctxt "Preferences|"
+msgid "Open other page..."
+msgstr "अन्यत् पृष्ठं उद्घाटयतु..."
+
+#: lib/preferences/preferences.ui:405
+msgctxt "Preferences|"
+msgid "<b>Profiles</b>"
+msgstr "<b>प्रोफाइल</b>"
+
+#: lib/preferences/preferences.ui:412
+msgctxt "Preferences|"
+msgid "Startup profile:"
+msgstr "स्टार्टअप प्रोफाइल :"
+
+#: lib/preferences/preferences.ui:419
+msgctxt "Preferences|"
+msgid "Check for updates on start"
+msgstr "आरम्भे अद्यतनं पश्यन्तु"
+
+#: lib/preferences/preferences.ui:426
+msgctxt "Preferences|"
+msgid "Active profile:"
+msgstr "सक्रियरूपरेखा :"
+
+#: lib/preferences/preferences.ui:440
+msgctxt "Preferences|"
+msgid "Don't load tabs until selected"
+msgstr "यावत् चयनितं न भवति तावत् ट्याब्स् लोड् न कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:462
+msgctxt "Preferences|"
+msgid "Check to see if Osza is the default browser on startup"
+msgstr "प्रारम्भे Osza पूर्वनिर्धारितः ब्राउजर् अस्ति वा इति पश्यन्तु"
+
+#: lib/preferences/preferences.ui:472
+msgctxt "Preferences|"
+msgid "Check Now"
+msgstr "अधुना पश्यन्तु"
+
+#: lib/preferences/preferences.ui:502
+msgctxt "Preferences|"
+msgid "Themes"
+msgstr "विषयाः"
+
+#: lib/preferences/preferences.ui:524
+msgctxt "Preferences|"
+msgid "Advanced options"
+msgstr "उन्नतविकल्पाः"
+
+#: lib/preferences/preferences.ui:532
+msgctxt "Preferences|"
+msgid "Show Bookmarks ToolBar on start"
+msgstr "आरम्भे Bookmarks ToolBar दर्शयतु"
+
+#: lib/preferences/preferences.ui:539
+msgctxt "Preferences|"
+msgid "Default minimal sideBar width:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:546
+msgctxt "Preferences|"
+msgid "Show StatusBar on start"
+msgstr "आरम्भे StatusBar दर्शयतु"
+
+#: lib/preferences/preferences.ui:553
+msgctxt "Preferences|"
+msgid "Show Navigation ToolBar on start"
+msgstr "आरम्भे Navigation ToolBar दर्शयन्तु"
+
+#: lib/preferences/preferences.ui:560
+msgctxt "Preferences|"
+msgid "Enable instant Bookmarks ToolBar"
+msgstr "तत्क्षणं Bookmarks ToolBar सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:567
+msgctxt "Preferences|"
+msgid "px"
+msgstr ""
+
+#: lib/preferences/preferences.ui:577
+msgctxt "Preferences|"
+msgid "Show Profile Name in Window Title"
+msgstr ""
+
+#: lib/preferences/preferences.ui:586
+msgctxt "Preferences|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Web Page Background "
+"Colors</span></p></body></html>"
+msgstr ""
+
+#: lib/preferences/preferences.ui:611 lib/preferences/preferences.ui:625
+#: lib/preferences/preferences.ui:1134 lib/preferences/preferences.ui:1495
+#: lib/preferences/preferences.ui:2033 lib/preferences/preferences.ui:2133
+#: lib/preferences/preferences.ui:2812
+msgctxt "Preferences|"
+msgid "..."
+msgstr "..."
+
+#: lib/preferences/preferences.ui:618 lib/preferences/preferences.ui:632
+#: lib/preferences/preferences.ui:1141
+msgctxt "Preferences|"
+msgid "Reset"
+msgstr "पुनः सेट् करें"
+
+#: lib/preferences/preferences.ui:639
+msgctxt "Preferences|"
+msgid "Background color when loaded:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:646
+msgctxt "Preferences|"
+msgid "Background color while loading:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:653
+msgctxt "Preferences|miliseconds"
+msgid "ms"
+msgstr ""
+
+#: lib/preferences/preferences.ui:666
+msgctxt ""
+"Preferences|Time in milisencods which describes how long to wait after the "
+"page was initially loaded before switching the backgroung color to the "
+"loaded variant."
+msgid "Loaded state switch delay:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:675
+msgctxt "Preferences|"
+msgid "<b>Browser Window</b>"
+msgstr "<b>ब्राउज़र विण्डो</b>"
+
+#: lib/preferences/preferences.ui:723
+msgctxt "Preferences|"
+msgid "Tabs behaviour"
+msgstr "ट्याब्स् व्यवहारः"
+
+#: lib/preferences/preferences.ui:729
+msgctxt "Preferences|"
+msgid "Hide tabs when there is only one tab"
+msgstr "यदा केवलं एकः ट्याब् भवति तदा ट्याब्स् गोपयन्तु"
+
+#: lib/preferences/preferences.ui:738
+msgctxt "Preferences|"
+msgid "When closing the active tab, activate:"
+msgstr ""
+
+#: lib/preferences/preferences.ui:746
+#, fuzzy
+#| msgctxt "SearchToolbar|"
+#| msgid "&Previous"
+msgctxt "Preferences|"
+msgid "Previous tab"
+msgstr "&पूर्वतनम्‌"
+
+#: lib/preferences/preferences.ui:751
+#, fuzzy
+#| msgctxt "TabWidget|"
+#| msgid "New tab"
+msgctxt "Preferences|"
+msgid "Next tab"
+msgstr "नवीनं ट्याब्"
+
+#: lib/preferences/preferences.ui:756
+msgctxt "Preferences|"
+msgid "Previously active tab"
+msgstr ""
+
+#: lib/preferences/preferences.ui:782
+msgctxt "Preferences|"
+msgid "Open new tabs after active tab"
+msgstr "सक्रिय ट्याब् इत्यस्य अनन्तरं नूतनानि ट्याब्स् उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:789
+msgctxt "Preferences|"
+msgid "Open new empty tabs after active tab"
+msgstr "सक्रियट्याब् इत्यस्य अनन्तरं नूतनानि रिक्तानि ट्याब्स् उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:796
+msgctxt "Preferences|"
+msgid "Reverse new tabs order"
+msgstr ""
+
+#: lib/preferences/preferences.ui:803
+msgctxt "Preferences|"
+msgid "Open popup windows in tabs"
+msgstr "ट्याब्स् मध्ये popup windows उद्घाटयन्तु"
+
+#: lib/preferences/preferences.ui:810
+msgctxt "Preferences|"
+msgid "Block automatic popups"
+msgstr ""
+
+#: lib/preferences/preferences.ui:817
+msgctxt "Preferences|"
+msgid "Always switch between tabs with mouse wheel"
+msgstr "मूषकचक्रेण सह सर्वदा ट्याब्स् मध्ये स्विच् कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:824
+msgctxt "Preferences|"
+msgid "Automatically switch to newly opened tab"
+msgstr "स्वयमेव नव उद्घाटितं ट्याब् प्रति स्विच् कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:831
+msgctxt "Preferences|"
+msgid "Don't close window upon closing last tab"
+msgstr "अन्तिम-ट्याब् पिधाय विण्डो न पिधायताम्"
+
+#: lib/preferences/preferences.ui:838
+msgctxt "Preferences|"
+msgid "Ask when closing multiple tabs"
+msgstr "एकाधिकट्याब् पिधाय पृच्छन्तु"
+
+#: lib/preferences/preferences.ui:845
+msgctxt "Preferences|"
+msgid "Show closed tabs button"
+msgstr "बन्द ट्याब्स् बटनं दर्शयतु"
+
+#: lib/preferences/preferences.ui:854
+msgctxt "Preferences|"
+msgid "Show close buttons on inactive tabs:"
+msgstr "निष्क्रियट्याब्षु close बटन् दर्शयतु:"
+
+#: lib/preferences/preferences.ui:862
+msgctxt "Preferences|"
+msgid "Automatic"
+msgstr "स्वतः"
+
+#: lib/preferences/preferences.ui:867
+msgctxt "Preferences|"
+msgid "Always"
+msgstr "सर्वदा"
+
+#: lib/preferences/preferences.ui:872
+msgctxt "Preferences|"
+msgid "Never"
+msgstr "कदापि न"
+
+#: lib/preferences/preferences.ui:912
+msgctxt "Preferences|"
+msgid "Address Bar behaviour"
+msgstr "Address Bar व्यवहारः"
+
+#: lib/preferences/preferences.ui:920
+msgctxt "Preferences|"
+msgid "Suggest when typing into address bar:"
+msgstr "पतापट्टिकायां टङ्कयन्ते सति सुझावः ददातु:"
+
+#: lib/preferences/preferences.ui:934
+msgctxt "Preferences|"
+msgid "History and Bookmarks"
+msgstr "इतिहास एवं बुकमार्क"
+
+#: lib/preferences/preferences.ui:939
+msgctxt "Preferences|"
+msgid "History"
+msgstr "इतिहास"
+
+#: lib/preferences/preferences.ui:944
+msgctxt "Preferences|"
+msgid "Bookmarks"
+msgstr "बुकमार्क्स"
+
+#: lib/preferences/preferences.ui:949
+msgctxt "Preferences|"
+msgid "Nothing"
+msgstr "किमपि न"
+
+#: lib/preferences/preferences.ui:975
+msgctxt "Preferences|"
+msgid "Enable inline suggestions"
+msgstr "इनलाइन सुझावः सक्षमाः कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:982
+msgctxt "Preferences|"
+msgid ""
+"Press \"Shift\" to not switch the tab but load the url in the current tab"
+msgstr "ट्याब् स्विच् न कर्तुं परन्तु वर्तमान ट्याब् मध्ये url लोड् कर्तुं \"Shift\" नुदन्तु"
+
+#: lib/preferences/preferences.ui:985
+msgctxt "Preferences|"
+msgid "Propose to switch tab if completed url is already loaded"
+msgstr "यदि सम्पन्नं url पूर्वमेव लोड् अस्ति तर्हि ट्याब् स्विच् कर्तुं प्रस्तावः"
+
+#: lib/preferences/preferences.ui:992
+msgctxt "Preferences|"
+msgid "Always show go icon"
+msgstr "सदैव go चिह्नं दर्शयतु"
+
+#: lib/preferences/preferences.ui:999
+msgctxt "Preferences|"
+msgid "Show zoom label"
+msgstr "जूम लेबलं दर्शयतु"
+
+#: lib/preferences/preferences.ui:1006
+msgctxt "Preferences|"
+msgid "Select all text by double clicking in address bar"
+msgstr "पतापट्टिकायां द्विवारं क्लिक् कृत्वा सर्वं पाठं चिनोतु"
+
+#: lib/preferences/preferences.ui:1013
+msgctxt "Preferences|"
+msgid "Select all text by clicking in address bar"
+msgstr "पतापट्टिकायां क्लिक् कृत्वा सर्वं पाठं चिनोतु"
+
+#: lib/preferences/preferences.ui:1020
+msgctxt "Preferences|"
+msgid "Enable automatic searching from the address bar"
+msgstr "पतापट्टिकातः स्वचालितं अन्वेषणं सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1027
+msgctxt "Preferences|"
+msgid "Search with Default Engine"
+msgstr "पूर्वनिर्धारितइञ्जिनेन सह अन्वेषणं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1034
+msgctxt "Preferences|"
+msgid "Show search suggestions"
+msgstr "अन्वेषणसूचनानि दर्शयतु"
+
+#: lib/preferences/preferences.ui:1041
+msgctxt "Preferences|"
+msgid "Expand suggestion popup to window width"
+msgstr "सुझावस्य पॉपअपं विण्डोविस्तारं प्रति विस्तारयन्तु"
+
+#: lib/preferences/preferences.ui:1064
+msgctxt "Preferences|"
+msgid "Show loading progress in address bar"
+msgstr "पतापट्टिकायां लोडिंग् प्रगतिः दर्शयतु"
+
+#: lib/preferences/preferences.ui:1097
+msgctxt "Preferences|"
+msgid "Fill"
+msgstr "पूरण"
+
+#: lib/preferences/preferences.ui:1102
+msgctxt "Preferences|"
+msgid "Bottom"
+msgstr "अधः"
+
+#: lib/preferences/preferences.ui:1107
+msgctxt "Preferences|"
+msgid "Top"
+msgstr "उपरितन"
+
+#: lib/preferences/preferences.ui:1115
+msgctxt "Preferences|"
+msgid "Custom color:"
+msgstr "कस्टमरङ्गः :"
+
+#: lib/preferences/preferences.ui:1131
+msgctxt "Preferences|"
+msgid "Select color"
+msgstr "वर्णं चिनोतु"
+
+#: lib/preferences/preferences.ui:1192
+msgctxt "Preferences|"
+msgid "Web Configuration"
+msgstr "जालविन्यासः"
+
+#: lib/preferences/preferences.ui:1200
+msgctxt "Preferences|"
+msgid "Enable Pepper plugin API (PPAPI)"
+msgstr "पेपर प्लगिन् एपिआइ (PPAPI) सक्षमं कुर्वन्तु ।"
+
+#: lib/preferences/preferences.ui:1207
+msgctxt "Preferences|"
+msgid "Use built-in PDF viewer (requires PPAPI)"
+msgstr "अन्तर्निर्मितं PDF दर्शकं उपयुज्यताम् (PPAPI आवश्यकम्)"
+
+#: lib/preferences/preferences.ui:1214
+msgctxt "Preferences|"
+msgid "Allow JavaScript"
+msgstr "जावास्क्रिप्ट् इत्यस्य अनुमतिं ददातु"
+
+#: lib/preferences/preferences.ui:1221
+msgctxt "Preferences|"
+msgid "Include links in focus chain"
+msgstr "फोकस श्रृङ्खलायां लिङ्कानि समाविष्टानि कुर्वन्तु"
+
+#. when you are printing page (on printer), it determine whether to also print background (color, image) of html elements
+#: lib/preferences/preferences.ui:1228
+msgctxt "Preferences|"
+msgid "Print element background"
+msgstr "मुद्रण तत्व पृष्ठभूमि"
+
+#: lib/preferences/preferences.ui:1235
+msgctxt "Preferences|"
+msgid "Animated scrolling"
+msgstr "एनिमेटेड स्क्रॉल"
+
+#: lib/preferences/preferences.ui:1242
+msgctxt "Preferences|"
+msgid "Enable spatial navigation"
+msgstr "स्थानिकमार्गदर्शनं सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1249
+msgctxt "Preferences|"
+msgid "Use native scrollbars"
+msgstr "देशी स्क्रॉलबारस्य उपयोगं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1256
+msgctxt "Preferences|"
+msgid "Disable automatic playing of videos"
+msgstr "विडियो स्वचालितं वादनं निष्क्रियं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1263
+msgctxt "Preferences|"
+msgid "Prevent WebRTC from leaking local IP address"
+msgstr "WebRTC इत्यस्य स्थानीय-IP-सङ्केतं लीकं कर्तुं निवारयन्तु"
+
+#: lib/preferences/preferences.ui:1270
+msgctxt "Preferences|"
+msgid "Enable DNS prefetching"
+msgstr "DNS पूर्वागमनं सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1277
+msgctxt "Preferences|"
+msgid "Enable screen capture"
+msgstr "स्क्रीन कैप्चर सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1284
+msgctxt "Preferences|"
+msgid "Use hardware acceleration (requires restart)"
+msgstr "हार्डवेयर त्वरणस्य उपयोगं कुर्वन्तु (पुनः आरम्भस्य आवश्यकता अस्ति)"
+
+#: lib/preferences/preferences.ui:1291
+msgctxt "Preferences|"
+msgid "Allow reading from canvas"
+msgstr "कैनवासतः पठनस्य अनुमतिं ददातु"
+
+#: lib/preferences/preferences.ui:1298
+msgctxt "Preferences|"
+msgid "Force dark mode"
+msgstr "बल अन्धकारविधा"
+
+#: lib/preferences/preferences.ui:1305
+msgctxt "Preferences|"
+msgid "Allow image animation"
+msgstr ""
+
+#: lib/preferences/preferences.ui:1314
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Preffer color scheme:"
+msgctxt "Preferences|"
+msgid "Preferred color scheme:"
+msgstr "वर्ण योजनां प्राधान्यं ददातु :"
+
+#: lib/preferences/preferences.ui:1349
+msgctxt "Preferences|"
+msgid "Mouse wheel scrolls"
+msgstr "मूषकचक्रं स्क्रॉलं करोति"
+
+#: lib/preferences/preferences.ui:1369
+msgctxt "Preferences|"
+msgid "lines on page"
+msgstr "पृष्ठे पङ्क्तयः"
+
+#: lib/preferences/preferences.ui:1380
+msgctxt "Preferences|"
+msgid "Default zoom on pages: "
+msgstr "पृष्ठेषु पूर्वनिर्धारितं जूमम् : "
+
+#: lib/preferences/preferences.ui:1419
+msgctxt "Preferences|"
+msgid "Local Storage"
+msgstr "स्थानीय भण्डारण"
+
+#: lib/preferences/preferences.ui:1427
+msgctxt "Preferences|"
+msgid "Allow storing network cache on disk"
+msgstr "डिस्क मध्ये संजालसञ्चयस्य संग्रहणं अनुमन्यताम्"
+
+#: lib/preferences/preferences.ui:1450
+msgctxt "Preferences|"
+msgid "Delete cache on close"
+msgstr "close इत्यत्र cache विलोपयन्तु"
+
+#: lib/preferences/preferences.ui:1457
+msgctxt "Preferences|"
+msgid "Maximum:"
+msgstr "अधिकतमम् :"
+
+#: lib/preferences/preferences.ui:1464
+msgctxt "Preferences|"
+msgid " MB"
+msgstr " MB"
+
+#: lib/preferences/preferences.ui:1480
+msgctxt "Preferences|"
+msgid "Store cache in:"
+msgstr "संग्रहणं संग्रहयन्तु अत्र:"
+
+#: lib/preferences/preferences.ui:1508
+msgctxt "Preferences|"
+msgid "Allow saving history"
+msgstr "इतिहासस्य रक्षणस्य अनुमतिं ददातु"
+
+#: lib/preferences/preferences.ui:1515
+msgctxt "Preferences|"
+msgid "Delete history on close"
+msgstr "close इत्यत्र इतिहासं विलोपयन्तु"
+
+#: lib/preferences/preferences.ui:1538
+msgctxt "Preferences|"
+msgid "Allow local storage of HTML5 web content"
+msgstr "HTML5 जालसामग्रीणां स्थानीयभण्डारणस्य अनुमतिं ददातु"
+
+#: lib/preferences/preferences.ui:1545
+msgctxt "Preferences|"
+msgid "Delete locally stored HTML5 web content on close"
+msgstr "स्थानीयतया संगृहीतं HTML5 जालसामग्रीम् close इत्यत्र विलोपयन्तु"
+
+#: lib/preferences/preferences.ui:1571
+msgctxt "Preferences|"
+msgid "Delete now"
+msgstr "अधुना विलोपयन्तु"
+
+#: lib/preferences/preferences.ui:1610
+msgctxt "Preferences|"
+msgid "Proxy Configuration"
+msgstr "प्रॉक्सी विन्यासः"
+
+#: lib/preferences/preferences.ui:1629
+msgctxt "Preferences|"
+msgid "System proxy configuration"
+msgstr "प्रणाली प्रॉक्सी विन्यास"
+
+#: lib/preferences/preferences.ui:1652
+msgctxt "Preferences|"
+msgid "Manual configuration"
+msgstr "मैनुअल विन्यास"
+
+#: lib/preferences/preferences.ui:1662
+msgctxt "Preferences|"
+msgid "HTTP"
+msgstr "एचटीटीपी"
+
+#: lib/preferences/preferences.ui:1667
+msgctxt "Preferences|"
+msgid "SOCKS5"
+msgstr "SOCKS5"
+
+#: lib/preferences/preferences.ui:1682
+msgctxt "Preferences|"
+msgid "Port:"
+msgstr "पोताश्रय:"
+
+#: lib/preferences/preferences.ui:1703
+msgctxt "Preferences|"
+msgid "Username:"
+msgstr "उपयोक्तृनाम :"
+
+#: lib/preferences/preferences.ui:1713
+msgctxt "Preferences|"
+msgid "Password:"
+msgstr "समाभाष्:"
+
+#: lib/preferences/preferences.ui:1742
+msgctxt "Preferences|"
+msgid "No proxy"
+msgstr "न प्रॉक्सी"
+
+#: lib/preferences/preferences.ui:1757
+msgctxt "Preferences|"
+msgid "<b>Font Families</b>"
+msgstr "<b>फॉन्ट परिवाराः</b>"
+
+#: lib/preferences/preferences.ui:1770
+msgctxt "Preferences|"
+msgid "Standard"
+msgstr "स्तरीय"
+
+#: lib/preferences/preferences.ui:1777
+msgctxt "Preferences|"
+msgid "Fixed"
+msgstr "युक्त"
+
+#: lib/preferences/preferences.ui:1787
+msgctxt "Preferences|"
+msgid "Serif"
+msgstr "सेरिफ"
+
+#: lib/preferences/preferences.ui:1797
+msgctxt "Preferences|"
+msgid "Sans Serif"
+msgstr "संस सेरिफ"
+
+#: lib/preferences/preferences.ui:1807
+msgctxt "Preferences|"
+msgid "Cursive"
+msgstr "वक्र"
+
+#: lib/preferences/preferences.ui:1859
+msgctxt "Preferences|"
+msgid "Fantasy"
+msgstr "काल्पनिकता"
+
+#: lib/preferences/preferences.ui:1866
+msgctxt "Preferences|"
+msgid "<b>Font Sizes</b>"
+msgstr "<b>फ़ॉन्ट आकाराः</b>"
+
+#: lib/preferences/preferences.ui:1875
+msgctxt "Preferences|"
+msgid "Fixed Font Size"
+msgstr "नियत फ़ॉन्ट आकार"
+
+#: lib/preferences/preferences.ui:1882
+msgctxt "Preferences|"
+msgid "Default Font Size"
+msgstr "पूर्वनिर्धारित फ़ॉन्ट आकार"
+
+#: lib/preferences/preferences.ui:1909
+msgctxt "Preferences|"
+msgid "Minimum Font Size"
+msgstr "न्यूनतम फॉन्ट आकार"
+
+#: lib/preferences/preferences.ui:1916
+msgctxt "Preferences|"
+msgid "Minimum Logical Font Size"
+msgstr "न्यूनतम तार्किक फ़ॉन्ट आकार"
+
+#: lib/preferences/preferences.ui:1949
+msgctxt "Preferences|"
+msgid "<b>Shortcuts</b>"
+msgstr "<b>शॉर्टकट</b>"
+
+#: lib/preferences/preferences.ui:1956
+msgctxt "Preferences|"
+msgid "Switch to tabs with Alt + number of tab"
+msgstr "Alt + number of tab इत्यनेन सह ट्याब्स् प्रति स्विच् कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1963
+msgctxt "Preferences|"
+msgid "Load speed dials with Ctrl + number of speed dial"
+msgstr "Ctrl + स्पीडडायलस्य संख्यायाः सह स्पीड् डायल्स् लोड् कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1970
+msgctxt "Preferences|"
+msgid ""
+"Existing shortcuts:<br/><b>1</b> - previous tab<br/><b>2</b> - next tab<br/"
+"><b>/</b> - search on page"
+msgstr ""
+"विद्यमानाः शॉर्टकट् : १.<br/> <b>१</b> - पूर्व टब<br/> <b>२</b> - अग्रिमः टबः<br/> "
+"<b>/</b> - पृष्ठे अन्वेषणं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1973
+msgctxt "Preferences|"
+msgid "Use single key shortcuts"
+msgstr "एककुंजी-शॉर्टकट्-प्रयोगं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:1980
+msgctxt "Preferences|"
+msgid ""
+"If unchecked, prevents accidental exit from the application if the Ctrl-W "
+"shortcut was intended."
+msgstr ""
+"यदि अनिरीक्षितं भवति तर्हि अनुप्रयोगात् आकस्मिकनिर्गमनं निवारयति यदि Ctrl-W शॉर्टकट् "
+"अभिप्रेतः आसीत् ।"
+
+#: lib/preferences/preferences.ui:1983
+msgctxt "Preferences|"
+msgid "Close application with Ctrl-Q"
+msgstr "Ctrl-Q इत्यनेन अनुप्रयोगं बन्दं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2007
+msgctxt "Preferences|"
+msgid "<b>Download Location</b>"
+msgstr "<b>स्थानं डाउनलोड् कुर्वन्तु</b>"
+
+#: lib/preferences/preferences.ui:2014
+msgctxt "Preferences|"
+msgid "Ask everytime for download location"
+msgstr "प्रत्येकं समये डाउनलोड् स्थानं पृच्छन्तु"
+
+#: lib/preferences/preferences.ui:2021
+msgctxt "Preferences|"
+msgid "Use defined location: "
+msgstr "परिभाषितस्थानस्य उपयोगं कुर्वन्तु : "
+
+#: lib/preferences/preferences.ui:2071
+msgctxt "Preferences|"
+msgid "<b>Download Options</b>"
+msgstr "<b>डाउनलोड् विकल्पाः</b>"
+
+#: lib/preferences/preferences.ui:2078
+msgctxt "Preferences|"
+msgid "Close download manager when downloading finishes"
+msgstr "डाउनलोड् समाप्तं भवति तदा डाउनलोड् प्रबन्धकं बन्दं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2085
+msgctxt "Preferences|"
+msgid "<b>External download manager</b>"
+msgstr "<b>बाह्य डाउनलोड प्रबन्धक</b>"
+
+#: lib/preferences/preferences.ui:2092
+msgctxt "Preferences|"
+msgid "Use external download manager"
+msgstr "बाह्य-अवलोकन-प्रबन्धकस्य उपयोगं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2104
+msgctxt "Preferences|"
+msgid "Executable:"
+msgstr "निष्पादनीयः :"
+
+#: lib/preferences/preferences.ui:2111
+msgctxt "Preferences|"
+msgid "Arguments:"
+msgstr "तर्काः :"
+
+#: lib/preferences/preferences.ui:2121
+msgctxt "Preferences|"
+msgid "Leave blank if unsure"
+msgstr "अनिश्चितः चेत् रिक्तं त्यजन्तु"
+
+#: lib/preferences/preferences.ui:2142
+msgctxt "Preferences|"
+msgid "<b>%d</b> will be replaced with URL to be downloaded"
+msgstr "<b>%d इत्यस्य</b> स्थाने अवतरणं कर्तव्यं URL भविष्यति"
+
+#: lib/preferences/preferences.ui:2168
+msgctxt "Preferences|"
+msgid "<b>AutoFill options</b>"
+msgstr "<b>AutoFill विकल्पाः</b>"
+
+#: lib/preferences/preferences.ui:2175
+msgctxt "Preferences|"
+msgid "Allow saving passwords from sites"
+msgstr "साइट् तः गुप्तशब्दानां रक्षणं अनुमन्यताम्"
+
+#: lib/preferences/preferences.ui:2226
+msgctxt "Preferences|"
+msgid "Automatically complete passwords on sites"
+msgstr "साइट्-स्थानेषु गुप्तशब्दान् स्वयमेव सम्पूर्णं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2247
+msgctxt "Preferences|"
+msgid "Manage Cookies"
+msgstr "कुकीजं प्रबन्धयन्तु"
+
+#: lib/preferences/preferences.ui:2260
+msgctxt "Preferences|"
+msgid "Cookies Manager"
+msgstr "कुकीज प्रबन्धक"
+
+#: lib/preferences/preferences.ui:2283
+msgctxt "Preferences|"
+msgid "<b>JavaScript</b>"
+msgstr "<b>जावास्क्रिप्ट्</b>"
+
+#: lib/preferences/preferences.ui:2296
+msgctxt "Preferences|"
+msgid "JavaScript options"
+msgstr "जावास्क्रिप्ट् विकल्पाः"
+
+#: lib/preferences/preferences.ui:2303
+msgctxt "Preferences|"
+msgid "Send Do Not Track header to servers"
+msgstr "सर्वरेभ्यः Do Not Track इति शीर्षकं प्रेषयन्तु"
+
+#: lib/preferences/preferences.ui:2310
+msgctxt "Preferences|"
+msgid "<b>Cookies</b>"
+msgstr "<b>कुकीज</b>"
+
+#: lib/preferences/preferences.ui:2336
+msgctxt "Preferences|"
+msgid "Manage JavaScript privacy options"
+msgstr "जावास्क्रिप्ट् गोपनीयताविकल्पान् प्रबन्धयन्तु"
+
+#: lib/preferences/preferences.ui:2343
+msgctxt "Preferences|"
+msgid "<b>Other</b>"
+msgstr "<b>इतर</b>"
+
+#: lib/preferences/preferences.ui:2364
+msgctxt "Preferences|"
+msgid "HTML5 Permissions"
+msgstr "HTML5 अनुमतिः"
+
+#: lib/preferences/preferences.ui:2374
+msgctxt "Preferences|"
+msgid "Site Settings"
+msgstr "साइट सेटिंग्स्"
+
+#: lib/preferences/preferences.ui:2406
+msgctxt "Preferences|"
+msgid "Expiration timeout:"
+msgstr "अवधिसमाप्तिसमयः :"
+
+#: lib/preferences/preferences.ui:2419
+msgctxt "Preferences|"
+msgid " seconds"
+msgstr " सेकण्ड्"
+
+#: lib/preferences/preferences.ui:2441
+msgctxt "Preferences|"
+msgid "<b>Notifications</b>"
+msgstr "<b>अधिसूचना</b>"
+
+#: lib/preferences/preferences.ui:2464
+msgctxt "Preferences|"
+msgid "Use Native System Notifications (Linux only)"
+msgstr "देशी प्रणाली सूचनानां उपयोगं कुर्वन्तु (केवलं लिनक्स)"
+
+#: lib/preferences/preferences.ui:2471
+msgctxt "Preferences|"
+msgid "Do not use Notifications"
+msgstr "सूचनानां उपयोगं न कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2494
+msgctxt "Preferences|"
+msgid ""
+"<b>Note: </b>You can change position of OSD Notification by dragging it on "
+"the screen."
+msgstr ""
+"<b>नोटः-</b> भवान् OSD Notification इत्यस्य स्थानं स्क्रीन् मध्ये कर्षयित्वा परिवर्तयितुं "
+"शक्नोति ।"
+
+#: lib/preferences/preferences.ui:2520
+msgctxt "Preferences|"
+msgid "Use OSD Notifications"
+msgstr "OSD सूचनानां उपयोगं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2527
+msgctxt "Preferences|"
+msgid "Preview"
+msgstr "पूर्वावलोकनम्"
+
+#: lib/preferences/preferences.ui:2624
+msgctxt "Preferences|"
+msgid ""
+"For more information about Spell Check, please see <a href=\"https://"
+"userbase.kde.org/Osza#Spell_Check\">wiki</a>."
+msgstr ""
+"वर्तनीपरीक्षायाः विषये अधिकविवरणार्थं <a href=\"https://userbase.kde.org/"
+"Osza#Spell_Check\">विकिं</a> पश्यन्तु ।"
+
+#: lib/preferences/preferences.ui:2665
+msgctxt "Preferences|"
+msgid "<b>Dictionary directories</b>"
+msgstr "<b>शब्दकोशनिर्देशिकाः</b>"
+
+#: lib/preferences/preferences.ui:2672
+msgctxt "Preferences|"
+msgid "No languages found"
+msgstr "न भाषाः प्राप्ताः"
+
+#: lib/preferences/preferences.ui:2679
+msgctxt "Preferences|"
+msgid "<b>Spell Check options</b>"
+msgstr "<b>Spell Check विकल्पाः</b>"
+
+#: lib/preferences/preferences.ui:2686
+msgctxt "Preferences|"
+msgid "Enable Spell Check"
+msgstr "वर्तनीपरीक्षां सक्षमं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2715
+msgctxt "Preferences|"
+msgid "Protocol Handlers Manager"
+msgstr "प्रोटोकॉल संचालक प्रबन्धक"
+
+#: lib/preferences/preferences.ui:2737
+msgctxt "Preferences|"
+msgid ""
+"<html><head/><body><p><span style=\" font-weight:700;\">Manage Auto Open "
+"protocols</span></p></body></html>"
+msgstr ""
+
+#: lib/preferences/preferences.ui:2749
+msgctxt "Preferences|"
+msgid "Manage custom schemes"
+msgstr "कस्टम योजनानां प्रबन्धनं कुर्वन्तु"
+
+#: lib/preferences/preferences.ui:2756
+msgctxt "Preferences|"
+msgid "<b>Change browser identification</b>"
+msgstr "<b>ब्राउजर्-परिचयं परिवर्तयन्तु</b>"
+
+#: lib/preferences/preferences.ui:2763
+msgctxt "Preferences|"
+msgid "<b>Manage search engines</b>"
+msgstr "<b>अन्वेषणयन्त्राणां प्रबन्धनं कुर्वन्तु</b>"
+
+#: lib/preferences/preferences.ui:2770
+msgctxt "Preferences|"
+msgid "<b>Preferred language for web sites</b>"
+msgstr "<b>जालस्थलानां कृते प्राधान्यभाषा</b>"
+
+#: lib/preferences/preferences.ui:2777
+msgctxt "Preferences|"
+msgid "<b>User Style Sheet</b>"
+msgstr "<b>उपयोक्तृशैलीपत्रम्</b>"
+
+#: lib/preferences/preferences.ui:2784
+msgctxt "Preferences|"
+msgid "<b>Manage protocol handlers</b>"
+msgstr "<b>प्रोटोकॉल-सञ्चालकानां प्रबन्धनं कुर्वन्तु</b>"
+
+#: lib/preferences/preferences.ui:2839
+msgctxt "Preferences|"
+msgid "Certificate Exception Manager"
+msgstr "प्रमाणपत्र अपवाद प्रबन्धक"
+
+#: lib/preferences/preferences.ui:2879
+msgctxt "Preferences|"
+msgid "User Agent Manager"
+msgstr "उपयोक्ता एजेण्ट् प्रबन्धकः"
+
+#: lib/preferences/preferences.ui:2914
+msgctxt "Preferences|"
+msgid "Style Sheet automatically loaded with all websites: "
+msgstr "Style Sheet स्वयमेव सर्वैः जालपुटैः सह लोड् भवति: "
+
+#: lib/preferences/preferences.ui:2939
+msgctxt "Preferences|"
+msgid "Custom Scheme Manager"
+msgstr "कस्टम योजना प्रबन्धक"
+
+#: lib/preferences/preferences.ui:2979
+msgctxt "Preferences|"
+msgid "Search Engines Manager"
+msgstr "अन्वेषणयन्त्रप्रबन्धकः"
+
+#: lib/preferences/preferences.ui:3019
+msgctxt "Preferences|"
+msgid "Languages"
+msgstr "भाषाः"
+
+#: lib/preferences/preferences.ui:3054
+msgctxt "Preferences|"
+msgid "<b>Certificate manager</b>"
+msgstr "<b>प्रमाणपत्र प्रबन्धक</b>"
+
+#: lib/preferences/preferences.ui:3079
+msgctxt "Preferences|"
+msgid "Auto Open protocols"
+msgstr ""
+
+#: lib/preferences/schememanager.cpp:84
+msgctxt "SchemeManager|"
+msgid "Add allowed scheme"
+msgstr "अनुमत योजनां योजयन्तु"
+
+#: lib/preferences/schememanager.cpp:84 lib/preferences/schememanager.cpp:119
+msgctxt "SchemeManager|"
+msgid "Scheme:"
+msgstr "योजना :"
+
+#: lib/preferences/schememanager.cpp:119
+msgctxt "SchemeManager|"
+msgid "Add blocked scheme"
+msgstr "अवरुद्ध योजनां योजयन्तु"
+
+#: lib/preferences/schememanager.ui:14
+msgctxt "SchemeManager|"
+msgid "Custom scheme manager"
+msgstr "कस्टम योजना प्रबन्धक"
+
+#: lib/preferences/schememanager.ui:26
+msgctxt "SchemeManager|"
+msgid "Allowed schemes"
+msgstr "अनुमत योजनाएँ"
+
+#: lib/preferences/schememanager.ui:33
+msgctxt "SchemeManager|"
+msgid "**Note:** Allowed schemes can be added by extensions."
+msgstr "**टिप्पणी:** अनुमताः योजनाः विस्तारैः योजयितुं शक्यन्ते ।"
+
+#: lib/preferences/schememanager.ui:54 lib/preferences/schememanager.ui:116
+msgctxt "SchemeManager|"
+msgid "Add"
+msgstr "संयोजयति"
+
+#: lib/preferences/schememanager.ui:61 lib/preferences/schememanager.ui:123
+msgctxt "SchemeManager|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/schememanager.ui:68
+msgctxt "SchemeManager|"
+msgid "Block"
+msgstr "मृदुवस्तु"
+
+#: lib/preferences/schememanager.ui:98
+msgctxt "SchemeManager|"
+msgid "Blocked schemes"
+msgstr "अवरुद्ध योजनाएँ"
+
+#: lib/preferences/schememanager.ui:147
+msgctxt "SchemeManager|"
+msgid "Changes will take effect after Osza restart."
+msgstr "Osza पुनः आरम्भस्य अनन्तरं परिवर्तनं प्रभावी भविष्यति ।"
+
+#: lib/preferences/sitesettingsattributesitem.ui:39
+msgctxt "SiteSettingsAttributesItem|"
+msgid "Browse"
+msgstr "ब्राउज़ करें"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:36
+#: lib/preferences/sitesettingsbrowsedialog.ui:99
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Ask"
+msgstr "पृच्छतु"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:37
+#: lib/preferences/sitesettingsbrowsedialog.ui:106
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Allow"
+msgstr "अनुमन्यताम्‌"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:38
+#: lib/preferences/sitesettingsbrowsedialog.ui:113
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Deny"
+msgstr "अपह्नुते"
+
+#: lib/preferences/sitesettingsbrowsedialog.cpp:39
+#: lib/preferences/sitesettingsbrowsedialog.ui:120
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Default"
+msgstr "मूलभूतम्‌"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:14
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Site Permissions"
+msgstr "साइट अनुमतिः"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:22
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Url:"
+msgstr "Url:"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:32
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "https://kde.org"
+msgstr "https://kde.org इति"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:51
+msgctxt "SiteSettingsBrowseDialog|Add or Modify"
+msgid "Set"
+msgstr "दृढः"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:68
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Site"
+msgstr "क्षेत्र"
+
+#: lib/preferences/sitesettingsbrowsedialog.ui:73
+msgctxt "SiteSettingsBrowseDialog|"
+msgid "Behaviour"
+msgstr "व्यवहार"
+
+#: lib/preferences/sitesettingshtml5item.ui:42
+msgctxt "SiteSettingsHtml5Item|"
+msgid "Browse"
+msgstr "ब्राउज़ करें"
+
+#: lib/preferences/thememanager.cpp:100
+msgctxt "ThemeManager|"
+msgid "Confirmation"
+msgstr "पुष्टिः"
+
+#: lib/preferences/thememanager.cpp:101
+#, qt-format
+msgctxt "ThemeManager|"
+msgid "Are you sure you want to remove '%1'?"
+msgstr "किं भवान् निश्चयेन '%1' अपसारयितुम् इच्छति?"
+
+#: lib/preferences/thememanager.ui:51
+msgctxt "ThemeManager|"
+msgid "<b>Name:</b>"
+msgstr "<b>नामः:</b>"
+
+#: lib/preferences/thememanager.ui:61
+msgctxt "ThemeManager|"
+msgid "<b>Author:</b>"
+msgstr "<b>लेखकः:</b>"
+
+#: lib/preferences/thememanager.ui:84
+msgctxt "ThemeManager|"
+msgid "<b>Description:</b>"
+msgstr "<b>वर्णनम्‌:</b>"
+
+#: lib/preferences/thememanager.ui:128
+msgctxt "ThemeManager|"
+msgid "License"
+msgstr "अनुज्ञापत्रम्"
+
+#: lib/preferences/thememanager.ui:155
+msgctxt "ThemeManager|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/thememanager.ui:175
+msgctxt "ThemeManager|"
+msgid ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">Get more themes...</a>"
+msgstr ""
+"<a href=\"https://github.com/osza-tools/osza-browser\">अधिकानि विषयाणि प्राप्नुवन्तु..."
+"</a>"
+
+#: lib/preferences/useragentdialog.cpp:99
+msgctxt "UserAgentDialog|"
+msgid "Add new site"
+msgstr "नूतनं साइट् योजयन्तु"
+
+#: lib/preferences/useragentdialog.cpp:141
+msgctxt "UserAgentDialog|"
+msgid "Edit site"
+msgstr "साइट् सम्पादयतु"
+
+#: lib/preferences/useragentdialog.cpp:227
+msgctxt "UserAgentDialog|"
+msgid "Site domain: "
+msgstr "साइट् डोमेन् : "
+
+#: lib/preferences/useragentdialog.cpp:228
+msgctxt "UserAgentDialog|"
+msgid "User Agent: "
+msgstr "उपयोक्ता एजेण्ट् : "
+
+#: lib/preferences/useragentdialog.ui:14
+msgctxt "UserAgentDialog|"
+msgid "User Agent Manager"
+msgstr "उपयोक्ता एजेण्ट् प्रबन्धकः"
+
+#: lib/preferences/useragentdialog.ui:20
+msgctxt "UserAgentDialog|"
+msgid "Change global User Agent"
+msgstr "वैश्विकं उपयोक्तृ एजेण्ट् परिवर्तयन्तु"
+
+#: lib/preferences/useragentdialog.ui:48
+msgctxt "UserAgentDialog|"
+msgid "Use different User Agents for specified sites"
+msgstr "निर्दिष्टस्थलानां कृते भिन्नानां User Agents इत्यस्य उपयोगं कुर्वन्तु"
+
+#: lib/preferences/useragentdialog.ui:92
+msgctxt "UserAgentDialog|"
+msgid "Site"
+msgstr "क्षेत्र"
+
+#: lib/preferences/useragentdialog.ui:97
+msgctxt "UserAgentDialog|"
+msgid "User Agent"
+msgstr "उपयोक्ता एजेण्ट्"
+
+#: lib/preferences/useragentdialog.ui:107
+msgctxt "UserAgentDialog|"
+msgid "Add"
+msgstr "संयोजयति"
+
+#: lib/preferences/useragentdialog.ui:114
+msgctxt "UserAgentDialog|"
+msgid "Remove"
+msgstr "अपाकरोति"
+
+#: lib/preferences/useragentdialog.ui:134
+msgctxt "UserAgentDialog|"
+msgid "Edit"
+msgstr "सम्पादन"
+
+#: lib/session/sessionmanager.cpp:127
+msgctxt "SessionManager|"
+msgid "_cloned"
+msgstr "_क्लोन् कृतम्"
+
+#: lib/session/sessionmanager.cpp:127
+msgctxt "SessionManager|"
+msgid "_renamed"
+msgstr "_नामान्तरितम्"
+
+#: lib/session/sessionmanager.cpp:128
+msgctxt "SessionManager|"
+msgid "Clone Session"
+msgstr "क्लोन सत्र"
+
+#: lib/session/sessionmanager.cpp:128
+msgctxt "SessionManager|"
+msgid "Rename Session"
+msgstr "सत्रस्य नाम परिवर्तनं कुर्वन्तु"
+
+#: lib/session/sessionmanager.cpp:129
+msgctxt "SessionManager|"
+msgid "Please enter a new name:"
+msgstr "कृपया नूतनं नाम प्रविष्टं कुर्वन्तु:"
+
+#: lib/session/sessionmanager.cpp:137 lib/session/sessionmanager.cpp:144
+#: lib/session/sessionmanager.cpp:149 lib/session/sessionmanager.cpp:171
+#: lib/session/sessionmanager.cpp:219
+msgctxt "SessionManager|"
+msgid "Error!"
+msgstr "त्रुटि!"
+
+#: lib/session/sessionmanager.cpp:137 lib/session/sessionmanager.cpp:171
+#: lib/session/sessionmanager.cpp:219
+#, qt-format
+msgctxt "SessionManager|"
+msgid "The session file \"%1\" exists. Please enter another name."
+msgstr "सत्रसञ्चिका \"%1\" अस्ति । कृपया अन्यत् नाम प्रविशतु।"
+
+#: lib/session/sessionmanager.cpp:144
+msgctxt "SessionManager|"
+msgid "An error occurred when cloning session file."
+msgstr "सत्रसञ्चिकायाः क्लोनिङ्ग् करणकाले त्रुटिः अभवत् ।"
+
+#: lib/session/sessionmanager.cpp:149
+msgctxt "SessionManager|"
+msgid "An error occurred when renaming session file."
+msgstr "सत्रसञ्चिकायाः नामकरणं कुर्वन् त्रुटिः अभवत् ।"
+
+#: lib/session/sessionmanager.cpp:162
+msgctxt "SessionManager|"
+msgid "Save Session"
+msgstr "सत्रं रक्षतु"
+
+#: lib/session/sessionmanager.cpp:163
+msgctxt "SessionManager|"
+msgid "Please enter a name to save session:"
+msgstr "सत्रं रक्षितुं कृपया नाम प्रविशतु:"
+
+#: lib/session/sessionmanager.cpp:164
+#, qt-format
+msgctxt "SessionManager|"
+msgid "Saved Session (%1)"
+msgstr "रक्षितसत्रम् (%1) ."
+
+#: lib/session/sessionmanager.cpp:181
+msgctxt "SessionManager|"
+msgid "Restore Backup"
+msgstr "Backup पुनः स्थापयन्तु"
+
+#: lib/session/sessionmanager.cpp:181
+msgctxt "SessionManager|"
+msgid "Are you sure you want to replace current session?"
+msgstr "किं भवान् निश्चयेन वर्तमानसत्रं प्रतिस्थापयितुम् इच्छति?"
+
+#: lib/session/sessionmanager.cpp:200
+msgctxt "SessionManager|"
+msgid "Delete Session"
+msgstr "सत्रं विलोपयन्तु"
+
+#: lib/session/sessionmanager.cpp:200
+#, qt-format
+msgctxt "SessionManager|"
+msgid "Are you sure you want to delete session '%1'?"
+msgstr "किं भवान् निश्चयेन '%1' सत्रं विलोपयितुम् इच्छति?"
+
+#: lib/session/sessionmanager.cpp:210
+msgctxt "SessionManager|"
+msgid "New Session"
+msgstr "नव सत्र"
+
+#: lib/session/sessionmanager.cpp:211
+msgctxt "SessionManager|"
+msgid "Please enter a name to create new session:"
+msgstr "नूतनसत्रस्य निर्माणार्थं कृपया नाम प्रविष्टं कुर्वन्तु:"
+
+#: lib/session/sessionmanager.cpp:212
+#, qt-format
+msgctxt "SessionManager|"
+msgid "New Session (%1)"
+msgstr "नवीनं सत्रम् (%1) ."
+
+#: lib/session/sessionmanager.cpp:244
+msgctxt "SessionManager|"
+msgid "Backup 1"
+msgstr "बैकअप 1"
+
+#: lib/session/sessionmanager.cpp:251
+msgctxt "SessionManager|"
+msgid "Backup 2"
+msgstr "बैकअप 2"
+
+#: lib/session/sessionmanager.cpp:291
+msgctxt "SessionManager|"
+msgid "Default Session"
+msgstr "पूर्वनिर्धारित सत्र"
+
+#: lib/session/sessionmanager.cpp:394
+msgctxt "SessionManager|"
+msgid "Please select the startup session:"
+msgstr "कृपया आरम्भसत्रं चिनोतु:"
+
+#: lib/session/sessionmanager.cpp:413
+#, qt-format
+msgctxt "SessionManager|"
+msgid "%1 (last session)"
+msgstr "%1 (अन्तिमसत्रम्)"
+
+#: lib/session/sessionmanagerdialog.cpp:140
+msgctxt "SessionManagerDialog|"
+msgid "Restore"
+msgstr "निर्यत्"
+
+#: lib/session/sessionmanagerdialog.cpp:140
+msgctxt "SessionManagerDialog|"
+msgid "Switch To"
+msgstr "Switch To इति"
+
+#: lib/session/sessionmanagerdialog.ui:14
+msgctxt "SessionManagerDialog|"
+msgid "Session Manager"
+msgstr "सत्र प्रबन्धक"
+
+#: lib/session/sessionmanagerdialog.ui:24
+msgctxt "SessionManagerDialog|"
+msgid "Session"
+msgstr "सत्र"
+
+#: lib/session/sessionmanagerdialog.ui:29
+msgctxt "SessionManagerDialog|"
+msgid "Last Modified"
+msgstr "अन्तिम परिवर्तन"
+
+#: lib/session/sessionmanagerdialog.ui:39
+msgctxt "SessionManagerDialog|"
+msgid "New"
+msgstr "नूतनम्‌"
+
+#: lib/session/sessionmanagerdialog.ui:46
+msgctxt "SessionManagerDialog|"
+msgid "Rename"
+msgstr "पुनर्नाम"
+
+#: lib/session/sessionmanagerdialog.ui:53
+msgctxt "SessionManagerDialog|"
+msgid "Clone"
+msgstr "क्लोन"
+
+#: lib/session/sessionmanagerdialog.ui:60
+msgctxt "SessionManagerDialog|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/session/sessionmanagerdialog.ui:67
+msgctxt "SessionManagerDialog|"
+msgid "Switch to"
+msgstr "स्विच् कुर्वन्तु"
+
+#: lib/sidebar/bookmarkssidebar.cpp:113
+msgctxt "BookmarksSidebar|"
+msgid "Open in new tab"
+msgstr "नूतन ट्याब् मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/bookmarkssidebar.cpp:114
+msgctxt "BookmarksSidebar|"
+msgid "Open in new window"
+msgstr "नूतनविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/bookmarkssidebar.cpp:115
+msgctxt "BookmarksSidebar|"
+msgid "Open in new private window"
+msgstr "नूतने निजविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/bookmarkssidebar.cpp:118
+msgctxt "BookmarksSidebar|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/sidebar/bookmarkssidebar.ui:41
+msgctxt "BookmarksSideBar|"
+msgid "Search..."
+msgstr "अन्वेषण..."
+
+#: lib/sidebar/historysidebar.cpp:96
+msgctxt "HistorySideBar|"
+msgid "Open in new tab"
+msgstr "नूतन ट्याब् मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/historysidebar.cpp:97
+msgctxt "HistorySideBar|"
+msgid "Open in new window"
+msgstr "नूतनविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/historysidebar.cpp:98
+msgctxt "HistorySideBar|"
+msgid "Open in new private window"
+msgstr "नूतने निजविण्डो मध्ये उद्घाटयन्तु"
+
+#: lib/sidebar/historysidebar.cpp:101
+msgctxt "HistorySideBar|"
+msgid "Delete"
+msgstr "लुप्"
+
+#: lib/sidebar/historysidebar.ui:32
+msgctxt "HistorySideBar|"
+msgid "Search..."
+msgstr "अन्वेषण..."
+
+#: lib/sidebar/sidebar.cpp:66 lib/sidebar/sidebar.cpp:110
+msgctxt "SideBar|"
+msgid "Bookmarks"
+msgstr "बुकमार्क्स"
+
+#: lib/sidebar/sidebar.cpp:73 lib/sidebar/sidebar.cpp:117
+msgctxt "SideBar|"
+msgid "History"
+msgstr "इतिहास"
+
+#: lib/tabwidget/tabbar.cpp:111
+msgctxt "BrowserWindow|"
+msgid "Close Tab"
+msgstr "ट्याब् बन्दं कुर्वन्तु"
+
+#: lib/tabwidget/tabcontextmenu.cpp:63
+msgctxt "TabBar|"
+msgid "Don't ask again"
+msgstr "पुनः मा पृच्छतु"
+
+#: lib/tabwidget/tabcontextmenu.cpp:80 lib/tabwidget/tabcontextmenu.cpp:91
+#: lib/tabwidget/tabcontextmenu.cpp:102
+msgctxt "TabContextMenu|"
+msgid "Close Tabs"
+msgstr "ट्याब्स् बन्दं कुर्वन्तु"
+
+#: lib/tabwidget/tabcontextmenu.cpp:80
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close other tabs?"
+msgstr "किं भवन्तः अन्ये ट्याब्स् पिधातुम् इच्छन्ति वा?"
+
+#: lib/tabwidget/tabcontextmenu.cpp:88
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the right?"
+msgstr "किं भवान् वास्तवमेव सर्वाणि ट्याब्स् दक्षिणतः पिधातुम् इच्छति?"
+
+#: lib/tabwidget/tabcontextmenu.cpp:89
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the bottom?"
+msgstr "किं भवान् वास्तवमेव सर्वाणि ट्याब्स् अधः पिधातुम् इच्छति?"
+
+#: lib/tabwidget/tabcontextmenu.cpp:99
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the left?"
+msgstr "किं भवान् वास्तवमेव वामतः सर्वाणि ट्याब्स् पिधातुम् इच्छति?"
+
+#: lib/tabwidget/tabcontextmenu.cpp:100
+msgctxt "TabContextMenu|"
+msgid "Do you really want to close all tabs to the top?"
+msgstr "किं भवान् वास्तवमेव सर्वाणि ट्याब्स् उपरि पिधातुम् इच्छति?"
+
+#: lib/tabwidget/tabcontextmenu.cpp:117
+msgctxt "TabContextMenu|"
+msgid "&Stop Tab"
+msgstr "&Stop Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:120
+msgctxt "TabContextMenu|"
+msgid "&Reload Tab"
+msgstr "&पुनः लोड् ट्याब्"
+
+#: lib/tabwidget/tabcontextmenu.cpp:123
+msgctxt "TabContextMenu|"
+msgid "&Duplicate Tab"
+msgstr "&Duplicate Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:126
+msgctxt "TabContextMenu|"
+msgid "D&etach Tab"
+msgstr "D&etach Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:129
+msgctxt "TabContextMenu|"
+msgid "Un&pin Tab"
+msgstr "अन&पिन टब"
+
+#: lib/tabwidget/tabcontextmenu.cpp:129
+msgctxt "TabContextMenu|"
+msgid "&Pin Tab"
+msgstr "&पिन टब"
+
+#: lib/tabwidget/tabcontextmenu.cpp:130
+msgctxt "TabContextMenu|"
+msgid "Un&mute Tab"
+msgstr "Un&mute Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:130
+msgctxt "TabContextMenu|"
+msgid "&Mute Tab"
+msgstr "&Mute Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:133
+msgctxt "TabContextMenu|"
+msgid "Load Tab"
+msgstr "लोड ट्याब्"
+
+#: lib/tabwidget/tabcontextmenu.cpp:135
+msgctxt "TabContextMenu|"
+msgid "Unload Tab"
+msgstr "Unload Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:139
+msgctxt "TabContextMenu|"
+msgid "Re&load All Tabs"
+msgstr "Re&load All Tabs"
+
+#: lib/tabwidget/tabcontextmenu.cpp:140 lib/tabwidget/tabcontextmenu.cpp:156
+msgctxt "TabContextMenu|"
+msgid "Bookmark &All Tabs"
+msgstr "बुकमार्क &All Tabs"
+
+#: lib/tabwidget/tabcontextmenu.cpp:144
+msgctxt "TabContextMenu|"
+msgid "Close Ot&her Tabs"
+msgstr "Ot&her Tabs बन्द करें"
+
+#: lib/tabwidget/tabcontextmenu.cpp:145
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Right"
+msgstr "Tabs To The Right इति बन्दं कुर्वन्तु"
+
+#: lib/tabwidget/tabcontextmenu.cpp:145
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Bottom"
+msgstr "Tabs To The Bottom इति बन्दं कुर्वन्तु"
+
+#: lib/tabwidget/tabcontextmenu.cpp:146
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Left"
+msgstr "Close Tabs To The Left इति"
+
+#: lib/tabwidget/tabcontextmenu.cpp:146
+msgctxt "TabContextMenu|"
+msgid "Close Tabs To The Top"
+msgstr "Close Tabs To The Top इति"
+
+#: lib/tabwidget/tabcontextmenu.cpp:151
+msgctxt "TabContextMenu|"
+msgid "Cl&ose Tab"
+msgstr "Cl&ose Tab"
+
+#: lib/tabwidget/tabcontextmenu.cpp:153
+msgctxt "TabContextMenu|"
+msgid "&New tab"
+msgstr "&नवीन ट्याब्"
+
+#: lib/tabwidget/tabcontextmenu.cpp:155
+msgctxt "TabContextMenu|"
+msgid "Reloa&d All Tabs"
+msgstr "Reloa&d All Tabs"
+
+#: lib/tabwidget/tabicon.cpp:169
+msgctxt "TabIcon|"
+msgid "Unmute Tab"
+msgstr "अप्रसन्नता टब"
+
+#: lib/tabwidget/tabicon.cpp:169
+msgctxt "TabIcon|"
+msgid "Mute Tab"
+msgstr "Mute Tab"
+
+#: lib/tabwidget/tabwidget.cpp:51
+msgctxt "TabWidget|"
+msgid "New Tab"
+msgstr "नवीन ट्याब्"
+
+#: lib/tabwidget/tabwidget.cpp:126
+msgctxt "TabWidget|"
+msgid "Closed tabs"
+msgstr "बन्द ट्याब्स्"
+
+#: lib/tabwidget/tabwidget.cpp:137
+msgctxt "TabWidget|"
+msgid "List of tabs"
+msgstr "ट्याब्स् इत्यस्य सूची"
+
+#: lib/tabwidget/tabwidget.cpp:297
+msgctxt "TabWidget|"
+msgid "Empty"
+msgstr "रिक्तम्‌"
+
+#: lib/tabwidget/tabwidget.cpp:301
+msgctxt "TabWidget|"
+msgid "Restore All Closed Tabs"
+msgstr "सर्वाणि बन्द ट्याब्स् पुनः स्थापयन्तु"
+
+#: lib/tabwidget/tabwidget.cpp:302
+msgctxt "TabWidget|"
+msgid "Clear list"
+msgstr "सूचीं स्पष्टं कुर्वन्तु"
+
+#: lib/tabwidget/tabwidget.h:106
+msgctxt "TabWidget|"
+msgid "New tab"
+msgstr "नवीनं ट्याब्"
+
+#: lib/tools/aesinterface.cpp:156
+msgctxt "AesInterface|"
+msgid "Warning!"
+msgstr "चेतवानी!"
+
+#: lib/tools/aesinterface.cpp:156
+msgctxt "AesInterface|"
+msgid ""
+"Data has been encrypted with a newer version of Osza.\n"
+"Please install latest version of Osza."
+msgstr ""
+"Osza् इत्यस्य नूतनतरसंस्करणेन सह आँकडा गुप्तीकरणं कृतम् अस्ति ।\n"
+"कृपया Osza इत्यस्य नवीनतमं संस्करणं संस्थापयन्तु।"
+
+#: lib/tools/certificateinfowidget.cpp:300
+msgctxt "QObject|"
+msgid "<not set in certificate>"
+msgstr "<प्रमाणपत्रे न सेट् कृतम्>"
+
+#: lib/tools/certificateinfowidget.ui:17
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Issued To</b>"
+msgstr "<b>निर्गतं To</b>"
+
+#: lib/tools/certificateinfowidget.ui:24 lib/tools/certificateinfowidget.ui:99
+msgctxt "CertificateInfoWidget|"
+msgid "Common Name (CN):"
+msgstr "सामान्य नाम (CN): ."
+
+#: lib/tools/certificateinfowidget.ui:41 lib/tools/certificateinfowidget.ui:116
+msgctxt "CertificateInfoWidget|"
+msgid "Organization (O):"
+msgstr "संगठन (ओ):"
+
+#: lib/tools/certificateinfowidget.ui:58 lib/tools/certificateinfowidget.ui:133
+msgctxt "CertificateInfoWidget|"
+msgid "Organizational Unit (OU):"
+msgstr "संगठनात्मक इकाई (OU): ."
+
+#: lib/tools/certificateinfowidget.ui:75
+msgctxt "CertificateInfoWidget|"
+msgid "Serial Number:"
+msgstr "क्रमाङ्कः :"
+
+#: lib/tools/certificateinfowidget.ui:92
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Issued By</b>"
+msgstr "<b>निर्गतम् By</b>"
+
+#: lib/tools/certificateinfowidget.ui:150
+msgctxt "CertificateInfoWidget|"
+msgid "<b>Validity</b>"
+msgstr "<b>वैधता</b>"
+
+#: lib/tools/certificateinfowidget.ui:157
+msgctxt "CertificateInfoWidget|"
+msgid "Issued On:"
+msgstr "निर्गतम् On:"
+
+#: lib/tools/certificateinfowidget.ui:174
+msgctxt "CertificateInfoWidget|"
+msgid "Expires On:"
+msgstr "अवधिः समाप्तः On:"
+
+#: lib/tools/docktitlebarwidget.cpp:58
+#, fuzzy
+#| msgctxt "MainMenu|"
+#| msgid "Close Window"
+msgctxt "DockTitleBarWidget|"
+msgid "&Close SideBar"
+msgstr "विण्डो बन्दं कुर्वन्तु"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:42
+msgctxt "HTML5PermissionsNotification|"
+msgid "this site"
+msgstr "एतत् स्थलम्"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:46
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to show desktop notifications?"
+msgstr "%1 इत्यस्य डेस्कटॉप् सूचनाः दर्शयितुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:50
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to locate your position?"
+msgstr "%1 इत्यस्य स्थानं ज्ञातुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:54
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your microphone?"
+msgstr "%1 इत्यस्य माइक्रोफोनस्य उपयोगं कर्तुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:58
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your camera?"
+msgstr "%1 भवतः कॅमेरा-उपयोगं कर्तुं अनुमन्यताम्?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:62
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to use your microphone and camera?"
+msgstr "%1 इत्यस्य माइक्रोफोनस्य, कॅमेरा च उपयोक्तुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:66
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to hide your pointer?"
+msgstr "%1 इत्यस्य सूचकं गोपयितुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:70
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to capture your screen?"
+msgstr "%1 इत्यस्य भवतः पटलं गृहीतुं अनुमन्यताम्?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.cpp:74
+#, qt-format
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow %1 to capture your screen and audio?"
+msgstr "%1 इत्यस्य पटलं श्रव्यं च गृहीतुं अनुमतिं ददातु?"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:43
+msgctxt "HTML5PermissionsNotification|"
+msgid "Remember"
+msgstr "स्मरतु"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:50
+msgctxt "HTML5PermissionsNotification|"
+msgid "Allow"
+msgstr "अनुमन्यताम्‌"
+
+#: lib/tools/html5permissions/html5permissionsnotification.ui:57
+msgctxt "HTML5PermissionsNotification|"
+msgid "Deny"
+msgstr "अपह्नुते"
+
+#: lib/tools/mactoolbutton.cpp:94
+#, fuzzy
+#| msgctxt "Preferences|"
+#| msgid "Select Color"
+msgctxt "MacToolButton|"
+msgid "Select Color"
+msgstr "Color इति चिनोतु"
+
+#: lib/tools/qztools.cpp:379
+msgctxt "QObject|"
+msgid "Unknown size"
+msgstr "अज्ञात आकार"
+
+#: lib/tools/qztools.cpp:386
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 kB"
+msgstr "%1 केबी"
+
+#: lib/tools/qztools.cpp:391
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 MB"
+msgstr "%1 MB"
+
+#: lib/tools/qztools.cpp:395
+#, qt-format
+msgctxt "QObject|"
+msgid "%1 GB"
+msgstr "%1 जीबी"
+
+#: lib/tools/qztools.cpp:857
+msgctxt "QObject|"
+msgid "Executable: "
+msgstr "निष्पादनीयः : "
+
+#: lib/tools/qztools.cpp:858
+msgctxt "QObject|"
+msgid "Arguments: "
+msgstr "तर्काः : "
+
+#: lib/tools/qztools.cpp:860
+msgctxt "QObject|"
+msgid "Cannot start external program"
+msgstr "बाह्यकार्यक्रमं आरभुं न शक्यते"
+
+#: lib/tools/qztools.cpp:861
+#, qt-format
+msgctxt "QObject|"
+msgid "Cannot start external program! %1"
+msgstr "बाह्यकार्यक्रमं आरभुं न शक्यते! %1"
+
+#: lib/webengine/jsalert.ui:125
+msgctxt "jsAlert|"
+msgid "Prevent this page from creating additional dialogs"
+msgstr "अस्य पृष्ठस्य अतिरिक्तसंवादस्य निर्माणं निवारयन्तु"
+
+#: lib/webengine/webpage.cpp:335
+#, qt-format
+msgctxt "WebPage|"
+msgid ""
+"Osza cannot handle <b>%1:</b> links. The requested link is <ul><li>%2</"
+"li></ul>Do you want Osza to try open this link in system application?"
+msgstr ""
+"Osza <b>%1:</b> लिङ्क्स् सम्भालितुं न शक्नोति । अनुरोधितः लिङ्कः अस्ति<ul><li> %2</"
+"li></ul> किं भवान् इच्छति यत् Osza इदं लिङ्क् सिस्टम् एप्लिकेशन् मध्ये उद्घाटयितुं प्रयतेत?"
+
+#: lib/webengine/webpage.cpp:340
+msgctxt "WebPage|"
+msgid "Remember my choice for this protocol"
+msgstr "अस्य प्रोटोकॉलस्य कृते मम विकल्पं स्मर्यताम्"
+
+#: lib/webengine/webpage.cpp:341
+msgctxt "WebPage|"
+msgid "External Protocol Request"
+msgstr "बाह्य प्रोटोकॉल अनुरोध"
+
+#: lib/webengine/webpage.cpp:419 lib/webengine/webpage.cpp:420
+msgctxt "WebPage|"
+msgid "Failed loading page"
+msgstr "पृष्ठं लोडं कर्तुं असफलम्"
+
+#: lib/webengine/webpage.cpp:421
+msgctxt "WebPage|"
+msgid "Something went wrong while loading this page."
+msgstr "एतत् पृष्ठं लोड् कुर्वन् किमपि भ्रष्टम् अभवत् ।"
+
+#: lib/webengine/webpage.cpp:422
+msgctxt "WebPage|"
+msgid ""
+"Try reloading the page or closing some tabs to make more memory available."
+msgstr "अधिकस्मृतिः उपलब्धं कर्तुं पृष्ठं पुनः लोड् कर्तुं वा केचन ट्याब्स् बन्दं कर्तुं वा प्रयतस्व ।"
+
+#: lib/webengine/webpage.cpp:423
+msgctxt "WebPage|"
+msgid "Reload page"
+msgstr "पृष्ठं पुनः लोडं कुर्वन्तु"
+
+#: lib/webengine/webpage.cpp:598
+msgctxt "WebPage|"
+msgid "Choose file..."
+msgstr "सञ्चिकां चिनोतु..."
+
+#: lib/webengine/webpage.cpp:602
+msgctxt "WebPage|"
+msgid "Choose files..."
+msgstr "सञ्चिकाः चिनोतु..."
+
+#: lib/webengine/webpage.cpp:738
+msgctxt "WebPage|"
+msgid "JavaScript alert"
+msgstr "जावास्क्रिप्ट अलर्ट"
+
+#: lib/webengine/webpage.cpp:747
+msgctxt "WebPage|"
+msgid "Prevent this page from creating additional dialogs"
+msgstr "अस्य पृष्ठस्य अतिरिक्तसंवादस्य निर्माणं निवारयन्तु"
+
+#: lib/webengine/webview.cpp:127
+msgctxt "WebView|"
+msgid "Empty Page"
+msgstr "रिक्त पृष्ठ"
+
+#: lib/webengine/webview.cpp:391
+#, qt-format
+msgctxt "WebView|"
+msgid "Osza %1 (%2)"
+msgstr "बाज %1 (%2)"
+
+#: lib/webengine/webview.cpp:705
+msgctxt "WebView|"
+msgid "No suggestions"
+msgstr "न सुझावः"
+
+#: lib/webengine/webview.cpp:756
+msgctxt "WebView|"
+msgid "&Back"
+msgstr "&पृष्ठभागः"
+
+#: lib/webengine/webview.cpp:760
+msgctxt "WebView|"
+msgid "&Forward"
+msgstr "&अग्रतः"
+
+#: lib/webengine/webview.cpp:767
+msgctxt "WebView|"
+msgid "&Add New Page"
+msgstr "&नव पृष्ठं योजयतु"
+
+#: lib/webengine/webview.cpp:768
+msgctxt "WebView|"
+msgid "&Configure Speed Dial"
+msgstr "&स्पीड डायल विन्यस्तं कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:770
+msgctxt "WebView|"
+msgid "Reload All Dials"
+msgstr "सर्वाणि डायल्स् पुनः लोड् कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:789
+msgctxt "WebView|"
+msgid "Book&mark page"
+msgstr "पुस्तक&चिह्न पृष्ठ"
+
+#: lib/webengine/webview.cpp:790
+msgctxt "WebView|"
+msgid "&Save page as..."
+msgstr "&पृष्ठं यथा..."
+
+#: lib/webengine/webview.cpp:791
+msgctxt "WebView|"
+msgid "&Copy page link"
+msgstr "&पृष्ठलिङ्कं प्रतिलिपि कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:792
+msgctxt "WebView|"
+msgid "Send page link..."
+msgstr "पृष्ठस्य लिङ्कं प्रेषयन्तु..."
+
+#: lib/webengine/webview.cpp:794
+msgctxt "WebView|"
+msgid "Select &all"
+msgstr "&all इति चयनं कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:800
+msgctxt "WebView|"
+msgid "Show so&urce code"
+msgstr "so&urce कोडं दर्शयतु"
+
+#: lib/webengine/webview.cpp:804
+msgctxt "WebView|"
+msgid "Show info ab&out site"
+msgstr "साइट् ab&out info दर्शयतु"
+
+#: lib/webengine/webview.cpp:810
+msgctxt "WebView|"
+msgid "Open link in new &tab"
+msgstr "new &tab इत्यत्र लिङ्कं उद्घाटयन्तु"
+
+#: lib/webengine/webview.cpp:815
+msgctxt "WebView|"
+msgid "Open link in new &window"
+msgstr "new &window इत्यत्र लिङ्कं उद्घाटयन्तु"
+
+#: lib/webengine/webview.cpp:816
+msgctxt "WebView|"
+msgid "Open link in &private window"
+msgstr "&private विण्डो मध्ये लिङ्क् उद्घाटयन्तु"
+
+#: lib/webengine/webview.cpp:821
+msgctxt "WebView|"
+msgid "B&ookmark link"
+msgstr "B&ookmark link"
+
+#: lib/webengine/webview.cpp:823
+msgctxt "WebView|"
+msgid "&Save link as..."
+msgstr "&लिङ्कं यथा..."
+
+#: lib/webengine/webview.cpp:824
+msgctxt "WebView|"
+msgid "Send link..."
+msgstr "लिङ्कं प्रेषयन्तु..."
+
+#: lib/webengine/webview.cpp:825
+msgctxt "WebView|"
+msgid "&Copy link address"
+msgstr "&लिङ्क पता प्रतिलिपि कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:838
+msgctxt "WebView|"
+msgid "Show i&mage"
+msgstr "इ&चित्रं दर्शयतु"
+
+#: lib/webengine/webview.cpp:844
+msgctxt "WebView|"
+msgid "Copy image"
+msgstr "प्रतिबिम्बं प्रतिलिपितु"
+
+#: lib/webengine/webview.cpp:845
+msgctxt "WebView|"
+msgid "Copy image ad&dress"
+msgstr "प्रतिलिपिं प्रतिबिम्ब ad&dress"
+
+#: lib/webengine/webview.cpp:847
+msgctxt "WebView|"
+msgid "&Save image as..."
+msgstr "&प्रतिबिम्बं यथा..."
+
+#: lib/webengine/webview.cpp:848
+msgctxt "WebView|"
+msgid "Send image..."
+msgstr "चित्रं प्रेषयन्तु..."
+
+#: lib/webengine/webview.cpp:867
+msgctxt "WebView|"
+msgid "Send text..."
+msgstr "पाठं प्रेषयन्तु..."
+
+#: lib/webengine/webview.cpp:879
+msgctxt "WebView|"
+msgid "Go to &web address"
+msgstr "&web address इत्यत्र गच्छन्तु"
+
+#: lib/webengine/webview.cpp:893
+#, qt-format
+msgctxt "WebView|"
+msgid "Search \"%1 ..\" with %2"
+msgstr "%2 इत्यनेन सह \"%1 ..\" इति अन्वेष्टुम्"
+
+#: lib/webengine/webview.cpp:899
+msgctxt "WebView|"
+msgid "Search with..."
+msgstr "अन्वेषणं कुर्वन्तु..."
+
+#: lib/webengine/webview.cpp:921
+msgctxt "WebView|"
+msgid "&Play"
+msgstr "&क्रीडतु"
+
+#: lib/webengine/webview.cpp:921
+msgctxt "WebView|"
+msgid "&Pause"
+msgstr "&विराम"
+
+#: lib/webengine/webview.cpp:922
+msgctxt "WebView|"
+msgid "Un&mute"
+msgstr "अन&मुत"
+
+#: lib/webengine/webview.cpp:922
+msgctxt "WebView|"
+msgid "&Mute"
+msgstr "&मूक"
+
+#: lib/webengine/webview.cpp:924
+msgctxt "WebView|"
+msgid "&Copy Media Address"
+msgstr "&मीडिया पता प्रतिलिपि कुर्वन्तु"
+
+#: lib/webengine/webview.cpp:925
+msgctxt "WebView|"
+msgid "&Send Media Address"
+msgstr "&मीडिया पता प्रेषयतु"
+
+#: lib/webengine/webview.cpp:926
+msgctxt "WebView|"
+msgid "Save Media To &Disk"
+msgstr "मीडिया &Disk मध्ये रक्षन्तु"
+
+#: lib/webengine/webview.cpp:945
+msgctxt "WebView|"
+msgid "Create Search Engine"
+msgstr "अन्वेषणयन्त्रं रचयन्तु"
+
+#: lib/webengine/webview.cpp:986
+msgctxt "WebView|"
+msgid "&Undo"
+msgstr "&Undo"
+
+#: lib/webengine/webview.cpp:992
+msgctxt "WebView|"
+msgid "&Redo"
+msgstr "&पुनः करो"
+
+#: lib/webengine/webview.cpp:998
+msgctxt "WebView|"
+msgid "&Cut"
+msgstr "&छिन्न"
+
+#: lib/webengine/webview.cpp:1004
+msgctxt "WebView|"
+msgid "&Copy"
+msgstr "&प्रतिलिपि"
+
+#: lib/webengine/webview.cpp:1010
+msgctxt "WebView|"
+msgid "&Paste"
+msgstr "&पेस्ट"
+
+#: lib/webengine/webview.cpp:1016
+msgctxt "WebView|"
+msgid "Select All"
+msgstr "All इति चिनोतु"
+
+#: lib/webengine/webview.cpp:1022
+msgctxt "WebView|"
+msgid "&Reload"
+msgstr "&पुनः भार"
+
+#: lib/webengine/webview.cpp:1026
+msgctxt "WebView|"
+msgid "S&top"
+msgstr "विरमतु"
+
+#: lib/webtab/searchtoolbar.cpp:151
+#, qt-format
+msgctxt "SearchToolBar|"
+msgid "%1 of %2"
+msgstr "%2 इत्यस्य %1"
+
+#: lib/webtab/searchtoolbar.ui:48
+msgctxt "SearchToolbar|"
+msgid "Find..."
+msgstr "अन्वेषय..."
+
+#: lib/webtab/searchtoolbar.ui:58
+msgctxt "SearchToolbar|"
+msgid "Find the next match for the current search phrase"
+msgstr "वर्तमान अन्वेषणवाक्यस्य अग्रिममेलनं ज्ञातव्यम्"
+
+#: lib/webtab/searchtoolbar.ui:61
+msgctxt "SearchToolbar|"
+msgid "&Next"
+msgstr "&अग्रिम"
+
+#: lib/webtab/searchtoolbar.ui:74
+msgctxt "SearchToolbar|"
+msgid "Find the previous match for the current search phrase"
+msgstr "वर्तमान अन्वेषणवाक्यस्य पूर्वमेलनं ज्ञातव्यम्"
+
+#: lib/webtab/searchtoolbar.ui:77
+msgctxt "SearchToolbar|"
+msgid "&Previous"
+msgstr "&पूर्वतनम्‌"
+
+#: lib/webtab/searchtoolbar.ui:90
+msgctxt "SearchToolbar|"
+msgid "&Match Case"
+msgstr "&मैच प्रकरण"
+
+#: lib/webtab/tabbedwebview.cpp:194
+msgctxt "TabbedWebView|"
+msgid "Inspect Element"
+msgstr "तत्वस्य निरीक्षणं कुर्वन्तु"
+
+#: lib/webtab/webtab.cpp:624
+#, qt-format
+msgctxt "WebTab|"
+msgid "%1 - Osza"
+msgstr "%1 - बाजः"
+
+#~ msgctxt "EditSearchEngine|"
+#~ msgid "Url:"
+#~ msgstr "Url:"
+
+#~ msgctxt "Preferences|"
+#~ msgid "Activate last tab when closing active tab"
+#~ msgstr "सक्रिय ट्याब् बन्दं कुर्वन् अन्तिम ट्याब् सक्रियं कुर्वन्तु"
+
+#~ msgctxt "BookmarksManager|"
+#~ msgid "Delete"
+#~ msgstr "लुप्"
+
+#~ msgctxt "MainApplication|"
+#~ msgid "Open new tab"
+#~ msgstr "नूतनं ट्याब् उद्घाटयन्तु"
+
+#~ msgctxt "MainApplication|"
+#~ msgid "Open new window"
+#~ msgstr "नूतनं विण्डो उद्घाटयन्तु"
+
+#~ msgctxt "MainApplication|"
+#~ msgid "Open new private window"
+#~ msgstr "नूतनं निजीविण्डो उद्घाटयन्तु"
+
+#~ msgctxt "AdBlockTreeWidget|"
+#~ msgid "%1 (recently updated)"
+#~ msgstr "%1 (सद्यः एव अद्यतनम्)"
+
+#~ msgctxt "AdBlockTreeWidget|"
+#~ msgid "%1 (Error: %2)"
+#~ msgstr "%1 (त्रुटिः %2)"
+
+#~ msgctxt "Preferences|"
+#~ msgid "Enable XSS Auditing"
+#~ msgstr "XSS Auditing सक्षमं कुर्वन्तु"

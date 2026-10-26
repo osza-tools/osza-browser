@@ -1,15 +1,15 @@
 {
-    "id": "org.veex.VeexBrowser",
+    "id": "org.osza.OszaBrowser",
     "runtime": "org.kde.Platform",
     "runtime-version": "6.11",
     "base": "io.qt.qtwebengine.BaseApp",
     "base-version": "6.11",
     "sdk": "org.kde.Sdk",
-    "command": "veex",
-    "rename-icon": "veex",
+    "command": "osza",
+    "rename-icon": "osza",
     "finish-args": [
         "--device=dri",
-        "--own-name=org.mpris.MediaPlayer2.veex.*",
+        "--own-name=org.mpris.MediaPlayer2.osza.*",
         "--share=ipc",
         "--share=network",
         "--socket=fallback-x11",
@@ -34,7 +34,7 @@
     "modules": [
         {
             "buildsystem": "cmake-ninja",
-            "name": "veex",
+            "name": "osza",
             "config-opts": [
                 "-DENABLE_TESTING=OFF"
             ],

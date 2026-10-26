@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2015  David Rosca <nowrep@gmail.com>
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
@@ -31,7 +31,7 @@ class WebPage;
 class WebTab;
 class Menu;
 
-class VEEX_EXPORT TabbedWebView : public WebView
+class OSZA_EXPORT TabbedWebView : public WebView
 {
     Q_OBJECT
 public:

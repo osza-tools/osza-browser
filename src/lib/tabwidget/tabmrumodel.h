@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class BrowserWindow;
 
 class TabMruModelItem;
 
-class VEEX_EXPORT TabMruModel : public QAbstractProxyModel
+class OSZA_EXPORT TabMruModel : public QAbstractProxyModel
 {
     Q_OBJECT
 

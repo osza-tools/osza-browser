@@ -1,4 +1,4 @@
-FlashCookieManager extension for Veex
+FlashCookieManager extension for Osza
 -------------------------------------------------
 An extension to manage flash cookies.
 

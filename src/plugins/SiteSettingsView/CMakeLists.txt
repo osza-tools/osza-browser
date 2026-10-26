@@ -7,8 +7,8 @@ set( SiteSettingsView_SRCS
         sitesettingsview_widget.h
 )
 
-ecm_create_qm_loader( SiteSettingsView_SRCS veex_sitesettingsview_qt )
+ecm_create_qm_loader( SiteSettingsView_SRCS osza_sitesettingsview_qt )
 
 add_library(SiteSettingsView MODULE ${SiteSettingsView_SRCS} ${RSCS})
-install(TARGETS SiteSettingsView DESTINATION ${VEEX_INSTALL_PLUGINDIR})
-target_link_libraries(SiteSettingsView VeexPrivate)
+install(TARGETS SiteSettingsView DESTINATION ${OSZA_INSTALL_PLUGINDIR})
+target_link_libraries(SiteSettingsView OszaPrivate)

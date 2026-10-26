@@ -1,5 +1,5 @@
 /* ============================================================
-* Veex - Qt web browser
+* Osza - Qt web browser
 * Copyright (C) 2010-2018 David Rosca <nowrep@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class ClosedWindowsManager;
 class ProtocolHandlerManager;
 class SiteSettingsManager;
 
-class VEEX_EXPORT MainApplication : public QtSingleApplication
+class OSZA_EXPORT MainApplication : public QtSingleApplication
 {
     Q_OBJECT
 
