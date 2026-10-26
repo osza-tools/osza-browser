@@ -157,8 +157,8 @@ QString OszaSchemeReply::startPage()
     }
 
     sPage.append(QzTools::readAllFileContents(QSL(":html/start.html")));
-    sPage.replace(QLatin1String("%ABOUT-IMG%"), QSL("qrc:icons/other/logo.png"));
-    sPage.replace(QLatin1String("%ABOUT-IMG-DARK%"), QSL("qrc:icons/other/logo.png"));
+    sPage.replace(QLatin1String("%ABOUT-IMG%"), QSL("qrc:icons/other/logo.svg"));
+    sPage.replace(QLatin1String("%ABOUT-IMG-DARK%"), QSL("qrc:icons/other/logo-dark.svg"));
 
     sPage.replace(QLatin1String("%TITLE%"), tr("Start Page"));
     sPage.replace(QLatin1String("%SEARCH-PLACEHOLDER%"), tr("Search the web"));

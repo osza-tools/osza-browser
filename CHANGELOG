@@ -14,10 +14,14 @@ Changed:
   pyosza_load_plugin / pyosza_init_plugin.
 - Desktop, appstream, snap, flatpak, AppImage and CI packaging updated
   to the new names, paths and osza-tools GitHub links.
-- New temporary logo: vintage gold royal medallion (ruby-set crown,
-  engraved O cipher, laurel wreath, beaded ring) with flat black/white
-  emblem variants, full icon sets (hicolor, Windows .ico, macOS .icns)
-  and the DMG installer icon.
+- New brand identity "Orbit": the lowercase o of osza drawn as a bold
+  open ring with an orbiting comet dot on a deep-space squircle, in a
+  mint-cyan-indigo gradient anchored on the in-app accent (#00ffd1).
+  Includes the full "osza" wordmark (Quicksand Bold letterforms) used
+  by the start page and the about dialog with proper light/dark logo
+  variants, flat black/white emblem variants, complete icon sets
+  (hicolor, Windows .ico, macOS .icns) and the DMG installer icon,
+  replacing the temporary gold medallion.
 
 0.1.0  (2026-10-23)
 -------------------
