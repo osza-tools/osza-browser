@@ -12,6 +12,9 @@ project(Osza VERSION ${OSZA_VERSION})
 
 set(KF_MAJOR_VERSION "6")
 set(QT_MIN_VERSION "6.4.0")
+# Used by component lookups that need a versioned Qt6 package, e.g. the
+# Qt6NetworkPrivate find_package when building against Qt >= 6.9.
+set(REQUIRED_QT_VERSION "${QT_MIN_VERSION}")
 set(KF_MIN_VERSION "5.240.0")
 
 # Find ECM, with nice error handling in case of failure
