@@ -1,50 +1,43 @@
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
 <title>%TITLE%</title>
+<link rel="stylesheet" href="qrc:html/veexpage.css">
 <style>
-html {font-family: sans-serif;}
-html * {font-size: 100%;line-height: 1.6;}
-#box {max-width:700px;min-width:400px;overflow:auto;margin: 25px auto 10px auto;padding: 10px 40px;text-align: %LEFT_STR%;}
-h1 {font-size: 160%;margin-bottom: 0px;}
-h2 {margin: 5px 0px;font-size: 100%;font-weight: bold;}
-dl {margin-top: 0px;}
-dt {display: block;float: %LEFT_STR%;min-width: 24%;margin: 0 0 0.3em 1%}
-dd {margin: 0 0 0.3em 28%;}
-p {margin-%LEFT_STR%: 1%;}
-.about-img {float: %RIGHT_STR%;margin-top:10px;width:300px;}
+body { direction: %DIRECTION%; }
 
-@media (prefers-color-scheme: light) {
-  html {background: #dddddd;color: #525c66;}
-  #box {background: #ffffff;}
-  h1 {color: #1a4ba4;}
-  dd {color: black;}
-  .dark {display: none;}
-}
-@media (prefers-color-scheme: dark) {
-  html {background: #070709;color: #dddddd;}
-  #box {background: #171717;}
-  h1 {color: #0078d7;}
-  dd {color: white;}
-  .light {display: none;}
-}
+.vx-about__head { display: flex; align-items: center; gap: 20px; margin-block-end: 8px; }
+.vx-about__head img { flex: none; inline-size: 96px; block-size: 96px; }
+
+.vx-about p { margin-block: 4px 12px; color: var(--veex-text-dim); }
+.vx-about p a { overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
-  <div id="box">
-  <img src="%ABOUT-IMG%" class="about-img light">
-  <img src="%ABOUT-IMG-DARK%" class="about-img dark">
-<h1>%ABOUT-VEEX%</h1>
-<h2>%INFORMATIONS-ABOUT-VERSION%</h2>
- <dl>
-  %VERSION-INFO%
- </dl>
+<main class="vx-stage">
+  <section class="vx-card vx-card--wide vx-about" aria-label="%ABOUT-VEEX%">
+    <div class="vx-about__head">
+      <img class="light" src="%ABOUT-IMG%" alt="">
+      <img class="dark" src="%ABOUT-IMG-DARK%" alt="">
+      <div>
+        <h1 class="vx-title">%ABOUT-VEEX%</h1>
+        <p class="vx-subtitle">%INFORMATIONS-ABOUT-VERSION%</p>
+      </div>
+    </div>
 
-<h3>%MAIN-DEVELOPER%</h3>
-<p>%MAIN-DEVELOPER-TEXT%</p>
-<h2>%COPYRIGHT%</h2>
-<pre>
-%COPYRIGHT-INCLUDE%
-</pre>
+    <h2 class="vx-h">%INFORMATIONS-ABOUT-VERSION%</h2>
+    <dl>
+      %VERSION-INFO%
+    </dl>
 
-  </div>
-</body></html>
+    <h2 class="vx-h">%MAIN-DEVELOPER%</h2>
+    <p>%MAIN-DEVELOPER-TEXT%</p>
+
+    <h2 class="vx-h">%COPYRIGHT%</h2>
+    <pre>%COPYRIGHT-INCLUDE%</pre>
+  </section>
+</main>
+</body>
+</html>

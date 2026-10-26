@@ -1,53 +1,43 @@
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
 <title>%TITLE%</title>
+<link rel="stylesheet" href="qrc:html/veexpage.css">
 <style>
-html {font-family: sans-serif;}
-html * {font-size: 100%;line-height: 1.6;}
-#box {max-width:700px;min-width:400px;overflow:auto;margin: 25px auto 10px auto;padding: 10px 40px;text-align: %LEFT_STR%;direction: %DIRECTION%;}
-h1 {font-size: 160%;margin-bottom: 0px;}
-h2 {margin: 5px 0px;font-size: 100%;font-weight: bold;}
-dl {margin-top: 0px;}
-dt {display: block;float: %LEFT_STR%;min-width: 24%;margin: 0 0 0.3em 1%}
-dd {margin: 0 0 0.3em 28%;word-wrap:break-word;}
-p {margin-%LEFT_STR%: 1%;}
-.about-img {float: %RIGHT_STR%;margin-top:10px;width:300px;}
-table.tbl {width: 100%;margin: 15px 0;border-radius: 4px;padding: 0px;border: 2px solid;border-collapse: separate;}
-.tbl th{border-radius: 2px;border: 1px solid;padding: 1px 3px;font-style:italic;}
-.tbl th[colspan="2"] {text-align: center;font-style:normal;}
-.tbl td{border-radius: 2px;border: 1px solid;text-align: center;padding:1px 3px;}
-.tbl td:first-child{text-align: %LEFT_STR%;padding:1px 3px 1px 5px;}
-.no-available-plugins{text-align: center !important;}
-.tbl td:nth-of-type(2){max-width: 400px;max-height: 50px;overflow:auto;}
+body { direction: %DIRECTION%; }
+
+.vx-config__head { display: flex; align-items: center; gap: 20px; margin-block-end: 8px; }
+.vx-config__head img { flex: none; inline-size: 96px; block-size: 96px; }
+
+.vx-config p { margin-block: 4px 12px; color: var(--veex-text-dim); }
+
+.vx-config .user-agent {
+    padding: 10px 14px;
+    border: 1px solid var(--veex-card-border);
+    border-radius: var(--veex-radius-sm);
+    background: rgba(0, 0, 0, 0.18);
+    font-family: var(--veex-font-mono);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
 
 @media (prefers-color-scheme: light) {
-  html {background: #dddddd;color: #525c66;}
-  #box {background: #ffffff;}
-  h1 {color: #1a4ba4;}
-  dd {color: black;}
-  table.tbl {border-color: #aaa;}
-  .tbl th[colspan="2"] {background: #ddd;}
-  .tbl th {background: #eee;border-color: #aaa;}
-  .tbl td {border-color: #aaa;}
-  .tbl td:first-child {background: #eee;}
-  .no-available-plugins {background: white !important;}
-  .tbl td:nth-of-type(2) {color: black;}
-  .dark {display: none;}
+    .vx-config .user-agent { background: rgba(255, 255, 255, 0.5); }
 }
-@media (prefers-color-scheme: dark) {
-  html {background: #070709;color: #dddddd;}
-  #box {background: #171717;}
-  h1 {color: #0078d7;}
-  dd {color: white;}
-  table.tbl {border-color: #555;}
-  .tbl th[colspan="2"] {background: #353535;}
-  .tbl th {background: #252525;border-color: #555;}
-  .tbl td {border-color: #555;}
-  .tbl td:first-child {background: #252525;}
-  .no-available-plugins {background: black !important;}
-  .tbl td:nth-of-type(2) {color: white;}
-  .light {display: none;}
+
+.vx-table-wrap { border: 1px solid var(--veex-card-border); border-radius: var(--veex-radius-sm); background: rgba(0, 0, 0, 0.18); overflow-x: auto; }
+
+@media (prefers-color-scheme: light) {
+    .vx-table-wrap { background: rgba(255, 255, 255, 0.5); }
 }
+
+.vx-table td.no-available-plugins { text-align: center; color: var(--veex-text-faint); }
+
+.vx-config small { display: block; margin-block-start: 20px; color: var(--veex-text-faint); font-size: 12px; }
 </style>
 <script type="text/javascript">
 function addPlugins() {
@@ -67,55 +57,64 @@ window.addEventListener("load", addPlugins, false);
 </script>
 </head>
 <body>
-  <div id="box">
-  <img src="%ABOUT-IMG%" class="about-img light">
-  <img src="%ABOUT-IMG-DARK%" class="about-img dark">
-<h1>%CONFIG%</h1>
-<h2>%INFORMATIONS-ABOUT-VERSION%</h2>
- <dl>
-  %VERSION-INFO%
- </dl>
- 
- <h2>%BROWSER-IDENTIFICATION%</h2>
- <p>%USER-AGENT%</p>
- 
- <h2>%PATHS%</h2>
- <dl>
-  %PATHS-TEXT%
- </dl>
- 
- <h2>%BUILD-CONFIG%</h2>
- <dl>
-  %BUILD-CONFIG-TEXT%
- </dl>
- 
- <h2>%PLUGINS%</h2>
+<main class="vx-stage">
+  <section class="vx-card vx-card--wide vx-config" aria-label="%CONFIG%">
+    <div class="vx-config__head">
+      <img class="light" src="%ABOUT-IMG%" alt="">
+      <img class="dark" src="%ABOUT-IMG-DARK%" alt="">
+      <div>
+        <h1 class="vx-title">%CONFIG%</h1>
+        <p class="vx-subtitle">%INFORMATIONS-ABOUT-VERSION%</p>
+      </div>
+    </div>
 
-  <table class="tbl">
-    <thead>
-      <tr><th>%PL-NAME%</th><th>%PL-VER%</th><th>%PL-AUTH%</th><th>%PL-DESC%</th></tr>
-    </thead>
-    <tbody>
-      %PLUGINS-INFO%
-    </tbody>
-    <tbody id="npapi-plugins">
+    <h2 class="vx-h">%INFORMATIONS-ABOUT-VERSION%</h2>
+    <dl>
+      %VERSION-INFO%
+    </dl>
 
-    </tbody>
-  </table>
+    <h2 class="vx-h">%BROWSER-IDENTIFICATION%</h2>
+    <p class="user-agent">%USER-AGENT%</p>
 
-<h2>%PREFS%</h2>
+    <h2 class="vx-h">%PATHS%</h2>
+    <dl>
+      %PATHS-TEXT%
+    </dl>
 
-  <table class="tbl">
-    <thead>
-      <tr><th>%OPTION%</th><th>%VALUE%</th></tr>
-    </thead>
-    <tbody>
-      %PREFS-INFO%
-    </tbody>
-  </table>
+    <h2 class="vx-h">%BUILD-CONFIG%</h2>
+    <dl>
+      %BUILD-CONFIG-TEXT%
+    </dl>
 
-<small style="text-align:justify">
-%CONFIG-ABOUT%
-</small>
-</div>
-</body></html>
+    <h2 class="vx-h">%PLUGINS%</h2>
+    <div class="vx-table-wrap">
+      <table class="vx-table">
+        <thead>
+          <tr><th>%PL-NAME%</th><th>%PL-VER%</th><th>%PL-AUTH%</th><th>%PL-DESC%</th></tr>
+        </thead>
+        <tbody>
+          %PLUGINS-INFO%
+        </tbody>
+        <tbody id="npapi-plugins">
+
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="vx-h">%PREFS%</h2>
+    <div class="vx-scroll">
+      <table class="vx-table">
+        <thead>
+          <tr><th>%OPTION%</th><th>%VALUE%</th></tr>
+        </thead>
+        <tbody>
+          %PREFS-INFO%
+        </tbody>
+      </table>
+    </div>
+
+    <small>%CONFIG-ABOUT%</small>
+  </section>
+</main>
+</body>
+</html>

@@ -161,6 +161,7 @@ QString VeexSchemeReply::startPage()
     sPage.replace(QLatin1String("%ABOUT-IMG-DARK%"), QSL("qrc:icons/other/logo.png"));
 
     sPage.replace(QLatin1String("%TITLE%"), tr("Start Page"));
+    sPage.replace(QLatin1String("%SEARCH-PLACEHOLDER%"), tr("Search the web"));
     sPage.replace(QLatin1String("%BUTTON-LABEL%"), tr("Search on Web"));
     sPage.replace(QLatin1String("%SEARCH-BY%"), tr("Search results provided by DuckDuckGo"));
     sPage.replace(QLatin1String("%WWW%"), QString::fromLatin1(Qz::WIKIADDRESS));

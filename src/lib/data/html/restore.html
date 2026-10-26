@@ -1,148 +1,59 @@
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
 <title>%TITLE%</title>
+<link rel="stylesheet" href="qrc:html/veexpage.css">
 <style>
-html {font-family: sans-serif;}
-html * {font-size: 100%;line-height: 1.6;}
-#box {max-width:650px;min-width:400px;overflow:auto;margin: 25px auto 10px auto;padding: 10px 40px;text-align: %LEFT_STR%;direction: %DIRECTION%;}
-hr {width: 100%;}
-img.warning {float: %LEFT_STR%;margin-%LEFT_STR%: -20px;margin-top: 15px;}
-h1 {font-size: 150%;font-weight: bold;border-bottom: 1px solid;margin-%LEFT_STR%: 48px;margin-%RIGHT_STR%: 50px;}
-h2 {font-size: 100%;font-weight: normal;border-bottom: 1px solid;margin-%LEFT_STR%: 48px;padding: 5px 0px 10px 2px;margin-%RIGHT_STR%: 50px;}
-ul {font-size: 90%;padding-%LEFT_STR%: 48px;margin: 20px 0;max-width:600px;}
-li {padding: 5px;}
+/* Page-specific rules. Dynamic values (icon, translated strings)
+   are substituted by VeexSchemeHandler in this document only. */
+body { direction: %DIRECTION%; }
 
-#recovery-widget
-{
-    margin: 20px 50px;
+.vx-restore__head { display: flex; align-items: center; gap: 16px; margin-block-end: 6px; }
+.vx-restore__head img { flex: none; inline-size: 45px; block-size: 45px; }
+
+.vx-h--recovery { margin-block-start: 18px; }
+
+/* Session tree — rows are appended by restore.user.js:
+   tr.window / tr.tab, each a single td with
+   checkbox + (favicon img) + span; tr.selected is the clicked row. */
+#listview td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+#listview tr.window td { cursor: default; }
+
+#listview tr.window span {
+    font-family: var(--veex-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--veex-text);
 }
 
-#recovery-widget .button
-{
-    margin-top: 10px;
-    height: 25px;
-}
+#listview tr.tab td { padding-inline-start: 34px; cursor: default; }
 
-#restore-session-button
-{
-    font-weight: bold;
-    margin-left: 5px;
-}
+#listview img { inline-size: 16px; block-size: 16px; margin-inline-end: 8px; vertical-align: -3px; }
 
-#listview
-{
-    width: 500px;
-    border-spacing: 0;
-    border: 1px solid;
-    cursor: default;
-    -webkit-user-select: none;
-}
+#listview input { margin-inline-end: 10px; vertical-align: -2px; }
 
-#listview tbody,
-#listview thead
-{
-    display: block;
-}
+#listview tbody tr:hover td { background: var(--veex-card-bg-hover); }
 
-#listview thead
-{
-    height: 30px;
-    padding-left: 5px;
-}
+#listview tbody tr.selected td { background: rgba(var(--veex-accent-rgb), 0.12); }
 
-#listview th
-{
-    line-height: 30px;
-    font-weight: normal;
-    vertical-align: middle;
-}
+#listview tr.js-disabled:hover td,
+#listview tbody tr.js-disabled:hover td { background: transparent; }
+#listview td.js-disabled { text-align: center; block-size: 120px; color: var(--veex-text-faint); }
 
-#listview tbody
-{
-    height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-#listview tbody
-{
-    border-top: 1px solid;
-}
-
-#listview tbody td
-{
-    height: 26px;
-    width: 480px;
-    max-width: 480px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#listview img
-{
-    width: 16px;
-    height: 16px;
-    margin-right: 7px;
-}
-
-#listview input
-{
-    margin-top: 6px;
-    margin-left: 8px;
-    margin-right: 10px;
-}
-
-#listview .tab input
-{
-    margin-left: 15px;
-}
-
-#listview .window
-{
-    font-weight: bold;
-}
-
-#listview span
-{
-    vertical-align: top;
-}
-
-#listview td.js-disabled
-{
-    text-align: center;
-    height: 150px;
-}
-
-#listview tbody tr.js-disabled:hover
-{
-    background-color: transparent;
-}
-
-@media (prefers-color-scheme: light) {
-  html {background: #dddddd;color: #525c66;}
-  #box {background: #ffffff;}
-  h1, h2 {border-color: #f4f4f4;}
-  hr {color: lightgray;}
-  #listview {border-color: #aaa;}
-  #listview thead {background: #eff0f1;}
-  #listview tbody {border-color: #c0c2c4;}
-  #listview tbody tr:hover {background-color: #baddff;}
-  #listview tbody tr.selected {color: white;background-color: #1e90ff;}
-}
-@media (prefers-color-scheme: dark) {
-  html {background: #070709;color: #dddddd;}
-  #box {background: #171717;}
-  h1, h2 {border-color: #555;}
-  hr {color: darkgray;}
-  #listview {border-color: #555;}
-  #listview thead {background: #252525;}
-  #listview tbody {border-color: #404244;}
-  #listview tbody tr:hover {background-color: #0e4272;}
-  #listview tbody tr.selected {color: white;background-color: #005baa;}
+.vx-restore__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-block-start: 20px;
+    padding-block-start: 16px;
+    border-block-start: 1px solid var(--veex-card-border);
 }
 </style>
-
 </head>
 <body>
 
@@ -150,23 +61,20 @@ li {padding: 5px;}
         data-window="%WINDOW%">
     </p>
 
-  <div id="box">
-    <img class="warning" src="%IMAGE%" width=45>
-    <h1>%OOPS%</h1>
-    <h2>%APOLOGIZE%</h2>
+<main class="vx-stage">
+  <section class="vx-card vx-card--wide" aria-label="%TITLE%">
+    <div class="vx-restore__head">
+      <img src="%IMAGE%" alt="">
+      <div>
+        <h1 class="vx-title">%OOPS%</h1>
+        <p class="vx-subtitle">%APOLOGIZE%</p>
+      </div>
+    </div>
 
-    <ul>
-      <li>%TRY-REMOVING%</li>
-      <li>%START-NEW%</li>
-    </ul>
+    <h2 class="vx-h vx-h--recovery">%WINDOWS-AND-TABS%</h2>
 
-    <div id="recovery-widget">
-      <table id="listview">
-        <thead>
-          <tr>
-            <th>%WINDOWS-AND-TABS%</th>
-          </tr>
-        </thead>
+    <div class="vx-scroll">
+      <table id="listview" class="vx-table">
         <tbody id="recovery-items">
           <noscript>
             <tr class="js-disabled">
@@ -175,13 +83,14 @@ li {padding: 5px;}
           </noscript>
         </tbody>
       </table>
-
-      <form>
-      <input class="button" type="submit" id="start-new-session-button" name="new-session" value="%BUTTON-START-NEW%">
-      <input class="button" type="submit" id="restore-session-button" name="restore-session" value="   %BUTTON-RESTORE%   ">
-      </form>
     </div>
-  </div>
+
+    <form class="vx-restore__actions">
+      <input class="vx-btn" type="submit" id="start-new-session-button" name="new-session" value="%BUTTON-START-NEW%">
+      <input class="vx-btn vx-btn--primary" type="submit" id="restore-session-button" name="restore-session" value="%BUTTON-RESTORE%">
+    </form>
+  </section>
+</main>
 </body>
 
 </html>
