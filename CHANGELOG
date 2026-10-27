@@ -32,6 +32,9 @@ Fixed:
   Actions rejects; the unused variable was removed.
 - Build: define REQUIRED_QT_VERSION so the Qt >= 6.9 Qt6NetworkPrivate
   lookup gets a proper version constraint instead of an empty variable.
+- Release CI: fetch extra-cmake-modules and KF6 Archive from the KDE
+  GitHub mirrors on Windows; the download.kde.org CDN stalls caused
+  hour-long curl retry loops on the release runners.
 - CI: new "Build check" workflow that compiles the tree (including
   autotests and benchmark targets) on every push to main and on pull
   requests, so build breakage no longer waits for a release tag.
