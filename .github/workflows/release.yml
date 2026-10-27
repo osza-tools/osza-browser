@@ -203,12 +203,13 @@ jobs:
           # Qt 6.8 LTS: its current patch release bundles a much newer Chromium
           # than 6.7 ever will, which matters a lot for a web browser.
           # MSVC 2022 archives are the default for Qt >= 6.8.
-          # aqt does not resolve module dependencies: qtwebchannel must be
-          # listed explicitly or find_package(Qt6 COMPONENTS WebChannel)
-          # fails at configure time (qtwebengine alone does not pull it in).
+          # aqt does not resolve module dependencies: qtwebchannel and
+          # qtpositioning must be listed explicitly or the Qt6WebEngineCore
+          # find_package fails at configure time (qtwebengine alone does not
+          # pull them in).
           version: "6.8.*"
           arch: win64_msvc2022_64
-          modules: "qtwebengine qtwebchannel"
+          modules: "qtwebengine qtwebchannel qtpositioning"
           cache: true
 
       - name: Set up MSVC environment
