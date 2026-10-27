@@ -238,12 +238,16 @@ jobs:
               "-DBUILD_TESTING=OFF"
             )
             if ($proj -eq 'karchive') {
-              # karchive 6.13 enables its optional OpenSSL backend by default,
-              # which hard-requires pkg-config + libzstd on the configure line
-              # (find_package(PkgConfig REQUIRED) + pkg_check_modules(libzstd
-              # REQUIRED)). Neither exists on the runner and Osza only uses
-              # KArchive's core zip/tar/gzip paths, so build without it.
-              # BZip2/LibLZMA stay optional and are found from vcpkg above.
+              # karchive 6.13 defaults every WITH_* option to ON. With
+              # WITH_LIBZSTD=ON its configure hard-requires pkg-config and a
+              # libzstd .pc module (find_package(PkgConfig REQUIRED) +
+              # pkg_check_modules(libzstd REQUIRED)); neither exists on the
+              # runner, and vcpkg's zstd port is not installed here. Osza
+              # only uses KArchive's core zip/tar/gzip (+ bzip2/lzma from
+              # vcpkg) paths, so turn the optional backends' *requiredness*
+              # off; WITH_OPENSSL=OFF likewise drops the OpenSSL requirement
+              # (vcpkg's OpenSSL is still found and used, just not required).
+              $cmakeArgs += "-DWITH_LIBZSTD=OFF"
               $cmakeArgs += "-DWITH_OPENSSL=OFF"
             }
             cmake @cmakeArgs
