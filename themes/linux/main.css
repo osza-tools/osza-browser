@@ -1,8 +1,24 @@
 /*************************************
  * Linux Theme                       *
  * Author: David Rosca               *
- * Using native widgets and icons    *
  *************************************/
+
+/*
+ * Modern neutral chrome refresh:
+ *
+ *  - One tinted canvas (palette(midlight)) behind the tab strip; a
+ *    content band (palette(window)) for the toolbars. The selected
+ *    tab is a rounded card in the content color that connects
+ *    seamlessly to the toolbar below it.
+ *  - Pill-shaped location and search fields with a teal focus ring
+ *    matching the in-app accent (#009e7c) used by the internal pages.
+ *  - Flat toolbar buttons with quiet hover states, rounded menus and
+ *    a separated status bar.
+ *  - Every color resolves from the active palette, so the whole
+ *    chrome follows the system light/dark scheme automatically.
+ *  - Icons still come from the active desktop icon theme, with the
+ *    bundled fallbacks for bare installations.
+ */
 
 *[html-link-look="true"]
 {
@@ -10,11 +26,7 @@
     text-decoration: underline;
 }
 
-/*MainWindow*/
-#statusbar-ip-label
-{
-    padding-right: 5px;
-}
+/* --- Icon assignments --------------------------------------------------- */
 
 /*NavigationBar*/
 #navigation-button-back
@@ -65,56 +77,43 @@
     qproperty-fallbackIcon: url(images/menu.svg);
 }
 
-#navigation-toolbutton-badge
-{
-    background: palette(dark);
-    color: palette(bright-text);
-    margin: 0px 1px;
-}
-
 ToolButton[button-id="button-downloads"]
 {
     qproperty-themeIcon: "edit-download";
 }
 
 /*TabWidget*/
-#tabbar
-{
-    qproperty-tabPadding: -1;
-    qproperty-baseColor: 0;
-}
-
 #tabbar-button-right
 {
     qproperty-themeIcon: "arrow-right";
     qproperty-fallbackIcon: url(images/tab-right-arrow.svg);
-    qproperty-fixedsize: 15px 25px;
+    qproperty-fixedsize: 18px 34px;
 }
 
 #tabbar-button-left
 {
     qproperty-themeIcon: "arrow-left";
     qproperty-fallbackIcon: url(images/tab-left-arrow.svg);
-    qproperty-fixedsize: 15px 25px;
+    qproperty-fixedsize: 18px 34px;
 }
 
 #tabwidget-button-opentabs
 {
     qproperty-themeIcon: "arrow-down";
     qproperty-fallbackIcon: url(images/arrow-down.svg);
-    qproperty-fixedsize: 20px 25px;
+    qproperty-fixedsize: 24px 34px;
 }
 
 #tabwidget-button-closedtabs
 {
     qproperty-themeIcon: "user-trash-full";
-    qproperty-fixedsize: 22px 25px;
+    qproperty-fixedsize: 24px 34px;
 }
 
 #tabwidget-button-addtab
 {
     qproperty-themeIcon: "list-add";
-    qproperty-fixedsize: 22px 25px;
+    qproperty-fixedsize: 26px 34px;
 }
 
 /*IconProvider*/
@@ -124,11 +123,6 @@ IconProvider
 }
 
 /*LocationBar*/
-#locationbar
-{
-    qproperty-leftMargin: 25;
-}
-
 #locationbar-bookmarkicon
 {
     qproperty-themeIcon: "rating-unrated";
@@ -141,13 +135,6 @@ IconProvider
     qproperty-themeIcon: "rating";
     qproperty-fallbackIcon: url(images/star-a.svg);
     qproperty-fixedsize: 16px 16px;
-}
-
-#locationbar-siteicon
-{
-    border-image: url(images/transp.png);
-    padding-left: 5px;
-    qproperty-fixedsize: 25px 16px;
 }
 
 #locationbar-goicon
@@ -172,46 +159,311 @@ IconProvider
 }
 
 /*WebSearchBar*/
-#websearchbar
-{
-    qproperty-leftMargin: 25;
-}
-
 #websearchbar-searchbutton
 {
-    qproperty-fixedsize: 22px 16px;
+    qproperty-fixedsize: 26px 30px;
     qproperty-themeIcon: "edit-find";
+}
+
+/* --- Modern neutral chrome ---------------------------------------------- */
+
+/*MainWindow*/
+#mainwindow
+{
+    background: palette(midlight);
+}
+
+#statusbar-ip-label
+{
+    padding-right: 8px;
+}
+
+#mainwindow-statusbar
+{
+    background: palette(window);
+    border-top: 1px solid palette(mid);
+}
+
+/*MenuBar*/
+#mainwindow-menubar
+{
+    background: transparent;
+}
+
+#mainwindow-menubar::item
+{
+    padding: 4px 8px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+#mainwindow-menubar::item:selected
+{
+    background: rgba(0, 0, 0, 25);
+}
+
+/*NavigationBar*/
+#navigationbar
+{
+    background: palette(window);
+    qproperty-layoutMargin: 4;
+    qproperty-layoutSpacing: 6;
+}
+
+#navigationbar QSplitter::handle
+{
+    background-color: transparent;
+}
+
+#navigationbar QSplitter
+{
+    min-width: 6px;
+}
+
+/* Flat toolbar buttons with quiet hover states */
+ToolButton[toolbar-look="true"]
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    qproperty-fixedsize: 32px 28px;
+}
+
+ToolButton[toolbar-look="true"]:hover
+{
+    background: rgba(0, 0, 0, 25);
+}
+
+ToolButton[toolbar-look="true"]:pressed
+{
+    background: rgba(0, 0, 0, 50);
+}
+
+#navigation-toolbutton-badge
+{
+    background: palette(highlight);
+    color: palette(highlightedtext);
+    border-radius: 8px;
+    margin: 0px 2px;
+}
+
+/*TabWidget*/
+TabBarTabMetrics
+{
+    qproperty-pinnedWidth: 38;
+}
+
+#tabbar
+{
+    background: transparent;
+    min-height: 34px;
+    max-height: 34px;
+    qproperty-tabPadding: 4;
+    qproperty-baseColor: transparent;
+}
+
+#tab-icon
+{
+    padding-right: 4px;
+    padding-left: 4px;
+    min-width: 16px;
+    max-width: 16px;
+    background: transparent;
+}
+
+/* Selected tab: rounded card in the content color connecting to the
+   toolbar below; inactive tabs stay transparent and tint on hover. */
+#tabbar::tab
+{
+    height: 32px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+#tabbar::tab:selected
+{
+    background: palette(window);
+    border: 1px solid palette(mid);
+    border-bottom: none;
+}
+
+#tabbar::tab:!selected
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+#tabbar::tab:!selected:hover
+{
+    background: rgba(0, 0, 0, 25);
+}
+
+/* Tab close button: soft gray X, red on hover */
+#tabbar::close-button
+{
+    image: url(images/tab-close.svg);
+}
+
+#tabbar::close-button:hover
+{
+    image: url(images/tab-close-h.svg);
+}
+
+#tabbar::close-button:pressed
+{
+    image: url(images/tab-close-a.svg);
+}
+
+#combotabbar_tabs_close_button
+{
+    min-width: 16px;
+    min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+}
+
+/* Strip corner buttons share the flat treatment */
+#tabbar-button-left,
+#tabbar-button-right,
+#tabwidget-button-opentabs,
+#tabwidget-button-closedtabs,
+#tabwidget-button-addtab
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+#tabbar-button-left:hover,
+#tabbar-button-right:hover,
+#tabwidget-button-opentabs:hover,
+#tabwidget-button-closedtabs:hover,
+#tabwidget-button-addtab:hover
+{
+    background: rgba(0, 0, 0, 25);
+}
+
+/*LocationBar*/
+#locationbar
+{
+    background: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 16px;
+    min-height: 30px;
+    padding: 0px 6px;
+    qproperty-leftMargin: 36;
+}
+
+#locationbar:focus
+{
+    border: 1px solid #009e7c;
+}
+
+#locationbar-siteicon
+{
+    border-image: url(images/transp.png);
+    qproperty-fixedwidth: 30;
+    min-height: 30px;
+    padding-left: 4px;
+}
+
+/*WebSearchBar*/
+#websearchbar
+{
+    background: palette(base);
+    border: 1px solid palette(mid);
+    border-radius: 16px;
+    min-height: 30px;
+    padding: 0px 6px;
+    qproperty-leftMargin: 36;
+}
+
+#websearchbar:focus
+{
+    border: 1px solid #009e7c;
 }
 
 #websearchbar-searchprovider-combobox
 {
     border-image: url(images/transp.png);
-    padding-left: 5px;
-    qproperty-fixedsize: 25px 16px;
+    qproperty-fixedwidth: 32;
+    min-height: 30px;
+    padding-left: 6px;
 }
 
 /*BookmarksToolbar*/
-#bookmarksbar QToolButton
+#bookmarksbar
 {
-    border-image: url(images/transp.png);
-    border-width: 0px;
-    height: 15px;
+    background: palette(window);
+    padding: 0px;
 }
 
-#bookmarksbar, #bookmarksbar BookmarksToolbarButton {
-    padding: 0px;
+#bookmarksbar QToolButton
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: 2px 6px;
+}
+
+#bookmarksbar QToolButton:hover
+{
+    background: rgba(0, 0, 0, 25);
 }
 
 /*SideBar*/
 #sidebar
 {
-    background: transparent;
+    background: palette(window);
+}
+
+#sidebar-splitter::handle
+{
+    background-color: palette(midlight);
+}
+
+/*Menus*/
+QMenu
+{
+    background: palette(window);
+    border: 1px solid palette(mid);
+    border-radius: 8px;
+    padding: 4px 6px;
+}
+
+QMenu::item
+{
+    padding: 6px 22px 6px 14px;
+    border-radius: 5px;
+}
+
+QMenu::item:selected
+{
+    background: rgba(0, 0, 0, 30);
+}
+
+QMenu::item:disabled
+{
+    color: palette(mid);
+}
+
+QMenu::separator
+{
+    height: 1px;
+    background: palette(mid);
+    margin: 5px 8px;
+}
+
+QMenu::icon
+{
+    padding-left: 8px;
 }
 
 /*SearchToolbar*/
 SearchToolBar #lineEdit[notfound="true"]
 {
-    background: #ff6666;
+    background: rgba(239, 68, 68, 77);
 }
 
 /*AboutDialog*/
@@ -228,35 +480,25 @@ AboutDialog #textLabel
 /*DesktopNotification*/
 DesktopNotification
 {
-    background: #31363b;
+    background: palette(window);
 }
 
 DesktopNotification #frame
 {
-    border: 1px solid #696d71;
-    padding: 10px;
+    border: 1px solid palette(mid);
+    border-radius: 10px;
+    padding: 12px;
 }
 
 DesktopNotification #heading
 {
-    font: bold;
-    color: #c2c7c7;
+    font-weight: bold;
+    color: palette(windowtext);
 }
 
 DesktopNotification #text
 {
-    color: #e7ebeb;
-}
-
-/*BrowsingLibrary*/
-BrowsingLibrary #tabs
-{
-    qproperty-bgPixmap: url(images/library-bg.png);
-}
-
-BrowsingLibrary #frame
-{
-    background: url(images/library-bg.png);
+    color: palette(mid);
 }
 
 /*JavaScript Dialogs*/
@@ -267,14 +509,20 @@ BrowsingLibrary #frame
 
 QFrame[js-frame="true"]
 {
-    border: 1px solid  black;
+    border: 1px solid palette(mid);
     border-bottom: 0px;
-    background-color: white;
+    background-color: palette(window);
 }
 
 QFrame[js-frame2="true"]
 {
-    border: 1px solid  black;
+    border: 1px solid palette(mid);
     border-top: 0px;
-    background-color: #f3f3f3;
+    background-color: palette(midlight);
+}
+
+/*WebView*/
+WebView
+{
+    background: white;
 }

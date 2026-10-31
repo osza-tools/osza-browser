@@ -1,3 +1,6 @@
+/* Right-to-left overrides: mirrored navigation icons only — the
+   modern neutral chrome is direction-agnostic. */
+
 #navigation-button-next
 {
     qproperty-themeIcon: "go-previous";

@@ -1,17 +1,4 @@
-/*TabWidget*/
-#tabbar
-{
-    min-height: 27px;
-    max-height: 27px;
-}
-
-#tabbarwidget
-{
-    background-image: url(images/tabs-bg.png);
-    background-repeat: repeat-x;
-}
-
-#tabbar::tab
-{
-    height: 26px;
-}
+/* Windows-specific overrides.
+ * The modern neutral chrome is platform-independent; this file is
+ * intentionally left without rules and kept only so the Mac theme
+ * directory stays structurally complete. */
