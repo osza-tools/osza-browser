@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Osza Cyber
+Comment=Showcase theme matching the internal pages: dark surfaces, rounded tabs with a neon cyan top edge, pill-shaped address bar and cyan focus rings
+Icon=theme.png
+Type=Service
+X-Osza-Type=Theme
+
+X-Osza-Author=E-Vex
+X-Osza-Email=raiedaleve@gmail.com
+X-Osza-License=GPLv3
