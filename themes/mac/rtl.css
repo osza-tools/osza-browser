@@ -1,35 +1,30 @@
-#navigation-button-next
-{
-    qproperty-multiIcon: url(images/navigation-back.png);
-}
+/* Right-to-left overrides: mirrored navigation icons only — the
+   modern neutral chrome is direction-agnostic. */
 
 #navigation-button-back
 {
-    qproperty-multiIcon: url(images/navigation-forward.png);
+    qproperty-themeIcon: "go-next";
+}
+
+#navigation-button-next
+{
+    qproperty-themeIcon: "go-previous";
 }
 
 #navigation-button-tools
 {
-    qproperty-icon: url(images/navigation-tools-rtl.png);
-}
-
-
-#tabwidget-button-opentabs
-{
-    qproperty-multiIcon: url(images/tabs-list-button_rtl.png);
-}
-
-#tabwidget-button-closedtabs
-{
-    qproperty-multiIcon: url(images/tabs-closed-button-rtl.png);
+    qproperty-themeIcon: "arrow-left-double";
+    qproperty-fallbackIcon: url(images/tools-rtl.svg);
 }
 
 #tabbar-button-right
 {
-    qproperty-icon: url(images/tab-left-arrow.png);
+    qproperty-themeIcon: "arrow-left";
+    qproperty-fallbackIcon: url(images/tab-left-arrow.svg);
 }
 
 #tabbar-button-left
 {
-    qproperty-icon: url(images/tab-right-arrow.png);
+    qproperty-themeIcon: "arrow-right";
+    qproperty-fallbackIcon: url(images/tab-right-arrow.svg);
 }
