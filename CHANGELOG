@@ -1,6 +1,31 @@
 Osza Browser - Changelog
 ========================
 
+Unreleased
+----------
+
+Added:
+- New bundled "Osza Cyber" theme (Preferences -> Themes) applying the
+  design system of the internal pages to the browser chrome: rounded
+  tab cards with a neon cyan top edge, dark pill-shaped address and
+  search fields with cyan focus rings, dark menus with cyan-tinted
+  hover states, a bundled dark icon set referenced directly so the
+  dark chrome never gets light artwork, and a private-browsing
+  variant that shifts the accent to violet (private.css).
+
+Changed:
+- The default Windows, macOS and Linux themes were modernized into a
+  shared "modern neutral" chrome: one tinted canvas behind the tab
+  strip, rounded selected-tab cards that connect to the toolbar band,
+  flat toolbar buttons with quiet hover states, pill-shaped location
+  and search fields with a teal focus ring matching the in-app accent,
+  rounded menus, a separated status bar and larger hit areas for the
+  tab close button and the strip controls. Every color resolves from
+  the active palette, so the chrome follows the system light and dark
+  scheme automatically. The macOS theme now resolves icons through
+  the theme icon mechanism (with the bundled fallbacks) instead of
+  the legacy four-state PNG artwork.
+
 0.1.1  (2026-10-27)
 -------------------
 First release published under the Osza Browser identity.
