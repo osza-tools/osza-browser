@@ -1,0 +1,93 @@
+/* Private browsing variant of the Osza Cyber chrome.
+ *
+ * Appended after main.css when a private window is open: the accent
+ * shifts from neon cyan to the violet secondary used by the internal
+ * pages (--osza-accent-alt-rgb), so private windows are recognizable
+ * at a glance while keeping the same dark geometry.
+ */
+
+*[html-link-look="true"]
+{
+    color: #a78bfa;
+}
+
+#mainwindow
+{
+    background: #0c0a12;
+}
+
+#mainwindow-statusbar,
+#navigationbar,
+#bookmarksbar,
+#sidebar
+{
+    background: #141021;
+}
+
+#mainwindow-statusbar
+{
+    border-top: 1px solid #322a4a;
+}
+
+#sidebar-splitter::handle
+{
+    background-color: #322a4a;
+}
+
+#navigation-toolbutton-badge
+{
+    background: #a78bfa;
+    color: #140b23;
+}
+
+/* Selected tab: violet top edge */
+#tabbar::tab:selected
+{
+    background: #141021;
+    border: 1px solid #32294a;
+    border-top: 2px solid #a78bfa;
+    border-bottom: none;
+}
+
+/*LocationBar / WebSearchBar*/
+#locationbar,
+#websearchbar
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+    selection-background-color: #a78bfa;
+    selection-color: #140b23;
+}
+
+#locationbar:focus,
+#websearchbar:focus
+{
+    border: 1px solid #a78bfa;
+}
+
+/*Menus*/
+QMenu
+{
+    background: #141021;
+    border: 1px solid #32294a;
+}
+
+QMenu::item:selected
+{
+    background: rgba(167, 139, 250, 30);
+}
+
+QMenu::separator
+{
+    background: #322a4a;
+}
+
+DesktopNotification
+{
+    background: #0f0c18;
+}
+
+DesktopNotification #frame
+{
+    border: 1px solid #32294a;
+}

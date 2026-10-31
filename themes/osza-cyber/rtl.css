@@ -1,0 +1,27 @@
+/* Right-to-left overrides: mirrored navigation icons only — the
+   Osza Cyber chrome is direction-agnostic. */
+
+#navigation-button-back
+{
+    qproperty-icon: url(images/forward.svg);
+}
+
+#navigation-button-next
+{
+    qproperty-icon: url(images/back.svg);
+}
+
+#navigation-button-tools
+{
+    qproperty-icon: url(images/tools-rtl.svg);
+}
+
+#tabbar-button-right
+{
+    qproperty-icon: url(images/tab-left-arrow.svg);
+}
+
+#tabbar-button-left
+{
+    qproperty-icon: url(images/tab-right-arrow.svg);
+}

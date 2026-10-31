@@ -1,0 +1,540 @@
+/*************************************
+ * Osza Cyber Theme                  *
+ * Author: E-Vex                     *
+ *************************************/
+
+/*
+ * Showcase companion to the "Osza Cyber" design system used by the
+ * internal pages (speed dial, start page, restore, about):
+ *
+ *   --osza-bg-base   #0a0a0f   canvas behind the tab strip
+ *   --osza-bg-panel  #12141d   toolbar band, selected tab card
+ *   --osza-accent    #00ffd1   neon cyan: focus rings, indicators
+ *   --osza-text      #e9edf5   primary text
+ *   --osza-text-dim  #9aa3b5   secondary text
+ *
+ * The chrome is dark by design: the selected tab is a rounded card
+ * with a cyan top edge that connects to the toolbar, location and
+ * search fields are dark pills with a cyan focus ring, menus are
+ * dark panels with cyan-tinted hover states.
+ *
+ * A matching icon set lives in images/ and is referenced directly
+ * (qproperty-icon), so the dark chrome never ends up with
+ * system-light icon artwork. See private.css for the private-mode
+ * violet variant.
+ */
+
+*[html-link-look="true"]
+{
+    color: #00ffd1;
+    text-decoration: underline;
+}
+
+/* --- Icon assignments (bundled dark set) -------------------------------- */
+
+/*NavigationBar*/
+#navigation-button-back
+{
+    qproperty-icon: url(images/back.svg);
+}
+
+#navigation-button-next
+{
+    qproperty-icon: url(images/forward.svg);
+}
+
+#navigation-button-stop
+{
+    qproperty-icon: url(images/stop.svg);
+}
+
+#navigation-button-reload
+{
+    qproperty-icon: url(images/reload.svg);
+}
+
+#navigation-button-home
+{
+    qproperty-icon: url(images/home.svg);
+}
+
+#navigation-button-addtab
+{
+    qproperty-icon: url(images/addtab.svg);
+}
+
+#navigation-button-tools
+{
+    qproperty-icon: url(images/tools.svg);
+}
+
+#navigation-button-exitfullscreen
+{
+    qproperty-icon: url(images/exit-fullscreen.svg);
+}
+
+#navigation-button-supermenu
+{
+    qproperty-icon: url(images/menu.svg);
+}
+
+ToolButton[button-id="button-downloads"]
+{
+    qproperty-icon: url(images/downloads.svg);
+}
+
+/*TabWidget*/
+#tabbar-button-right
+{
+    qproperty-icon: url(images/tab-right-arrow.svg);
+    qproperty-fixedsize: 18px 34px;
+}
+
+#tabbar-button-left
+{
+    qproperty-icon: url(images/tab-left-arrow.svg);
+    qproperty-fixedsize: 18px 34px;
+}
+
+#tabwidget-button-opentabs
+{
+    qproperty-icon: url(images/arrow-down.svg);
+    qproperty-fixedsize: 24px 34px;
+}
+
+#tabwidget-button-closedtabs
+{
+    qproperty-themeIcon: "user-trash-full";
+    qproperty-fallbackIcon: url(images/downloads.svg);
+    qproperty-fixedsize: 24px 34px;
+}
+
+#tabwidget-button-addtab
+{
+    qproperty-icon: url(images/addtab.svg);
+    qproperty-fixedsize: 26px 34px;
+}
+
+/*IconProvider*/
+IconProvider
+{
+    qproperty-bookmarkIcon: url(images/star-a.svg);
+}
+
+/*LocationBar*/
+#locationbar-bookmarkicon
+{
+    qproperty-icon: url(images/star.svg);
+    qproperty-fixedsize: 18px 18px;
+}
+
+#locationbar-bookmarkicon[bookmarked="true"]
+{
+    qproperty-icon: url(images/star-a.svg);
+    qproperty-fixedsize: 18px 18px;
+}
+
+#locationbar-goicon
+{
+    qproperty-icon: url(images/goto.svg);
+    qproperty-fixedsize: 16px 16px;
+}
+
+#locationbar-down-icon
+{
+    qproperty-icon: url(images/arrow-down.svg);
+    qproperty-fixedsize: 12px 16px;
+}
+
+#locationbar-autofillicon
+{
+    qproperty-icon: url(images/user.svg);
+    qproperty-fixedsize: 16px 16px;
+}
+
+/*WebSearchBar*/
+#websearchbar-searchbutton
+{
+    qproperty-fixedsize: 26px 30px;
+    qproperty-icon: url(images/search.svg);
+}
+
+/* --- Chrome -------------------------------------------------------------- */
+
+/*MainWindow*/
+#mainwindow
+{
+    background: #0a0a0f;
+}
+
+#statusbar-ip-label
+{
+    padding-right: 8px;
+    color: #9aa3b5;
+}
+
+#mainwindow-statusbar
+{
+    background: #12141d;
+    border-top: 1px solid #262b3a;
+    color: #9aa3b5;
+}
+
+#mainwindow-statusbar QLabel
+{
+    color: #9aa3b5;
+}
+
+/*MenuBar*/
+#mainwindow-menubar
+{
+    background: transparent;
+    color: #e9edf5;
+}
+
+#mainwindow-menubar::item
+{
+    padding: 4px 8px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+#mainwindow-menubar::item:selected
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+/*NavigationBar*/
+#navigationbar
+{
+    background: #12141d;
+    qproperty-layoutMargin: 4;
+    qproperty-layoutSpacing: 6;
+}
+
+#navigationbar QSplitter::handle
+{
+    background-color: transparent;
+}
+
+#navigationbar QSplitter
+{
+    min-width: 6px;
+}
+
+/* Flat toolbar buttons, glass hover states */
+ToolButton[toolbar-look="true"]
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    qproperty-fixedsize: 32px 28px;
+}
+
+ToolButton[toolbar-look="true"]:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+ToolButton[toolbar-look="true"]:pressed
+{
+    background: rgba(255, 255, 255, 50);
+}
+
+#navigation-toolbutton-badge
+{
+    background: #00ffd1;
+    color: #06120f;
+    border-radius: 8px;
+    margin: 0px 2px;
+}
+
+/*TabWidget*/
+TabBarTabMetrics
+{
+    qproperty-pinnedWidth: 38;
+}
+
+#tabbar
+{
+    background: transparent;
+    color: #e9edf5;
+    min-height: 34px;
+    max-height: 34px;
+    qproperty-tabPadding: 4;
+    qproperty-baseColor: transparent;
+}
+
+#tab-icon
+{
+    padding-right: 4px;
+    padding-left: 4px;
+    min-width: 16px;
+    max-width: 16px;
+    background: transparent;
+}
+
+/* Selected tab: dark card with the cyan top edge connecting to the
+   toolbar; inactive tabs tint on hover. */
+#tabbar::tab
+{
+    height: 32px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+#tabbar::tab:selected
+{
+    background: #12141d;
+    border: 1px solid #2a2f42;
+    border-top: 2px solid #00ffd1;
+    border-bottom: none;
+}
+
+#tabbar::tab:!selected
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+#tabbar::tab:!selected:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+/* Tab close button: soft gray X, cyan on hover */
+#tabbar::close-button
+{
+    image: url(images/tab-close.svg);
+}
+
+#tabbar::close-button:hover
+{
+    image: url(images/tab-close-h.svg);
+}
+
+#tabbar::close-button:pressed
+{
+    image: url(images/tab-close-a.svg);
+}
+
+#combotabbar_tabs_close_button
+{
+    min-width: 16px;
+    min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+}
+
+/* Strip corner buttons share the flat treatment */
+#tabbar-button-left,
+#tabbar-button-right,
+#tabwidget-button-opentabs,
+#tabwidget-button-closedtabs,
+#tabwidget-button-addtab
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+#tabbar-button-left:hover,
+#tabbar-button-right:hover,
+#tabwidget-button-opentabs:hover,
+#tabwidget-button-closedtabs:hover,
+#tabwidget-button-addtab:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+/*LocationBar*/
+#locationbar
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 16px;
+    min-height: 30px;
+    padding: 0px 6px;
+    color: #e9edf5;
+    selection-background-color: #00ffd1;
+    selection-color: #06120f;
+    qproperty-leftMargin: 38;
+}
+
+#locationbar:focus
+{
+    border: 1px solid #00ffd1;
+}
+
+#locationbar-siteicon
+{
+    border-image: url(images/transp.png);
+    qproperty-fixedwidth: 30;
+    min-height: 30px;
+    padding-left: 4px;
+}
+
+/*WebSearchBar*/
+#websearchbar
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 16px;
+    min-height: 30px;
+    padding: 0px 6px;
+    color: #e9edf5;
+    selection-background-color: #00ffd1;
+    selection-color: #06120f;
+    qproperty-leftMargin: 38;
+}
+
+#websearchbar:focus
+{
+    border: 1px solid #00ffd1;
+}
+
+#websearchbar-searchprovider-combobox
+{
+    border-image: url(images/transp.png);
+    qproperty-fixedwidth: 32;
+    min-height: 30px;
+    padding-left: 6px;
+}
+
+/*BookmarksToolbar*/
+#bookmarksbar
+{
+    background: #12141d;
+    padding: 0px;
+}
+
+#bookmarksbar QToolButton
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: 2px 6px;
+    color: #e9edf5;
+}
+
+#bookmarksbar QToolButton:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+/*SideBar*/
+#sidebar
+{
+    background: #12141d;
+}
+
+#sidebar-splitter::handle
+{
+    background-color: #262b3a;
+}
+
+/*Menus — dark panels with cyan-tinted hover*/
+QMenu
+{
+    background: #12141d;
+    border: 1px solid #2a2f42;
+    border-radius: 8px;
+    padding: 4px 6px;
+    color: #e9edf5;
+}
+
+QMenu::item
+{
+    padding: 6px 22px 6px 14px;
+    border-radius: 5px;
+}
+
+QMenu::item:selected
+{
+    background: rgba(0, 255, 209, 30);
+}
+
+QMenu::item:disabled
+{
+    color: #6b7386;
+}
+
+QMenu::separator
+{
+    height: 1px;
+    background: #262b3a;
+    margin: 5px 8px;
+}
+
+QMenu::icon
+{
+    padding-left: 8px;
+}
+
+/*SearchToolbar*/
+SearchToolBar #lineEdit[notfound="true"]
+{
+    background: rgba(239, 68, 68, 89);
+}
+
+/*AboutDialog*/
+AboutDialog #label
+{
+    background: palette(window);
+}
+
+AboutDialog #textLabel
+{
+    background: palette(window);
+}
+
+/*DesktopNotification*/
+DesktopNotification
+{
+    background: #0d0f16;
+}
+
+DesktopNotification #frame
+{
+    border: 1px solid #2a2f42;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+DesktopNotification #heading
+{
+    font-weight: bold;
+    color: #e9edf5;
+}
+
+DesktopNotification #text
+{
+    color: #9aa3b5;
+}
+
+/*JavaScript Dialogs*/
+#jsFrame
+{
+    background: url(images/semi-transp.png);
+}
+
+QFrame[js-frame="true"]
+{
+    border: 1px solid palette(mid);
+    border-bottom: 0px;
+    background-color: palette(window);
+}
+
+QFrame[js-frame2="true"]
+{
+    border: 1px solid palette(mid);
+    border-top: 0px;
+    background-color: palette(midlight);
+}
+
+/*WebView*/
+WebView
+{
+    background: white;
+}
