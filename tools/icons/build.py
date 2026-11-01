@@ -762,17 +762,21 @@ def io_bytes_png(img: Image.Image) -> bytes:
     return buf.getvalue()
 
 
-ICNS_TYPES = {16: "ic12", 32: "ic11", 128: "ic07", 256: "ic08", 512: "ic09", 1024: "ic10"}
+# pixel size -> ICNS 4-byte type code (PNG payloads)
+ICNS_TYPES = {16: "icp4", 32: "ic11", 64: "ic12", 128: "ic07",
+              256: "ic08", 512: "ic09", 1024: "ic10"}
 
 
 def save_icns(sizes_imgs: Dict[int, Image.Image], path: Path) -> None:
-    data = b"icns"
+    """Write an ICNS container: "icns" magic + big-endian total file
+    length, then one PNG chunk per size (type + chunk length + payload)."""
+    import struct
+    chunks = b""
     for s in sorted(sizes_imgs):
         code = ICNS_TYPES[s].encode("ascii")
         blob = io_bytes_png(sizes_imgs[s])
-        import struct
-        data += code + struct.pack(">I", len(blob) + 8) + blob
-    path.write_bytes(data)
+        chunks += code + struct.pack(">I", len(blob) + 8) + blob
+    path.write_bytes(b"icns" + struct.pack(">I", 8 + len(chunks)) + chunks)
 
 
 def emit_packaging() -> None:
