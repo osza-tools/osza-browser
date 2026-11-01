@@ -72,14 +72,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build snap
-        id: snap
+      # snapcraft's managed LXD instance occasionally fails its initial
+      # "apt update" (transient archive/mirror flakiness inside the VM),
+      # which surfaces as "Failed to refresh package list". That is
+      # infrastructure noise, not a code regression, so the build gets a
+      # second attempt on a clean instance before the job is allowed to
+      # fail. snapcore/action-build is idempotent (it refreshes an already
+      # installed LXD/snapcraft instead of reinstalling), so a re-run is
+      # cheap.
+      - name: Build snap (attempt 1)
+        id: snap1
+        uses: snapcore/action-build@v1
+        continue-on-error: true
+
+      - name: Reset the managed snapcraft instance
+        if: steps.snap1.outcome == 'failure'
+        run: |
+          # Drop any half-initialized instance so the retry starts clean
+          # from the cached base image.
+          instances="$(sudo lxc list --format csv --columns n 2>/dev/null | grep '^snapcraft' || true)"
+          if [ -n "$instances" ]; then
+            echo "$instances" | xargs -r -n1 sudo lxc delete --force
+          fi
+
+      - name: Build snap (attempt 2)
+        id: snap2
+        if: steps.snap1.outcome == 'failure'
         uses: snapcore/action-build@v1
 
       - name: Attach to release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.snap.outputs.snap }}
+          files: ${{ (steps.snap1.outcome == 'success' && steps.snap1.outputs.snap) || steps.snap2.outputs.snap }}
           fail_on_unmatched_patterns: true
           overwrite_files: true
           retries: 3
