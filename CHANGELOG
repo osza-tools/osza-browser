@@ -1,7 +1,7 @@
 Osza Browser - Changelog
 ========================
 
-Unrelease
+Unreleased
 ---------
 The visual refresh: one icon language everywhere.
 
@@ -48,6 +48,19 @@ Fixed:
 - The bookmark editor's speed dial button showed no icon at all: it
   referenced a resource that never existed (:/icons/theme/
   speeddial.png) and now uses a proper glyph.
+- The Linux build check failed to compile: oszaicons.cpp called
+  Settings::globalSettings()->value() without including <QSettings>,
+  leaving the type incomplete (the -Werror=return-type error on top
+  was a cascade of that).
+- The README banner and the DMG background lost the bottom of the
+  wordmark: the icon pipeline's svg_to_png() defaulted the output
+  height to the width, which letterboxed the 494x132 brand lockup
+  into a square canvas and pushed the wordmark below the banners'
+  bottom edges. The README logo is now shown at 360 px so the mark
+  and wordmark are legible.
+- CI: the snap release job retries once on a clean managed instance
+  before failing, because snapcraft's LXD build VM intermittently
+  fails its initial apt update ("Failed to refresh package list").
 
 1.2  (2026-11-01)
 -----------------
