@@ -26,6 +26,17 @@ Changed:
   the theme icon mechanism (with the bundled fallbacks) instead of
   the legacy four-state PNG artwork.
 
+Fixed:
+- CI: the KDE Neon apt repository is now fetched from the CDN-backed
+  archive.neon.kde.org endpoint over HTTPS instead of the single
+  origin.archive.neon.kde.org backend server, which intermittently
+  refuses connections and broke the Linux build check on 2026-10-31
+  (the two endpoints serve a byte-identical archive). The snap recipe
+  points at the same endpoint, the workflows fall back to the origin
+  server only if the CDN cannot be reached, and the dependency
+  installer now passes apt retry options so transient network blips
+  no longer abort a run.
+
 0.1.1  (2026-10-27)
 -------------------
 First release published under the Osza Browser identity.
