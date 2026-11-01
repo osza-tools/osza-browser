@@ -57,8 +57,8 @@ SiteInfo::SiteInfo(WebView *view)
     delegate->setUniformItemSizes(true);
     ui->listWidget->setItemDelegate(delegate);
 
-    ui->listWidget->item(0)->setIcon(QIcon::fromTheme(QSL("document-properties"), QIcon(QSL(":/icons/preferences/document-properties.png"))));
-    ui->listWidget->item(1)->setIcon(QIcon::fromTheme(QSL("applications-graphics"), QIcon(QSL(":/icons/preferences/applications-graphics.png"))));
+    ui->listWidget->item(0)->setIcon(QIcon::fromTheme(QSL("document-properties"), QIcon(QSL(":/icons/preferences/document-properties.svg"))));
+    ui->listWidget->item(1)->setIcon(QIcon::fromTheme(QSL("applications-graphics"), QIcon(QSL(":/icons/preferences/applications-graphics.svg"))));
     ui->listWidget->item(2)->setIcon(QIcon(QStringLiteral(":/icons/preferences/privacy.svg")));
     ui->listWidget->item(0)->setSelected(true);
 
