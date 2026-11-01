@@ -1,6 +1,54 @@
 Osza Browser - Changelog
 ========================
 
+Unrelease
+---------
+The visual refresh: one icon language everywhere.
+
+Changed:
+- Every icon in the product was redrawn as one original, coherent set
+  (see ICONS.md for the system). The browser now ships a complete
+  bundled "Osza" icon theme - a light and a dark variant covering all
+  81 themed icon names the code requests, plus hand-tuned 16 px versions
+  of the high-traffic toolbar glyphs - so no toolbar, menu, sidebar,
+  preferences page or dialog shows blank or mismatched icons anymore,
+  on any platform and in light or dark mode.
+- Osza's UI icons no longer follow the desktop icon theme on Linux:
+  the bundled theme is active on all platforms and the system theme is
+  only a fallback for names Osza does not ship. The browser therefore
+  looks identical on Linux, Windows and macOS. This is a deliberate
+  behavior change; a restart is required after switching palettes,
+  like the chrome themes.
+- The tab close button is no longer a saturated red cross: a quiet
+  neutral cross, a darker hover state and a red pressed confirmation,
+  each legible on light and dark chrome. Toolbar hover overlays no
+  longer use hard-coded black translucency (which was invisible on
+  dark palettes) and follow the active palette instead.
+- The internal pages' artwork (start page, about, restore, crash and
+  the speed dial buttons), the preferences page icons, the site info
+  dialog, the loading spinner and every plugin glyph were redrawn on
+  the same system. The start page and about art now use the Osza ring
+  and wordmark instead of leftover artwork from the project's origins.
+- App and packaging art (hicolor set, Windows .ico, macOS .icns, DMG
+  background, document-type icons, README banner) was regenerated from
+  the brand mark, with a simplified variant for 32 px and below.
+
+Removed:
+- The "breeze-fallback" icon theme (17 hard-coded dark-grey icons),
+  the unused legacy location bar PNGs, the unused third-party speed
+  dial backgrounds and three orphaned mac theme images.
+
+Added:
+- tools/icons: a design system, a deterministic build pipeline and a
+  static auditor for icons and resources (development tools only, no
+  new build or runtime dependencies). ICONS.md documents the grid,
+  palette, states and how to add an icon.
+
+Fixed:
+- The bookmark editor's speed dial button showed no icon at all: it
+  referenced a resource that never existed (:/icons/theme/
+  speeddial.png) and now uses a proper glyph.
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.
