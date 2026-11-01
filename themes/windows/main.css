@@ -195,7 +195,7 @@ IconProvider
 
 #mainwindow-menubar::item:selected
 {
-    background: rgba(0, 0, 0, 25);
+    background: rgba(128, 128, 128, 26);
 }
 
 /*NavigationBar*/
@@ -227,12 +227,12 @@ ToolButton[toolbar-look="true"]
 
 ToolButton[toolbar-look="true"]:hover
 {
-    background: rgba(0, 0, 0, 25);
+    background: rgba(128, 128, 128, 26);
 }
 
 ToolButton[toolbar-look="true"]:pressed
 {
-    background: rgba(0, 0, 0, 50);
+    background: rgba(128, 128, 128, 51);
 }
 
 #navigation-toolbutton-badge
@@ -292,10 +292,10 @@ TabBarTabMetrics
 
 #tabbar::tab:!selected:hover
 {
-    background: rgba(0, 0, 0, 25);
+    background: rgba(128, 128, 128, 26);
 }
 
-/* Tab close button: soft gray X, red on hover */
+/* Tab close button: quiet neutral X; pressed confirms in danger red */
 #tabbar::close-button
 {
     image: url(images/tab-close.svg);
@@ -337,7 +337,7 @@ TabBarTabMetrics
 #tabwidget-button-closedtabs:hover,
 #tabwidget-button-addtab:hover
 {
-    background: rgba(0, 0, 0, 25);
+    background: rgba(128, 128, 128, 26);
 }
 
 /*LocationBar*/
@@ -405,7 +405,7 @@ TabBarTabMetrics
 
 #bookmarksbar QToolButton:hover
 {
-    background: rgba(0, 0, 0, 25);
+    background: rgba(128, 128, 128, 26);
 }
 
 /*SideBar*/
@@ -436,7 +436,7 @@ QMenu::item
 
 QMenu::item:selected
 {
-    background: rgba(0, 0, 0, 30);
+    background: rgba(128, 128, 128, 31);
 }
 
 QMenu::item:disabled
