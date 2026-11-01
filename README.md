@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Osza Browser" width="180" />
+  <img src="logo.png" alt="Osza Browser" width="360" />
 </p>
 
 <h1 align="center">Osza Browser</h1>

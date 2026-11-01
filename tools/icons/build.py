@@ -118,8 +118,13 @@ def write_svg(path: Path, content: str) -> None:
 
 
 def svg_to_png(svg: str, w: int, h: Optional[int] = None) -> Image.Image:
+    # With no explicit height, keep the SVG's own aspect ratio. Defaulting
+    # the height to the width letterboxes non-square artwork into a square
+    # canvas: the 494x132 brand lockup rendered that way put its wordmark
+    # ~200 px below the artwork inside the square, which clipped it off the
+    # bottom edge of the README banner and the DMG background.
     data = cairosvg.svg2png(bytestring=svg.encode("utf-8"),
-                            output_width=w, output_height=h or w)
+                            output_width=w, output_height=h)
     import io
     return Image.open(io.BytesIO(data)).convert("RGBA")
 
@@ -851,11 +856,12 @@ def _dmg_background() -> Image.Image:
         'stroke-opacity="0.16" stroke-width="14" stroke-linecap="round"/>'
         '<circle cx="148" cy="47" r="9" fill="#00E5C8" fill-opacity="0.22"/></svg>', 300)
     img.alpha_composite(ring, (W - 260, 30))
-    # wordmark bottom-left
+    # wordmark bottom-left (anchor to the bottom edge: the mark's height
+    # depends on the lockup's aspect ratio)
     brand = load_brand()
     lock = lockup_svg(brand, "#E9EDF5", D.GRADIENTS["neon"], width=494, height=132)
     mark = svg_to_png(lock, 300)
-    img.alpha_composite(mark, (40, H - 140))
+    img.alpha_composite(mark, (40, H - mark.height - 40))
     return img
 
 
