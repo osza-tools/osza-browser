@@ -1,0 +1,24 @@
+[Icon Theme]
+Name=Osza
+Name[osza]=Osza
+Comment=Osza browser icon theme (bundled)
+Comment=Osza browser icon theme, light variant for dark surfaces
+
+Directories=scalable,16x16,22x22,32x32
+
+[scalable]
+Size=24
+MaxSize=256
+Type=Scalable
+
+[16x16]
+Size=16
+Type=Fixed
+
+[22x22]
+Size=22
+Type=Fixed
+
+[32x32]
+Size=32
+Type=Fixed
