@@ -30,6 +30,7 @@
 #include "proxystyle.h"
 #include "pluginproxy.h"
 #include "iconprovider.h"
+#include "oszaicons.h"
 #include "browserwindow.h"
 #include "checkboxdialog.h"
 #include "networkmanager.h"
@@ -124,7 +125,6 @@ MainApplication::MainApplication(int &argc, char** argv)
     setApplicationName(QStringLiteral("osza"));
     setOrganizationDomain(QStringLiteral("org.osza"));
 #if defined(Q_OS_WIN)
-    QIcon::setFallbackThemeName(QStringLiteral("breeze"));
     setStyle(QStringLiteral("breeze"));
 #endif
     setWindowIcon(QIcon::fromTheme(QSL("osza"), QIcon(QSL(":icons/osza.svg"))));
@@ -136,10 +136,9 @@ MainApplication::MainApplication(int &argc, char** argv)
     setApplicationVersion(QString::fromLatin1(Qz::VERSION));
 #endif
 
-    // Set fallback icon theme (eg. on Windows/Mac)
-    if (QIcon::fromTheme(QSL("view-refresh")).isNull()) {
-        QIcon::setThemeName(QSL("breeze-fallback"));
-    }
+    // Use the bundled Osza icon theme everywhere, picking the variant
+    // that matches the palette (see ICONS.md)
+    OszaIcons::activateTheme();
 
     // QSQLITE database plugin is required
     if (!QSqlDatabase::isDriverAvailable(QSL("QSQLITE"))) {
