@@ -1,0 +1,85 @@
+Osza icon/resource audit
+  bundled themes: breeze-fallback
+  distinct themed names requested: 81
+  distinct themed names provided:  17
+
+== Themed names requested but NOT provided (64) ==
+  application-exit  [src/lib/app/mainmenu.cpp:483]
+  application-menu  [themes/linux/main.css:76 +2 more]
+  application-x-javascript  [src/plugins/StatusBarIcons/sbi_javascripticon.cpp:37]
+  applications-graphics  [src/lib/other/siteinfo.cpp:61]
+  arrow-down  [themes/linux/main.css:102 +7 more]
+  arrow-left  [themes/linux/main.css:95 +8 more]
+  arrow-left-double  [themes/linux/rtl.css:16 +2 more]
+  arrow-right  [themes/linux/main.css:64 +8 more]
+  audio-volume-high  [src/lib/tabwidget/tabicon.cpp:107 +1 more]
+  audio-volume-muted  [src/lib/tabwidget/tabicon.cpp:108 +1 more]
+  bookmarks  [src/lib/tools/iconprovider.cpp:87]
+  deep-history  [src/lib/history/historymenu.cpp:263]
+  dialog-close  [src/lib/tools/iconprovider.cpp:111]
+  dialog-error  [src/lib/tools/iconprovider.cpp:99]
+  dialog-information  [src/lib/app/mainmenu.cpp:577 +2 more]
+  dialog-question  [src/lib/tools/iconprovider.cpp:105]
+  dialog-warning  [src/lib/tools/iconprovider.cpp:108]
+  document-encrypted  [src/lib/navigation/locationbar.cpp:470 +1 more]
+  document-new  [src/plugins/StatusBarIcons/sbi_networkicondialog.cpp:34]
+  document-open  [src/lib/app/mainmenu.cpp:496 +2 more]
+  document-open-remote  [src/lib/app/mainmenu.cpp:496 +1 more]
+  document-print  [src/lib/app/mainmenu.cpp:514 +1 more]
+  document-properties  [src/lib/other/siteinfo.cpp:60]
+  document-save  [src/lib/app/mainmenu.cpp:512 +5 more]
+  document-share  [src/plugins/SystemIntegration/systemintegrationplugin.cpp:117]
+  download  [src/lib/app/mainmenu.cpp:29 +55 more]
+  edit-clear  [src/lib/app/mainmenu.cpp:583 +6 more]
+  edit-copy  [src/lib/app/mainmenu.cpp:529 +9 more]
+  edit-cut  [src/lib/app/mainmenu.cpp:527 +1 more]
+  edit-delete  [src/lib/bookmarks/bookmarksmanager.cpp:121 +7 more]
+  edit-download  [src/lib/downloads/downloadsbutton.cpp:26 +3 more]
+  edit-paste  [src/lib/app/mainmenu.cpp:531 +3 more]
+  edit-redo  [src/lib/app/mainmenu.cpp:524 +1 more]
+  edit-select-all  [src/lib/app/mainmenu.cpp:534 +2 more]
+  edit-undo  [src/lib/app/mainmenu.cpp:522 +1 more]
+  folder-new  [src/lib/bookmarks/bookmarkstoolbar.cpp:77]
+  go-down-search  [src/lib/webtab/searchtoolbar.ui:64]
+  go-jump-locationbar  [themes/linux/main.css:142 +2 more]
+  go-up-search  [src/lib/webtab/searchtoolbar.ui:80]
+  help-about  [src/lib/app/mainmenu.cpp:472]
+  help-contents  [src/lib/app/mainmenu.cpp:602]
+  image-x-generic  [src/plugins/StatusBarIcons/sbi_imagesicon.cpp:36]
+  mail-message-new  [src/lib/app/mainmenu.cpp:513 +6 more]
+  media-playback-pause  [src/lib/downloads/downloaditem.cpp:295 +2 more]
+  media-playback-start  [src/lib/downloads/downloaditem.cpp:298 +1 more]
+  osza  [src/lib/app/mainapplication.cpp:124 +21 more]
+  rating  [themes/linux/main.css:128 +5 more]
+  rating-unrated  [themes/linux/main.css:128 +2 more]
+  security-low  [src/lib/navigation/locationbar.cpp:467]
+  security-medium  [src/lib/navigation/locationbar.cpp:464]
+  tab-detach  [src/lib/tabwidget/tabcontextmenu.cpp:126]
+  tab-duplicate  [src/lib/tabwidget/tabcontextmenu.cpp:123]
+  tab-new  [src/lib/tools/iconprovider.cpp:147]
+  text-html  [src/lib/app/mainmenu.cpp:568 +2 more]
+  user-identity  [themes/linux/main.css:156 +2 more]
+  user-trash  [src/lib/app/mainmenu.cpp:617]
+  view-calendar  [src/lib/history/historymodel.cpp:90]
+  view-fullscreen  [src/lib/app/mainmenu.cpp:570]
+  view-private-symbolic  [src/lib/tools/iconprovider.cpp:157]
+  view-restore  [themes/linux/main.css:70 +2 more]
+  window-new  [src/lib/tools/iconprovider.cpp:152]
+  zoom-in  [src/lib/app/mainmenu.cpp:562 +1 more]
+  zoom-original  [src/lib/app/mainmenu.cpp:564 +1 more]
+  zoom-out  [src/lib/app/mainmenu.cpp:563 +1 more]
+
+== .qrc entries whose file is missing on disk (0) ==
+
+== Resource references that no .qrc resolves (1) ==
+  /icons/theme/speeddial.png  [src/lib/bookmarks/bookmarkswidget.ui]
+
+== Theme CSS url() images missing on disk (0) ==
+
+== Asset files referenced nowhere (orphans) (3) ==
+  themes/mac/images/splitter.png
+  themes/mac/images/tabs-closed-button-rtl.png
+  themes/mac/images/tabs-list-button_rtl.png
+
+== SVGs that fail to render (0) ==
+
