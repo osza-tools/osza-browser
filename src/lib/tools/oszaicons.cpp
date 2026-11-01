@@ -23,6 +23,7 @@
 #include <QGuiApplication>
 #include <QIcon>
 #include <QPalette>
+#include <QSettings>
 #include <QStyleHints>
 #include <QtGuiVersion>
 
