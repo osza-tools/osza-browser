@@ -1,0 +1,17 @@
+Osza icon/resource audit
+  bundled themes: osza, osza-dark
+  distinct themed names requested: 81
+  distinct themed names provided:  81
+
+== Themed names requested but NOT provided (0) ==
+
+== .qrc entries whose file is missing on disk (0) ==
+
+== Resource references that no .qrc resolves (0) ==
+
+== Theme CSS url() images missing on disk (0) ==
+
+== Asset files referenced nowhere (orphans) (0) ==
+
+== SVGs that fail to render (0) ==
+

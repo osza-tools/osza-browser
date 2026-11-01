@@ -1,13 +1,2 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-  <defs id="defs3051">
-    <style type="text/css" id="current-color-scheme">
-      .ColorScheme-Text {
-        color:#4d4d4d;
-      }
-      </style>
-  </defs>
- <path style="fill:currentColor;fill-opacity:1;stroke:none" 
-      d="M 2 2 L 2 5 L 2 14 L 3 14 L 14 14 L 14 13 L 14 2 L 3 2 L 2 2 z M 3 5 L 13 5 L 13 13 L 3 13 L 3 5 z M 4 6 L 4 12 L 6 12 L 6 6 L 4 6 z M 7 7 L 7 8 L 12 8 L 12 7 L 7 7 z M 7 10 L 7 11 L 12 11 L 12 10 L 7 10 z "
-     class="ColorScheme-Text"
-     />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+<path d="M18.11 10.48L20.14 11.04L20.14 12.96L18.11 13.52L17.4 15.25L18.44 17.08L17.08 18.44L15.25 17.4L13.52 18.11L12.96 20.14L11.04 20.14L10.48 18.11L8.75 17.4L6.92 18.44L5.56 17.08L6.6 15.25L5.89 13.52L3.86 12.96L3.86 11.04L5.89 10.48L6.6 8.75L5.56 6.92L6.92 5.56L8.75 6.6L10.48 5.89L11.04 3.86L12.96 3.86L13.52 5.89L15.25 6.6L17.08 5.56L18.44 6.92L17.4 8.75Z" fill="none" stroke="#6E788C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#6E788C" stroke-width="2" stroke-linecap="round"/></svg>

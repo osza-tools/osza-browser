@@ -34,7 +34,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>:/icons/theme/speeddial.png</normaloff>:/icons/theme/speeddial.png</iconset>
+       <normaloff>:/icons/menu/speeddial.svg</normaloff>:/icons/menu/speeddial.svg</iconset>
      </property>
      <property name="flat">
       <bool>true</bool>
