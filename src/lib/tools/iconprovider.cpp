@@ -154,7 +154,7 @@ QIcon IconProvider::newWindowIcon()
 
 QIcon IconProvider::privateBrowsingIcon()
 {
-    return QIcon::fromTheme(QSL("view-private-symbolic"), QIcon(QSL(":/icons/menu/privatebrowsing.png")));
+    return QIcon::fromTheme(QSL("view-private-symbolic"), QIcon(QSL(":/icons/menu/privatebrowsing.svg")));
 }
 
 QIcon IconProvider::settingsIcon()
