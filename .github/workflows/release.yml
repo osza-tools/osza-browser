@@ -22,10 +22,20 @@ jobs:
       - name: Enable KDE Neon repository (Ubuntu 24.04 lacks KF6 packages)
         run: |
           if grep -q 'noble' /etc/os-release; then
-            curl -fsSL 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x444DABCF3667D0283F894EDDE6D4736255751E5D' \
+            curl -fsSL --retry 5 --retry-all-errors \
+              'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x444DABCF3667D0283F894EDDE6D4736255751E5D' \
               | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/kde-neon-user.gpg
-            echo "deb http://origin.archive.neon.kde.org/user noble main" | sudo tee /etc/apt/sources.list.d/kde-neon-user.list
-            sudo apt-get update
+            # archive.neon.kde.org is the CDN-backed front door to the
+            # Neon archive (byte-identical InRelease, anycast IPs).
+            # origin.archive.neon.kde.org is a single backend server that
+            # intermittently refuses connections, which has broken CI
+            # runs; it is only kept as a last-resort fallback.
+            echo "deb https://archive.neon.kde.org/user noble main" | sudo tee /etc/apt/sources.list.d/kde-neon-user.list
+            if ! sudo apt-get update -o Acquire::Retries=5; then
+              echo "Neon CDN unreachable; retrying against the origin server" >&2
+              echo "deb http://origin.archive.neon.kde.org/user noble main" | sudo tee /etc/apt/sources.list.d/kde-neon-user.list
+              sudo apt-get update -o Acquire::Retries=5
+            fi
           else
             echo "Runner already ships KF6 packages; skipping Neon repo."
           fi

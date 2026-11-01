@@ -115,6 +115,10 @@ if ((with_cups)); then
     packages+=(libcups2-dev)
 fi
 
+# Transient archive-server hiccups should not abort the install; let apt
+# retry each download a few times before giving up.
+APT_RETRY_OPTS=(-o Acquire::Retries=5)
+
 if ((EUID == 0)); then
     APT=(apt-get)
 else
@@ -126,10 +130,10 @@ else
 fi
 
 echo "Updating package lists..."
-"${APT[@]}" update
+"${APT[@]}" update "${APT_RETRY_OPTS[@]}"
 
 echo "Installing Osza Browser build dependencies..."
-"${APT[@]}" install -y --no-install-recommends "${packages[@]}"
+"${APT[@]}" install -y --no-install-recommends "${APT_RETRY_OPTS[@]}" "${packages[@]}"
 
 echo
 echo "Build dependencies installed successfully."

@@ -40,7 +40,7 @@ package-repositories:
     suites:
     - noble
     key-id: 444DABCF3667D0283F894EDDE6D4736255751E5D
-    url: http://origin.archive.neon.kde.org/user
+    url: https://archive.neon.kde.org/user
     key-server: keyserver.ubuntu.com
 parts:
   osza:
