@@ -37,15 +37,15 @@ and KDE contributors for their work.
 
 ## Downloads
 
-The current release is [**Osza Browser 0.1.1**](https://github.com/osza-tools/osza-browser/releases/tag/v0.1.1),
-the first under the Osza name:
+The current release is [**Osza Browser 1.2**](https://github.com/osza-tools/osza-browser/releases/tag/v1.2),
+the modern chrome refresh release:
 
 | Platform | File | Notes |
 |---|---|---|
-| Linux x86_64 | `Osza-Browser-0.1.1-linux-x86_64.tar.gz` | Extract and run `usr/bin/osza` (plain `/usr` layout). |
-| Linux (Snap) | `osza-browser_0.1.1_amd64.snap` | `sudo snap install ./osza-browser_0.1.1_amd64.snap --dangerous` |
-| macOS (Apple Silicon) | `Osza-Browser-0.1.1-macos-arm64.dmg` | Drag **Osza** to Applications. Not notarized — right-click → Open on first launch. |
-| Windows x64 | `Osza-Browser-0.1.1-windows-x64.zip` | Extract and run `osza.exe` (MSVC 2022, Qt 6.8 LTS). |
+| Linux x86_64 | `Osza-Browser-1.2-linux-x86_64.tar.gz` | Extract and run `usr/bin/osza` (plain `/usr` layout). |
+| Linux (Snap) | `osza-browser_1.2_amd64.snap` | `sudo snap install ./osza-browser_1.2_amd64.snap --dangerous` |
+| macOS (Apple Silicon) | `Osza-Browser-1.2-macos-arm64.dmg` | Drag **Osza** to Applications. Not notarized — right-click → Open on first launch. |
+| Windows x64 | `Osza-Browser-1.2-windows-x64.zip` | Extract and run `osza.exe` (MSVC 2022, Qt 6.8 LTS). |
 
 For older releases and checksums see the
 [releases page](https://github.com/osza-tools/osza-browser/releases),

@@ -203,6 +203,12 @@
   </provides>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.2" date="2026-11-01">
+      <description>
+        <p>The modern chrome refresh release.</p>
+        <p>The default Windows, macOS and Linux themes were modernized into a shared "modern neutral" chrome that follows the system light and dark scheme automatically, and a new bundled "Osza Cyber" showcase theme applies the design system of the internal pages to the browser chrome. CI reliability: the KDE Neon apt repository is now fetched from the CDN-backed archive.neon.kde.org endpoint, fixing the intermittent Linux build failures caused by the single origin server.</p>
+      </description>
+    </release>
     <release version="0.1.1" date="2026-10-27">
       <description>
         <p>First release published under the Osza Browser identity.</p>
