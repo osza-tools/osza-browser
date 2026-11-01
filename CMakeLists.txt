@@ -2,9 +2,9 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Osza Browser version
-set(OSZA_VERSION_MAJOR "0")
-set(OSZA_VERSION_MINOR "1")
-set(OSZA_VERSION_MICRO "1")
+set(OSZA_VERSION_MAJOR "1")
+set(OSZA_VERSION_MINOR "2")
+set(OSZA_VERSION_MICRO "0")
 set(OSZA_VERSION "${OSZA_VERSION_MAJOR}.${OSZA_VERSION_MINOR}.${OSZA_VERSION_MICRO}")
 
 # Project name and version
