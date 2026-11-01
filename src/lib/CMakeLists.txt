@@ -255,6 +255,7 @@ set(SRCS ${SRCS}
     tools/html5permissions/html5permissionsmanager.cpp
     tools/html5permissions/html5permissionsnotification.cpp
     tools/iconprovider.cpp
+    tools/oszaicons.cpp
     tools/listitemdelegate.cpp
     tools/mactoolbutton.cpp
     tools/menubar.cpp
@@ -494,6 +495,7 @@ set(SRCS ${SRCS}
     tools/html5permissions/html5permissionsmanager.h
     tools/html5permissions/html5permissionsnotification.h
     tools/iconprovider.h
+    tools/oszaicons.h
     tools/listitemdelegate.h
     tools/mactoolbutton.h
     tools/menubar.h
@@ -593,7 +595,7 @@ qt_add_resources(SRCS
     data/data.qrc
     data/html.qrc
     data/icons.qrc
-    data/breeze-fallback.qrc
+    data/osza-icons.qrc
     adblock/adblock.qrc
 )
 
