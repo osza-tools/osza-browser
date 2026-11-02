@@ -40,6 +40,8 @@ public:
 private:
     void updateProtocolHandler();
     void protocolHandlerButtonClicked();
+    void updateHttpsOnlyState();
+    void httpsOnlyButtonClicked();
 
     Ui::SiteInfoWidget* ui;
     BrowserWindow* m_window;

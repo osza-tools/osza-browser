@@ -28,10 +28,14 @@ and KDE contributors for their work.
 - **Privacy first** — built-in private browsing, per-site settings and
   full control over cookies, JavaScript and other permissions.
 - **Security tools** — a bundled security suite: HTTPS-Only mode
-  (upgrades every insecure connection, with per-site exceptions) and
-  tracking-parameter stripping (utm_*, fbclid, gclid and friends are
-  removed from links before they load). Both live in Preferences →
-  Privacy → Security tools.
+  (upgrades every insecure connection, with per-site exceptions and
+  shortcuts in the padlock menu), tracking-parameter stripping
+  (utm_*, fbclid, gclid and friends are removed from links before
+  they load) and DNS-over-HTTPS (encrypts all hostname resolution,
+  with known providers or a custom server). The security dashboard
+  sidebar keeps live counters of blocked ads, stripped trackers and
+  HTTPS upgrades. Everything lives in Preferences → Privacy →
+  Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS
   feeds, all reachable from collapsible sidebars.

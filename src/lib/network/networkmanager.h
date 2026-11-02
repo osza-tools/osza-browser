@@ -26,6 +26,7 @@
 class UrlInterceptor;
 class NetworkUrlInterceptor;
 class HttpsOnlyInterceptor;
+class DnsOverHttpsManager;
 class ExtensionSchemeManager;
 class ExtensionSchemeHandler;
 
@@ -42,6 +43,9 @@ public:
 
     void installUrlInterceptor(UrlInterceptor *interceptor);
     void removeUrlInterceptor(UrlInterceptor *interceptor);
+
+    HttpsOnlyInterceptor *httpsOnlyInterceptor() const;
+    DnsOverHttpsManager *dnsOverHttpsManager() const;
 
     void registerExtensionSchemeHandler(const QString &name, ExtensionSchemeHandler *handler);
     void unregisterExtensionSchemeHandler(ExtensionSchemeHandler *handler);
@@ -65,6 +69,7 @@ private:
 
     NetworkUrlInterceptor *m_urlInterceptor;
     HttpsOnlyInterceptor *m_httpsOnlyInterceptor;
+    DnsOverHttpsManager *m_dnsOverHttpsManager;
     ExtensionSchemeManager *m_extensionScheme;
     QHash<QString, QWebEngineCertificateError::Type> m_ignoredSslErrors;
     QHash<QString, QWebEngineCertificateError::Type> m_rejectedSslErrors;

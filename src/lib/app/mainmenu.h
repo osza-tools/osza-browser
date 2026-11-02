@@ -85,6 +85,7 @@ private Q_SLOTS:
 
     // Tools menu
     void webSearch();
+    void showSecurityDashboard();
     void showSiteInfo();
     void showDownloadManager();
     void showCookieManager();

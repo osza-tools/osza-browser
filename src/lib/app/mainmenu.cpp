@@ -26,6 +26,7 @@
 #include "bookmarksmenu.h"
 #include "tabbedwebview.h"
 #include "browserwindow.h"
+#include "sidebar.h"
 #include "downloadmanager.h"
 #include "mainapplication.h"
 #include "clearprivatedata.h"
@@ -295,6 +296,13 @@ void MainMenu::showFullScreen()
 void MainMenu::webSearch()
 {
     callSlot("webSearch");
+}
+
+void MainMenu::showSecurityDashboard()
+{
+    if (m_window) {
+        m_window->sideBarManager()->showSideBar(QSL("Security"));
+    }
 }
 
 void MainMenu::showSiteInfo()
@@ -574,6 +582,7 @@ void MainMenu::init()
     connect(m_menuTools, &QMenu::aboutToShow, this, &MainMenu::aboutToShowToolsMenu);
 
     ADD_ACTION("Tools/WebSearch", m_menuTools, QIcon::fromTheme(QSL("edit-find")), tr("&Web Search"), SLOT(webSearch()), "Ctrl+K");
+    ADD_ACTION("Tools/SecurityDashboard", m_menuTools, QIcon::fromTheme(QSL("security-high")), tr("&Security Dashboard"), SLOT(showSecurityDashboard()), "");
     ADD_ACTION("Tools/SiteInfo", m_menuTools, QIcon::fromTheme(QSL("dialog-information")), tr("Site &Info"), SLOT(showSiteInfo()), "Ctrl+I");
     action->setShortcutContext(Qt::WidgetShortcut);
     m_menuTools->addSeparator();

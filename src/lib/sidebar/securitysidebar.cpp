@@ -1,0 +1,370 @@
+/* ============================================================
+* Osza - Qt web browser
+* Copyright (C) 2026 Osza Tools contributors
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* ============================================================ */
+#include "securitysidebar.h"
+#include "browserwindow.h"
+#include "adblockmanager.h"
+#include "dnsoverhttpsmanager.h"
+#include "httpsonlyinterceptor.h"
+#include "mainapplication.h"
+#include "networkmanager.h"
+#include "securitymanager.h"
+#include "settings.h"
+#include "tabwidget.h"
+#include "tabbedwebview.h"
+
+#include <QCheckBox>
+#include <QFont>
+#include <QFrame>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QTimer>
+#include <QToolButton>
+#include <QVBoxLayout>
+
+namespace {
+
+const int kRefreshIntervalMs = 1000;
+
+const char kDefaultDohServer[] = "https://cloudflare-dns.com/dns-query{?dns}";
+
+QLabel* headingLabel(const QString &text)
+{
+    auto *label = new QLabel(text);
+    QFont font = label->font();
+    font.setBold(true);
+    label->setFont(font);
+    return label;
+}
+
+} // namespace
+
+SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
+    : QWidget(parent)
+    , m_window(window)
+{
+    createLayout();
+
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setInterval(kRefreshIntervalMs);
+    connect(m_refreshTimer, &QTimer::timeout, this, &SecuritySideBar::refresh);
+    m_refreshTimer->start();
+
+    connect(AdBlockManager::instance(), &AdBlockManager::enabledChanged, this, &SecuritySideBar::refresh);
+
+    if (m_window) {
+        connect(m_window->tabWidget(), &TabWidget::currentTabChanged, this, &SecuritySideBar::refresh);
+    }
+
+    connect(m_adBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleAdBlock);
+    connect(m_httpsOnlyToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleHttpsOnly);
+    connect(m_stripTrackingToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleStripTracking);
+    connect(m_secureDnsToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleSecureDns);
+    connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
+
+    refresh();
+}
+
+void SecuritySideBar::createLayout()
+{
+    auto *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(8, 8, 8, 8);
+    mainLayout->setSpacing(8);
+
+    // Protection status
+    auto *statusRow = new QHBoxLayout;
+    statusRow->setSpacing(6);
+    m_statusIcon = new QLabel(this);
+    m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    m_statusLabel = new QLabel(this);
+    m_statusLabel->setWordWrap(true);
+    statusRow->addWidget(m_statusIcon);
+    statusRow->addWidget(m_statusLabel, 1);
+    mainLayout->addLayout(statusRow);
+
+    // Totals
+    mainLayout->addWidget(headingLabel(tr("Protection totals")));
+
+    auto *tilesLayout = new QHBoxLayout;
+    tilesLayout->setSpacing(6);
+    auto *adsTile = createCounterTile(tr("Ads blocked"), &m_adsValue);
+    auto *trackersTile = createCounterTile(tr("Trackers stripped"), &m_trackersValue);
+    auto *upgradesTile = createCounterTile(tr("HTTPS upgrades"), &m_upgradesValue);
+    tilesLayout->addWidget(adsTile, 1);
+    tilesLayout->addWidget(trackersTile, 1);
+    tilesLayout->addWidget(upgradesTile, 1);
+    mainLayout->addLayout(tilesLayout);
+
+    // Current site
+    mainLayout->addWidget(headingLabel(tr("This site")));
+    m_siteLabel = new QLabel(this);
+    m_siteLabel->setWordWrap(true);
+    mainLayout->addWidget(m_siteLabel);
+
+    auto *siteGrid = new QGridLayout;
+    siteGrid->setHorizontalSpacing(8);
+    siteGrid->setVerticalSpacing(2);
+    auto *siteAdsRow = createHostRow(tr("Ads blocked"), &m_siteAdsValue);
+    auto *siteTrackersRow = createHostRow(tr("Trackers stripped"), &m_siteTrackersValue);
+    auto *siteUpgradesRow = createHostRow(tr("HTTPS upgrades"), &m_siteUpgradesValue);
+    siteGrid->addWidget(siteAdsRow, 0, 0);
+    siteGrid->addWidget(siteTrackersRow, 1, 0);
+    siteGrid->addWidget(siteUpgradesRow, 2, 0);
+    mainLayout->addLayout(siteGrid);
+
+    // Quick switches
+    mainLayout->addWidget(headingLabel(tr("Protections")));
+    m_adBlockToggle = new QCheckBox(tr("AdBlock"), this);
+    m_httpsOnlyToggle = new QCheckBox(tr("HTTPS-Only mode"), this);
+    m_httpsOnlyToggle->setToolTip(tr("Automatically upgrade all insecure http:// connections to https://."));
+    m_stripTrackingToggle = new QCheckBox(tr("Strip tracking parameters"), this);
+    m_secureDnsToggle = new QCheckBox(tr("Secure DNS (DNS-over-HTTPS)"), this);
+    m_secureDnsState = new QLabel(this);
+    m_secureDnsState->setContentsMargins(20, 0, 0, 0);
+    m_secureDnsState->setWordWrap(true);
+
+    mainLayout->addWidget(m_adBlockToggle);
+    mainLayout->addWidget(m_httpsOnlyToggle);
+    mainLayout->addWidget(m_stripTrackingToggle);
+    mainLayout->addWidget(m_secureDnsToggle);
+    mainLayout->addWidget(m_secureDnsState);
+
+    mainLayout->addStretch(1);
+
+    auto *footerLayout = new QHBoxLayout;
+    m_resetButton = new QToolButton(this);
+    m_resetButton->setText(tr("Reset counters"));
+    m_resetButton->setAutoRaise(true);
+    m_resetButton->setToolTip(tr("Reset the protection counters. Per-site values are cleared too."));
+    footerLayout->addWidget(m_resetButton);
+    footerLayout->addStretch(1);
+    mainLayout->addLayout(footerLayout);
+}
+
+QWidget* SecuritySideBar::createCounterTile(const QString &caption, QLabel **valueOut)
+{
+    auto *frame = new QFrame(this);
+    frame->setFrameShape(QFrame::StyledPanel);
+
+    auto *layout = new QVBoxLayout(frame);
+    layout->setContentsMargins(6, 6, 6, 6);
+    layout->setSpacing(2);
+
+    auto *value = new QLabel(QSL("0"), frame);
+    value->setAlignment(Qt::AlignCenter);
+    QFont font = value->font();
+    font.setBold(true);
+    font.setPointSize(font.pointSize() + 3);
+    value->setFont(font);
+
+    auto *captionLabel = new QLabel(caption, frame);
+    captionLabel->setAlignment(Qt::AlignCenter);
+    captionLabel->setWordWrap(true);
+
+    layout->addWidget(value);
+    layout->addWidget(captionLabel);
+
+    *valueOut = value;
+
+    return frame;
+}
+
+QWidget* SecuritySideBar::createHostRow(const QString &caption, QLabel **valueOut)
+{
+    auto *widget = new QWidget(this);
+
+    auto *layout = new QHBoxLayout(widget);
+    layout->setContentsMargins(12, 0, 0, 0);
+    layout->setSpacing(6);
+
+    auto *captionLabel = new QLabel(caption, widget);
+    auto *value = new QLabel(QSL("0"), widget);
+
+    layout->addWidget(captionLabel, 1);
+    layout->addWidget(value);
+
+    *valueOut = value;
+
+    return widget;
+}
+
+QString SecuritySideBar::currentHost() const
+{
+    if (!m_window) {
+        return QString();
+    }
+
+    WebView *view = m_window->weView();
+
+    if (!view) {
+        return QString();
+    }
+
+    const QUrl url = view->url();
+
+    return url.isValid() ? url.host() : QString();
+}
+
+QString SecuritySideBar::formatCount(quint64 count) const
+{
+    return QString::number(count);
+}
+
+void SecuritySideBar::refresh()
+{
+    updateToggles();
+    updateStatus();
+
+    SecurityManager *security = SecurityManager::instance();
+
+    m_adsValue->setText(formatCount(security->adsBlocked()));
+    m_trackersValue->setText(formatCount(security->trackersStripped()));
+    m_upgradesValue->setText(formatCount(security->httpsUpgrades()));
+
+    const QString host = currentHost();
+    m_siteLabel->setText(host.isEmpty() ? tr("No site is open.") : tr("<b>%1</b>").arg(host.toHtmlEscaped()));
+
+    m_siteAdsValue->setText(formatCount(security->adsBlockedForHost(host)));
+    m_siteTrackersValue->setText(formatCount(security->trackersStrippedForHost(host)));
+    m_siteUpgradesValue->setText(formatCount(security->httpsUpgradesForHost(host)));
+}
+
+void SecuritySideBar::updateStatus()
+{
+    const bool adBlock = AdBlockManager::instance()->isEnabled();
+    const bool httpsOnly = mApp->networkManager()->httpsOnlyInterceptor()->isEnabled();
+    const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+
+    const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked() || doh->mode() != DnsOverHttpsManager::Disabled;
+
+    if (anyOn) {
+        m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        m_statusLabel->setText(tr("Protections are active on this browser."));
+    } else {
+        m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/unsafe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        m_statusLabel->setText(tr("No protections are enabled."));
+    }
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+
+    switch (doh->mode()) {
+    case DnsOverHttpsManager::SecureOnly:
+        m_secureDnsState->setText(tr("DoH only, no fallback (%1)").arg(doh->serverTemplates().value(0, tr("custom"))));
+        break;
+    case DnsOverHttpsManager::SecureWithFallback:
+        m_secureDnsState->setText(tr("DoH with system fallback (%1)").arg(doh->serverTemplates().value(0, tr("custom"))));
+        break;
+    case DnsOverHttpsManager::Disabled:
+    default:
+        m_secureDnsState->setText(dohSupported ? tr("Secure DNS is off.") : tr("Secure DNS requires QtWebEngine 6.6+."));
+        break;
+    }
+}
+
+void SecuritySideBar::updateToggles()
+{
+    const QSignalBlocker adBlockBlocker(m_adBlockToggle);
+    const QSignalBlocker httpsOnlyBlocker(m_httpsOnlyToggle);
+    const QSignalBlocker stripTrackingBlocker(m_stripTrackingToggle);
+    const QSignalBlocker secureDnsBlocker(m_secureDnsToggle);
+
+    m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
+    m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    m_stripTrackingToggle->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
+    settings.endGroup();
+
+    const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    m_secureDnsToggle->setChecked(doh->mode() != DnsOverHttpsManager::Disabled);
+    m_secureDnsToggle->setEnabled(DnsOverHttpsManager::isSupported());
+}
+
+void SecuritySideBar::resetCounters()
+{
+    SecurityManager::instance()->resetCounters();
+    refresh();
+}
+
+void SecuritySideBar::toggleAdBlock(bool enabled)
+{
+    AdBlockManager::instance()->setEnabled(enabled);
+    refresh();
+}
+
+void SecuritySideBar::toggleHttpsOnly(bool enabled)
+{
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), enabled);
+        settings.endGroup();
+    }
+
+    mApp->networkManager()->httpsOnlyInterceptor()->loadSettings();
+    refresh();
+}
+
+void SecuritySideBar::toggleStripTracking(bool enabled)
+{
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("StripTrackingQuery"), enabled);
+        settings.endGroup();
+    }
+
+    mApp->networkManager()->loadSettings();
+    refresh();
+}
+
+void SecuritySideBar::toggleSecureDns(bool enabled)
+{
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+
+    if (!enabled) {
+        doh->setConfiguration(DnsOverHttpsManager::Disabled, doh->serverTemplates());
+        refresh();
+        return;
+    }
+
+    // Re-apply the saved configuration, or start with a sensible default.
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    const int savedMode = settings.value(QSL("DnsOverHttpsMode"), 0).toInt();
+    const QStringList savedServers = settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList();
+    settings.endGroup();
+
+    const auto mode = static_cast<DnsOverHttpsManager::Mode>(savedMode);
+    QStringList servers;
+
+    for (const QString &server : savedServers) {
+        if (!server.trimmed().isEmpty()) {
+            servers.append(server.trimmed());
+        }
+    }
+
+    if (mode == DnsOverHttpsManager::Disabled || servers.isEmpty()) {
+        doh->setConfiguration(DnsOverHttpsManager::SecureWithFallback, {QLatin1String(kDefaultDohServer)});
+    } else {
+        doh->setConfiguration(mode, servers);
+    }
+
+    refresh();
+}

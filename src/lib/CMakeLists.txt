@@ -133,6 +133,7 @@ set(SRCS ${SRCS}
     navigation/websearchbar.cpp
     navigation/zoomlabel.cpp
     network/httpsonlyinterceptor.cpp
+    network/dnsoverhttpsmanager.cpp
     network/networkmanager.cpp
     network/networkurlinterceptor.cpp
     network/schemehandlers/extensionschemehandler.cpp
@@ -222,12 +223,14 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.cpp
     preferences/thememanager.cpp
     preferences/useragentdialog.cpp
+    security/securitymanager.cpp
     session/recoveryjsobject.cpp
     session/restoremanager.cpp
     session/sessionmanager.cpp
     session/sessionmanagerdialog.cpp
     sidebar/bookmarkssidebar.cpp
     sidebar/historysidebar.cpp
+    sidebar/securitysidebar.cpp
     sidebar/sidebar.cpp
     tabwidget/combotabbar.cpp
     tabwidget/tabbar.cpp
@@ -375,6 +378,7 @@ set(SRCS ${SRCS}
     navigation/websearchbar.h
     navigation/zoomlabel.h
     network/httpsonlyinterceptor.h
+    network/dnsoverhttpsmanager.h
     network/networkmanager.h
     network/networkurlinterceptor.h
     network/schemehandlers/extensionschemehandler.h
@@ -464,12 +468,14 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.h
     preferences/thememanager.h
     preferences/useragentdialog.h
+    security/securitymanager.h
     session/recoveryjsobject.h
     session/restoremanager.h
     session/sessionmanager.h
     session/sessionmanagerdialog.h
     sidebar/bookmarkssidebar.h
     sidebar/historysidebar.h
+    sidebar/securitysidebar.h
     sidebar/sidebar.h
     tabwidget/combotabbar.h
     tabwidget/tabbar.h

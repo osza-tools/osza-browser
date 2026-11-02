@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
 #include "httpsonlyinterceptor.h"
+#include "securitymanager.h"
 #include "settings.h"
 
 #include <QHostAddress>
@@ -53,21 +54,100 @@ void HttpsOnlyInterceptor::interceptRequest(QWebEngineUrlRequestInfo &request)
         return;
     }
 
-    if (isExcluded(url.host())) {
+    if (isExcludedLocked(url.host())) {
         return;
     }
 
     QUrl upgraded = url;
     upgraded.setScheme(QSL("https"));
     request.redirect(upgraded);
+
+    SecurityManager::instance()->reportHttpsUpgrade(url.host());
+}
+
+bool HttpsOnlyInterceptor::isEnabled() const
+{
+    QMutexLocker lock(&m_mutex);
+    return m_enabled;
 }
 
 bool HttpsOnlyInterceptor::isExcluded(const QString &host) const
+{
+    QMutexLocker lock(&m_mutex);
+    return isExcludedLocked(host);
+}
+
+bool HttpsOnlyInterceptor::hasExplicitExclusion(const QString &host) const
+{
+    QMutexLocker lock(&m_mutex);
+    return hasExplicitExclusionLocked(host);
+}
+
+void HttpsOnlyInterceptor::addExclusion(const QString &host)
+{
+    const QString trimmed = host.trimmed();
+
+    if (trimmed.isEmpty()) {
+        return;
+    }
+
+    QStringList exclusions;
+
+    {
+        QMutexLocker lock(&m_mutex);
+
+        if (!m_exclusions.contains(trimmed, Qt::CaseInsensitive)) {
+            m_exclusions.append(trimmed);
+        }
+
+        exclusions = m_exclusions;
+    }
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("HttpsOnlyExclusions"), exclusions);
+    settings.endGroup();
+}
+
+void HttpsOnlyInterceptor::removeExclusion(const QString &host)
+{
+    const QString trimmed = host.trimmed();
+
+    if (trimmed.isEmpty()) {
+        return;
+    }
+
+    QStringList exclusions;
+
+    {
+        QMutexLocker lock(&m_mutex);
+
+        for (int i = m_exclusions.size() - 1; i >= 0; --i) {
+            if (m_exclusions.at(i).trimmed().compare(trimmed, Qt::CaseInsensitive) == 0) {
+                m_exclusions.removeAt(i);
+            }
+        }
+
+        exclusions = m_exclusions;
+    }
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("HttpsOnlyExclusions"), exclusions);
+    settings.endGroup();
+}
+
+bool HttpsOnlyInterceptor::isExcludedLocked(const QString &host) const
 {
     if (host.isEmpty() || isLoopbackHost(host) || isPrivateAddress(host)) {
         return true;
     }
 
+    return hasExplicitExclusionLocked(host);
+}
+
+bool HttpsOnlyInterceptor::hasExplicitExclusionLocked(const QString &host) const
+{
     for (const QString &entry : m_exclusions) {
         const QString trimmed = entry.trimmed();
 

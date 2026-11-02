@@ -34,6 +34,8 @@
 #include "browserwindow.h"
 #include "checkboxdialog.h"
 #include "networkmanager.h"
+#include "securitymanager.h"
+#include "adblockmanager.h"
 #include "profilemanager.h"
 #include "browsinglibrary.h"
 #include "downloadmanager.h"
@@ -353,6 +355,12 @@ MainApplication::MainApplication(int &argc, char** argv)
     });
 
     m_networkManager = new NetworkManager(this);
+
+    // Security tools: load persisted counters and count blocked ads
+    SecurityManager::instance()->loadCounters();
+    connect(AdBlockManager::instance(), &AdBlockManager::blockedRequestsChanged, this, [](const QUrl &url) {
+        SecurityManager::instance()->reportAdBlocked(url.host());
+    });
 
     initNetworkInformation();
     setupUserScripts();
@@ -935,6 +943,7 @@ void MainApplication::saveSettings()
     m_searchEnginesManager->saveSettings();
     m_plugins->shutdown();
     m_networkManager->shutdown();
+    SecurityManager::instance()->saveCounters();
 
     qzSettings->saveSettings();
     QFile::remove(DataPaths::currentProfilePath() + QLatin1String("/WebpageIcons.db"));

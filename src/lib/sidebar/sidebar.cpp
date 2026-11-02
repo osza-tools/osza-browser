@@ -20,6 +20,7 @@
 #include "docktitlebarwidget.h"
 #include "bookmarkssidebar.h"
 #include "historysidebar.h"
+#include "securitysidebar.h"
 #include "mainapplication.h"
 #include "browserwindow.h"
 #include "settings.h"
@@ -59,6 +60,13 @@ void SideBar::setWidget(QWidget* widget)
 
     if (widget)
         m_layout->addWidget(widget);
+}
+
+void SideBar::showSecurity()
+{
+    m_titleBar->setTitle(tr("Security"));
+    auto* bar = new SecuritySideBar(m_window);
+    setWidget(bar);
 }
 
 void SideBar::showBookmarks()
@@ -107,7 +115,14 @@ void SideBarManager::createMenu(QMenu* menu, bool mainMenu)
 
     auto *group = new QActionGroup(menu);
 
-    QAction* act = menu->addAction(SideBar::tr("Bookmarks"), this, &SideBarManager::slotShowSideBar);
+    QAction* act = menu->addAction(SideBar::tr("Security"), this, &SideBarManager::slotShowSideBar);
+    act->setCheckable(true);
+    act->setShortcut(QKeySequence(QSL("Ctrl+Shift+D")));
+    act->setData(QSL("Security"));
+    act->setChecked(m_activeBar == QL1S("Security"));
+    group->addAction(act);
+
+    act = menu->addAction(SideBar::tr("Bookmarks"), this, &SideBarManager::slotShowSideBar);
     act->setCheckable(true);
     act->setShortcut(QKeySequence(QSL("Ctrl+Shift+B")));
     act->setData(QSL("Bookmarks"));
@@ -194,7 +209,10 @@ void SideBarManager::showSideBar(const QString &id, bool toggle)
         return;
     }
 
-    if (id == QLatin1String("Bookmarks")) {
+    if (id == QLatin1String("Security")) {
+        m_sideBar.data()->showSecurity();
+    }
+    else if (id == QLatin1String("Bookmarks")) {
         m_sideBar.data()->showBookmarks();
     }
     else if (id == QLatin1String("History")) {

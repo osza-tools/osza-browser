@@ -78,6 +78,7 @@ private Q_SLOTS:
     void useExternalDownManagerChanged(bool state);
     void changeCachePathClicked();
     void allowPluginsToggled(bool checked);
+    void dnsOverHttpsServerChanged(int index);
 
     void newTabChanged(int value);
     void afterLaunchChanged(int value);
@@ -92,6 +93,7 @@ private Q_SLOTS:
 
 private:
     void closeEvent(QCloseEvent* event) override;
+    void loadDnsOverHttpsServers(const QStringList &savedServers);
 
     Ui::Preferences* ui;
     BrowserWindow* m_window;

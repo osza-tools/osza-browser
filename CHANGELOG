@@ -17,6 +17,35 @@ Fixed:
   detection when called before them.
 
 Added:
+- Security tools (3): DNS-over-HTTPS (DoH). All hostname resolution
+  performed by the engine can now go through an encrypted DoH server
+  instead of the system resolver, so the network operator can neither
+  read nor modify the DNS answers (Preferences > Privacy > Security
+  tools > Secure DNS). Two modes are available: secure with fallback
+  to the system DNS, and secure-only without fallback; the server can
+  be picked from the known providers (Cloudflare, Google, Quad9,
+  AdGuard) or entered as a custom RFC 8484 URI template. The feature
+  is wired through the new DnsOverHttpsManager on top of QtWebEngine's
+  global DNS mode (QtWebEngine >= 6.6; on older engines the controls
+  are disabled) and surfaces its current state in the security
+  dashboard.
+- Security tools (4): the security dashboard, a new built-in sidebar
+  (View > Sidebar > Security, Ctrl+Shift+D, or Tools > Security
+  Dashboard). It shows live counters for the whole suite - ads blocked
+  by AdBlock, tracking parameters stripped and insecure connections
+  upgraded to HTTPS - both as persisted totals and for the current
+  site, with quick switches for every protection (AdBlock, HTTPS-Only,
+  tracking-parameter stripping, secure DNS) and a reset button. The
+  counters are collected in a new thread-safe SecurityManager hub
+  (the interceptors run on the IO thread) and survive restarts.
+- Security tools (5): per-site HTTPS-Only shortcuts in the padlock
+  (site info) menu. The menu now states the HTTPS-Only state for the
+  site ("HTTP connections to this site are upgraded / never upgraded")
+  and offers one-click shortcuts: "Always upgrade to HTTPS" removes a
+  site from the exception list, "Never upgrade to HTTPS" adds one, and
+  when the mode is off it can be turned on right from the menu. A
+  plain-http page reloads immediately after the change so the shortcut
+  takes effect at once.
 - Security tools (1): HTTPS-Only mode. When enabled (Preferences >
   Privacy > Security tools), every insecure http:// request is
   transparently upgraded to https:// by a new request interceptor -

@@ -25,6 +25,8 @@
 #include "sqldatabase.h"
 #include "protocolhandlermanager.h"
 #include "networkmanager.h"
+#include "httpsonlyinterceptor.h"
+#include "settings.h"
 
 #include <QToolTip>
 
@@ -107,9 +109,11 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     }
 
     updateProtocolHandler();
+    updateHttpsOnlyState();
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
+    connect(ui->httpsOnlyButton, &QPushButton::clicked, this, &SiteInfoWidget::httpsOnlyButtonClicked);
 }
 
 SiteInfoWidget::~SiteInfoWidget()
@@ -139,5 +143,61 @@ void SiteInfoWidget::protocolHandlerButtonClicked()
     WebPage *page = m_window->weView()->page();
 
     mApp->protocolHandlerManager()->addProtocolHandler(page->registerProtocolHandlerRequestScheme(), page->registerProtocolHandlerRequestUrl());
+    close();
+}
+
+void SiteInfoWidget::updateHttpsOnlyState()
+{
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->httpsOnlyLabel->hide();
+        ui->httpsOnlyButton->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+
+    if (!interceptor->isEnabled()) {
+        ui->httpsOnlyLabel->setText(tr("HTTPS-Only mode is <b>off</b>."));
+        ui->httpsOnlyButton->setText(tr("Enable HTTPS-Only mode"));
+        return;
+    }
+
+    if (interceptor->hasExplicitExclusion(host)) {
+        ui->httpsOnlyLabel->setText(tr("HTTP connections to this site are <b>never</b> upgraded."));
+        ui->httpsOnlyButton->setText(tr("Always upgrade to HTTPS"));
+    } else {
+        ui->httpsOnlyLabel->setText(tr("HTTP connections to this site are <b>upgraded</b> to HTTPS."));
+        ui->httpsOnlyButton->setText(tr("Never upgrade to HTTPS"));
+    }
+}
+
+void SiteInfoWidget::httpsOnlyButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+
+    if (!interceptor->isEnabled()) {
+        // The per-site shortcuts need the mode itself, turn it on.
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), true);
+        settings.endGroup();
+
+        interceptor->loadSettings();
+    }
+    else if (interceptor->hasExplicitExclusion(url.host())) {
+        interceptor->removeExclusion(url.host());
+    } else {
+        interceptor->addExclusion(url.host());
+    }
+
+    // Reload so plain http connections are upgraded right away.
+    if (url.scheme() == QL1S("http")) {
+        m_window->weView()->reload();
+    }
+
     close();
 }

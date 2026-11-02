@@ -2427,7 +2427,73 @@ Local and private network addresses are never upgraded.</string>
                  </property>
                 </widget>
                </item>
-               <item row="13" column="0" colspan="3">
+               <item row="13" column="0">
+                <widget class="QLabel" name="labelSecureDns">
+                 <property name="text">
+                  <string>Secure DNS (DNS-over-HTTPS)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="2">
+                <widget class="QComboBox" name="dnsOverHttpsMode">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>Resolve all hostnames through an encrypted DNS-over-HTTPS server.
+Secure DNS with fallback falls back to the system DNS if the secure server fails.
+Secure DNS only never falls back - if the secure server fails, pages will not load.
+Requires QtWebEngine 6.6 or newer.</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Off (use system DNS)</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Secure DNS with fallback</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Secure DNS only (no fallback)</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="labelDnsOverHttpsServer">
+                 <property name="text">
+                  <string>Secure DNS server</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="2">
+                <layout class="QHBoxLayout" name="horizontalLayoutSecureDns">
+                 <item>
+                  <widget class="QComboBox" name="dnsOverHttpsServers">
+                   <property name="toolTip">
+                    <string>Choose a known secure DNS provider, or Custom to enter your own DNS-over-HTTPS URI template.</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="dnsOverHttpsCustom">
+                   <property name="toolTip">
+                    <string>DNS-over-HTTPS URI template, for example https://dns.example.com/dns-query{?dns}</string>
+                   </property>
+                   <property name="placeholderText">
+                    <string>https://dns.example.com/dns-query{?dns}</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="16" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

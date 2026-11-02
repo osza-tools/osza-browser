@@ -30,6 +30,7 @@
 #include "pluginsmanager.h"
 #include "jsoptions.h"
 #include "httpsonlyexceptionsdialog.h"
+#include "dnsoverhttpsmanager.h"
 #include "networkmanager.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
@@ -408,6 +409,14 @@ Preferences::Preferences(BrowserWindow* window)
     // Security tools
     ui->httpsOnly->setChecked(settings.value(QSL("HttpsOnlyMode"), false).toBool());
     ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
+    ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
+    loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
+    connect(ui->dnsOverHttpsServers, &QComboBox::currentIndexChanged, this, &Preferences::dnsOverHttpsServerChanged);
+    dnsOverHttpsServerChanged(ui->dnsOverHttpsServers->currentIndex());
+    ui->dnsOverHttpsMode->setEnabled(DnsOverHttpsManager::isSupported());
+    ui->dnsOverHttpsServers->setEnabled(DnsOverHttpsManager::isSupported());
+    ui->labelDnsOverHttpsServer->setEnabled(DnsOverHttpsManager::isSupported());
+    ui->labelSecureDns->setEnabled(DnsOverHttpsManager::isSupported());
 
     //CSS Style
     ui->userStyleSheet->setText(settings.value(QSL("userStyleSheet"), QSL("")).toString());
@@ -815,6 +824,49 @@ void Preferences::openHttpsOnlyExceptions()
     }
 }
 
+void Preferences::loadDnsOverHttpsServers(const QStringList &savedServers)
+{
+    const auto providers = DnsOverHttpsManager::knownProviders();
+
+    ui->dnsOverHttpsServers->clear();
+
+    for (const auto &provider : providers) {
+        ui->dnsOverHttpsServers->addItem(provider.name, provider.template_);
+    }
+
+    ui->dnsOverHttpsServers->addItem(tr("Custom"), QString());
+
+    const QString saved = savedServers.value(0).trimmed();
+
+    int index = -1;
+
+    for (int i = 0; i < ui->dnsOverHttpsServers->count(); ++i) {
+        if (ui->dnsOverHttpsServers->itemData(i).toString().compare(saved, Qt::CaseInsensitive) == 0) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index >= 0) {
+        ui->dnsOverHttpsServers->setCurrentIndex(index);
+        ui->dnsOverHttpsCustom->setText(saved);
+    } else {
+        ui->dnsOverHttpsServers->setCurrentIndex(ui->dnsOverHttpsServers->count() - 1);
+        ui->dnsOverHttpsCustom->setText(saved);
+    }
+}
+
+void Preferences::dnsOverHttpsServerChanged(int index)
+{
+    const bool isCustom = ui->dnsOverHttpsServers->itemData(index).toString().isEmpty();
+
+    ui->dnsOverHttpsCustom->setEnabled(isCustom);
+
+    if (!isCustom) {
+        ui->dnsOverHttpsCustom->setText(ui->dnsOverHttpsServers->itemData(index).toString());
+    }
+}
+
 void Preferences::useExternalDownManagerChanged(bool state)
 {
     ui->externalDownExecutable->setEnabled(state);
@@ -1073,6 +1125,8 @@ void Preferences::saveSettings()
     settings.setValue(QSL("DoNotTrack"), ui->doNotTrack->isChecked());
     settings.setValue(QSL("HttpsOnlyMode"), ui->httpsOnly->isChecked());
     settings.setValue(QSL("StripTrackingQuery"), ui->stripTrackingQuery->isChecked());
+    settings.setValue(QSL("DnsOverHttpsMode"), ui->dnsOverHttpsMode->currentIndex());
+    settings.setValue(QSL("DnsOverHttpsServers"), QStringList{ui->dnsOverHttpsCustom->text().trimmed()});
     settings.setValue(QSL("CheckUpdates"), ui->checkUpdates->isChecked());
     settings.setValue(QSL("LoadTabsOnActivation"), ui->dontLoadTabsUntilSelected->isChecked());
     settings.setValue(QSL("DefaultZoomLevel"), ui->defaultZoomLevel->currentIndex());

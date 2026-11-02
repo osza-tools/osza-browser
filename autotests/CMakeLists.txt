@@ -24,6 +24,7 @@ osza_tests(
     webviewtest
     webtabtest
     sqldatabasetest
+    securitytoolstest
 )
 
 if (BUILD_TESTING_ONLINE)

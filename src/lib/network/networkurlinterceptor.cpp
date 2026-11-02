@@ -17,6 +17,7 @@
 * ============================================================ */
 #include "networkurlinterceptor.h"
 #include "urlinterceptor.h"
+#include "securitymanager.h"
 #include "settings.h"
 #include "mainapplication.h"
 #include "useragentmanager.h"
@@ -74,6 +75,7 @@ void NetworkUrlInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
             const QUrl stripped = stripTrackingParameters(requestUrl);
             if (stripped != requestUrl) {
                 info.redirect(stripped);
+                SecurityManager::instance()->reportTrackerStripped(requestUrl.host());
                 return;
             }
         }

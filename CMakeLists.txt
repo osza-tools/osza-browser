@@ -197,6 +197,7 @@ include_directories(
      ${CMAKE_SOURCE_DIR}/src/lib/plugins
      ${CMAKE_SOURCE_DIR}/src/lib/popupwindow
      ${CMAKE_SOURCE_DIR}/src/lib/preferences
+     ${CMAKE_SOURCE_DIR}/src/lib/security
      ${CMAKE_SOURCE_DIR}/src/lib/session
      ${CMAKE_SOURCE_DIR}/src/lib/sidebar
      ${CMAKE_SOURCE_DIR}/src/lib/tabwidget

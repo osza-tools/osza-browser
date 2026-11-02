@@ -26,6 +26,7 @@
 #include "sslerrordialog.h"
 #include "networkurlinterceptor.h"
 #include "httpsonlyinterceptor.h"
+#include "dnsoverhttpsmanager.h"
 #include "schemehandlers/oszaschemehandler.h"
 #include "schemehandlers/extensionschemehandler.h"
 #include "webpage.h"
@@ -62,6 +63,9 @@ NetworkManager::NetworkManager(QObject *parent)
     // Create HTTPS-Only interceptor (part of the security tools suite)
     m_httpsOnlyInterceptor = new HttpsOnlyInterceptor(this);
     installUrlInterceptor(m_httpsOnlyInterceptor);
+
+    // Create DNS-over-HTTPS manager (part of the security tools suite)
+    m_dnsOverHttpsManager = new DnsOverHttpsManager(this);
 
     // Create cookie jar
     mApp->cookieJar();
@@ -261,6 +265,16 @@ void NetworkManager::removeUrlInterceptor(UrlInterceptor *interceptor)
     m_urlInterceptor->removeUrlInterceptor(interceptor);
 }
 
+HttpsOnlyInterceptor *NetworkManager::httpsOnlyInterceptor() const
+{
+    return m_httpsOnlyInterceptor;
+}
+
+DnsOverHttpsManager *NetworkManager::dnsOverHttpsManager() const
+{
+    return m_dnsOverHttpsManager;
+}
+
 void NetworkManager::registerExtensionSchemeHandler(const QString &name, ExtensionSchemeHandler *handler)
 {
     m_extensionScheme->registerHandler(name, handler);
@@ -306,6 +320,7 @@ void NetworkManager::loadSettings()
 
     m_urlInterceptor->loadSettings();
     m_httpsOnlyInterceptor->loadSettings();
+    m_dnsOverHttpsManager->loadSettings();
 
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_ignoredSslHosts = settings.value(QSL("IgnoredSslHosts"), QStringList()).toStringList();

@@ -38,6 +38,7 @@ class OSZA_EXPORT SideBar : public QWidget
 public:
     explicit SideBar(SideBarManager* manager, BrowserWindow* window);
 
+    void showSecurity();
     void showBookmarks();
     void showHistory();
 

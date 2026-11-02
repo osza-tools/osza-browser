@@ -35,12 +35,26 @@ public:
     // Must be called after Settings have been created
     void loadSettings();
 
-private:
+    bool isEnabled() const;
+
+    // Full exclusion check, including loopback / private addresses.
     bool isExcluded(const QString &host) const;
+
+    // True when the host itself is on the user's exception list.
+    bool hasExplicitExclusion(const QString &host) const;
+
+    // Per-site shortcuts used by the padlock menu. Both persist the
+    // new list to Settings; call them from the UI thread only.
+    void addExclusion(const QString &host);
+    void removeExclusion(const QString &host);
+
+private:
+    bool isExcludedLocked(const QString &host) const;
+    bool hasExplicitExclusionLocked(const QString &host) const;
     static bool isLoopbackHost(const QString &host);
     static bool isPrivateAddress(const QString &host);
 
-    QMutex m_mutex;
+    mutable QMutex m_mutex;
     bool m_enabled;
     QStringList m_exclusions;
 };
