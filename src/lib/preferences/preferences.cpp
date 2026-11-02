@@ -29,6 +29,7 @@
 #include "pluginproxy.h"
 #include "pluginsmanager.h"
 #include "jsoptions.h"
+#include "httpsonlyexceptionsdialog.h"
 #include "networkmanager.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
@@ -404,6 +405,10 @@ Preferences::Preferences(BrowserWindow* window)
     // Other
     ui->doNotTrack->setChecked(settings.value(QSL("DoNotTrack"), false).toBool());
 
+    // Security tools
+    ui->httpsOnly->setChecked(settings.value(QSL("HttpsOnlyMode"), false).toBool());
+    ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
+
     //CSS Style
     ui->userStyleSheet->setText(settings.value(QSL("userStyleSheet"), QSL("")).toString());
     connect(ui->chooseUserStylesheet, &QAbstractButton::clicked, this, &Preferences::chooseUserStyleClicked);
@@ -590,6 +595,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->deleteHtml5storage, &QAbstractButton::clicked, this, &Preferences::deleteHtml5storage);
     connect(ui->uaManager, &QAbstractButton::clicked, this, &Preferences::openUserAgentManager);
     connect(ui->jsOptionsButton, &QAbstractButton::clicked, this, &Preferences::openJsOptions);
+    connect(ui->httpsOnlyExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openHttpsOnlyExceptions);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
@@ -794,6 +800,19 @@ void Preferences::openJsOptions()
 {
     auto* dialog = new JsOptions(this);
     dialog->open();
+}
+
+void Preferences::openHttpsOnlyExceptions()
+{
+    HttpsOnlyExceptionsDialog dialog(Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList(), this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        Settings settings;
+        settings.setValue(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), dialog.exclusions());
+
+        // Make the new exclusions effective immediately
+        mApp->networkManager()->loadSettings();
+    }
 }
 
 void Preferences::useExternalDownManagerChanged(bool state)
@@ -1052,6 +1071,8 @@ void Preferences::saveSettings()
     settings.setValue(QSL("AnimateScrolling"), ui->animateScrolling->isChecked());
     settings.setValue(QSL("wheelScrollLines"), ui->wheelScroll->value());
     settings.setValue(QSL("DoNotTrack"), ui->doNotTrack->isChecked());
+    settings.setValue(QSL("HttpsOnlyMode"), ui->httpsOnly->isChecked());
+    settings.setValue(QSL("StripTrackingQuery"), ui->stripTrackingQuery->isChecked());
     settings.setValue(QSL("CheckUpdates"), ui->checkUpdates->isChecked());
     settings.setValue(QSL("LoadTabsOnActivation"), ui->dontLoadTabsUntilSelected->isChecked());
     settings.setValue(QSL("DefaultZoomLevel"), ui->defaultZoomLevel->currentIndex());

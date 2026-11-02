@@ -136,10 +136,6 @@ MainApplication::MainApplication(int &argc, char** argv)
     setApplicationVersion(QString::fromLatin1(Qz::VERSION));
 #endif
 
-    // Use the bundled Osza icon theme everywhere, picking the variant
-    // that matches the palette (see ICONS.md)
-    OszaIcons::activateTheme();
-
     // QSQLITE database plugin is required
     if (!QSqlDatabase::isDriverAvailable(QSL("QSQLITE"))) {
         QMessageBox::critical(nullptr, QSL("Error"), QSL("Qt SQLite database plugin is not available. Please install it and restart the application."));
@@ -297,6 +293,12 @@ MainApplication::MainApplication(int &argc, char** argv)
     profileManager.initCurrentProfile(startProfile);
 
     Settings::createSettings(DataPaths::currentProfilePath() + QLatin1String("/settings.ini"));
+
+    // Use the bundled Osza icon theme everywhere, picking the variant
+    // that matches the palette (see ICONS.md). This must run after
+    // Settings::createSettings() - activateTheme() reads the user's
+    // color-scheme preference from the profile settings.
+    OszaIcons::activateTheme();
 
     setChromiumFlags();
     NetworkManager::registerSchemes();

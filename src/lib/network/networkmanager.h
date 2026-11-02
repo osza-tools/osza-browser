@@ -25,6 +25,7 @@
 
 class UrlInterceptor;
 class NetworkUrlInterceptor;
+class HttpsOnlyInterceptor;
 class ExtensionSchemeManager;
 class ExtensionSchemeHandler;
 
@@ -63,6 +64,7 @@ private:
     void saveIgnoredSslHosts();
 
     NetworkUrlInterceptor *m_urlInterceptor;
+    HttpsOnlyInterceptor *m_httpsOnlyInterceptor;
     ExtensionSchemeManager *m_extensionScheme;
     QHash<QString, QWebEngineCertificateError::Type> m_ignoredSslErrors;
     QHash<QString, QWebEngineCertificateError::Type> m_rejectedSslErrors;

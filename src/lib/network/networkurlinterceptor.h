@@ -21,6 +21,7 @@
 
 #include <QMutex>
 #include <QWebEngineUrlRequestInterceptor>
+#include <QUrl>
 
 #include "qzcommon.h"
 
@@ -39,10 +40,13 @@ public:
     void loadSettings();
 
 private:
+    QUrl stripTrackingParameters(const QUrl &url) const;
+
     QMutex m_mutex;
     QList<UrlInterceptor*> m_interceptors;
     bool m_sendDNT = false;
     bool m_usePerDomainUserAgent = false;
+    bool m_stripTrackingQuery = true;
     QHash<QString, QString> m_userAgentsList;
 };
 

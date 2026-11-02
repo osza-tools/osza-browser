@@ -46,8 +46,16 @@ bool paletteIsDark()
 
 bool userPrefersDark()
 {
-    switch (Settings::globalSettings()->value(QSL("Web-Browser-Settings/prefferColorScheme"),
-                                              Qz::ColorScheme_Auto).toInt()) {
+    // Settings may not exist yet if this is called before
+    // Settings::createSettings() (eg. very early during startup) -
+    // fall back to palette detection instead of crashing.
+    const QSettings *settings = Settings::globalSettings();
+    if (!settings) {
+        return paletteIsDark();
+    }
+
+    switch (settings->value(QSL("Web-Browser-Settings/prefferColorScheme"),
+                            Qz::ColorScheme_Auto).toInt()) {
     case Qz::ColorScheme_Dark:
         return true;
     case Qz::ColorScheme_Light:

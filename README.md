@@ -27,6 +27,11 @@ and KDE contributors for their work.
   QtWebEngine rendering engine.
 - **Privacy first** — built-in private browsing, per-site settings and
   full control over cookies, JavaScript and other permissions.
+- **Security tools** — a bundled security suite: HTTPS-Only mode
+  (upgrades every insecure connection, with per-site exceptions) and
+  tracking-parameter stripping (utm_*, fbclid, gclid and friends are
+  removed from links before they load). Both live in Preferences →
+  Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS
   feeds, all reachable from collapsible sidebars.

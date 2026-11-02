@@ -62,6 +62,7 @@ private Q_SLOTS:
     void chooseExternalDownloadManager();
     void openUserAgentManager();
     void openJsOptions();
+    void openHttpsOnlyExceptions();
     void openSearchEnginesManager();
     void openCertificateManager();
     void openProtocolHandlersManager();

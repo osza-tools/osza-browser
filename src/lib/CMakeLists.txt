@@ -132,6 +132,7 @@ set(SRCS ${SRCS}
     navigation/siteicon.cpp
     navigation/websearchbar.cpp
     navigation/zoomlabel.cpp
+    network/httpsonlyinterceptor.cpp
     network/networkmanager.cpp
     network/networkurlinterceptor.cpp
     network/schemehandlers/extensionschemehandler.cpp
@@ -210,6 +211,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.cpp
     preferences/autoopenprotocolsdialog.cpp
     preferences/certificatemanager.cpp
+    preferences/httpsonlyexceptionsdialog.cpp
     preferences/jsoptions.cpp
     preferences/pluginlistdelegate.cpp
     preferences/pluginsmanager.cpp
@@ -372,6 +374,7 @@ set(SRCS ${SRCS}
     navigation/siteicon.h
     navigation/websearchbar.h
     navigation/zoomlabel.h
+    network/httpsonlyinterceptor.h
     network/networkmanager.h
     network/networkurlinterceptor.h
     network/schemehandlers/extensionschemehandler.h
@@ -450,6 +453,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.h
     preferences/autoopenprotocolsdialog.h
     preferences/certificatemanager.h
+    preferences/httpsonlyexceptionsdialog.h
     preferences/jsoptions.h
     preferences/pluginlistdelegate.h
     preferences/pluginsmanager.h

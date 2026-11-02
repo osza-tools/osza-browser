@@ -3,8 +3,36 @@ Osza Browser - Changelog
 
 Unreleased
 ---------
-The visual refresh: one icon language everywhere.
+The visual refresh: one icon language everywhere. Security tools: the
+start of the bundled security suite.
 
+Fixed:
+- The browser crashed on every launch and no window ever appeared:
+  MainApplication called OszaIcons::activateTheme() while still inside
+  its constructor, before Settings::createSettings() had run, and
+  activateTheme() dereferenced the not-yet-created global settings
+  object (a guaranteed nullptr crash on every platform, fresh or
+  existing profile). The call now happens after the settings exist and
+  activateTheme() is null-safe on top, falling back to palette
+  detection when called before them.
+
+Added:
+- Security tools (1): HTTPS-Only mode. When enabled (Preferences >
+  Privacy > Security tools), every insecure http:// request is
+  transparently upgraded to https:// by a new request interceptor -
+  top-level navigations as well as subresources, before anything
+  touches the network. Local addresses (localhost, loopback), private
+  network ranges (10/8, 172.16/12, 192.168/16, 169.254/16, IPv6 ULA
+  and link-local, .local and .localhost names) are never upgraded, and
+  a per-site exception list ("HTTPS-Only exceptions" dialog) covers
+  the servers that only exist over plain HTTP.
+- Security tools (2): tracking-parameter stripping, on by default.
+  Known click-identifier query parameters (utm_*, fbclid, gclid,
+  msclkid, twclid, ttclid, _hsenc, s_kwcid and friends - 33 names) are
+  removed from every http(s) request before it is sent, so links that
+  were shared or pasted with campaign trackers load clean. Signed CDN
+  URLs are untouched (they do not use these parameters) and the
+  feature can be turned off next to HTTPS-Only mode.
 Changed:
 - Every icon in the product was redrawn as one original, coherent set
   (see ICONS.md for the system). The browser now ships a complete

@@ -25,6 +25,7 @@
 #include "passwordmanager.h"
 #include "sslerrordialog.h"
 #include "networkurlinterceptor.h"
+#include "httpsonlyinterceptor.h"
 #include "schemehandlers/oszaschemehandler.h"
 #include "schemehandlers/extensionschemehandler.h"
 #include "webpage.h"
@@ -57,6 +58,10 @@ NetworkManager::NetworkManager(QObject *parent)
     // Create url interceptor
     m_urlInterceptor = new NetworkUrlInterceptor(this);
     mApp->webProfile()->setUrlRequestInterceptor(m_urlInterceptor);
+
+    // Create HTTPS-Only interceptor (part of the security tools suite)
+    m_httpsOnlyInterceptor = new HttpsOnlyInterceptor(this);
+    installUrlInterceptor(m_httpsOnlyInterceptor);
 
     // Create cookie jar
     mApp->cookieJar();
@@ -300,6 +305,7 @@ void NetworkManager::loadSettings()
     }
 
     m_urlInterceptor->loadSettings();
+    m_httpsOnlyInterceptor->loadSettings();
 
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_ignoredSslHosts = settings.value(QSL("IgnoredSslHosts"), QStringList()).toStringList();

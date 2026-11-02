@@ -22,6 +22,36 @@
 #include "useragentmanager.h"
 
 #include <QMutexLocker>
+#include <QUrlQuery>
+
+namespace {
+
+/*
+ * Query parameters that exist only to link a click/visit back to a
+ * tracking campaign. They are never needed for the page to work, so
+ * stripping them is safe; signed CDN URLs use different parameters.
+ */
+QStringList trackingParameterNames()
+{
+    return {
+        // Google Analytics / Urchin
+        QSL("utm_source"), QSL("utm_medium"), QSL("utm_campaign"),
+        QSL("utm_term"), QSL("utm_content"), QSL("utm_id"),
+        QSL("utm_source_platform"), QSL("utm_creative_format"),
+        QSL("utm_marketing_tactic"), QSL("_ga"),
+        // Platform click identifiers
+        QSL("fbclid"), QSL("gclid"), QSL("gclsrc"), QSL("dclid"),
+        QSL("gbraid"), QSL("wbraid"), QSL("msclkid"), QSL("twclid"),
+        QSL("ttclid"), QSL("yclid"), QSL("igshid"), QSL("li_fat_id"),
+        // Mail / marketing vendors
+        QSL("mc_cid"), QSL("mc_eid"), QSL("_hsenc"), QSL("_hsmi"),
+        QSL("vero_id"), QSL("vero_conv"), QSL("oly_anon_id"),
+        QSL("oly_enc_id"), QSL("s_kwcid"), QSL("rb_clickid"),
+        QSL("wickedid")
+    };
+}
+
+} // namespace
 
 NetworkUrlInterceptor::NetworkUrlInterceptor(QObject *parent)
     : QWebEngineUrlRequestInterceptor(parent)
@@ -35,6 +65,18 @@ void NetworkUrlInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 
     if (m_sendDNT) {
         info.setHttpHeader(QByteArrayLiteral("DNT"), QByteArrayLiteral("1"));
+    }
+
+    if (m_stripTrackingQuery) {
+        const QUrl requestUrl = info.requestUrl();
+        const QString scheme = requestUrl.scheme();
+        if (scheme == QSL("http") || scheme == QSL("https")) {
+            const QUrl stripped = stripTrackingParameters(requestUrl);
+            if (stripped != requestUrl) {
+                info.redirect(stripped);
+                return;
+            }
+        }
     }
 
     const QString host = info.firstPartyUrl().host();
@@ -79,6 +121,32 @@ void NetworkUrlInterceptor::removeUrlInterceptor(UrlInterceptor *interceptor)
     m_interceptors.removeOne(interceptor);
 }
 
+QUrl NetworkUrlInterceptor::stripTrackingParameters(const QUrl &url) const
+{
+    QUrlQuery query(url);
+    if (query.isEmpty()) {
+        return url;
+    }
+
+    bool changed = false;
+
+    for (const QString &name : trackingParameterNames()) {
+        while (query.hasQueryItem(name)) {
+            query.removeQueryItem(name);
+            changed = true;
+        }
+    }
+
+    if (!changed) {
+        return url;
+    }
+
+    QUrl stripped = url;
+    stripped.setQuery(query);
+
+    return stripped;
+}
+
 void NetworkUrlInterceptor::loadSettings()
 {
     QMutexLocker lock(&m_mutex);
@@ -86,6 +154,7 @@ void NetworkUrlInterceptor::loadSettings()
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_sendDNT = settings.value(QSL("DoNotTrack"), false).toBool();
+    m_stripTrackingQuery = settings.value(QSL("StripTrackingQuery"), true).toBool();
     settings.endGroup();
 
     m_usePerDomainUserAgent = mApp->userAgentManager()->usePerDomainUserAgents();
