@@ -63,6 +63,7 @@ private Q_SLOTS:
     void openUserAgentManager();
     void openJsOptions();
     void openHttpsOnlyExceptions();
+    void openFingerprintExceptions();
     void updateThreatBlockNow();
     void updateThreatBlockStatus();
     void threatBlockUpdateFailed(const QString &error);

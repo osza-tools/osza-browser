@@ -213,6 +213,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.cpp
     preferences/autoopenprotocolsdialog.cpp
     preferences/certificatemanager.cpp
+    preferences/fingerprintexceptionsdialog.cpp
     preferences/httpsonlyexceptionsdialog.cpp
     preferences/jsoptions.cpp
     preferences/pluginlistdelegate.cpp
@@ -462,6 +463,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.h
     preferences/autoopenprotocolsdialog.h
     preferences/certificatemanager.h
+    preferences/fingerprintexceptionsdialog.h
     preferences/httpsonlyexceptionsdialog.h
     preferences/jsoptions.h
     preferences/pluginlistdelegate.h

@@ -18,6 +18,7 @@
 #include "autotests.h"
 #include "securitytoolstest.h"
 #include "dnsoverhttpsmanager.h"
+#include "fingerprintexceptionsdialog.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
@@ -625,6 +626,35 @@ void SecurityToolsTest::fingerprintExclusionTest()
     QVERIFY(!manager->isExcluded(QSL("fp.example")));
     QVERIFY(!manager->isExcluded(QSL("www.fp.example")));
     QVERIFY(!manager->isExcluded(QSL("deep.fp-wild.example")));
+}
+
+void SecurityToolsTest::fingerprintExceptionsDialogTest()
+{
+    // The management dialog round-trips the exclusion list: blank
+    // entries are dropped and the rest is handed back verbatim.
+    FingerprintExceptionsDialog dialog({QSL("  FP.Example  "), QString(), QSL("*.wild.example")});
+
+    const QStringList exclusions = dialog.exclusions();
+    QCOMPARE(exclusions.size(), 2);
+    QVERIFY(exclusions.contains(QSL("FP.Example")));
+    QVERIFY(exclusions.contains(QSL("*.wild.example")));
+
+    // The dialog's result flows through the same settings path the
+    // preferences window uses, and the manager picks it up: entries
+    // cover their subdomains, wildcards cover subdomains only.
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/FingerprintExclusions"), exclusions);
+    FingerprintManager::instance()->loadSettings();
+
+    QVERIFY(FingerprintManager::instance()->isExcluded(QSL("fp.example")));
+    QVERIFY(FingerprintManager::instance()->isExcluded(QSL("www.fp.example")));
+    QVERIFY(FingerprintManager::instance()->isExcluded(QSL("deep.wild.example")));
+    QVERIFY(!FingerprintManager::instance()->isExcluded(QSL("wild.example")));
+    QVERIFY(!FingerprintManager::instance()->isExcluded(QSL("other.example")));
+
+    // restore the empty list the other tests expect
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList());
+    FingerprintManager::instance()->loadSettings();
+    QVERIFY(!FingerprintManager::instance()->isExcluded(QSL("fp.example")));
 }
 
 void SecurityToolsTest::fingerprintScriptLifecycleTest()

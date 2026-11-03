@@ -43,6 +43,7 @@ private Q_SLOTS:
 
     void fingerprintScriptSourceTest();
     void fingerprintExclusionTest();
+    void fingerprintExceptionsDialogTest();
     void fingerprintScriptLifecycleTest();
     void fingerprintIntegrationTest();
 

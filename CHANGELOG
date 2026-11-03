@@ -17,6 +17,16 @@ Fixed:
   detection when called before them.
 
 Added:
+- Fingerprint-protection exceptions can now be managed in bulk, in
+  Preferences > Privacy > Security tools > "Fingerprint exceptions"
+  (new FingerprintExceptionsDialog, the counterpart of the HTTPS-Only
+  exceptions dialog). Until now exclusions were only reachable one at
+  a time, from the padlock menu of a loaded site; the dialog lists
+  them all, adds hosts (an entry covers its subdomains; "*.domain"
+  covers the subdomains only) and removes them, and accepting the
+  dialog regenerates the guard script immediately so the change
+  applies to newly loaded pages. A new autotest covers the dialog's
+  round-trip and the settings path the preferences window uses.
 - Security tools (8): the Global Privacy Control signal, on by default.
   Osza now speaks GPC - the successor of Do Not Track with actual
   legal weight - and it does so completely, in both places the

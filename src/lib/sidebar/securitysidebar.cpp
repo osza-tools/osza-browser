@@ -160,7 +160,7 @@ void SecuritySideBar::createLayout()
     m_threatBlockState->setContentsMargins(20, 0, 0, 0);
     m_threatBlockState->setWordWrap(true);
     m_fingerprintToggle = new QCheckBox(tr("Fingerprint protection"), this);
-    m_fingerprintToggle->setToolTip(tr("Randomize canvas, WebGL, audio and hardware fingerprints per site. Sites can be excluded from the padlock menu."));
+    m_fingerprintToggle->setToolTip(tr("Randomize canvas, WebGL, audio and hardware fingerprints per site. Sites can be excluded from the padlock menu or the exceptions dialog in Preferences."));
     m_fingerprintState = new QLabel(this);
     m_fingerprintState->setContentsMargins(20, 0, 0, 0);
     m_fingerprintState->setWordWrap(true);

@@ -29,10 +29,12 @@
 #include "pluginproxy.h"
 #include "pluginsmanager.h"
 #include "jsoptions.h"
+#include "fingerprintexceptionsdialog.h"
 #include "httpsonlyexceptionsdialog.h"
 #include "dnsoverhttpsmanager.h"
 #include "threatblockmanager.h"
 #include "networkmanager.h"
+#include "fingerprintmanager.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
 #include "thememanager.h"
@@ -617,6 +619,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->uaManager, &QAbstractButton::clicked, this, &Preferences::openUserAgentManager);
     connect(ui->jsOptionsButton, &QAbstractButton::clicked, this, &Preferences::openJsOptions);
     connect(ui->httpsOnlyExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openHttpsOnlyExceptions);
+    connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
@@ -833,6 +836,20 @@ void Preferences::openHttpsOnlyExceptions()
 
         // Make the new exclusions effective immediately
         mApp->networkManager()->loadSettings();
+    }
+}
+
+void Preferences::openFingerprintExceptions()
+{
+    FingerprintExceptionsDialog dialog(Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList(), this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        Settings settings;
+        settings.setValue(QSL("Web-Browser-Settings/FingerprintExclusions"), dialog.exclusions());
+
+        // Make the new exclusions effective immediately: the guard
+        // script is regenerated with the new list baked in
+        FingerprintManager::instance()->loadSettings();
     }
 }
 

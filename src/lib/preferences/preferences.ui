@@ -2601,7 +2601,8 @@ Requires QtWebEngine 6.6 or newer.</string>
                  <property name="toolTip">
                   <string>Randomize canvas, WebGL, audio and hardware fingerprints on every site.
 The values stay stable for one site (so sites keep working) but differ between sites,
-browser profiles and users. Individual sites can be excluded from the padlock menu.</string>
+browser profiles and users. Individual sites can be excluded from the padlock menu,
+or in bulk from the fingerprint exceptions dialog.</string>
                  </property>
                  <property name="text">
                   <string>Randomize browser fingerprints (canvas, WebGL, audio)</string>
@@ -2634,7 +2635,27 @@ browser profiles and users. Individual sites can be excluded from the padlock me
                  </property>
                 </widget>
                </item>
-               <item row="20" column="0" colspan="3">
+               <item row="20" column="0">
+                <widget class="QLabel" name="labelFingerprintExceptions">
+                 <property name="text">
+                  <string>Manage fingerprint exceptions</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="20" column="2">
+                <widget class="QPushButton" name="fingerprintExceptionsButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Fingerprint exceptions</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>
