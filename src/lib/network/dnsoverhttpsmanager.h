@@ -63,6 +63,11 @@ public:
     // DoH requires QtWebEngine >= 6.6; older engines report unsupported.
     static bool isSupported();
 
+    // The default server template (the first of the known providers).
+    // The security dashboard's quick switch and the recommended-
+    // baseline preset resolve their default from here.
+    static QString defaultServerTemplate();
+
     // Built-in provider presets (name + RFC 8484 URI template).
     struct Provider
     {

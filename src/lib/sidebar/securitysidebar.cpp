@@ -26,6 +26,7 @@
 #include "networkmanager.h"
 #include "qztools.h"
 #include "securitymanager.h"
+#include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "settings.h"
 #include "tabwidget.h"
@@ -51,8 +52,6 @@
 namespace {
 
 const int kRefreshIntervalMs = 1000;
-
-const char kDefaultDohServer[] = "https://cloudflare-dns.com/dns-query{?dns}";
 
 QLabel* headingLabel(const QString &text)
 {
@@ -101,6 +100,21 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
             this, &SecuritySideBar::exportSecuritySettings);
     connect(m_backupMenu->addAction(tr("Import settings...")), &QAction::triggered,
             this, &SecuritySideBar::importSecuritySettings);
+
+    // The recommended baselines live next to the importer they are
+    // built on: applying a preset goes through the very same
+    // validation as importing a file.
+    m_backupMenu->addSeparator();
+    QMenu *presetsMenu = m_backupMenu->addMenu(tr("Apply recommended baseline"));
+    presetsMenu->setToolTipsVisible(true);
+
+    for (const SecurityPresets::Preset &preset : SecurityPresets::presets()) {
+        QAction *action = presetsMenu->addAction(preset.name);
+        action->setToolTip(preset.description);
+        connect(action, &QAction::triggered, this, [this, id = preset.id]() {
+            applySecurityPreset(id);
+        });
+    }
 
     refresh();
 }
@@ -456,7 +470,22 @@ void SecuritySideBar::importSecuritySettings()
         return;
     }
 
-    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+    SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+    // A mismatching checksum means the file was hand-edited or
+    // corrupted after the export. That can be legitimate (a
+    // deliberate hand edit, checked with the offline verifier), so
+    // the choice belongs to the user - but it must be explicit.
+    if (!result.ok && result.checksumMismatch) {
+        const QMessageBox::StandardButton answer = QMessageBox::question(
+            this, tr("Import Security Settings"),
+            tr("The file's checksum does not match its contents. It was changed or corrupted after it was exported.\n\nImport it anyway?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+        if (answer == QMessageBox::Yes) {
+            result = SecuritySettingsPorter::importFromFile(path, SecuritySettingsPorter::ChecksumPolicy::Allow);
+        }
+    }
 
     if (!result.ok) {
         QMessageBox::warning(this, tr("Import Security Settings"),
@@ -468,11 +497,55 @@ void SecuritySideBar::importSecuritySettings()
 
     QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
 
+    if (result.checksumMismatch) {
+        summary += QSL("\n\n") + tr("The file's checksum did not match; it was imported anyway.");
+    }
+
     if (!result.skippedTools.isEmpty()) {
         summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
     }
 
     QMessageBox::information(this, tr("Import Security Settings"), summary);
+}
+
+void SecuritySideBar::applySecurityPreset(const QString &id)
+{
+    const SecurityPresets::Preset preset = SecurityPresets::presetById(id);
+
+    if (preset.id.isEmpty()) {
+        return;
+    }
+
+    // A preset replaces the configuration of every tool; that is its
+    // point, so it never happens without the user seeing it coming.
+    const QMessageBox::StandardButton answer = QMessageBox::question(
+        this, tr("Apply Security Preset"),
+        tr("The preset \"%1\" replaces the current configuration of every security tool:\n%2\n\nApply it now?").arg(preset.name, preset.description),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    // The same validation and the same live manager APIs as an
+    // imported file - there is no second, weaker code path.
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(preset.document);
+
+    if (!result.ok) {
+        QMessageBox::warning(this, tr("Apply Security Preset"),
+                             tr("The preset could not be applied:\n%1").arg(result.error));
+        return;
+    }
+
+    refresh();
+
+    QString summary = tr("Applied \"%1\" to %n security tool(s).", nullptr, result.appliedTools).arg(preset.name);
+
+    if (!result.skippedTools.isEmpty()) {
+        summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
+    }
+
+    QMessageBox::information(this, tr("Apply Security Preset"), summary);
 }
 
 void SecuritySideBar::toggleAdBlock(bool enabled)
@@ -534,7 +607,8 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
     }
 
     if (mode == DnsOverHttpsManager::Disabled || servers.isEmpty()) {
-        doh->setConfiguration(DnsOverHttpsManager::SecureWithFallback, {QLatin1String(kDefaultDohServer)});
+        doh->setConfiguration(DnsOverHttpsManager::SecureWithFallback,
+                              {DnsOverHttpsManager::defaultServerTemplate()});
     } else {
         doh->setConfiguration(mode, servers);
     }

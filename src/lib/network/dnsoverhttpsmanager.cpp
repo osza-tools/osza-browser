@@ -71,6 +71,14 @@ QList<DnsOverHttpsManager::Provider> DnsOverHttpsManager::knownProviders()
     };
 }
 
+QString DnsOverHttpsManager::defaultServerTemplate()
+{
+    // The first of the known providers; the security dashboard's
+    // quick switch and the recommended-baseline preset resolve their
+    // default from here, so the template lives exactly once.
+    return knownProviders().constFirst().template_;
+}
+
 void DnsOverHttpsManager::loadSettings()
 {
     Settings settings;

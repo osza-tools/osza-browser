@@ -7,6 +7,49 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (11): recommended-baseline presets and
+  checksum-verified settings files. A hardened setup no longer
+  requires clicking through seven toggles: the new preset picker
+  offers three ready-made configurations - Essentials (the four
+  request-path protections: AdBlock, HTTPS-Only mode,
+  tracking-parameter stripping and malicious-site protection; secure
+  DNS, fingerprint randomization and the Global Privacy Control
+  signal off, for networks and sites where the deeper tools cause
+  trouble), Recommended baseline (all seven protections on with the
+  project defaults: secure DNS with fallback to the system resolver,
+  the default blocklist source, no site exceptions) and Maximum
+  protection (all seven on and secure DNS only, with no fallback).
+  A preset is a document in the same osza-security-settings format
+  the importer reads, applied through the very same validation and
+  the same live manager APIs - there is no second, weaker code path.
+  Applying always asks first, because a preset replaces the
+  configuration of every tool (site exception lists are reset: a
+  baseline starts from the recommended state). The picker lives in
+  Preferences > Privacy > Security tools ("Recommended baseline"
+  row) and in the security dashboard footer's "Import / Export"
+  menu under "Apply recommended baseline". The fingerprint master
+  seed stays out of presets, exactly as it stays out of exports.
+  Settings files become tamper-evident: every export now carries a
+  checksum - the SHA-256 of the canonical serialization of its
+  tools section, so reformatting the file or reordering keys keeps
+  it valid while any changed value breaks it. An import refuses a
+  file whose checksum does not match (it was hand-edited or
+  corrupted after the export) and offers an explicit "import
+  anyway"; files without a checksum, from older versions or
+  deliberate hand edits, import as before. After an intentional
+  hand edit, tools/security/verify_settings_porter.py
+  --update-checksum validates the file and writes a fresh checksum,
+  so the edit imports without the mismatch warning; the offline
+  verifier now checks checksums the same way the importer does and
+  cross-checks the new constants (algorithm, preset ids) against
+  the C++ sources. The default blocklist source and the default
+  secure DNS server template live once now, as public accessors on
+  ThreatBlockManager and DnsOverHttpsManager that the sidebar, the
+  presets and the tests all share. Two new autotests pin the
+  checksum rules (valid, tampered, malformed, missing, overridden;
+  reformatting stays valid) and the full preset behavior (ids,
+  ordering, pinned content, application through the managers, state
+  restoration).
 - Security tools (10): import and export of the security-tools
   settings. The configuration of all seven bundled protections -
   AdBlock, HTTPS-Only mode (with its exception list), tracking

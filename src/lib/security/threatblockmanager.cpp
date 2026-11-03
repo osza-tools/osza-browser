@@ -38,13 +38,6 @@
 
 namespace {
 
-// Default blocklist source: the StevenBlack hosts list - a curated,
-// MIT-licensed aggregation of adware and malware hosts (itself built
-// from sources like MalwareDomainList and Spam404). It is downloaded
-// in bulk, without any information about the browsing that identified
-// it, and the parser also accepts plain URL or host-per-line feeds.
-const char kDefaultSourceUrl[] = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts";
-
 // Refresh cadence: like every mainstream browser with a built-in bad
 // list, a few downloads per day keep the list fresh while the local
 // copy keeps working when offline.
@@ -71,6 +64,18 @@ ThreatBlockManager::ThreatBlockManager(QObject *parent)
 {
 }
 
+// The default blocklist source: the StevenBlack hosts list - a
+// curated, MIT-licensed aggregation of adware and malware hosts
+// (itself built from sources like MalwareDomainList and Spam404). It
+// is downloaded in bulk, without any information about the browsing
+// that identified it, and the parser also accepts plain URL or
+// host-per-line feeds. The recommended-baseline preset and the
+// sidebar read the default from here, so the URL lives once.
+QString ThreatBlockManager::defaultSourceUrl()
+{
+    return QSL("https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts");
+}
+
 void ThreatBlockManager::loadSettings()
 {
     QString source;
@@ -80,12 +85,12 @@ void ThreatBlockManager::loadSettings()
         Settings settings;
         settings.beginGroup(QSL("Web-Browser-Settings"));
         enabled = settings.value(QSL("ThreatBlockEnabled"), true).toBool();
-        source = settings.value(QSL("ThreatBlockSource"), QLatin1String(kDefaultSourceUrl)).toString();
+        source = settings.value(QSL("ThreatBlockSource"), ThreatBlockManager::defaultSourceUrl()).toString();
         settings.endGroup();
     }
 
     if (source.trimmed().isEmpty()) {
-        source = QLatin1String(kDefaultSourceUrl);
+        source = ThreatBlockManager::defaultSourceUrl();
     }
 
     {

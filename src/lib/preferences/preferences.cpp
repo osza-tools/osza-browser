@@ -35,6 +35,7 @@
 #include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "fingerprintmanager.h"
+#include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
@@ -624,11 +625,22 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
     connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
+    connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
     connect(ui->customSchemes, &QAbstractButton::clicked, this, &Preferences::openSchemesManager);
     connect(ui->AutoOpenProtocolsButton, &QAbstractButton::clicked, this, &Preferences::openAutoOpenProtocolsDialog);
+
+    // The preset picker, from lightest to strictest; the recommended
+    // baseline is what the row is about, so it is the default.
+    for (const SecurityPresets::Preset &preset : SecurityPresets::presets()) {
+        ui->securityPresetCombo->addItem(preset.name, preset.id);
+        ui->securityPresetCombo->setItemData(ui->securityPresetCombo->count() - 1,
+                                             preset.description, Qt::ToolTipRole);
+    }
+    const int baselineIndex = ui->securityPresetCombo->findData(QSL("recommended-baseline"));
+    ui->securityPresetCombo->setCurrentIndex(baselineIndex >= 0 ? baselineIndex : 0);
 
     connect(ui->listWidget, &QListWidget::currentItemChanged, this, &Preferences::showStackedPage);
     ui->listWidget->itemAt(5, 5)->setSelected(true);
@@ -886,7 +898,22 @@ void Preferences::importSecuritySettings()
         return;
     }
 
-    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+    SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+    // A mismatching checksum means the file was hand-edited or
+    // corrupted after the export. That can be legitimate (a
+    // deliberate hand edit, checked with the offline verifier), so
+    // the choice belongs to the user - but it must be explicit.
+    if (!result.ok && result.checksumMismatch) {
+        const QMessageBox::StandardButton answer = QMessageBox::question(
+            this, tr("Import Security Settings"),
+            tr("The file's checksum does not match its contents. It was changed or corrupted after it was exported.\n\nImport it anyway?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+        if (answer == QMessageBox::Yes) {
+            result = SecuritySettingsPorter::importFromFile(path, SecuritySettingsPorter::ChecksumPolicy::Allow);
+        }
+    }
 
     if (!result.ok) {
         QMessageBox::warning(this, tr("Import Security Settings"),
@@ -900,11 +927,58 @@ void Preferences::importSecuritySettings()
 
     QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
 
+    if (result.checksumMismatch) {
+        summary += QSL("\n\n") + tr("The file's checksum did not match; it was imported anyway.");
+    }
+
     if (!result.skippedTools.isEmpty()) {
         summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
     }
 
     QMessageBox::information(this, tr("Import Security Settings"), summary);
+}
+
+void Preferences::applySecurityPreset()
+{
+    const QString id = ui->securityPresetCombo->currentData().toString();
+    const SecurityPresets::Preset preset = SecurityPresets::presetById(id);
+
+    if (preset.id.isEmpty()) {
+        return;
+    }
+
+    // A preset replaces the configuration of every tool; that is its
+    // point, so it never happens without the user seeing it coming.
+    const QMessageBox::StandardButton answer = QMessageBox::question(
+        this, tr("Apply Security Preset"),
+        tr("The preset \"%1\" replaces the current configuration of every security tool:\n%2\n\nApply it now?").arg(preset.name, preset.description),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    // The same validation and the same live manager APIs as an
+    // imported file - there is no second, weaker code path.
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(preset.document);
+
+    if (!result.ok) {
+        QMessageBox::warning(this, tr("Apply Security Preset"),
+                             tr("The preset could not be applied:\n%1").arg(result.error));
+        return;
+    }
+
+    // The preset is applied and live already; resync the widgets so a
+    // later OK does not save the stale checkbox states back over it.
+    updateSecurityToolsWidgets();
+
+    QString summary = tr("Applied \"%1\" to %n security tool(s).", nullptr, result.appliedTools).arg(preset.name);
+
+    if (!result.skippedTools.isEmpty()) {
+        summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
+    }
+
+    QMessageBox::information(this, tr("Apply Security Preset"), summary);
 }
 
 void Preferences::updateSecurityToolsWidgets()

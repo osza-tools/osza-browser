@@ -228,6 +228,7 @@ set(SRCS ${SRCS}
     security/fingerprintmanager.cpp
     security/gpcmanager.cpp
     security/securitymanager.cpp
+    security/securitypresets.cpp
     security/securitysettingsporter.cpp
     security/selftestpage.cpp
     security/threatblockmanager.cpp
@@ -480,6 +481,7 @@ set(SRCS ${SRCS}
     security/fingerprintmanager.h
     security/gpcmanager.h
     security/securitymanager.h
+    security/securitypresets.h
     security/securitysettingsporter.h
     security/selftestpage.h
     security/threatblockmanager.h

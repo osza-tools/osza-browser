@@ -58,6 +58,11 @@ public:
     // mode. Must be called after Settings have been created.
     void loadSettings();
 
+    // The default blocklist source (the curated StevenBlack hosts
+    // list). Single source of truth for Preferences, the security
+    // dashboard and the recommended-baseline preset.
+    static QString defaultSourceUrl();
+
     bool isEnabled() const;
 
     // Persists the new state and starts/stops protecting.

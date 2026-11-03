@@ -27,6 +27,7 @@
 #include "threatblockmanager.h"
 
 #include <QCoreApplication>
+#include <QCryptographicHash>
 #include <QDateTime>
 #include <QFile>
 #include <QJsonArray>
@@ -98,6 +99,55 @@ QString SecuritySettingsPorter::formatIdentifier()
 int SecuritySettingsPorter::formatVersion()
 {
     return 1;
+}
+
+QString SecuritySettingsPorter::checksumAlgorithm()
+{
+    return QSL("sha256");
+}
+
+QString SecuritySettingsPorter::checksumForTools(const QJsonObject &tools)
+{
+    // The canonical form is the compact serialization of the tools
+    // object: no whitespace, keys in sorted order (QJsonObject keeps
+    // them sorted), UTF-8. Numbers written as 1.0 parse to the same
+    // double and re-serialize as 1, so the checksum follows the
+    // parsed content, never the raw bytes of the file.
+    const QByteArray canonical = QJsonDocument(tools).toJson(QJsonDocument::Compact);
+    const QByteArray digest = QCryptographicHash::hash(canonical, QCryptographicHash::Sha256);
+
+    return QString::fromLatin1(digest.toHex());
+}
+
+SecuritySettingsPorter::ChecksumState SecuritySettingsPorter::checkChecksum(const QJsonObject &document)
+{
+    const QJsonValue value = document.value(QSL("checksum"));
+
+    if (value.isUndefined()) {
+        return ChecksumState::NoChecksum;
+    }
+
+    // A malformed checksum field counts as a mismatch: fail safe.
+    if (!value.isObject()) {
+        return ChecksumState::Mismatch;
+    }
+
+    const QJsonObject checksum = value.toObject();
+
+    if (checksum.value(QSL("algorithm")).toString() != checksumAlgorithm()) {
+        return ChecksumState::Mismatch;
+    }
+
+    // A SHA-256 digest is 32 bytes, 64 hexadecimal characters.
+    const QString expected = checksum.value(QSL("tools")).toString().toLower();
+
+    if (expected.size() != 2 * QCryptographicHash::hashLength(QCryptographicHash::Sha256)) {
+        return ChecksumState::Mismatch;
+    }
+
+    return checksumForTools(document.value(QSL("tools")).toObject()) == expected
+        ? ChecksumState::Valid
+        : ChecksumState::Mismatch;
 }
 
 QJsonObject SecuritySettingsPorter::buildDocument()
@@ -175,6 +225,15 @@ QJsonObject SecuritySettingsPorter::buildDocument()
     document.insert(QSL("format"), formatIdentifier());
     document.insert(QSL("version"), formatVersion());
     document.insert(QSL("exportedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+
+    // Tamper evidence for exactly the payload below: reformatting
+    // the file keeps the checksum valid, changing any setting breaks
+    // it, and an import refuses the file until the user says yes.
+    QJsonObject checksum;
+    checksum.insert(QSL("algorithm"), checksumAlgorithm());
+    checksum.insert(QSL("tools"), checksumForTools(tools));
+    document.insert(QSL("checksum"), checksum);
+
     document.insert(QSL("tools"), tools);
 
     return document;
@@ -213,7 +272,7 @@ bool SecuritySettingsPorter::exportToFile(const QString &path, QString *error)
     return true;
 }
 
-SecuritySettingsPorter::ImportResult SecuritySettingsPorter::importFromFile(const QString &path)
+SecuritySettingsPorter::ImportResult SecuritySettingsPorter::importFromFile(const QString &path, ChecksumPolicy policy)
 {
     ImportResult result;
 
@@ -237,7 +296,7 @@ SecuritySettingsPorter::ImportResult SecuritySettingsPorter::importFromFile(cons
         return result;
     }
 
-    return applyDocument(document.object());
+    return applyDocument(document.object(), policy);
 }
 
 bool SecuritySettingsPorter::validateDocumentHeader(const QJsonObject &document, QString *error)
@@ -268,12 +327,24 @@ bool SecuritySettingsPorter::validateDocumentHeader(const QJsonObject &document,
     return true;
 }
 
-SecuritySettingsPorter::ImportResult SecuritySettingsPorter::applyDocument(const QJsonObject &document)
+SecuritySettingsPorter::ImportResult SecuritySettingsPorter::applyDocument(const QJsonObject &document, ChecksumPolicy policy)
 {
     ImportResult result;
 
     if (!validateDocumentHeader(document, &result.error)) {
         return result;
+    }
+
+    // A checksum that does not match means the document changed after
+    // it was exported - by hand or by corruption. Refuse it unless
+    // the caller explicitly allows it (the UI asks the user first).
+    if (checkChecksum(document) == ChecksumState::Mismatch) {
+        result.checksumMismatch = true;
+
+        if (policy == ChecksumPolicy::Reject) {
+            result.error = porterTr("The file's checksum does not match its contents. It was changed or corrupted after it was exported.");
+            return result;
+        }
     }
 
     const QJsonValue toolsValue = document.value(QSL("tools"));

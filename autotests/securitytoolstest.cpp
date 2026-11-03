@@ -27,6 +27,7 @@
 #include "mainapplication.h"
 #include "qzcommon.h"
 #include "securitymanager.h"
+#include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "securitysidebar.h"
 #include "selftestpage.h"
@@ -35,6 +36,7 @@
 #include "webpage.h"
 
 #include <QtTest/QtTest>
+#include <QCryptographicHash>
 #include <QDateTime>
 #include <QFile>
 #include <QJsonArray>
@@ -1859,6 +1861,426 @@ void SecurityToolsTest::settingsPorterValidationTest()
     }
 
     QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
+    QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
+    QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
+    QCOMPARE(doh->mode(), dohModeBefore);
+    QCOMPARE(doh->serverTemplates(), dohServersBefore);
+}
+
+void SecurityToolsTest::settingsPorterChecksumTest()
+{
+    auto *adblock = AdBlockManager::instance();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+
+    const bool adblockBefore = adblock->isEnabled();
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+
+    QTemporaryDir dir;
+    const QString path = dir.filePath(QSL("checksum.json"));
+
+    // A document without a checksum field - an export of an older
+    // version, or a deliberate hand edit - has nothing to verify.
+    {
+        QJsonObject document;
+        document.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        document.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        document.insert(QSL("tools"), QJsonObject());
+
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(document),
+                 SecuritySettingsPorter::ChecksumState::NoChecksum);
+    }
+
+    // The live document carries a checksum over its tools section,
+    // computed exactly the documented way.
+    const QJsonObject document = SecuritySettingsPorter::buildDocument();
+
+    QCOMPARE(SecuritySettingsPorter::checksumAlgorithm(), QSL("sha256"));
+    QCOMPARE(SecuritySettingsPorter::checkChecksum(document),
+             SecuritySettingsPorter::ChecksumState::Valid);
+
+    {
+        const QJsonObject checksum = document.value(QSL("checksum")).toObject();
+        QCOMPARE(checksum.value(QSL("algorithm")).toString(), QSL("sha256"));
+
+        // The documented mechanism, recomputed here: the SHA-256 of
+        // the compact serialization of the tools object.
+        const QByteArray canonical = QJsonDocument(document.value(QSL("tools")).toObject())
+                                         .toJson(QJsonDocument::Compact);
+        const QByteArray digest = QCryptographicHash::hash(canonical, QCryptographicHash::Sha256);
+        QCOMPARE(checksum.value(QSL("tools")).toString(), QString::fromLatin1(digest.toHex()));
+    }
+
+    // A genuine export imports through the file path without warnings.
+    QString error;
+    QVERIFY(SecuritySettingsPorter::exportToFile(path, &error));
+
+    {
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        const QJsonDocument written = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(written.object()),
+                 SecuritySettingsPorter::ChecksumState::Valid);
+    }
+
+    {
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+        QVERIFY(result.error.isEmpty());
+    }
+
+    // Reformatting the file keeps the checksum valid: it pins the
+    // parsed content, never the raw bytes.
+    {
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        QJsonDocument written = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        const QByteArray reformatted = QJsonDocument(written.object()).toJson(QJsonDocument::Compact);
+        QVERIFY(reformatted != QJsonDocument(written.object()).toJson(QJsonDocument::Indented));
+
+        QFile rewritten(path);
+        QVERIFY(rewritten.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        rewritten.write(reformatted);
+        rewritten.close();
+
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+    }
+
+    // Tampering with a setting breaks the checksum; the import is
+    // refused, nothing is applied, and the result says why.
+    {
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        QJsonDocument tampered = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        QJsonObject tools = tampered.object().value(QSL("tools")).toObject();
+        QJsonObject adblockTool = tools.value(QSL("adblock")).toObject();
+        adblockTool.insert(QSL("enabled"), !adblockTool.value(QSL("enabled")).toBool());
+        tools.insert(QSL("adblock"), adblockTool);
+        QJsonObject root = tampered.object();
+        root.insert(QSL("tools"), tools);
+        tampered.setObject(root);
+
+        QFile rewrite(path);
+        QVERIFY(rewrite.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        rewrite.write(QJsonDocument(tampered.object()).toJson(QJsonDocument::Indented));
+        rewrite.close();
+
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(tampered.object()),
+                 SecuritySettingsPorter::ChecksumState::Mismatch);
+
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+        QVERIFY(!result.ok);
+        QVERIFY(result.checksumMismatch);
+        QVERIFY(!result.error.isEmpty());
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(result.skippedTools.size(), 0);
+
+        // the tampered AdBlock state was really not applied
+        QCOMPARE(adblock->isEnabled(), adblockBefore);
+
+        // with the explicit override the import goes through, and
+        // reports that the checksum was overridden
+        const SecuritySettingsPorter::ImportResult forced =
+            SecuritySettingsPorter::importFromFile(path, SecuritySettingsPorter::ChecksumPolicy::Allow);
+        QVERIFY(forced.ok);
+        QVERIFY(forced.checksumMismatch);
+        QCOMPARE(adblock->isEnabled(), !adblockBefore);
+
+        // restore for the following checks
+        adblock->setEnabled(adblockBefore);
+    }
+
+    // A malformed checksum field is a mismatch, never an acceptance:
+    // not an object, an unknown algorithm, a non-string value, or a
+    // digest of the wrong length.
+    {
+        QJsonObject base = SecuritySettingsPorter::buildDocument();
+
+        auto check = [&](const QJsonValue &checksumValue) {
+            QJsonObject document2 = base;
+            document2.insert(QSL("checksum"), checksumValue);
+            return SecuritySettingsPorter::checkChecksum(document2);
+        };
+
+        QCOMPARE(check(QSL("not-an-object")), SecuritySettingsPorter::ChecksumState::Mismatch);
+        QCOMPARE(check(QJsonObject{{QSL("algorithm"), QSL("md5")},
+                                   {QSL("tools"), SecuritySettingsPorter::checksumForTools(base.value(QSL("tools")).toObject())}}),
+                 SecuritySettingsPorter::ChecksumState::Mismatch);
+        QCOMPARE(check(QJsonObject{{QSL("algorithm"), QSL("sha256")},
+                                   {QSL("tools"), 12345}}),
+                 SecuritySettingsPorter::ChecksumState::Mismatch);
+        QCOMPARE(check(QJsonObject{{QSL("algorithm"), QSL("sha256")},
+                                   {QSL("tools"), QSL("tooshort")}}),
+                 SecuritySettingsPorter::ChecksumState::Mismatch);
+
+        // the real one still validates
+        QCOMPARE(check(document.value(QSL("checksum")).toObject()),
+                 SecuritySettingsPorter::ChecksumState::Valid);
+    }
+
+    // A file whose checksum was removed - the older-format case -
+    // imports as before, without the mismatch dance. The content on
+    // disk at this point is still the tampered one; without a
+    // checksum there is nothing to refuse, and the values apply.
+    {
+        QFile file(path);
+        QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+        QJsonDocument stripped = QJsonDocument::fromJson(file.readAll());
+        file.close();
+
+        QJsonObject root = stripped.object();
+        root.remove(QSL("checksum"));
+        stripped.setObject(root);
+
+        QFile rewrite(path);
+        QVERIFY(rewrite.open(QIODevice::WriteOnly | QIODevice::Truncate));
+        rewrite.write(QJsonDocument(stripped.object()).toJson(QJsonDocument::Indented));
+        rewrite.close();
+
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+        QCOMPARE(adblock->isEnabled(), !adblockBefore);
+    }
+
+    // restore the state the other tests expect
+    adblock->setEnabled(adblockBefore);
+    QCOMPARE(adblock->isEnabled(), adblockBefore);
+    QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
+}
+
+void SecurityToolsTest::securityPresetsTest()
+{
+    auto *adblock = AdBlockManager::instance();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    auto *fingerprint = FingerprintManager::instance();
+    auto *gpc = GpcManager::instance();
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+
+    // Snapshot every piece of state the presets touch.
+    const bool adblockBefore = adblock->isEnabled();
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+    const bool stripTrackingBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+    const bool gpcBefore = gpc->isEnabled();
+    const bool threatEnabledBefore = threatBlock->isEnabled();
+    const QString threatSourceBefore = threatBlock->sourceUrl();
+    const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
+    const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const auto dohModeBefore = doh->mode();
+    const QStringList dohServersBefore = doh->serverTemplates();
+
+    const QList<SecurityPresets::Preset> presets = SecurityPresets::presets();
+
+    // Three built-ins, from lightest to strictest, each identified,
+    // named and described.
+    QCOMPARE(presets.size(), 3);
+    QCOMPARE(presets.at(0).id, QSL("essentials"));
+    QCOMPARE(presets.at(1).id, QSL("recommended-baseline"));
+    QCOMPARE(presets.at(2).id, QSL("maximum-protection"));
+
+    QSet<QString> ids;
+    for (const SecurityPresets::Preset &preset : std::as_const(presets)) {
+        QVERIFY(!preset.name.isEmpty());
+        QVERIFY(!preset.description.isEmpty());
+        QVERIFY(!ids.contains(preset.id));
+        ids.insert(preset.id);
+
+        // Every preset is a well-formed document in the import format
+        // that states all seven tools explicitly - the ones it turns
+        // off included - and carries neither a seed nor a checksum.
+        QVERIFY(SecuritySettingsPorter::validateDocumentHeader(preset.document, nullptr));
+
+        const QJsonObject tools = preset.document.value(QSL("tools")).toObject();
+        QCOMPARE(tools.size(), 7);
+        QVERIFY(tools.value(QSL("adblock")).isObject());
+        QVERIFY(tools.value(QSL("httpsOnly")).isObject());
+        QVERIFY(tools.value(QSL("trackingParameters")).isObject());
+        QVERIFY(tools.value(QSL("secureDns")).isObject());
+        QVERIFY(tools.value(QSL("threatBlock")).isObject());
+        QVERIFY(tools.value(QSL("fingerprintProtection")).isObject());
+        QVERIFY(tools.value(QSL("globalPrivacyControl")).isObject());
+
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(preset.document),
+                 SecuritySettingsPorter::ChecksumState::NoChecksum);
+
+        const QByteArray serialized = QJsonDocument(preset.document).toJson(QJsonDocument::Compact);
+        QVERIFY(!serialized.contains("seed"));
+        QVERIFY(!serialized.contains("Seed"));
+
+        // The provenance field names the preset.
+        QCOMPARE(preset.document.value(QSL("preset")).toString(), preset.id);
+    }
+
+    // The content of each preset is pinned: changing what
+    // "recommended" means is a decision that shows up in this diff.
+    {
+        const QJsonObject tools = presets.at(0).document.value(QSL("tools")).toObject();
+        QCOMPARE(tools.value(QSL("adblock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("httpsOnly")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("httpsOnly")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("trackingParameters")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(DnsOverHttpsManager::Disabled));
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("servers")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("sourceUrl")).toString(),
+                 ThreatBlockManager::defaultSourceUrl());
+        QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), false);
+        QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), false);
+    }
+
+    {
+        const QJsonObject tools = presets.at(1).document.value(QSL("tools")).toObject();
+        QCOMPARE(tools.value(QSL("adblock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("httpsOnly")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("trackingParameters")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(DnsOverHttpsManager::SecureWithFallback));
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("servers")).toArray().size(), 1);
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("servers")).toArray().at(0).toString(),
+                 DnsOverHttpsManager::defaultServerTemplate());
+        QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("sourceUrl")).toString(),
+                 ThreatBlockManager::defaultSourceUrl());
+        QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
+    }
+
+    {
+        const QJsonObject tools = presets.at(2).document.value(QSL("tools")).toObject();
+        QCOMPARE(tools.value(QSL("adblock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("httpsOnly")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("trackingParameters")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(DnsOverHttpsManager::SecureOnly));
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("servers")).toArray().size(), 1);
+        QCOMPARE(tools.value(QSL("secureDns")).toObject().value(QSL("servers")).toArray().at(0).toString(),
+                 DnsOverHttpsManager::defaultServerTemplate());
+        QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
+    }
+
+    // Lookup by id finds every built-in and nothing else.
+    for (const SecurityPresets::Preset &preset : std::as_const(presets)) {
+        QCOMPARE(SecurityPresets::presetById(preset.id).id, preset.id);
+    }
+    QVERIFY(SecurityPresets::presetById(QSL("does-not-exist")).id.isEmpty());
+
+    // Applying the recommended baseline goes through the same
+    // validation as an import and reaches the live managers.
+    {
+        // start from a state every preset tool changes
+        {
+            Settings settings;
+            settings.beginGroup(QSL("Web-Browser-Settings"));
+            settings.setValue(QSL("HttpsOnlyMode"), !httpsOnlyBefore);
+            settings.setValue(QSL("HttpsOnlyExclusions"), QStringList{QSL("preset.example")});
+            settings.setValue(QSL("StripTrackingQuery"), !stripTrackingBefore);
+            settings.setValue(QSL("FingerprintProtection"), !fingerprintBefore);
+            settings.setValue(QSL("FingerprintExclusions"), QStringList{QSL("preset.example")});
+            settings.setValue(QSL("GlobalPrivacyControl"), !gpcBefore);
+            settings.endGroup();
+        }
+        interceptor->loadSettings();
+        fingerprint->loadSettings();
+        gpc->setEnabled(!gpcBefore);
+        mApp->networkManager()->loadSettings();
+        adblock->setEnabled(!adblockBefore);
+        threatBlock->setEnabled(!threatEnabledBefore);
+        threatBlock->setSourceUrl(QSL("https://preset.example/hosts"));
+        if (dohSupported) {
+            doh->setConfiguration(DnsOverHttpsManager::Disabled, QStringList());
+        }
+
+        const SecuritySettingsPorter::ImportResult result =
+            SecuritySettingsPorter::applyDocument(SecurityPresets::presetById(QSL("recommended-baseline")).document);
+
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+        if (dohSupported) {
+            QCOMPARE(result.appliedTools, 7);
+            QCOMPARE(result.skippedTools.size(), 0);
+        } else {
+            QCOMPARE(result.appliedTools, 6);
+            QCOMPARE(result.skippedTools.size(), 1);
+            QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
+        }
+
+        QCOMPARE(adblock->isEnabled(), true);
+        QCOMPARE(interceptor->isEnabled(), true);
+        QVERIFY(!interceptor->hasExplicitExclusion(QSL("preset.example")));
+        QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool(), true);
+        if (dohSupported) {
+            QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureWithFallback);
+            QCOMPARE(doh->serverTemplates(), QStringList{DnsOverHttpsManager::defaultServerTemplate()});
+        }
+        QCOMPARE(threatBlock->isEnabled(), true);
+        QCOMPARE(threatBlock->sourceUrl(), ThreatBlockManager::defaultSourceUrl());
+        QCOMPARE(fingerprint->isEnabled(), true);
+        QVERIFY(!fingerprint->isExcluded(QSL("preset.example")));
+        QCOMPARE(gpc->isEnabled(), true);
+
+        // The guard script follows the preset.
+        QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
+    }
+
+    // The essentials preset turns the deeper tools back off; a preset
+    // really replaces the whole configuration.
+    {
+        const SecuritySettingsPorter::ImportResult result =
+            SecuritySettingsPorter::applyDocument(SecurityPresets::presetById(QSL("essentials")).document);
+
+        QVERIFY(result.ok);
+        QCOMPARE(fingerprint->isEnabled(), false);
+        QCOMPARE(gpc->isEnabled(), false);
+        if (dohSupported) {
+            QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
+        }
+        QVERIFY(mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
+    }
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), httpsExclusionsBefore);
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingBefore);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("FingerprintExclusions"), fingerprintExclusionsBefore);
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcBefore);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockBefore);
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+
+    QCOMPARE(adblock->isEnabled(), adblockBefore);
+    QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
+    QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
+    QCOMPARE(gpc->isEnabled(), gpcBefore);
     QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
     QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
     QCOMPARE(doh->mode(), dohModeBefore);

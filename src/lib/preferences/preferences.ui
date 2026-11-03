@@ -2673,7 +2673,7 @@ or in bulk from the fingerprint exceptions dialog.</string>
                     </sizepolicy>
                    </property>
                    <property name="toolTip">
-                    <string>Save the configuration of all security tools (protections, exceptions, secure DNS servers, blocklist source) to a JSON file that can be imported on another machine or profile.</string>
+                    <string>Save the configuration of all security tools (protections, exceptions, secure DNS servers, blocklist source) to a JSON file that can be imported on another machine or profile. The file carries a checksum of its contents, so changes made after the export are detected on import.</string>
                    </property>
                    <property name="text">
                     <string>Export...</string>
@@ -2689,7 +2689,7 @@ or in bulk from the fingerprint exceptions dialog.</string>
                     </sizepolicy>
                    </property>
                    <property name="toolTip">
-                    <string>Apply a previously exported security settings file. Every tool section is validated on its own; malformed sections are skipped and reported, the rest still applies. The fingerprint randomization seed is never part of a settings file.</string>
+                    <string>Apply a previously exported security settings file. Every tool section is validated on its own; malformed sections are skipped and reported, the rest still applies. A file whose checksum does not match was changed after the export and is refused unless you explicitly allow it. The fingerprint randomization seed is never part of a settings file.</string>
                    </property>
                    <property name="text">
                     <string>Import...</string>
@@ -2711,7 +2711,54 @@ or in bulk from the fingerprint exceptions dialog.</string>
                  </item>
                 </layout>
                </item>
-               <item row="22" column="0" colspan="3">
+               <item row="22" column="0">
+                <widget class="QLabel" name="labelSecurityPreset">
+                 <property name="text">
+                  <string>Recommended baseline</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="2">
+                <layout class="QHBoxLayout" name="horizontalLayoutSecurityPreset">
+                 <item>
+                  <widget class="QComboBox" name="securityPresetCombo">
+                   <property name="toolTip">
+                    <string>Ready-made configurations for the whole security suite, from Essentials to Maximum protection. Applying a preset replaces the configuration of every security tool; site exceptions are reset.</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="securityBaselineButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Apply the selected preset to every security tool, after a confirmation. The preset goes through the same validation as an imported settings file.</string>
+                   </property>
+                   <property name="text">
+                    <string>Apply...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacerSecurityPreset">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item row="23" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

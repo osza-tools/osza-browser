@@ -66,6 +66,7 @@ private Q_SLOTS:
     void openFingerprintExceptions();
     void exportSecuritySettings();
     void importSecuritySettings();
+    void applySecurityPreset();
     void updateThreatBlockNow();
     void updateThreatBlockStatus();
     void threatBlockUpdateFailed(const QString &error);

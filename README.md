@@ -47,14 +47,23 @@ and KDE contributors for their work.
   in Preferences → Privacy → Security tools) saves the configuration
   of every protection - switches, exception lists, secure DNS
   servers, blocklist source - to one portable JSON file, and applies
-  such a file to another machine or profile; the per-profile
-  fingerprint seed is deliberately never part of it. The security
-  dashboard sidebar keeps live counters of blocked ads, stripped trackers,
-  HTTPS upgrades and blocked threats, with quick switches for every
-  protection, and the built-in security self-test page (osza:selftest,
-  one click from the sidebar) measures the browser's own canvas,
-  WebGL, audio and hardware readouts live - through the same hooks a
-  fingerprinting site would use - and verifies the randomization
+  such a file to another machine or profile; exports carry a
+  checksum of their contents, so a file that was changed or
+  corrupted after the export is refused on import (with an explicit
+  "import anyway" for deliberate hand edits, and
+  `tools/security/verify_settings_porter.py --update-checksum` to
+  re-seal an edited file). For a quick start, the same places offer
+  recommended-baseline presets - Essentials, Recommended baseline
+  and Maximum protection - that apply a ready-made configuration of
+  all seven tools through the same validation as an import. The
+  per-profile fingerprint seed is deliberately never part of it. The
+  security dashboard sidebar keeps live counters of blocked ads,
+  stripped trackers, HTTPS upgrades and blocked threats, with quick
+  switches for every protection, and the built-in security self-test
+  page (osza:selftest, one click from the sidebar) measures the
+  browser's own canvas, WebGL, audio and hardware readouts live -
+  through the same hooks a fingerprinting site would use - and
+  verifies the randomization
   working, with the invisible per-site noise made visible. Everything
   lives in Preferences → Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
