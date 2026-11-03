@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%TITLE%</title>
+<link rel="stylesheet" href="qrc:html/oszapage.css">
+<style>
+/* Page-specific rules. Dynamic values (translated strings, the blocked
+   URL, blocklist state) are substituted by OszaSchemeHandler in this
+   document only. */
+
+body { direction: %DIRECTION%; }
+
+/* Danger accent: this page overrides the neon cyan accent with the
+   warning red of the security tools. Scoped to the interstitial only. */
+.vx-threat {
+    --osza-danger: #ff5468;
+    --osza-danger-rgb: 255, 84, 104;
+    --osza-danger-dim: rgba(255, 84, 104, 0.14);
+}
+
+@media (prefers-color-scheme: light) {
+    .vx-threat {
+        --osza-danger: #c81e3c;
+        --osza-danger-rgb: 200, 30, 60;
+        --osza-danger-dim: rgba(200, 30, 60, 0.10);
+    }
+}
+
+.vx-threat__icon {
+    inline-size: 56px;
+    block-size: 56px;
+    margin-block-end: 14px;
+    padding: 12px;
+    border: 1px solid rgba(var(--osza-danger-rgb), 0.45);
+    border-radius: 18px;
+    background: var(--osza-danger-dim);
+    color: var(--osza-danger);
+    animation: vx-threat-pulse 2.6s var(--osza-ease) infinite;
+}
+
+@keyframes vx-threat-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--osza-danger-rgb), 0.30); }
+    55% { box-shadow: 0 0 0 14px rgba(var(--osza-danger-rgb), 0); }
+}
+
+.vx-threat__title { color: var(--osza-danger); }
+
+.vx-threat__host {
+    padding: 2px 10px;
+    border-radius: 6px;
+    background: var(--osza-danger-dim);
+    font-family: var(--osza-font-mono);
+    overflow-wrap: anywhere;
+}
+
+/* Action row: primary escape first, the escape hatch far away from it */
+.vx-threat__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-block-start: 24px;
+}
+
+.vx-btn--danger {
+    background: rgba(var(--osza-danger-rgb), 0.16);
+    border-color: rgba(var(--osza-danger-rgb), 0.55);
+    color: var(--osza-danger);
+}
+.vx-btn--danger:hover, .vx-btn--danger:focus-visible {
+    background: rgba(var(--osza-danger-rgb), 0.26);
+    box-shadow: 0 0 24px rgba(var(--osza-danger-rgb), 0.30);
+    color: var(--osza-danger);
+}
+
+.vx-threat__details { text-align: start; }
+
+.vx-threat__warning {
+    margin-block-start: 18px;
+    padding: 12px 16px;
+    border: 1px solid rgba(var(--osza-danger-rgb), 0.35);
+    border-radius: var(--osza-radius-sm);
+    background: var(--osza-danger-dim);
+    color: var(--osza-text-dim);
+    font-size: 13px;
+}
+
+.vx-threat__url {
+    margin-block-start: 6px;
+    font-family: var(--osza-font-mono);
+    font-size: 11.5px;
+    color: var(--osza-text-dim);
+    overflow-wrap: anywhere;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+</style>
+</head>
+<body>
+<main class="vx-stage">
+  <section class="vx-card vx-threat" aria-label="%HEADING%">
+    <svg class="vx-threat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5 4.5 5.5v6c0 5 3.2 8.4 7.5 10 4.3-1.6 7.5-5 7.5-10v-6L12 2.5z"></path><path d="M12 8v4.5"></path><circle cx="12" cy="15.8" r="0.2"></circle></svg>
+
+    <h1 class="vx-title vx-threat__title">%HEADING%</h1>
+    <p class="vx-subtitle">%LEAD%</p>
+
+    <p style="margin-block-start: 16px;">%EXPLAIN-1%</p>
+
+    <div class="vx-threat__actions">
+      <a class="vx-btn vx-btn--danger" href="osza:start" onclick="return goBack()">%BACK-LABEL%</a>
+    </div>
+
+    <h2 class="vx-h vx-threat__details">%DETAILS-HEADING%</h2>
+    <dl class="vx-threat__details">
+      <dt>%BLOCKED-URL%</dt>
+      <dd class="vx-threat__url">%URL%</dd>
+      <dt>%LIST-STATE%</dt>
+      <dd>%LIST-INFO%</dd>
+    </dl>
+
+    <p class="vx-note" style="margin-block-start: 16px;">%EXPLAIN-2%</p>
+
+    <p class="vx-threat__warning">%PROCEED-WARN%</p>
+    <div class="vx-threat__actions" style="margin-block-start: 14px;">
+      <a class="vx-btn" href="osza:threatblocked?url=%PROCEED-URL%&amp;proceed=1">%PROCEED-LABEL%</a>
+    </div>
+  </section>
+</main>
+
+<script>
+// Go back to the page the user came from when there is one, and to the
+// start page otherwise. The href keeps the button useful without JS.
+function goBack() {
+    if (history.length > 1) {
+        history.back();
+        return false;
+    }
+    return true;
+}
+</script>
+</body>
+</html>

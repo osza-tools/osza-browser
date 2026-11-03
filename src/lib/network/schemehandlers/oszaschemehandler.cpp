@@ -20,9 +20,11 @@
 #include "qztools.h"
 #include "browserwindow.h"
 #include "mainapplication.h"
+#include "networkmanager.h"
 #include "speeddial.h"
 #include "pluginproxy.h"
 #include "plugininterface.h"
+#include "threatblockmanager.h"
 #include "settings.h"
 #include "datapaths.h"
 #include "iconprovider.h"
@@ -60,7 +62,7 @@ void OszaSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     }
 
     QStringList knownPages;
-    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore");
+    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore") << QSL("threatblocked");
 
     if (knownPages.contains(job->requestUrl().path()))
         job->reply(QByteArrayLiteral("text/html"), new OszaSchemeReply(job, job));
@@ -84,6 +86,19 @@ bool OszaSchemeHandler::handleRequest(QWebEngineUrlRequestJob *job)
         return true;
     } else if (job->requestUrl().path() == QL1S("reportbug")) {
         job->redirect(QUrl(QString::fromLatin1(Qz::BUGSADDRESS)));
+        return true;
+    } else if (job->requestUrl().path() == QL1S("threatblocked")
+               && ThreatBlockManager::isProceedPageUrl(job->requestUrl())) {
+        // "Proceed anyway" from the interstitial: grant a session
+        // exception for this host and load the blocked URL.
+        const QUrl blocked = ThreatBlockManager::blockedUrlFromPageUrl(job->requestUrl());
+
+        if (blocked.isValid() && !blocked.host().isEmpty()) {
+            mApp->networkManager()->threatBlockManager()->allowForSession(blocked.host());
+            job->redirect(blocked);
+        } else {
+            job->fail(QWebEngineUrlRequestJob::UrlInvalid);
+        }
         return true;
     }
 
@@ -116,6 +131,9 @@ void OszaSchemeReply::loadPage()
         contents = configPage();
     } else if (m_pageName == QLatin1String("restore")) {
         contents = restorePage();
+    } else if (m_pageName == QLatin1String("threatblocked")) {
+        contents = mApp->networkManager()->threatBlockManager()->interstitialPage(
+            ThreatBlockManager::blockedUrlFromPageUrl(m_job->requestUrl()));
     }
 
     QMutexLocker lock(&m_mutex);

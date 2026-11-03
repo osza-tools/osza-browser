@@ -2493,7 +2493,94 @@ Requires QtWebEngine 6.6 or newer.</string>
                  </item>
                 </layout>
                </item>
-               <item row="16" column="0" colspan="3">
+               <item row="15" column="2">
+                <widget class="QCheckBox" name="threatBlock">
+                 <property name="toolTip">
+                  <string>Block navigations and resources from hosts on a curated security blocklist (default: StevenBlack hosts). The list is downloaded in bulk from the configured source - no information about your browsing is sent.</string>
+                 </property>
+                 <property name="text">
+                  <string>Block known dangerous sites (malware and adware hosts)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="labelThreatBlock">
+                 <property name="text">
+                  <string>Malicious site protection</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="labelThreatBlockSource">
+                 <property name="text">
+                  <string>Blocklist source</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="2">
+                <widget class="QLineEdit" name="threatBlockSource">
+                 <property name="toolTip">
+                  <string>Plain-text blocklist URL. Lines can be hosts-file entries (0.0.0.0 domain), full URLs or bare host names.</string>
+                 </property>
+                 <property name="placeholderText">
+                  <string>https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="0">
+                <widget class="QLabel" name="labelThreatBlockStatus">
+                 <property name="text">
+                  <string>Blocklist status</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="17" column="2">
+                <layout class="QHBoxLayout" name="horizontalLayoutThreatBlock">
+                 <item>
+                  <widget class="QLabel" name="threatBlockStatus">
+                   <property name="toolTip">
+                    <string>Number of hosts on the blocklist and when it was last updated.</string>
+                   </property>
+                   <property name="text">
+                    <string>Not downloaded yet</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacerThreatBlock">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="threatBlockUpdateButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Download the blocklist from the configured source now.</string>
+                   </property>
+                   <property name="text">
+                    <string>Update now</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="18" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

@@ -134,6 +134,7 @@ set(SRCS ${SRCS}
     navigation/zoomlabel.cpp
     network/httpsonlyinterceptor.cpp
     network/dnsoverhttpsmanager.cpp
+    network/threatblockinterceptor.cpp
     network/networkmanager.cpp
     network/networkurlinterceptor.cpp
     network/schemehandlers/extensionschemehandler.cpp
@@ -224,6 +225,7 @@ set(SRCS ${SRCS}
     preferences/thememanager.cpp
     preferences/useragentdialog.cpp
     security/securitymanager.cpp
+    security/threatblockmanager.cpp
     session/recoveryjsobject.cpp
     session/restoremanager.cpp
     session/sessionmanager.cpp
@@ -379,6 +381,7 @@ set(SRCS ${SRCS}
     navigation/zoomlabel.h
     network/httpsonlyinterceptor.h
     network/dnsoverhttpsmanager.h
+    network/threatblockinterceptor.h
     network/networkmanager.h
     network/networkurlinterceptor.h
     network/schemehandlers/extensionschemehandler.h
@@ -469,6 +472,7 @@ set(SRCS ${SRCS}
     preferences/thememanager.h
     preferences/useragentdialog.h
     security/securitymanager.h
+    security/threatblockmanager.h
     session/recoveryjsobject.h
     session/restoremanager.h
     session/sessionmanager.h

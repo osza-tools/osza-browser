@@ -31,10 +31,13 @@ and KDE contributors for their work.
   (upgrades every insecure connection, with per-site exceptions and
   shortcuts in the padlock menu), tracking-parameter stripping
   (utm_*, fbclid, gclid and friends are removed from links before
-  they load) and DNS-over-HTTPS (encrypts all hostname resolution,
-  with known providers or a custom server). The security dashboard
-  sidebar keeps live counters of blocked ads, stripped trackers and
-  HTTPS upgrades. Everything lives in Preferences → Privacy →
+  they load), DNS-over-HTTPS (encrypts all hostname resolution,
+  with known providers or a custom server) and malicious-site
+  protection (navigations to blocklisted hosts stop on a full-screen
+  warning page with a session-scoped "proceed anyway"; subresources
+  of listed hosts are blocked). The security dashboard sidebar keeps
+  live counters of blocked ads, stripped trackers, HTTPS upgrades
+  and blocked threats. Everything lives in Preferences → Privacy →
   Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS

@@ -26,6 +26,7 @@
 #include "settings.h"
 #include "tabwidget.h"
 #include "tabbedwebview.h"
+#include "threatblockmanager.h"
 
 #include <QCheckBox>
 #include <QFont>
@@ -33,6 +34,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLocale>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -67,6 +69,11 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
 
     connect(AdBlockManager::instance(), &AdBlockManager::enabledChanged, this, &SecuritySideBar::refresh);
 
+    auto *threatManager = mApp->networkManager()->threatBlockManager();
+    connect(threatManager, &ThreatBlockManager::enabledChanged, this, &SecuritySideBar::refresh);
+    connect(threatManager, &ThreatBlockManager::listUpdated, this, &SecuritySideBar::refresh);
+    connect(threatManager, &ThreatBlockManager::updateFailed, this, &SecuritySideBar::refresh);
+
     if (m_window) {
         connect(m_window->tabWidget(), &TabWidget::currentTabChanged, this, &SecuritySideBar::refresh);
     }
@@ -75,6 +82,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_httpsOnlyToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleHttpsOnly);
     connect(m_stripTrackingToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleStripTracking);
     connect(m_secureDnsToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleSecureDns);
+    connect(m_threatBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleThreatBlock);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
 
     refresh();
@@ -97,17 +105,20 @@ void SecuritySideBar::createLayout()
     statusRow->addWidget(m_statusLabel, 1);
     mainLayout->addLayout(statusRow);
 
-    // Totals
+    // Totals: a 2x2 grid keeps the four tiles readable even in a
+    // narrow sidebar.
     mainLayout->addWidget(headingLabel(tr("Protection totals")));
 
-    auto *tilesLayout = new QHBoxLayout;
+    auto *tilesLayout = new QGridLayout;
     tilesLayout->setSpacing(6);
     auto *adsTile = createCounterTile(tr("Ads blocked"), &m_adsValue);
     auto *trackersTile = createCounterTile(tr("Trackers stripped"), &m_trackersValue);
     auto *upgradesTile = createCounterTile(tr("HTTPS upgrades"), &m_upgradesValue);
-    tilesLayout->addWidget(adsTile, 1);
-    tilesLayout->addWidget(trackersTile, 1);
-    tilesLayout->addWidget(upgradesTile, 1);
+    auto *threatsTile = createCounterTile(tr("Threats blocked"), &m_threatsValue);
+    tilesLayout->addWidget(adsTile, 0, 0);
+    tilesLayout->addWidget(trackersTile, 0, 1);
+    tilesLayout->addWidget(upgradesTile, 1, 0);
+    tilesLayout->addWidget(threatsTile, 1, 1);
     mainLayout->addLayout(tilesLayout);
 
     // Current site
@@ -122,9 +133,11 @@ void SecuritySideBar::createLayout()
     auto *siteAdsRow = createHostRow(tr("Ads blocked"), &m_siteAdsValue);
     auto *siteTrackersRow = createHostRow(tr("Trackers stripped"), &m_siteTrackersValue);
     auto *siteUpgradesRow = createHostRow(tr("HTTPS upgrades"), &m_siteUpgradesValue);
+    auto *siteThreatsRow = createHostRow(tr("Threats blocked"), &m_siteThreatsValue);
     siteGrid->addWidget(siteAdsRow, 0, 0);
     siteGrid->addWidget(siteTrackersRow, 1, 0);
     siteGrid->addWidget(siteUpgradesRow, 2, 0);
+    siteGrid->addWidget(siteThreatsRow, 3, 0);
     mainLayout->addLayout(siteGrid);
 
     // Quick switches
@@ -137,12 +150,19 @@ void SecuritySideBar::createLayout()
     m_secureDnsState = new QLabel(this);
     m_secureDnsState->setContentsMargins(20, 0, 0, 0);
     m_secureDnsState->setWordWrap(true);
+    m_threatBlockToggle = new QCheckBox(tr("Malicious site protection"), this);
+    m_threatBlockToggle->setToolTip(tr("Block navigations and resources of sites on a curated malware and adware blocklist (StevenBlack hosts by default; the source is configurable)."));
+    m_threatBlockState = new QLabel(this);
+    m_threatBlockState->setContentsMargins(20, 0, 0, 0);
+    m_threatBlockState->setWordWrap(true);
 
     mainLayout->addWidget(m_adBlockToggle);
     mainLayout->addWidget(m_httpsOnlyToggle);
     mainLayout->addWidget(m_stripTrackingToggle);
     mainLayout->addWidget(m_secureDnsToggle);
     mainLayout->addWidget(m_secureDnsState);
+    mainLayout->addWidget(m_threatBlockToggle);
+    mainLayout->addWidget(m_threatBlockState);
 
     mainLayout->addStretch(1);
 
@@ -235,6 +255,7 @@ void SecuritySideBar::refresh()
     m_adsValue->setText(formatCount(security->adsBlocked()));
     m_trackersValue->setText(formatCount(security->trackersStripped()));
     m_upgradesValue->setText(formatCount(security->httpsUpgrades()));
+    m_threatsValue->setText(formatCount(security->threatsBlocked()));
 
     const QString host = currentHost();
     m_siteLabel->setText(host.isEmpty() ? tr("No site is open.") : tr("<b>%1</b>").arg(host.toHtmlEscaped()));
@@ -242,6 +263,7 @@ void SecuritySideBar::refresh()
     m_siteAdsValue->setText(formatCount(security->adsBlockedForHost(host)));
     m_siteTrackersValue->setText(formatCount(security->trackersStrippedForHost(host)));
     m_siteUpgradesValue->setText(formatCount(security->httpsUpgradesForHost(host)));
+    m_siteThreatsValue->setText(formatCount(security->threatsBlockedForHost(host)));
 }
 
 void SecuritySideBar::updateStatus()
@@ -249,8 +271,11 @@ void SecuritySideBar::updateStatus()
     const bool adBlock = AdBlockManager::instance()->isEnabled();
     const bool httpsOnly = mApp->networkManager()->httpsOnlyInterceptor()->isEnabled();
     const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    const auto *threatBlock = mApp->networkManager()->threatBlockManager();
 
-    const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked() || doh->mode() != DnsOverHttpsManager::Disabled;
+    const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked()
+        || doh->mode() != DnsOverHttpsManager::Disabled
+        || threatBlock->isEnabled();
 
     if (anyOn) {
         m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -274,6 +299,21 @@ void SecuritySideBar::updateStatus()
         m_secureDnsState->setText(dohSupported ? tr("Secure DNS is off.") : tr("Secure DNS requires QtWebEngine 6.6+."));
         break;
     }
+
+    // Malicious-site protection state, honest about the list.
+    if (!threatBlock->isEnabled()) {
+        m_threatBlockState->setText(tr("Malicious site protection is off."));
+    } else if (threatBlock->isUpdating()) {
+        m_threatBlockState->setText(tr("Updating the blocklist..."));
+    } else if (threatBlock->hostCount() == 0) {
+        m_threatBlockState->setText(tr("Blocklist not downloaded yet. It is fetched from the configured source."));
+    } else {
+        const QString count = QLocale().toString(threatBlock->hostCount());
+        const QString updated = threatBlock->lastUpdate().isValid()
+            ? QLocale().toString(threatBlock->lastUpdate().toLocalTime(), QLocale::ShortFormat)
+            : tr("unknown date");
+        m_threatBlockState->setText(tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated));
+    }
 }
 
 void SecuritySideBar::updateToggles()
@@ -282,6 +322,7 @@ void SecuritySideBar::updateToggles()
     const QSignalBlocker httpsOnlyBlocker(m_httpsOnlyToggle);
     const QSignalBlocker stripTrackingBlocker(m_stripTrackingToggle);
     const QSignalBlocker secureDnsBlocker(m_secureDnsToggle);
+    const QSignalBlocker threatBlockBlocker(m_threatBlockToggle);
 
     m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
     m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
@@ -294,6 +335,8 @@ void SecuritySideBar::updateToggles()
     const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
     m_secureDnsToggle->setChecked(doh->mode() != DnsOverHttpsManager::Disabled);
     m_secureDnsToggle->setEnabled(DnsOverHttpsManager::isSupported());
+
+    m_threatBlockToggle->setChecked(mApp->networkManager()->threatBlockManager()->isEnabled());
 }
 
 void SecuritySideBar::resetCounters()
@@ -366,5 +409,11 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
         doh->setConfiguration(mode, servers);
     }
 
+    refresh();
+}
+
+void SecuritySideBar::toggleThreatBlock(bool enabled)
+{
+    mApp->networkManager()->threatBlockManager()->setEnabled(enabled);
     refresh();
 }

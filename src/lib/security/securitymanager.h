@@ -47,15 +47,18 @@ public:
     void reportAdBlocked(const QString &host);
     void reportTrackerStripped(const QString &host);
     void reportHttpsUpgrade(const QString &host);
+    void reportThreatBlocked(const QString &host);
 
     quint64 adsBlocked() const;
     quint64 trackersStripped() const;
     quint64 httpsUpgrades() const;
+    quint64 threatsBlocked() const;
 
     // Session counters for a single site (first-party host).
     quint64 adsBlockedForHost(const QString &host) const;
     quint64 trackersStrippedForHost(const QString &host) const;
     quint64 httpsUpgradesForHost(const QString &host) const;
+    quint64 threatsBlockedForHost(const QString &host) const;
 
     void loadCounters();
     void saveCounters();
@@ -72,6 +75,7 @@ private:
         quint64 ads = 0;
         quint64 trackers = 0;
         quint64 upgrades = 0;
+        quint64 threats = 0;
     };
 
     static QString normalizeHost(const QString &host);
@@ -80,6 +84,7 @@ private:
     std::atomic<quint64> m_adsBlocked;
     std::atomic<quint64> m_trackersStripped;
     std::atomic<quint64> m_httpsUpgrades;
+    std::atomic<quint64> m_threatsBlocked;
 
     // Per-host session counters, only exposed in the dashboard.
     mutable QMutex m_hostMutex;

@@ -30,6 +30,7 @@ osza_tests(
 if (BUILD_TESTING_ONLINE)
     osza_tests(
         sitesettingstest
+        threatblockonlinetest
     )
 endif()
 

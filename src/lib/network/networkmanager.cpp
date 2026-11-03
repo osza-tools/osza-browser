@@ -27,6 +27,8 @@
 #include "networkurlinterceptor.h"
 #include "httpsonlyinterceptor.h"
 #include "dnsoverhttpsmanager.h"
+#include "threatblockinterceptor.h"
+#include "threatblockmanager.h"
 #include "schemehandlers/oszaschemehandler.h"
 #include "schemehandlers/extensionschemehandler.h"
 #include "webpage.h"
@@ -59,6 +61,13 @@ NetworkManager::NetworkManager(QObject *parent)
     // Create url interceptor
     m_urlInterceptor = new NetworkUrlInterceptor(this);
     mApp->webProfile()->setUrlRequestInterceptor(m_urlInterceptor);
+
+    // Create the threat block manager and install its interceptor first:
+    // the dangerous-site interstitial must win over every other redirect
+    // (part of the security tools suite).
+    m_threatBlockManager = new ThreatBlockManager(this);
+    m_threatBlockInterceptor = new ThreatBlockInterceptor(m_threatBlockManager, this);
+    installUrlInterceptor(m_threatBlockInterceptor);
 
     // Create HTTPS-Only interceptor (part of the security tools suite)
     m_httpsOnlyInterceptor = new HttpsOnlyInterceptor(this);
@@ -275,6 +284,11 @@ DnsOverHttpsManager *NetworkManager::dnsOverHttpsManager() const
     return m_dnsOverHttpsManager;
 }
 
+ThreatBlockManager *NetworkManager::threatBlockManager() const
+{
+    return m_threatBlockManager;
+}
+
 void NetworkManager::registerExtensionSchemeHandler(const QString &name, ExtensionSchemeHandler *handler)
 {
     m_extensionScheme->registerHandler(name, handler);
@@ -321,6 +335,7 @@ void NetworkManager::loadSettings()
     m_urlInterceptor->loadSettings();
     m_httpsOnlyInterceptor->loadSettings();
     m_dnsOverHttpsManager->loadSettings();
+    m_threatBlockManager->loadSettings();
 
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_ignoredSslHosts = settings.value(QSL("IgnoredSslHosts"), QStringList()).toStringList();

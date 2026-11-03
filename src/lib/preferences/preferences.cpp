@@ -31,6 +31,7 @@
 #include "jsoptions.h"
 #include "httpsonlyexceptionsdialog.h"
 #include "dnsoverhttpsmanager.h"
+#include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
@@ -417,6 +418,15 @@ Preferences::Preferences(BrowserWindow* window)
     ui->dnsOverHttpsServers->setEnabled(DnsOverHttpsManager::isSupported());
     ui->labelDnsOverHttpsServer->setEnabled(DnsOverHttpsManager::isSupported());
     ui->labelSecureDns->setEnabled(DnsOverHttpsManager::isSupported());
+
+    // Malicious site protection
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    ui->threatBlock->setChecked(threatBlockManager->isEnabled());
+    ui->threatBlockSource->setText(threatBlockManager->sourceUrl());
+    updateThreatBlockStatus();
+    connect(ui->threatBlockUpdateButton, &QAbstractButton::clicked, this, &Preferences::updateThreatBlockNow);
+    connect(threatBlockManager, &ThreatBlockManager::listUpdated, this, &Preferences::updateThreatBlockStatus);
+    connect(threatBlockManager, &ThreatBlockManager::updateFailed, this, &Preferences::threatBlockUpdateFailed);
 
     //CSS Style
     ui->userStyleSheet->setText(settings.value(QSL("userStyleSheet"), QSL("")).toString());
@@ -824,6 +834,47 @@ void Preferences::openHttpsOnlyExceptions()
     }
 }
 
+void Preferences::updateThreatBlockNow()
+{
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    // The source field can be edited before an update is triggered.
+    const QString source = ui->threatBlockSource->text().trimmed();
+
+    if (!source.isEmpty()) {
+        manager->setSourceUrl(source);
+    }
+
+    ui->threatBlockStatus->setText(tr("Updating the blocklist..."));
+    manager->updateNow();
+}
+
+void Preferences::updateThreatBlockStatus()
+{
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    if (manager->isUpdating()) {
+        ui->threatBlockStatus->setText(tr("Updating the blocklist..."));
+        return;
+    }
+
+    if (manager->hostCount() == 0) {
+        ui->threatBlockStatus->setText(tr("Not downloaded yet"));
+        return;
+    }
+
+    const QString count = QLocale().toString(manager->hostCount());
+    const QString updated = manager->lastUpdate().isValid()
+        ? QLocale().toString(manager->lastUpdate().toLocalTime(), QLocale::ShortFormat)
+        : tr("unknown date");
+    ui->threatBlockStatus->setText(tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated));
+}
+
+void Preferences::threatBlockUpdateFailed(const QString &error)
+{
+    ui->threatBlockStatus->setText(tr("Update failed: %1").arg(error));
+}
+
 void Preferences::loadDnsOverHttpsServers(const QStringList &savedServers)
 {
     const auto providers = DnsOverHttpsManager::knownProviders();
@@ -1125,6 +1176,10 @@ void Preferences::saveSettings()
     settings.setValue(QSL("DoNotTrack"), ui->doNotTrack->isChecked());
     settings.setValue(QSL("HttpsOnlyMode"), ui->httpsOnly->isChecked());
     settings.setValue(QSL("StripTrackingQuery"), ui->stripTrackingQuery->isChecked());
+    settings.setValue(QSL("ThreatBlockEnabled"), ui->threatBlock->isChecked());
+    if (!ui->threatBlockSource->text().trimmed().isEmpty()) {
+        settings.setValue(QSL("ThreatBlockSource"), ui->threatBlockSource->text().trimmed());
+    }
     settings.setValue(QSL("DnsOverHttpsMode"), ui->dnsOverHttpsMode->currentIndex());
     settings.setValue(QSL("DnsOverHttpsServers"), QStringList{ui->dnsOverHttpsCustom->text().trimmed()});
     settings.setValue(QSL("CheckUpdates"), ui->checkUpdates->isChecked());

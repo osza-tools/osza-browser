@@ -63,6 +63,9 @@ private Q_SLOTS:
     void openUserAgentManager();
     void openJsOptions();
     void openHttpsOnlyExceptions();
+    void updateThreatBlockNow();
+    void updateThreatBlockStatus();
+    void threatBlockUpdateFailed(const QString &error);
     void openSearchEnginesManager();
     void openCertificateManager();
     void openProtocolHandlersManager();

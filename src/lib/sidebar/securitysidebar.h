@@ -52,6 +52,7 @@ public Q_SLOTS:
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);
     void toggleSecureDns(bool enabled);
+    void toggleThreatBlock(bool enabled);
 
 private:
     QWidget* createCounterTile(const QString &caption, QLabel **valueOut);
@@ -70,17 +71,21 @@ private:
     QLabel* m_adsValue;
     QLabel* m_trackersValue;
     QLabel* m_upgradesValue;
+    QLabel* m_threatsValue;
 
     QLabel* m_siteLabel;
     QLabel* m_siteAdsValue;
     QLabel* m_siteTrackersValue;
     QLabel* m_siteUpgradesValue;
+    QLabel* m_siteThreatsValue;
 
     QCheckBox* m_adBlockToggle;
     QCheckBox* m_httpsOnlyToggle;
     QCheckBox* m_stripTrackingToggle;
     QCheckBox* m_secureDnsToggle;
     QLabel* m_secureDnsState;
+    QCheckBox* m_threatBlockToggle;
+    QLabel* m_threatBlockState;
 
     QToolButton* m_resetButton;
 

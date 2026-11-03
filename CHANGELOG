@@ -38,6 +38,29 @@ Added:
   tracking-parameter stripping, secure DNS) and a reset button. The
   counters are collected in a new thread-safe SecurityManager hub
   (the interceptors run on the IO thread) and survive restarts.
+- Security tools (6): malicious-site protection, the blocklist-driven
+  counterpart to the per-request tools. Navigations to hosts on a
+  curated security blocklist (default: the StevenBlack hosts list,
+  downloaded in bulk from the configured source - no browsing data is
+  ever sent) are stopped with a full-screen "Dangerous site blocked"
+  interstitial (osza:threatblocked) styled like the other internal
+  pages, and requests for frames, scripts and other subresources of
+  listed hosts are blocked outright. The interstitial offers "Back to
+  safety" and a clearly-marked "Proceed anyway (not recommended)"
+  that whitelists the host for the current session only. Listed hosts
+  cover their subdomains; the blocklist is refreshed every 12 hours
+  (plus on demand from Preferences > Privacy > Security tools, where
+  the source URL is also configurable and accepts hosts-file, plain
+  host and URL-per-line feeds), is persisted in the profile so it
+  keeps working offline, and honors a 1,000,000-entry safety cap
+  against broken sources. The security dashboard gained a fourth
+  counter ("Threats blocked", per site and in total) and a quick
+  switch with an honest state line ("N hosts, updated ..." /
+  "Blocklist not downloaded yet"), and a new online autotest
+  (threatblockonlinetest, BUILD_TESTING_ONLINE) fails loudly if the
+  default source ever goes away - which is exactly how the originally
+  planned URLhaus default was discovered to be retired (410 Gone)
+  and replaced with a live source before release.
 - Security tools (5): per-site HTTPS-Only shortcuts in the padlock
   (site info) menu. The menu now states the HTTPS-Only state for the
   site ("HTTP connections to this site are upgraded / never upgraded")
