@@ -53,6 +53,7 @@ public Q_SLOTS:
     void toggleStripTracking(bool enabled);
     void toggleSecureDns(bool enabled);
     void toggleThreatBlock(bool enabled);
+    void toggleFingerprintProtection(bool enabled);
 
 private:
     QWidget* createCounterTile(const QString &caption, QLabel **valueOut);
@@ -86,6 +87,8 @@ private:
     QLabel* m_secureDnsState;
     QCheckBox* m_threatBlockToggle;
     QLabel* m_threatBlockState;
+    QCheckBox* m_fingerprintToggle;
+    QLabel* m_fingerprintState;
 
     QToolButton* m_resetButton;
 

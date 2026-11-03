@@ -40,6 +40,11 @@ private Q_SLOTS:
     void threatBlockInterstitialTest();
     void threatBlockManagerStateTest();
     void threatBlockIntegrationTest();
+
+    void fingerprintScriptSourceTest();
+    void fingerprintExclusionTest();
+    void fingerprintScriptLifecycleTest();
+    void fingerprintIntegrationTest();
 };
 
 #endif // SECURITYTOOLSTEST_H

@@ -34,6 +34,7 @@
 #include "browserwindow.h"
 #include "checkboxdialog.h"
 #include "networkmanager.h"
+#include "fingerprintmanager.h"
 #include "securitymanager.h"
 #include "adblockmanager.h"
 #include "profilemanager.h"
@@ -1155,6 +1156,7 @@ void MainApplication::loadSettings()
     qzSettings->loadSettings();
     userAgentManager()->loadSettings();
     networkManager()->loadSettings();
+    FingerprintManager::instance()->loadSettings();
 }
 
 void MainApplication::loadTheme(const QString &name)

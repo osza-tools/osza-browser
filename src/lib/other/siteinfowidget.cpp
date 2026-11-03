@@ -26,6 +26,7 @@
 #include "protocolhandlermanager.h"
 #include "networkmanager.h"
 #include "httpsonlyinterceptor.h"
+#include "fingerprintmanager.h"
 #include "settings.h"
 
 #include <QToolTip>
@@ -110,10 +111,12 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
 
     updateProtocolHandler();
     updateHttpsOnlyState();
+    updateFingerprintState();
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
     connect(ui->httpsOnlyButton, &QPushButton::clicked, this, &SiteInfoWidget::httpsOnlyButtonClicked);
+    connect(ui->fingerprintButton, &QPushButton::clicked, this, &SiteInfoWidget::fingerprintButtonClicked);
 }
 
 SiteInfoWidget::~SiteInfoWidget()
@@ -196,6 +199,60 @@ void SiteInfoWidget::httpsOnlyButtonClicked()
 
     // Reload so plain http connections are upgraded right away.
     if (url.scheme() == QL1S("http")) {
+        m_window->weView()->reload();
+    }
+
+    close();
+}
+
+void SiteInfoWidget::updateFingerprintState()
+{
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->fingerprintLabel->hide();
+        ui->fingerprintButton->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *manager = FingerprintManager::instance();
+
+    if (!manager->isEnabled()) {
+        ui->fingerprintLabel->setText(tr("Fingerprint protection is <b>off</b>."));
+        ui->fingerprintButton->setText(tr("Enable fingerprint protection"));
+    }
+    else if (manager->isExcluded(host)) {
+        ui->fingerprintLabel->setText(tr("Canvas and audio readouts are <b>not</b> randomized on this site."));
+        ui->fingerprintButton->setText(tr("Randomize fingerprints"));
+    } else {
+        ui->fingerprintLabel->setText(tr("Canvas and audio readouts are <b>randomized</b> on this site."));
+        ui->fingerprintButton->setText(tr("Do not randomize fingerprints"));
+    }
+}
+
+void SiteInfoWidget::fingerprintButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = FingerprintManager::instance();
+
+    if (!manager->isEnabled()) {
+        // The per-site shortcut needs the protection itself, turn it on.
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+
+        manager->loadSettings();
+    }
+    else if (manager->isExcluded(url.host())) {
+        manager->removeExclusion(url.host());
+    } else {
+        manager->addExclusion(url.host());
+    }
+
+    // Reload so the changed protection applies to this page right away.
+    if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {
         m_window->weView()->reload();
     }
 

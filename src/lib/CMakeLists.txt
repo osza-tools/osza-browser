@@ -224,6 +224,7 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.cpp
     preferences/thememanager.cpp
     preferences/useragentdialog.cpp
+    security/fingerprintmanager.cpp
     security/securitymanager.cpp
     security/threatblockmanager.cpp
     session/recoveryjsobject.cpp
@@ -471,6 +472,7 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.h
     preferences/thememanager.h
     preferences/useragentdialog.h
+    security/fingerprintmanager.h
     security/securitymanager.h
     security/threatblockmanager.h
     session/recoveryjsobject.h

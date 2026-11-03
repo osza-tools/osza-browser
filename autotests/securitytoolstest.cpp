@@ -18,6 +18,7 @@
 #include "autotests.h"
 #include "securitytoolstest.h"
 #include "dnsoverhttpsmanager.h"
+#include "fingerprintmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "networkmanager.h"
 #include "mainapplication.h"
@@ -30,6 +31,9 @@
 
 #include <QtTest/QtTest>
 #include <QWebEnginePage>
+#include <QWebEngineProfile>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
 #include <QEventLoop>
 
 void SecurityToolsTest::securityManagerCountersTest()
@@ -216,9 +220,16 @@ void SecurityToolsTest::securityDashboardWidgetTest()
     sidebar.toggleThreatBlock(!threatBlockBefore);
     QCOMPARE(mApp->networkManager()->threatBlockManager()->isEnabled(), !threatBlockBefore);
 
+    // The fingerprint protection quick switch must apply through the manager.
+    const bool fingerprintBefore = FingerprintManager::instance()->isEnabled();
+
+    sidebar.toggleFingerprintProtection(!fingerprintBefore);
+    QCOMPARE(FingerprintManager::instance()->isEnabled(), !fingerprintBefore);
+
     // restore the original state
     sidebar.toggleHttpsOnly(httpsOnlyBefore);
     sidebar.toggleThreatBlock(threatBlockBefore);
+    sidebar.toggleFingerprintProtection(fingerprintBefore);
 }
 
 void SecurityToolsTest::threatBlockListParsingTest()
@@ -529,3 +540,241 @@ void SecurityToolsTest::threatBlockIntegrationTest()
 }
 
 OSZATEST_MAIN(SecurityToolsTest)
+
+void SecurityToolsTest::fingerprintScriptSourceTest()
+{
+    // An empty exclusion list embeds an empty JSON array, the master
+    // seed is embedded verbatim and as an unsigned normalization.
+    QString source = FingerprintManager::buildScriptSource(1234567890, QStringList());
+    QVERIFY(source.contains(QLatin1String("var EXCLUSIONS = [];")));
+    QVERIFY(source.contains(QLatin1String("var MASTER_SEED = 1234567890 >>> 0;")));
+
+    // Exclusions are embedded as JSON, blank entries are dropped.
+    source = FingerprintManager::buildScriptSource(42, {QSL(" Example.COM "), QString(), QSL("*.wild.example")});
+    QVERIFY(source.contains(QLatin1String("var EXCLUSIONS = [\"Example.COM\",\"*.wild.example\"];")));
+    QVERIFY(source.contains(QLatin1String("var MASTER_SEED = 42 >>> 0;")));
+
+    // Every classic fingerprinting readout is covered.
+    QVERIFY(source.contains(QLatin1String("getImageData")));
+    QVERIFY(source.contains(QLatin1String("toDataURL")));
+    QVERIFY(source.contains(QLatin1String("toBlob")));
+    QVERIFY(source.contains(QLatin1String("convertToBlob")));
+    QVERIFY(source.contains(QLatin1String("readPixels")));
+    QVERIFY(source.contains(QLatin1String("getChannelData")));
+    QVERIFY(source.contains(QLatin1String("copyFromChannel")));
+    QVERIFY(source.contains(QLatin1String("getFloatFrequencyData")));
+    QVERIFY(source.contains(QLatin1String("hardwareConcurrency")));
+
+    // The placeholders are always substituted, whatever the input.
+    QVERIFY(!source.contains(QLatin1String("%EXCLUSIONS%")));
+    QVERIFY(!source.contains(QLatin1String("%MASTER_SEED%")));
+
+    // A different master seed (another browser profile) changes the guard.
+    QVERIFY(FingerprintManager::buildScriptSource(1, QStringList()) != FingerprintManager::buildScriptSource(2, QStringList()));
+    QVERIFY(FingerprintManager::buildScriptSource(7, {QSL("a.example")}) != FingerprintManager::buildScriptSource(7, {QSL("b.example")}));
+}
+
+void SecurityToolsTest::fingerprintExclusionTest()
+{
+    auto *manager = FingerprintManager::instance();
+    QVERIFY(manager);
+
+    // isolate from other tests / user settings
+    manager->removeExclusion(QSL("fp.example"));
+    manager->removeExclusion(QSL("*.fp-wild.example"));
+
+    QVERIFY(!manager->isExcluded(QSL("fp.example")));
+
+    // addExclusion normalizes the host
+    manager->addExclusion(QSL("  FP.Example  "));
+
+    // exact and subdomain matches, case-insensitive
+    QVERIFY(manager->isExcluded(QSL("fp.example")));
+    QVERIFY(manager->isExcluded(QSL("www.fp.example")));
+    QVERIFY(manager->isExcluded(QSL("DEEP.FP.example")));
+
+    // suffix spoofing and unrelated hosts never match
+    QVERIFY(!manager->isExcluded(QSL("evilfp.example")));
+    QVERIFY(!manager->isExcluded(QSL("fp.example.evil.org")));
+    QVERIFY(!manager->isExcluded(QSL("other.example")));
+    QVERIFY(!manager->isExcluded(QString()));
+
+    // wildcard entries match subdomains only, not the bare domain
+    manager->addExclusion(QSL("*.fp-wild.example"));
+    QVERIFY(manager->isExcluded(QSL("deep.fp-wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("fp-wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("evilfp-wild.example")));
+
+    manager->removeExclusion(QSL("fp.example"));
+    manager->removeExclusion(QSL("*.fp-wild.example"));
+
+    QVERIFY(!manager->isExcluded(QSL("fp.example")));
+    QVERIFY(!manager->isExcluded(QSL("www.fp.example")));
+    QVERIFY(!manager->isExcluded(QSL("deep.fp-wild.example")));
+}
+
+void SecurityToolsTest::fingerprintScriptLifecycleTest()
+{
+    auto *manager = FingerprintManager::instance();
+    auto *profile = mApp->webProfile();
+    QVERIFY(profile);
+
+    // Protection on -> exactly one guard script is in the profile.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+
+    const QString name = QSL("_osza_fingerprint_guard");
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+    const QString source = profile->scripts()->find(name).value(0).sourceCode();
+    QVERIFY(source.contains(QLatin1String("fingerprint guard")));
+    QVERIFY(!source.contains(QLatin1String("%EXCLUSIONS%")));
+    QVERIFY(!source.contains(QLatin1String("%MASTER_SEED%")));
+
+    // The script runs in the main world before the page, on subframes too.
+    const QWebEngineScript script = profile->scripts()->find(name).value(0);
+    QCOMPARE(script.worldId(), quint32(QWebEngineScript::MainWorld));
+    QCOMPARE(script.injectionPoint(), QWebEngineScript::DocumentCreation);
+    QVERIFY(script.runsOnSubFrames());
+
+    // Refreshing never duplicates the script.
+    manager->updateScript();
+    manager->updateScript();
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+
+    // An exclusion is baked into the regenerated script.
+    manager->addExclusion(QSL("fp-lifecycle.example"));
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+    QVERIFY(profile->scripts()->find(name).value(0).sourceCode().contains(QLatin1String("fp-lifecycle.example")));
+    manager->removeExclusion(QSL("fp-lifecycle.example"));
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+    QVERIFY(!profile->scripts()->find(name).value(0).sourceCode().contains(QLatin1String("fp-lifecycle.example")));
+
+    // Protection off -> the script is gone.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), false);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+    QCOMPARE(manager->isEnabled(), false);
+    QCOMPARE(profile->scripts()->find(name).count(), 0);
+
+    // Restore the protection-on default for the other tests.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+    QCOMPARE(manager->isEnabled(), true);
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+}
+
+void SecurityToolsTest::fingerprintIntegrationTest()
+{
+    // Full end-to-end check through the real script injection: the
+    // guard must run in the main world, canvas readouts must be
+    // stable for one host, differ between hosts, and stay original
+    // on excluded hosts. Everything runs against synthetic hosts, so
+    // no request ever leaves the machine.
+    auto *manager = FingerprintManager::instance();
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    manager->removeExclusion(QSL("fp-excluded.example"));
+    manager->removeExclusion(QSL("fp-excluded2.example"));
+    manager->loadSettings();
+
+    const QString html = QSL("<html><body><canvas id='c' width='120' height='40'></canvas></body></html>");
+    const QString probe = QSL(
+        "(function() {"
+        "  var c = document.getElementById('c');"
+        "  var ctx = c.getContext('2d');"
+        "  for (var x = 0; x < c.width; x++) {"
+        "    ctx.fillStyle = 'rgb(' + (x * 2) + ', 60, ' + (255 - x * 2) + ')';"
+        "    ctx.fillRect(x, 0, 1, c.height);"
+        "  }"
+        "  return c.toDataURL();"
+        "})()");
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    auto loadAndProbe = [&page, &loadFinishedSpy, &html, &probe](const QString &host) {
+        loadFinishedSpy.clear();
+        page.setHtml(html, QUrl(QSL("https://%1/fp-test").arg(host)));
+        if (!loadFinishedSpy.wait(20000)) {
+            return QString();
+        }
+
+        QString result;
+        QEventLoop loop;
+        QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+        page.runJavaScript(probe, [&result, &loop](const QVariant &value) {
+            result = value.toString();
+            loop.quit();
+        });
+        loop.exec();
+        return result;
+    };
+
+    // The guard ran in the main world and left no enumerable marker.
+    {
+        loadFinishedSpy.clear();
+        page.setHtml(html, QUrl(QSL("https://fp-a.example/fp-test")));
+        QVERIFY(loadFinishedSpy.wait(20000));
+
+        QString marker;
+        QEventLoop loop;
+        QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+        page.runJavaScript(QSL("window.__oszaFingerprintGuard + '|' + Object.keys(window).indexOf('__oszaFingerprintGuard')"), [&marker, &loop](const QVariant &value) {
+            marker = value.toString();
+            loop.quit();
+        });
+        loop.exec();
+        QCOMPARE(marker, QSL("1|-1"));
+    }
+
+    const QString hostA1 = loadAndProbe(QSL("fp-a.example"));
+    const QString hostA2 = loadAndProbe(QSL("fp-a.example"));
+    const QString hostB = loadAndProbe(QSL("fp-b.example"));
+
+    QVERIFY(!hostA1.isEmpty());
+    QVERIFY(hostA1.startsWith(QSL("data:image/png;base64,")));
+
+    // Same host: the readout is stable across loads (not itself
+    // fingerprintable).
+    QCOMPARE(hostA1, hostA2);
+
+    // Different host: the readout differs.
+    QVERIFY(hostA1 != hostB);
+
+    // Excluded hosts keep the original, unperturbed readout: two
+    // excluded hosts must produce identical (pristine) strings, and
+    // that string must differ from the perturbed host A readout.
+    manager->addExclusion(QSL("fp-excluded.example"));
+    manager->addExclusion(QSL("fp-excluded2.example"));
+
+    const QString excluded1 = loadAndProbe(QSL("fp-excluded.example"));
+    const QString excluded2 = loadAndProbe(QSL("fp-excluded2.example"));
+
+    QVERIFY(excluded1.startsWith(QSL("data:image/png;base64,")));
+    QCOMPARE(excluded1, excluded2);
+    QVERIFY(excluded1 != hostA1);
+
+    // restore the state the other tests expect
+    manager->removeExclusion(QSL("fp-excluded.example"));
+    manager->removeExclusion(QSL("fp-excluded2.example"));
+    manager->loadSettings();
+}

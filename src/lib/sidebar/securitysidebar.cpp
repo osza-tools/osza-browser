@@ -19,6 +19,7 @@
 #include "browserwindow.h"
 #include "adblockmanager.h"
 #include "dnsoverhttpsmanager.h"
+#include "fingerprintmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "mainapplication.h"
 #include "networkmanager.h"
@@ -83,6 +84,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_stripTrackingToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleStripTracking);
     connect(m_secureDnsToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleSecureDns);
     connect(m_threatBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleThreatBlock);
+    connect(m_fingerprintToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleFingerprintProtection);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
 
     refresh();
@@ -155,6 +157,11 @@ void SecuritySideBar::createLayout()
     m_threatBlockState = new QLabel(this);
     m_threatBlockState->setContentsMargins(20, 0, 0, 0);
     m_threatBlockState->setWordWrap(true);
+    m_fingerprintToggle = new QCheckBox(tr("Fingerprint protection"), this);
+    m_fingerprintToggle->setToolTip(tr("Randomize canvas, WebGL, audio and hardware fingerprints per site. Sites can be excluded from the padlock menu."));
+    m_fingerprintState = new QLabel(this);
+    m_fingerprintState->setContentsMargins(20, 0, 0, 0);
+    m_fingerprintState->setWordWrap(true);
 
     mainLayout->addWidget(m_adBlockToggle);
     mainLayout->addWidget(m_httpsOnlyToggle);
@@ -163,6 +170,8 @@ void SecuritySideBar::createLayout()
     mainLayout->addWidget(m_secureDnsState);
     mainLayout->addWidget(m_threatBlockToggle);
     mainLayout->addWidget(m_threatBlockState);
+    mainLayout->addWidget(m_fingerprintToggle);
+    mainLayout->addWidget(m_fingerprintState);
 
     mainLayout->addStretch(1);
 
@@ -272,10 +281,12 @@ void SecuritySideBar::updateStatus()
     const bool httpsOnly = mApp->networkManager()->httpsOnlyInterceptor()->isEnabled();
     const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
     const auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    const bool fingerprint = FingerprintManager::instance()->isEnabled();
 
     const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked()
         || doh->mode() != DnsOverHttpsManager::Disabled
-        || threatBlock->isEnabled();
+        || threatBlock->isEnabled()
+        || fingerprint;
 
     if (anyOn) {
         m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -298,6 +309,18 @@ void SecuritySideBar::updateStatus()
     default:
         m_secureDnsState->setText(dohSupported ? tr("Secure DNS is off.") : tr("Secure DNS requires QtWebEngine 6.6+."));
         break;
+    }
+
+    // Fingerprint protection state, honest about the current site.
+    if (!fingerprint) {
+        m_fingerprintState->setText(tr("Fingerprint protection is off."));
+    } else {
+        const QString host = currentHost();
+        if (!host.isEmpty() && FingerprintManager::instance()->isExcluded(host)) {
+            m_fingerprintState->setText(tr("Randomized everywhere except %1 (excluded from the padlock menu).").arg(host.toHtmlEscaped()));
+        } else {
+            m_fingerprintState->setText(tr("Canvas, WebGL and audio readouts are randomized per site."));
+        }
     }
 
     // Malicious-site protection state, honest about the list.
@@ -323,6 +346,7 @@ void SecuritySideBar::updateToggles()
     const QSignalBlocker stripTrackingBlocker(m_stripTrackingToggle);
     const QSignalBlocker secureDnsBlocker(m_secureDnsToggle);
     const QSignalBlocker threatBlockBlocker(m_threatBlockToggle);
+    const QSignalBlocker fingerprintBlocker(m_fingerprintToggle);
 
     m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
     m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
@@ -337,6 +361,7 @@ void SecuritySideBar::updateToggles()
     m_secureDnsToggle->setEnabled(DnsOverHttpsManager::isSupported());
 
     m_threatBlockToggle->setChecked(mApp->networkManager()->threatBlockManager()->isEnabled());
+    m_fingerprintToggle->setChecked(FingerprintManager::instance()->isEnabled());
 }
 
 void SecuritySideBar::resetCounters()
@@ -415,5 +440,18 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
 void SecuritySideBar::toggleThreatBlock(bool enabled)
 {
     mApp->networkManager()->threatBlockManager()->setEnabled(enabled);
+    refresh();
+}
+
+void SecuritySideBar::toggleFingerprintProtection(bool enabled)
+{
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), enabled);
+        settings.endGroup();
+    }
+
+    FingerprintManager::instance()->loadSettings();
     refresh();
 }

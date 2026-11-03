@@ -410,6 +410,7 @@ Preferences::Preferences(BrowserWindow* window)
     // Security tools
     ui->httpsOnly->setChecked(settings.value(QSL("HttpsOnlyMode"), false).toBool());
     ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
+    ui->fingerprintProtection->setChecked(settings.value(QSL("FingerprintProtection"), true).toBool());
     ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
     loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
     connect(ui->dnsOverHttpsServers, &QComboBox::currentIndexChanged, this, &Preferences::dnsOverHttpsServerChanged);
@@ -1176,6 +1177,7 @@ void Preferences::saveSettings()
     settings.setValue(QSL("DoNotTrack"), ui->doNotTrack->isChecked());
     settings.setValue(QSL("HttpsOnlyMode"), ui->httpsOnly->isChecked());
     settings.setValue(QSL("StripTrackingQuery"), ui->stripTrackingQuery->isChecked());
+    settings.setValue(QSL("FingerprintProtection"), ui->fingerprintProtection->isChecked());
     settings.setValue(QSL("ThreatBlockEnabled"), ui->threatBlock->isChecked());
     if (!ui->threatBlockSource->text().trimmed().isEmpty()) {
         settings.setValue(QSL("ThreatBlockSource"), ui->threatBlockSource->text().trimmed());

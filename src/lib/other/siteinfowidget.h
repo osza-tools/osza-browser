@@ -42,6 +42,8 @@ private:
     void protocolHandlerButtonClicked();
     void updateHttpsOnlyState();
     void httpsOnlyButtonClicked();
+    void updateFingerprintState();
+    void fingerprintButtonClicked();
 
     Ui::SiteInfoWidget* ui;
     BrowserWindow* m_window;

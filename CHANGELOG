@@ -17,6 +17,33 @@ Fixed:
   detection when called before them.
 
 Added:
+- Security tools (7): browser-fingerprint randomization, on by
+  default. A small guard script is injected into every frame before
+  any page script runs (new FingerprintManager, Preferences > Privacy
+  > Security tools > "Randomize browser fingerprints") and makes the
+  classic fingerprinting readouts unusable for tracking: canvas 2D
+  (getImageData, toDataURL, toBlob, also on OffscreenCanvas), WebGL
+  (readPixels, plus the UNMASKED_VENDOR/UNMASKED_RENDERER GPU
+  strings, which are replaced with generic values) and audio
+  (AnalyserNode frequency and time-domain data plus AudioBuffer
+  channel readouts - the classic OfflineAudioContext fingerprint)
+  get per-site noise,
+  and navigator.hardwareConcurrency/deviceMemory report per-site
+  common values instead of the real hardware. The noise is
+  deterministic - it depends only on a per-profile master seed
+  (generated on first use, kept in the profile), the site host and
+  the pixel position - so readouts stay stable for one site across
+  reloads (sites keep working; a fingerprint that changed on every
+  load would itself be fingerprintable) while differing between
+  sites, between profiles and between users. Every hook fails closed
+  to the original behaviour, so pages never break. Sites that misbehave
+  can be excluded per site from the padlock (site info) menu, which
+  states the current state and offers one-click shortcuts like the
+  HTTPS-Only ones; the security dashboard gained a "Fingerprint
+  protection" quick switch with a state line that names the current
+  site when it is excluded. The guard script is additionally verified
+  standalone, without a Qt build, by tools/security/
+  verify_fingerprint_guard.py (node-based, 44 behavioural checks).
 - Security tools (3): DNS-over-HTTPS (DoH). All hostname resolution
   performed by the engine can now go through an encrypted DoH server
   instead of the system resolver, so the network operator can neither
