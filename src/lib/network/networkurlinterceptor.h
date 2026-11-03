@@ -45,6 +45,7 @@ private:
     QMutex m_mutex;
     QList<UrlInterceptor*> m_interceptors;
     bool m_sendDNT = false;
+    bool m_sendGPC = true;
     bool m_usePerDomainUserAgent = false;
     bool m_stripTrackingQuery = true;
     QHash<QString, QString> m_userAgentsList;

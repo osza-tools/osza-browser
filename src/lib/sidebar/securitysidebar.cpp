@@ -20,6 +20,7 @@
 #include "adblockmanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
+#include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "mainapplication.h"
 #include "networkmanager.h"
@@ -85,6 +86,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_secureDnsToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleSecureDns);
     connect(m_threatBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleThreatBlock);
     connect(m_fingerprintToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleFingerprintProtection);
+    connect(m_gpcToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleGpc);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
 
     refresh();
@@ -162,6 +164,11 @@ void SecuritySideBar::createLayout()
     m_fingerprintState = new QLabel(this);
     m_fingerprintState->setContentsMargins(20, 0, 0, 0);
     m_fingerprintState->setWordWrap(true);
+    m_gpcToggle = new QCheckBox(tr("Global Privacy Control (Sec-GPC)"), this);
+    m_gpcToggle->setToolTip(tr("Send the Global Privacy Control opt-out with every request and report it to page scripts. Where the law recognizes GPC, sites must honor it as an opt-out from the sale or sharing of personal data."));
+    m_gpcState = new QLabel(this);
+    m_gpcState->setContentsMargins(20, 0, 0, 0);
+    m_gpcState->setWordWrap(true);
 
     mainLayout->addWidget(m_adBlockToggle);
     mainLayout->addWidget(m_httpsOnlyToggle);
@@ -172,6 +179,8 @@ void SecuritySideBar::createLayout()
     mainLayout->addWidget(m_threatBlockState);
     mainLayout->addWidget(m_fingerprintToggle);
     mainLayout->addWidget(m_fingerprintState);
+    mainLayout->addWidget(m_gpcToggle);
+    mainLayout->addWidget(m_gpcState);
 
     mainLayout->addStretch(1);
 
@@ -282,11 +291,13 @@ void SecuritySideBar::updateStatus()
     const auto *doh = mApp->networkManager()->dnsOverHttpsManager();
     const auto *threatBlock = mApp->networkManager()->threatBlockManager();
     const bool fingerprint = FingerprintManager::instance()->isEnabled();
+    const bool gpc = GpcManager::instance()->isEnabled();
 
     const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked()
         || doh->mode() != DnsOverHttpsManager::Disabled
         || threatBlock->isEnabled()
-        || fingerprint;
+        || fingerprint
+        || gpc;
 
     if (anyOn) {
         m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -323,6 +334,13 @@ void SecuritySideBar::updateStatus()
         }
     }
 
+    // Global Privacy Control state, honest about what leaves the browser.
+    if (!gpc) {
+        m_gpcState->setText(tr("The Global Privacy Control signal is off."));
+    } else {
+        m_gpcState->setText(tr("Every request carries the Sec-GPC: 1 opt-out, and pages see navigator.globalPrivacyControl = true."));
+    }
+
     // Malicious-site protection state, honest about the list.
     if (!threatBlock->isEnabled()) {
         m_threatBlockState->setText(tr("Malicious site protection is off."));
@@ -347,6 +365,7 @@ void SecuritySideBar::updateToggles()
     const QSignalBlocker secureDnsBlocker(m_secureDnsToggle);
     const QSignalBlocker threatBlockBlocker(m_threatBlockToggle);
     const QSignalBlocker fingerprintBlocker(m_fingerprintToggle);
+    const QSignalBlocker gpcBlocker(m_gpcToggle);
 
     m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
     m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
@@ -362,6 +381,7 @@ void SecuritySideBar::updateToggles()
 
     m_threatBlockToggle->setChecked(mApp->networkManager()->threatBlockManager()->isEnabled());
     m_fingerprintToggle->setChecked(FingerprintManager::instance()->isEnabled());
+    m_gpcToggle->setChecked(GpcManager::instance()->isEnabled());
 }
 
 void SecuritySideBar::resetCounters()
@@ -453,5 +473,15 @@ void SecuritySideBar::toggleFingerprintProtection(bool enabled)
     }
 
     FingerprintManager::instance()->loadSettings();
+    refresh();
+}
+
+void SecuritySideBar::toggleGpc(bool enabled)
+{
+    // setEnabled persists the preference and installs/removes the
+    // DOM signal script; reloading the network stack makes the
+    // Sec-GPC header follow immediately.
+    GpcManager::instance()->setEnabled(enabled);
+    mApp->networkManager()->loadSettings();
     refresh();
 }

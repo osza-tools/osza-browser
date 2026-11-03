@@ -54,6 +54,7 @@ public Q_SLOTS:
     void toggleSecureDns(bool enabled);
     void toggleThreatBlock(bool enabled);
     void toggleFingerprintProtection(bool enabled);
+    void toggleGpc(bool enabled);
 
 private:
     QWidget* createCounterTile(const QString &caption, QLabel **valueOut);
@@ -89,6 +90,8 @@ private:
     QLabel* m_threatBlockState;
     QCheckBox* m_fingerprintToggle;
     QLabel* m_fingerprintState;
+    QCheckBox* m_gpcToggle;
+    QLabel* m_gpcState;
 
     QToolButton* m_resetButton;
 

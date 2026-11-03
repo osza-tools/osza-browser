@@ -17,6 +17,29 @@ Fixed:
   detection when called before them.
 
 Added:
+- Security tools (8): the Global Privacy Control signal, on by default.
+  Osza now speaks GPC - the successor of Do Not Track with actual
+  legal weight - and it does so completely, in both places the
+  specification demands: every outgoing request carries the
+  "Sec-GPC: 1" opt-out header (navigations and subresources alike,
+  set by the URL interceptor next to DNT, which remains available),
+  and every frame reports the opt-out to page scripts through
+  navigator.globalPrivacyControl, set before any page script runs
+  (new GpcManager, installed through the same machinery as the
+  fingerprint guard: document creation, main world, subframes, and
+  removed entirely when the signal is off so pages see the plain
+  browser environment). Both halves follow one preference -
+  Preferences > Privacy > Security tools > "Send Global Privacy
+  Control signal" - and the security dashboard gained a matching
+  quick switch with a state line. Where the law recognizes the
+  signal (California, Colorado, Connecticut and several other
+  jurisdictions), sites must honor it as an opt-out from the sale or
+  sharing of personal data; elsewhere it is already respected by the
+  major privacy-aware sites. The DOM half is verified end-to-end by
+  an autotest that loads a page and reads the property back, and the
+  network half by one that captures the raw request on loopback and
+  asserts the header is present when the signal is on and absent
+  when it is off.
 - Security tools (7): browser-fingerprint randomization, on by
   default. A small guard script is injected into every frame before
   any page script runs (new FingerprintManager, Preferences > Privacy

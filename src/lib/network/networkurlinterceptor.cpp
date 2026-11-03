@@ -57,6 +57,7 @@ QStringList trackingParameterNames()
 NetworkUrlInterceptor::NetworkUrlInterceptor(QObject *parent)
     : QWebEngineUrlRequestInterceptor(parent)
     , m_sendDNT(false)
+    , m_sendGPC(true)
 {
 }
 
@@ -66,6 +67,14 @@ void NetworkUrlInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 
     if (m_sendDNT) {
         info.setHttpHeader(QByteArrayLiteral("DNT"), QByteArrayLiteral("1"));
+    }
+
+    // Global Privacy Control: the network half of the signal (the DOM
+    // half is navigator.globalPrivacyControl, installed by GpcManager).
+    // Sent with every request, navigations and subresources alike, as
+    // the GPC specification requires.
+    if (m_sendGPC) {
+        info.setHttpHeader(QByteArrayLiteral("Sec-GPC"), QByteArrayLiteral("1"));
     }
 
     if (m_stripTrackingQuery) {
@@ -156,6 +165,7 @@ void NetworkUrlInterceptor::loadSettings()
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_sendDNT = settings.value(QSL("DoNotTrack"), false).toBool();
+    m_sendGPC = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
     m_stripTrackingQuery = settings.value(QSL("StripTrackingQuery"), true).toBool();
     settings.endGroup();
 

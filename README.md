@@ -34,7 +34,10 @@ and KDE contributors for their work.
   they load), browser-fingerprint randomization (canvas, WebGL, audio
   and hardware readouts get deterministic per-site noise, so
   trackers cannot tie your browsing together; on by default, with a
-  per-site opt-out in the padlock menu), DNS-over-HTTPS (encrypts all
+  per-site opt-out in the padlock menu), the Global Privacy Control
+  signal (Sec-GPC: 1 is sent with every request and reported to page
+  scripts - the legally-binding opt-out from the sale or sharing of
+  personal data; on by default), DNS-over-HTTPS (encrypts all
   hostname resolution, with known providers or a custom server) and
   malicious-site protection (navigations to blocklisted hosts stop on
   a full-screen warning page with a session-scoped "proceed anyway";

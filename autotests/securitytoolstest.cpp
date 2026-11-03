@@ -19,6 +19,7 @@
 #include "securitytoolstest.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
+#include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "networkmanager.h"
 #include "mainapplication.h"
@@ -35,6 +36,12 @@
 #include <QWebEngineScript>
 #include <QWebEngineScriptCollection>
 #include <QEventLoop>
+#include <QElapsedTimer>
+#include <QHostAddress>
+#include <QNetworkProxy>
+#include <QNetworkProxyFactory>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 void SecurityToolsTest::securityManagerCountersTest()
 {
@@ -226,10 +233,17 @@ void SecurityToolsTest::securityDashboardWidgetTest()
     sidebar.toggleFingerprintProtection(!fingerprintBefore);
     QCOMPARE(FingerprintManager::instance()->isEnabled(), !fingerprintBefore);
 
+    // The GPC quick switch must apply through the manager.
+    const bool gpcBefore = GpcManager::instance()->isEnabled();
+
+    sidebar.toggleGpc(!gpcBefore);
+    QCOMPARE(GpcManager::instance()->isEnabled(), !gpcBefore);
+
     // restore the original state
     sidebar.toggleHttpsOnly(httpsOnlyBefore);
     sidebar.toggleThreatBlock(threatBlockBefore);
     sidebar.toggleFingerprintProtection(fingerprintBefore);
+    sidebar.toggleGpc(gpcBefore);
 }
 
 void SecurityToolsTest::threatBlockListParsingTest()
@@ -777,4 +791,241 @@ void SecurityToolsTest::fingerprintIntegrationTest()
     manager->removeExclusion(QSL("fp-excluded.example"));
     manager->removeExclusion(QSL("fp-excluded2.example"));
     manager->loadSettings();
+}
+
+namespace {
+
+// Write the GPC preference and make both halves of the signal follow
+// it: the DOM script through GpcManager, the Sec-GPC header through
+// the network stack.
+void applyGpcSetting(bool enabled)
+{
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("GlobalPrivacyControl"), enabled);
+    settings.endGroup();
+
+    GpcManager::instance()->loadSettings();
+    mApp->networkManager()->loadSettings();
+}
+
+} // namespace
+
+void SecurityToolsTest::gpcScriptSourceTest()
+{
+    const QString source = GpcManager::signalScriptSource();
+
+    // The signal property is defined on the Navigator prototype.
+    QVERIFY(source.contains(QLatin1String("globalPrivacyControl")));
+    QVERIFY(source.contains(QLatin1String("window.Navigator.prototype")));
+
+    // The marker keeps the script idempotent and non-enumerable.
+    QVERIFY(source.contains(QLatin1String("__oszaGpcSignal")));
+    QVERIFY(source.contains(QLatin1String("enumerable: false")));
+
+    // It reports true, the value the GPC specification requires.
+    QVERIFY(source.contains(QLatin1String("return true;")));
+
+    // Every hook fails closed to the unmodified environment.
+    QVERIFY(source.contains(QLatin1String("catch (e)")));
+
+    // The source is a constant: there is nothing left to substitute.
+    QVERIFY(!source.contains(QLatin1String("%")));
+}
+
+void SecurityToolsTest::gpcScriptLifecycleTest()
+{
+    auto *manager = GpcManager::instance();
+    auto *profile = mApp->webProfile();
+    QVERIFY(profile);
+
+    // Signal on -> exactly one signal script is in the profile.
+    applyGpcSetting(true);
+    QCOMPARE(manager->isEnabled(), true);
+
+    const QString name = QSL("_osza_gpc_signal");
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+
+    // The script runs in the main world before the page, on subframes too.
+    const QWebEngineScript script = profile->scripts()->find(name).value(0);
+    QCOMPARE(script.worldId(), quint32(QWebEngineScript::MainWorld));
+    QCOMPARE(script.injectionPoint(), QWebEngineScript::DocumentCreation);
+    QVERIFY(script.runsOnSubFrames());
+    QVERIFY(script.sourceCode().contains(QLatin1String("globalPrivacyControl")));
+
+    // Refreshing never duplicates the script.
+    manager->updateScript();
+    manager->updateScript();
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+
+    // Signal off -> the script is gone (and the property with it).
+    applyGpcSetting(false);
+    QCOMPARE(manager->isEnabled(), false);
+    QCOMPARE(profile->scripts()->find(name).count(), 0);
+
+    // setEnabled is the API the dashboard uses; it must persist too.
+    manager->setEnabled(true);
+    QCOMPARE(manager->isEnabled(), true);
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        QCOMPARE(settings.value(QSL("GlobalPrivacyControl")).toBool(), true);
+        settings.endGroup();
+    }
+    manager->setEnabled(false);
+    QCOMPARE(profile->scripts()->find(name).count(), 0);
+
+    // Restore the signal-on default for the other tests.
+    applyGpcSetting(true);
+    QCOMPARE(profile->scripts()->find(name).count(), 1);
+}
+
+void SecurityToolsTest::gpcDomSignalIntegrationTest()
+{
+    // Full end-to-end check through the real script injection: pages
+    // must see navigator.globalPrivacyControl === true while the
+    // signal is on, and the plain browser behaviour (no property at
+    // all) while it is off. The synthetic host never leaves the machine.
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    const QString html = QSL("<html><head><link rel='icon' href='data:,'></head><body></body></html>");
+    const QString probe = QSL(
+        "(function() {"
+        "  var marker = Object.keys(window).indexOf('__oszaGpcSignal');"
+        "  return typeof navigator.globalPrivacyControl + '|' + navigator.globalPrivacyControl + '|' + marker;"
+        "})()");
+
+    auto loadAndProbe = [&page, &loadFinishedSpy, &html, &probe](const QString &host) {
+        loadFinishedSpy.clear();
+        page.setHtml(html, QUrl(QSL("https://%1/gpc-test").arg(host)));
+        if (!loadFinishedSpy.wait(20000)) {
+            return QString();
+        }
+
+        QString result;
+        QEventLoop loop;
+        QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+        page.runJavaScript(probe, [&result, &loop](const QVariant &value) {
+            result = value.toString();
+            loop.quit();
+        });
+        loop.exec();
+        return result;
+    };
+
+    // Signal on: the property is a boolean true, set before any page
+    // script runs, and the marker leaves no enumerable key behind.
+    applyGpcSetting(true);
+    QCOMPARE(loadAndProbe(QSL("gpc-on.example")), QSL("boolean|true|-1"));
+
+    // Signal off: the property is gone, exactly like a browser
+    // without GPC support.
+    applyGpcSetting(false);
+    QCOMPARE(loadAndProbe(QSL("gpc-off.example")), QSL("undefined|undefined|-1"));
+
+    // restore the signal-on default for the other tests
+    applyGpcSetting(true);
+}
+
+void SecurityToolsTest::gpcHeaderIntegrationTest()
+{
+    // Full end-to-end check of the network half: a one-shot HTTP
+    // server on loopback captures the raw request, proving the
+    // Sec-GPC opt-out really leaves the browser with the navigation.
+    // Loopback is never HTTPS-upgraded, so plain HTTP works.
+
+    // The capture must not depend on the machine the test runs on: a
+    // system proxy configuration could swallow the loopback request
+    // before it ever reaches the server. Force a direct connection
+    // for the duration of the test, like the proxy-off preference.
+    QNetworkProxyFactory::setUseSystemConfiguration(false);
+    QNetworkProxy noProxy;
+    noProxy.setType(QNetworkProxy::NoProxy);
+    QNetworkProxy::setApplicationProxy(noProxy);
+
+    QTcpServer server;
+    QVERIFY(server.listen(QHostAddress(QHostAddress::LocalHost), 0));
+    const quint16 port = server.serverPort();
+
+    // Serve exactly one page; the data: favicon keeps Chromium from
+    // issuing a second request that could race the navigation.
+    const QByteArray body = "<html><head><link rel='icon' href='data:,'></head><body>ok</body></html>";
+    const QByteArray response = QByteArrayLiteral("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ")
+        + QByteArray::number(body.size()) + QByteArrayLiteral("\r\n\r\n") + body;
+
+    // Accept connections until the one asking for the given path
+    // shows up; anything else is answered and dropped. The wait spins
+    // the event loop in short slices: the navigation only progresses
+    // while events are processed, so a plain blocking wait would
+    // deadlock the request that is supposed to arrive.
+    auto captureRequest = [&server, &response](const QString &path, QString *captured) -> bool {
+        QElapsedTimer timer;
+        timer.start();
+        while (timer.elapsed() < 20000) {
+            QEventLoop loop;
+            QTimer::singleShot(200, &loop, &QEventLoop::quit);
+            QObject::connect(&server, &QTcpServer::newConnection, &loop, &QEventLoop::quit);
+            loop.exec();
+            while (server.hasPendingConnections()) {
+                QTcpSocket *socket = server.nextPendingConnection();
+                QByteArray raw;
+                QElapsedTimer readTimer;
+                readTimer.start();
+                while (!raw.contains("\r\n\r\n") && readTimer.elapsed() < 5000) {
+                    socket->waitForReadyRead(200);
+                    raw += socket->readAll();
+                }
+                socket->write(response);
+                socket->flush();
+                socket->disconnectFromHost();
+                if (socket->state() == QAbstractSocket::ConnectedState) {
+                    socket->waitForDisconnected(2000);
+                }
+                const QByteArray requestLine = QByteArrayLiteral("GET ") + path.toLatin1() + QByteArrayLiteral(" HTTP");
+                if (raw.startsWith(requestLine)) {
+                    *captured = QString::fromLatin1(raw);
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    // Signal on -> the navigation carries Sec-GPC: 1.
+    applyGpcSetting(true);
+
+    page.load(QUrl(QSL("http://127.0.0.1:%1/gpc-on").arg(port)));
+    QString rawOn;
+    QVERIFY(captureRequest(QSL("/gpc-on"), &rawOn));
+    if (loadFinishedSpy.count() == 0) {
+        QVERIFY(loadFinishedSpy.wait(20000));
+    }
+    QVERIFY(loadFinishedSpy.last().at(0).toBool());
+
+    QVERIFY(rawOn.contains(QSL("Host: 127.0.0.1")));
+    QVERIFY(rawOn.contains(QLatin1String("sec-gpc: 1"), Qt::CaseInsensitive));
+
+    // Signal off -> no trace of the header at all.
+    applyGpcSetting(false);
+
+    page.load(QUrl(QSL("http://127.0.0.1:%1/gpc-off").arg(port)));
+    QString rawOff;
+    QVERIFY(captureRequest(QSL("/gpc-off"), &rawOff));
+    if (loadFinishedSpy.count() == 0) {
+        QVERIFY(loadFinishedSpy.wait(20000));
+    }
+
+    QVERIFY(rawOff.contains(QSL("Host: 127.0.0.1")));
+    QVERIFY(!rawOff.contains(QLatin1String("sec-gpc"), Qt::CaseInsensitive));
+
+    // restore the signal-on default for the other tests, and the
+    // system proxy resolution the app would use
+    applyGpcSetting(true);
+    QNetworkProxy::setApplicationProxy(QNetworkProxy());
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
 }

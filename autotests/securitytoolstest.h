@@ -45,6 +45,11 @@ private Q_SLOTS:
     void fingerprintExclusionTest();
     void fingerprintScriptLifecycleTest();
     void fingerprintIntegrationTest();
+
+    void gpcScriptSourceTest();
+    void gpcScriptLifecycleTest();
+    void gpcDomSignalIntegrationTest();
+    void gpcHeaderIntegrationTest();
 };
 
 #endif // SECURITYTOOLSTEST_H
