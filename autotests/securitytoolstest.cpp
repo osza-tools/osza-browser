@@ -17,6 +17,7 @@
 * ============================================================ */
 #include "autotests.h"
 #include "securitytoolstest.h"
+#include "adblockmanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
 #include "fingerprintmanager.h"
@@ -26,6 +27,7 @@
 #include "mainapplication.h"
 #include "qzcommon.h"
 #include "securitymanager.h"
+#include "securitysettingsporter.h"
 #include "securitysidebar.h"
 #include "selftestpage.h"
 #include "settings.h"
@@ -33,11 +35,14 @@
 #include "webpage.h"
 
 #include <QtTest/QtTest>
+#include <QDateTime>
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRegularExpression>
 #include <QSet>
+#include <QTemporaryDir>
 #include <QToolButton>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
@@ -1359,4 +1364,503 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
         settings.endGroup();
     }
     manager->loadSettings();
+}
+
+void SecurityToolsTest::settingsPorterDocumentTest()
+{
+    // The identity of the format is a stable contract with every
+    // settings file ever written.
+    QCOMPARE(SecuritySettingsPorter::formatIdentifier(), QSL("osza-security-settings"));
+    QCOMPARE(SecuritySettingsPorter::formatVersion(), 1);
+
+    const QJsonObject document = SecuritySettingsPorter::buildDocument();
+
+    QCOMPARE(document.value(QSL("format")).toString(), QSL("osza-security-settings"));
+    QCOMPARE(document.value(QSL("version")).toInt(), 1);
+    QVERIFY(QDateTime::fromString(document.value(QSL("exportedAt")).toString(), Qt::ISODate).isValid());
+
+    // All seven bundled tools are covered, each with an enabled state.
+    const QJsonObject tools = document.value(QSL("tools")).toObject();
+    const QStringList expectedTools = {QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
+                                       QSL("secureDns"), QSL("threatBlock"), QSL("fingerprintProtection"),
+                                       QSL("globalPrivacyControl")};
+    QCOMPARE(tools.size(), expectedTools.size());
+
+    for (const QString &id : expectedTools) {
+        QVERIFY(tools.value(id).isObject());
+        QVERIFY(tools.value(id).toObject().contains(QSL("enabled")));
+    }
+
+    // The exported state follows the live managers, not stale keys:
+    // flipping the interceptor is reflected in the next document.
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+    const QStringList exclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), !httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), QStringList{QSL("document.porter.example")});
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+
+    const QJsonObject updated = SecuritySettingsPorter::buildDocument();
+    const QJsonObject httpsOnly = updated.value(QSL("tools")).toObject().value(QSL("httpsOnly")).toObject();
+    QCOMPARE(httpsOnly.value(QSL("enabled")).toBool(), !httpsOnlyBefore);
+    QCOMPARE(httpsOnly.value(QSL("exclusions")).toArray().size(), 1);
+    QCOMPARE(httpsOnly.value(QSL("exclusions")).toArray().at(0).toString(), QSL("document.porter.example"));
+
+    // The per-profile secrets and the usage history never leave the
+    // profile: neither the fingerprint master seed nor any protection
+    // counter appears anywhere in the serialized document.
+    const QByteArray serialized = QJsonDocument(updated).toJson(QJsonDocument::Compact);
+    QVERIFY(!serialized.contains("seed"));
+    QVERIFY(!serialized.contains("Seed"));
+    QVERIFY(!serialized.contains("AdsBlocked"));
+    QVERIFY(!serialized.contains("TrackersStripped"));
+    QVERIFY(!serialized.contains("HttpsUpgrades"));
+    QVERIFY(!serialized.contains("ThreatsBlocked"));
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), exclusionsBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+}
+
+void SecurityToolsTest::settingsPorterRoundTripTest()
+{
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    auto *fingerprint = FingerprintManager::instance();
+    auto *gpc = GpcManager::instance();
+    auto *adblock = AdBlockManager::instance();
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+
+    // Snapshot every piece of state the porter touches.
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+    const bool stripTrackingBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+    const bool gpcBefore = gpc->isEnabled();
+    const bool adblockBefore = adblock->isEnabled();
+    const bool threatEnabledBefore = threatBlock->isEnabled();
+    const QString threatSourceBefore = threatBlock->sourceUrl();
+    const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
+    const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const auto dohModeBefore = doh->mode();
+    const QStringList dohServersBefore = doh->serverTemplates();
+
+    // A distinctive target configuration, deliberately different from
+    // the current state of every tool.
+    const bool adblockTarget = !adblockBefore;
+    const bool httpsOnlyTarget = !httpsOnlyBefore;
+    const bool stripTrackingTarget = !stripTrackingBefore;
+    const bool fingerprintTarget = !fingerprintBefore;
+    const bool gpcTarget = !gpcBefore;
+    const bool threatEnabledTarget = !threatEnabledBefore;
+    const QString threatSourceTarget = QSL("https://porter.example/hosts");
+    const QStringList httpsExclusionsTarget = {QSL("legacy.porter.example"), QSL("*.wild.porter.example")};
+    const QStringList fingerprintExclusionsTarget = {QSL("bank.porter.example")};
+    const QStringList dohServersTarget = {QSL("https://dns.porter.example/dns-query{?dns}")};
+    const auto dohModeTarget = DnsOverHttpsManager::SecureWithFallback;
+
+    // Phase 1: apply the target state through the normal manager APIs.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyTarget);
+        settings.setValue(QSL("HttpsOnlyExclusions"), httpsExclusionsTarget);
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingTarget);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintTarget);
+        settings.setValue(QSL("FingerprintExclusions"), fingerprintExclusionsTarget);
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcTarget);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcTarget);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockTarget);
+    threatBlock->setEnabled(threatEnabledTarget);
+    threatBlock->setSourceUrl(threatSourceTarget);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeTarget, dohServersTarget);
+    }
+
+    // Phase 2: export through the file path, exactly like the UI does.
+    const QJsonObject expectedTools = SecuritySettingsPorter::buildDocument().value(QSL("tools")).toObject();
+
+    QTemporaryDir dir;
+    const QString path = dir.filePath(QSL("porter-roundtrip.json"));
+
+    QString error;
+    QVERIFY(SecuritySettingsPorter::exportToFile(path, &error));
+
+    // The written file is indented, non-empty JSON with the live
+    // configuration, and the tools section matches the snapshot.
+    QFile file(path);
+    QVERIFY(file.open(QIODevice::ReadOnly | QIODevice::Text));
+    const QByteArray raw = file.readAll();
+    file.close();
+    QVERIFY(!raw.isEmpty());
+    QVERIFY(raw.contains('\n'));
+
+    QJsonParseError parseError;
+    const QJsonDocument written = QJsonDocument::fromJson(raw, &parseError);
+    QCOMPARE(parseError.error, QJsonParseError::NoError);
+    QCOMPARE(written.object().value(QSL("format")).toString(), QSL("osza-security-settings"));
+    QCOMPARE(written.object().value(QSL("tools")).toObject(), expectedTools);
+
+    // Phase 3: move every tool away from the target state, so the
+    // import has live state to change, not just written keys.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), QStringList{QSL("old.porter.example")});
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingBefore);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("FingerprintExclusions"), QStringList{QSL("old.porter.example")});
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcBefore);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockBefore);
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+
+    QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
+    QVERIFY(interceptor->hasExplicitExclusion(QSL("old.porter.example")));
+    QCOMPARE(adblock->isEnabled(), adblockBefore);
+    QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
+    QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
+    QCOMPARE(gpc->isEnabled(), gpcBefore);
+
+    // Phase 4: import through the file path.
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+    QVERIFY(result.ok);
+    QVERIFY(result.error.isEmpty());
+    if (dohSupported) {
+        QCOMPARE(result.appliedTools, 7);
+        QCOMPARE(result.skippedTools.size(), 0);
+    } else {
+        QCOMPARE(result.appliedTools, 6);
+        QCOMPARE(result.skippedTools.size(), 1);
+        QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
+    }
+
+    // Phase 5: every tool arrived, through the same APIs the
+    // dashboard uses.
+    QCOMPARE(adblock->isEnabled(), adblockTarget);
+    QCOMPARE(interceptor->isEnabled(), httpsOnlyTarget);
+    QVERIFY(interceptor->hasExplicitExclusion(QSL("legacy.porter.example")));
+    QVERIFY(interceptor->hasExplicitExclusion(QSL("deep.wild.porter.example")));
+    QVERIFY(!interceptor->hasExplicitExclusion(QSL("old.porter.example")));
+
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool(), stripTrackingTarget);
+
+    if (dohSupported) {
+        QCOMPARE(doh->mode(), dohModeTarget);
+        QCOMPARE(doh->serverTemplates(), dohServersTarget);
+    }
+
+    QCOMPARE(threatBlock->isEnabled(), threatEnabledTarget);
+    QCOMPARE(threatBlock->sourceUrl(), threatSourceTarget);
+
+    QCOMPARE(fingerprint->isEnabled(), fingerprintTarget);
+    QVERIFY(fingerprint->isExcluded(QSL("bank.porter.example")));
+    QVERIFY(!fingerprint->isExcluded(QSL("old.porter.example")));
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList(),
+             fingerprintExclusionsTarget);
+
+    QCOMPARE(gpc->isEnabled(), gpcTarget);
+
+    // The guard script follows the imported fingerprint state.
+    if (fingerprintTarget) {
+        QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
+    } else {
+        QVERIFY(mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
+    }
+
+    // Phase 6: the format round-trips without loss - exporting the
+    // imported state yields the same tools section again.
+    QCOMPARE(SecuritySettingsPorter::buildDocument().value(QSL("tools")).toObject(), expectedTools);
+
+    // Phase 7: restore the profile exactly as it was found.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), httpsExclusionsBefore);
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingBefore);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("FingerprintExclusions"), fingerprintExclusionsBefore);
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcBefore);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockBefore);
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+
+    QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
+    QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
+    QCOMPARE(gpc->isEnabled(), gpcBefore);
+    QCOMPARE(adblock->isEnabled(), adblockBefore);
+    QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
+    QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
+    QCOMPARE(doh->mode(), dohModeBefore);
+    QCOMPARE(doh->serverTemplates(), dohServersBefore);
+}
+
+void SecurityToolsTest::settingsPorterValidationTest()
+{
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    auto *fingerprint = FingerprintManager::instance();
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+    const auto dohModeBefore = doh->mode();
+    const QStringList dohServersBefore = doh->serverTemplates();
+    const bool threatEnabledBefore = threatBlock->isEnabled();
+    const QString threatSourceBefore = threatBlock->sourceUrl();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+
+    QTemporaryDir dir;
+
+    auto writeDocument = [&dir](const QByteArray &data) {
+        const QString path = dir.filePath(QSL("document.json"));
+        QFile file(path);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return QString();
+        }
+        file.write(data);
+        file.close();
+        return path;
+    };
+
+    auto makeDocument = [](const QJsonObject &tools) {
+        QJsonObject document;
+        document.insert(QSL("format"), QSL("osza-security-settings"));
+        document.insert(QSL("version"), 1);
+        document.insert(QSL("tools"), tools);
+        return document;
+    };
+
+    // A file that does not exist is a fatal error.
+    SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(dir.filePath(QSL("missing.json")));
+    QVERIFY(!result.ok);
+    QVERIFY(!result.error.isEmpty());
+    QCOMPARE(result.appliedTools, 0);
+    QCOMPARE(result.skippedTools.size(), 0);
+
+    // Not JSON at all.
+    result = SecuritySettingsPorter::importFromFile(writeDocument(QByteArrayLiteral("this is not json")));
+    QVERIFY(!result.ok);
+    QCOMPARE(result.appliedTools, 0);
+
+    // JSON, but not an object.
+    result = SecuritySettingsPorter::importFromFile(writeDocument(QByteArrayLiteral("[1, 2, 3]")));
+    QVERIFY(!result.ok);
+
+    // A different format identifier.
+    {
+        QJsonObject document;
+        document.insert(QSL("format"), QSL("something-else"));
+        document.insert(QSL("version"), 1);
+        result = SecuritySettingsPorter::importFromFile(writeDocument(QJsonDocument(document).toJson()));
+        QVERIFY(!result.ok);
+    }
+
+    // A newer format version is refused instead of guessed.
+    {
+        QJsonObject document;
+        document.insert(QSL("format"), QSL("osza-security-settings"));
+        document.insert(QSL("version"), 2);
+        document.insert(QSL("tools"), QJsonObject());
+        result = SecuritySettingsPorter::importFromFile(writeDocument(QJsonDocument(document).toJson()));
+        QVERIFY(!result.ok);
+        QVERIFY(result.error.contains(QSL("newer")));
+    }
+
+    // The header validation helper agrees on all of the above.
+    {
+        QJsonObject good;
+        good.insert(QSL("format"), QSL("osza-security-settings"));
+        good.insert(QSL("version"), 1);
+        QVERIFY(SecuritySettingsPorter::validateDocumentHeader(good, nullptr));
+
+        QJsonObject badFormat;
+        badFormat.insert(QSL("format"), QSL("other"));
+        badFormat.insert(QSL("version"), 1);
+        QString error;
+        QVERIFY(!SecuritySettingsPorter::validateDocumentHeader(badFormat, &error));
+        QVERIFY(!error.isEmpty());
+
+        QJsonObject noVersion;
+        noVersion.insert(QSL("format"), QSL("osza-security-settings"));
+        QVERIFY(!SecuritySettingsPorter::validateDocumentHeader(noVersion, nullptr));
+    }
+
+    // "tools" must be an object when present.
+    {
+        QJsonObject document;
+        document.insert(QSL("format"), QSL("osza-security-settings"));
+        document.insert(QSL("version"), 1);
+        document.insert(QSL("tools"), 42);
+        result = SecuritySettingsPorter::applyDocument(document);
+        QVERIFY(!result.ok);
+    }
+
+    // A document without any tool section is valid, but does nothing.
+    {
+        QJsonObject document;
+        document.insert(QSL("format"), QSL("osza-security-settings"));
+        document.insert(QSL("version"), 1);
+        result = SecuritySettingsPorter::applyDocument(document);
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(result.skippedTools.size(), 0);
+    }
+
+    // Empty tools is valid too.
+    result = SecuritySettingsPorter::applyDocument(makeDocument(QJsonObject()));
+    QVERIFY(result.ok);
+    QCOMPARE(result.appliedTools, 0);
+
+    // One malformed section does not stop the others, and unknown
+    // tools are ignored instead of rejected.
+    {
+        QJsonObject tools;
+        tools.insert(QSL("adblock"), QJsonObject{{QSL("enabled"), QSL("yes")}});
+        tools.insert(QSL("httpsOnly"), QJsonObject{{QSL("enabled"), true}, {QSL("exclusions"), QSL("not-an-array")}});
+        tools.insert(QSL("fingerprintProtection"), QJsonObject{{QSL("enabled"), true}});
+        tools.insert(QSL("timeMachine"), QJsonObject{{QSL("enabled"), false}});
+
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 1);
+        QCOMPARE(result.skippedTools.size(), 2);
+
+        bool adblockSkipped = false;
+        bool httpsOnlySkipped = false;
+        for (const QString &entry : std::as_const(result.skippedTools)) {
+            if (entry.startsWith(QSL("adblock"))) {
+                adblockSkipped = true;
+            }
+            if (entry.startsWith(QSL("httpsOnly"))) {
+                httpsOnlySkipped = true;
+            }
+        }
+        QVERIFY(adblockSkipped);
+        QVERIFY(httpsOnlySkipped);
+
+        // the healthy section was applied for real
+        QCOMPARE(fingerprint->isEnabled(), true);
+    }
+
+    // The blocklist source must be a URL the downloader accepts.
+    {
+        QJsonObject tools;
+        tools.insert(QSL("threatBlock"), QJsonObject{{QSL("enabled"), true}, {QSL("sourceUrl"), QSL("not a url at all")}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(result.skippedTools.size(), 1);
+        QVERIFY(result.skippedTools.constFirst().startsWith(QSL("threatBlock")));
+        QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
+    }
+    {
+        QJsonObject tools;
+        tools.insert(QSL("threatBlock"), QJsonObject{{QSL("enabled"), true}, {QSL("sourceUrl"), QSL("ftp://porter.example/hosts")}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+    }
+    {
+        QJsonObject tools;
+        tools.insert(QSL("threatBlock"), QJsonObject{{QSL("enabled"), true}, {QSL("sourceUrl"), QSL("https://porter.example/hosts")}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 1);
+        QCOMPARE(threatBlock->isEnabled(), true);
+        QCOMPARE(threatBlock->sourceUrl(), QSL("https://porter.example/hosts"));
+    }
+
+    // A secure DNS mode without servers cannot work.
+    {
+        QJsonObject tools;
+        tools.insert(QSL("secureDns"), QJsonObject{{QSL("mode"), 1}, {QSL("servers"), QJsonArray{}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(result.skippedTools.size(), 1);
+        QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
+        if (dohSupported) {
+            QVERIFY(result.skippedTools.constFirst().contains(QSL("server")));
+        }
+    }
+
+    // A mode outside the enum is a type error.
+    {
+        QJsonObject tools;
+        tools.insert(QSL("secureDns"), QJsonObject{{QSL("mode"), 9}, {QSL("servers"), QJsonArray{QSL("https://dns.porter.example/dns-query{?dns}")}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
+    }
+
+    // A valid secure DNS section applies through the engine.
+    if (dohSupported) {
+        QJsonObject tools;
+        tools.insert(QSL("secureDns"), QJsonObject{{QSL("mode"), 2},
+                                                   {QSL("servers"), QJsonArray{QSL("https://dns.porter.example/dns-query{?dns}")}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 1);
+        QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureOnly);
+        QCOMPARE(doh->serverTemplates(), QStringList{QSL("https://dns.porter.example/dns-query{?dns}")});
+    }
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+
+    QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
+    QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
+    QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
+    QCOMPARE(doh->mode(), dohModeBefore);
+    QCOMPARE(doh->serverTemplates(), dohServersBefore);
 }

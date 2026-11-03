@@ -24,19 +24,26 @@
 #include "httpsonlyinterceptor.h"
 #include "mainapplication.h"
 #include "networkmanager.h"
+#include "qztools.h"
 #include "securitymanager.h"
+#include "securitysettingsporter.h"
 #include "settings.h"
 #include "tabwidget.h"
 #include "tabbedwebview.h"
 #include "threatblockmanager.h"
 
+#include <QAction>
 #include <QCheckBox>
+#include <QDir>
+#include <QFileDialog>
 #include <QFont>
 #include <QFrame>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLocale>
+#include <QMenu>
+#include <QMessageBox>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -89,6 +96,11 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_gpcToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleGpc);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
     connect(m_selfTestButton, &QToolButton::clicked, this, &SecuritySideBar::openSelfTest);
+
+    connect(m_backupMenu->addAction(tr("Export settings...")), &QAction::triggered,
+            this, &SecuritySideBar::exportSecuritySettings);
+    connect(m_backupMenu->addAction(tr("Import settings...")), &QAction::triggered,
+            this, &SecuritySideBar::importSecuritySettings);
 
     refresh();
 }
@@ -197,6 +209,15 @@ void SecuritySideBar::createLayout()
     m_resetButton->setAutoRaise(true);
     m_resetButton->setToolTip(tr("Reset the protection counters. Per-site values are cleared too."));
     footerLayout->addWidget(m_resetButton);
+    m_backupButton = new QToolButton(this);
+    m_backupButton->setObjectName(QSL("backupButton"));
+    m_backupButton->setText(tr("Import / Export"));
+    m_backupButton->setAutoRaise(true);
+    m_backupButton->setPopupMode(QToolButton::InstantPopup);
+    m_backupButton->setToolTip(tr("Save the configuration of every security tool to a file, or apply such a file to this profile."));
+    m_backupMenu = new QMenu(m_backupButton);
+    m_backupButton->setMenu(m_backupMenu);
+    footerLayout->addWidget(m_backupButton);
     footerLayout->addStretch(1);
     mainLayout->addLayout(footerLayout);
 }
@@ -404,6 +425,54 @@ void SecuritySideBar::openSelfTest()
     }
 
     m_window->tabWidget()->addView(LoadRequest(QUrl(QSL("osza:selftest"))), Qz::NT_SelectedTab);
+}
+
+void SecuritySideBar::exportSecuritySettings()
+{
+    const QString path = QzTools::getSaveFileName(QSL("SecuritySettings-Export"), this, tr("Export Security Settings"),
+                                                  QDir::homePath() + QSL("/osza-security-settings.json"),
+                                                  tr("JSON files (*.json);;All files (*)"));
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    QString error;
+    if (SecuritySettingsPorter::exportToFile(path, &error)) {
+        QMessageBox::information(this, tr("Export Security Settings"),
+                                 tr("The security tools configuration was saved to %1.").arg(QDir::toNativeSeparators(path)));
+    } else {
+        QMessageBox::warning(this, tr("Export Security Settings"),
+                             tr("The security tools configuration could not be saved:\n%1").arg(error));
+    }
+}
+
+void SecuritySideBar::importSecuritySettings()
+{
+    const QString path = QzTools::getOpenFileName(QSL("SecuritySettings-Import"), this, tr("Import Security Settings"),
+                                                   QDir::homePath(), tr("JSON files (*.json);;All files (*)"));
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+    if (!result.ok) {
+        QMessageBox::warning(this, tr("Import Security Settings"),
+                             tr("The file could not be imported:\n%1").arg(result.error));
+        return;
+    }
+
+    refresh();
+
+    QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
+
+    if (!result.skippedTools.isEmpty()) {
+        summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
+    }
+
+    QMessageBox::information(this, tr("Import Security Settings"), summary);
 }
 
 void SecuritySideBar::toggleAdBlock(bool enabled)

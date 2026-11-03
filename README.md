@@ -42,8 +42,14 @@ and KDE contributors for their work.
   hostname resolution, with known providers or a custom server) and
   malicious-site protection (navigations to blocklisted hosts stop on
   a full-screen warning page with a session-scoped "proceed anyway";
-  subresources of listed hosts are blocked). The security dashboard
-  sidebar keeps live counters of blocked ads, stripped trackers,
+  subresources of listed hosts are blocked). The whole suite can be
+  backed up and moved: the dashboard's "Import / Export" button (also
+  in Preferences → Privacy → Security tools) saves the configuration
+  of every protection - switches, exception lists, secure DNS
+  servers, blocklist source - to one portable JSON file, and applies
+  such a file to another machine or profile; the per-profile
+  fingerprint seed is deliberately never part of it. The security
+  dashboard sidebar keeps live counters of blocked ads, stripped trackers,
   HTTPS upgrades and blocked threats, with quick switches for every
   protection, and the built-in security self-test page (osza:selftest,
   one click from the sidebar) measures the browser's own canvas,

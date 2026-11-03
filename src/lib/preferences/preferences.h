@@ -64,6 +64,8 @@ private Q_SLOTS:
     void openJsOptions();
     void openHttpsOnlyExceptions();
     void openFingerprintExceptions();
+    void exportSecuritySettings();
+    void importSecuritySettings();
     void updateThreatBlockNow();
     void updateThreatBlockStatus();
     void threatBlockUpdateFailed(const QString &error);
@@ -98,6 +100,7 @@ private Q_SLOTS:
 private:
     void closeEvent(QCloseEvent* event) override;
     void loadDnsOverHttpsServers(const QStringList &savedServers);
+    void updateSecurityToolsWidgets();
 
     Ui::Preferences* ui;
     BrowserWindow* m_window;

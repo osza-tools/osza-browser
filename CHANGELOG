@@ -7,6 +7,34 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (10): import and export of the security-tools
+  settings. The configuration of all seven bundled protections -
+  AdBlock, HTTPS-Only mode (with its exception list), tracking
+  parameter stripping, secure DNS (mode and server templates),
+  malicious site protection (switch and blocklist source),
+  fingerprint protection (switch and exception list) and the Global
+  Privacy Control signal - can now be saved to one portable JSON
+  document and applied to another machine or profile, so a hardened
+  setup can be backed up, moved or shared as a recommended baseline.
+  New "Export..." / "Import..." buttons live in Preferences > Privacy >
+  Security tools and in the security dashboard footer ("Import /
+  Export"). Exports are written atomically (a failed export never
+  destroys an existing backup) from the live manager state, not stale
+  keys. Imports validate every tool section on its own - a malformed
+  or unsupported section is skipped with a reason, the rest still
+  applies - and refuse files that are not Osza security settings or
+  come from a newer format version. The fingerprint master seed is
+  deliberately never part of the format: it is the per-profile secret
+  that keeps every user's noise unique, and copying it between
+  browsers would give two machines the identical fingerprint; the
+  protection counters are usage history, not settings. Three new
+  autotests pin the document structure (including the seed-privacy
+  guarantee), a full file round-trip through every manager, and the
+  validation rules; the offline
+  tools/security/verify_settings_porter.py validates a settings file
+  without a Qt build and cross-checks the format constants against
+  the C++ source, so hand-edited files can be checked before they are
+  imported.
 - Security tools (9): the security self-test page, osza:selftest. The
   security suite now proves itself: the page measures its own canvas
   2D, WebGL and audio readouts through the very hooks a fingerprinting

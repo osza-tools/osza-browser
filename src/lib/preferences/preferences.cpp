@@ -35,6 +35,7 @@
 #include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "fingerprintmanager.h"
+#include "securitysettingsporter.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
 #include "thememanager.h"
@@ -61,6 +62,7 @@
 #include "qzsettings.h"
 
 #include <QSettings>
+#include <QDir>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -620,6 +622,8 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->jsOptionsButton, &QAbstractButton::clicked, this, &Preferences::openJsOptions);
     connect(ui->httpsOnlyExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openHttpsOnlyExceptions);
     connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
+    connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
+    connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
@@ -851,6 +855,74 @@ void Preferences::openFingerprintExceptions()
         // script is regenerated with the new list baked in
         FingerprintManager::instance()->loadSettings();
     }
+}
+
+void Preferences::exportSecuritySettings()
+{
+    const QString path = QzTools::getSaveFileName(QSL("SecuritySettings-Export"), this, tr("Export Security Settings"),
+                                                  QDir::homePath() + QSL("/osza-security-settings.json"),
+                                                  tr("JSON files (*.json);;All files (*)"));
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    QString error;
+    if (SecuritySettingsPorter::exportToFile(path, &error)) {
+        QMessageBox::information(this, tr("Export Security Settings"),
+                                 tr("The security tools configuration was saved to %1.").arg(QDir::toNativeSeparators(path)));
+    } else {
+        QMessageBox::warning(this, tr("Export Security Settings"),
+                             tr("The security tools configuration could not be saved:\n%1").arg(error));
+    }
+}
+
+void Preferences::importSecuritySettings()
+{
+    const QString path = QzTools::getOpenFileName(QSL("SecuritySettings-Import"), this, tr("Import Security Settings"),
+                                                   QDir::homePath(), tr("JSON files (*.json);;All files (*)"));
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+    if (!result.ok) {
+        QMessageBox::warning(this, tr("Import Security Settings"),
+                             tr("The file could not be imported:\n%1").arg(result.error));
+        return;
+    }
+
+    // The imported values are applied and live already; resync the
+    // widgets so a later OK does not save the stale checkbox states.
+    updateSecurityToolsWidgets();
+
+    QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
+
+    if (!result.skippedTools.isEmpty()) {
+        summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
+    }
+
+    QMessageBox::information(this, tr("Import Security Settings"), summary);
+}
+
+void Preferences::updateSecurityToolsWidgets()
+{
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    ui->httpsOnly->setChecked(settings.value(QSL("HttpsOnlyMode"), false).toBool());
+    ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
+    ui->fingerprintProtection->setChecked(settings.value(QSL("FingerprintProtection"), true).toBool());
+    ui->globalPrivacyControl->setChecked(settings.value(QSL("GlobalPrivacyControl"), true).toBool());
+    ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
+    loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
+    settings.endGroup();
+
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    ui->threatBlock->setChecked(threatBlockManager->isEnabled());
+    ui->threatBlockSource->setText(threatBlockManager->sourceUrl());
+    updateThreatBlockStatus();
 }
 
 void Preferences::updateThreatBlockNow()

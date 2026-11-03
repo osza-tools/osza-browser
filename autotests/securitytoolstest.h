@@ -56,6 +56,10 @@ private Q_SLOTS:
     void selfTestNoiseEquivalenceTest();
     void selfTestPageBuildTest();
     void selfTestPageIntegrationTest();
+
+    void settingsPorterDocumentTest();
+    void settingsPorterRoundTripTest();
+    void settingsPorterValidationTest();
 };
 
 #endif // SECURITYTOOLSTEST_H

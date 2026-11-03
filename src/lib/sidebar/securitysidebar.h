@@ -24,6 +24,7 @@
 
 class QLabel;
 class QCheckBox;
+class QMenu;
 class QTimer;
 class QToolButton;
 
@@ -50,6 +51,8 @@ public Q_SLOTS:
     void refresh();
     void resetCounters();
     void openSelfTest();
+    void exportSecuritySettings();
+    void importSecuritySettings();
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);
@@ -97,6 +100,8 @@ private:
 
     QToolButton* m_resetButton;
     QToolButton* m_selfTestButton;
+    QToolButton* m_backupButton;
+    QMenu* m_backupMenu;
 
     QTimer* m_refreshTimer;
 };
