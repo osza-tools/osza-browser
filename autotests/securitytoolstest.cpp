@@ -27,11 +27,18 @@
 #include "qzcommon.h"
 #include "securitymanager.h"
 #include "securitysidebar.h"
+#include "selftestpage.h"
 #include "settings.h"
 #include "threatblockmanager.h"
 #include "webpage.h"
 
 #include <QtTest/QtTest>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QRegularExpression>
+#include <QSet>
+#include <QToolButton>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineScript>
@@ -199,6 +206,13 @@ void SecurityToolsTest::securityDashboardWidgetTest()
     sidebar.refresh();
     sidebar.show();
     QVERIFY(QTest::qWaitForWindowExposed(&sidebar));
+
+    // The self-test shortcut exists and is a no-op without a window
+    // (it must not crash the sidebar-less dashboard).
+    auto *selfTestButton = sidebar.findChild<QToolButton*>(QSL("selftestButton"));
+    QVERIFY(selfTestButton);
+    QVERIFY(selfTestButton->isVisible());
+    sidebar.openSelfTest();
 
     // The HTTPS-Only quick switch must apply through the interceptor.
     const bool httpsOnlyBefore = mApp->networkManager()->httpsOnlyInterceptor()->isEnabled();
@@ -1058,4 +1072,291 @@ void SecurityToolsTest::gpcHeaderIntegrationTest()
     applyGpcSetting(true);
     QNetworkProxy::setApplicationProxy(QNetworkProxy());
     QNetworkProxyFactory::setUseSystemConfiguration(true);
+}
+
+void SecurityToolsTest::selfTestNoisePatternTest()
+{
+    // The C++ mirror of the guard's perturbation: deterministic,
+    // in range, and different per host and per profile seed.
+    const QVector<int> a = FingerprintManager::siteNoisePattern(1234567890u, QSL("SelfTest.Example"), 64);
+    const QVector<int> aLower = FingerprintManager::siteNoisePattern(1234567890u, QSL("selftest.example"), 64);
+
+    QCOMPARE(a.size(), 64 * 64);
+
+    // Hosts are case-folded, exactly like the guard's siteKey().
+    QVERIFY(a == aLower);
+
+    QSet<int> values;
+    for (int deviation : a) {
+        QVERIFY(deviation >= -1);
+        QVERIFY(deviation <= 1);
+        values.insert(deviation);
+    }
+
+    // A real noise pattern, not a flat buffer.
+    QVERIFY(values.size() >= 2);
+
+    // Same seed, different host -> a different pattern.
+    const QVector<int> otherHost = FingerprintManager::siteNoisePattern(1234567890u, QSL("other.example"), 64);
+    QVERIFY(a != otherHost);
+
+    // Same host, different seed (another browser profile) -> a different pattern.
+    const QVector<int> otherSeed = FingerprintManager::siteNoisePattern(987654321u, QSL("selftest.example"), 64);
+    QVERIFY(a != otherSeed);
+
+    // The empty host (what osza: pages have) is a valid key too.
+    const QVector<int> emptyHost = FingerprintManager::siteNoisePattern(1234567890u, QString(), 64);
+    QCOMPARE(emptyHost.size(), 64 * 64);
+    QVERIFY(a != emptyHost);
+
+    // Degenerate sizes are rejected, a 1x1 pattern still works.
+    QVERIFY(FingerprintManager::siteNoisePattern(1, QSL("x.example"), 0).isEmpty());
+    QVERIFY(FingerprintManager::siteNoisePattern(1, QSL("x.example"), -3).isEmpty());
+    QCOMPARE(FingerprintManager::siteNoisePattern(7, QSL("x.example"), 1).size(), 1);
+}
+
+void SecurityToolsTest::selfTestNoiseEquivalenceTest()
+{
+    // THE cross-implementation check: the pixel deviations a real
+    // page measures through the injected guard script must be exactly
+    // the values FingerprintManager::siteNoisePattern() computes for
+    // the same seed and host. The seed is pinned on both sides.
+    auto *manager = FingerprintManager::instance();
+
+    const quint32 originalSeed = manager->masterSeed();
+    const quint32 pinnedSeed = 305419896u; // 0x12345678
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Security-Tools"));
+        settings.setValue(QSL("FingerprintSeed"), pinnedSeed);
+        settings.endGroup();
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+    QCOMPARE(manager->masterSeed(), pinnedSeed);
+
+    // A 64x64 canvas filled with solid middle gray; the guard shifts
+    // each RGB channel by -1/0/+1, so the red channel of every pixel
+    // is 128 + deviation. Reported as digits 0/1/2 (deviation + 1).
+    const QString html = QSL("<html><body><canvas id='c' width='64' height='64'></canvas></body></html>");
+    const QString probe = QSL(
+        "(function() {"
+        "  var c = document.getElementById('c');"
+        "  var ctx = c.getContext('2d');"
+        "  ctx.fillStyle = 'rgb(128, 128, 128)';"
+        "  ctx.fillRect(0, 0, c.width, c.height);"
+        "  var data = ctx.getImageData(0, 0, c.width, c.height).data;"
+        "  var out = '';"
+        "  for (var p = 0; p < c.width * c.height; p++) {"
+        "    out += String.fromCharCode(48 + (data[p * 4] - 128 + 1));"
+        "  }"
+        "  return out;"
+        "})()");
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    page.setHtml(html, QUrl(QSL("https://fp-noise.example/equivalence")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+
+    QString digits;
+    QEventLoop loop;
+    QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+    page.runJavaScript(probe, [&digits, &loop](const QVariant &value) {
+        digits = value.toString();
+        loop.quit();
+    });
+    loop.exec();
+
+    QCOMPARE(digits.size(), 64 * 64);
+
+    const QVector<int> expected = FingerprintManager::siteNoisePattern(pinnedSeed, QSL("fp-noise.example"), 64);
+    QCOMPARE(expected.size(), 64 * 64);
+
+    for (int i = 0; i < expected.size(); ++i) {
+        QCOMPARE(digits.at(i).toLatin1() - '0', expected.at(i) + 1);
+    }
+
+    // restore the seed the profile had (a missing one is removed
+    // again so the next start regenerates it)
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Security-Tools"));
+        if (originalSeed != 0) {
+            settings.setValue(QSL("FingerprintSeed"), originalSeed);
+        } else {
+            settings.remove(QSL("FingerprintSeed"));
+        }
+        settings.endGroup();
+    }
+    manager->loadSettings();
+}
+
+void SecurityToolsTest::selfTestPageBuildTest()
+{
+    // The page builds with every placeholder substituted and carries
+    // the statuses of all seven bundled tools.
+    const QString page = SelfTestPage::buildPage();
+
+    QVERIFY(page.contains(QLatin1String("osza-selftest")));
+    QVERIFY(page.contains(QSL("Security self-test")));
+    QVERIFY(!page.contains(QLatin1String("%TITLE%")));
+    QVERIFY(!page.contains(QLatin1String("%STATUS-JSON%")));
+    QVERIFY(!page.contains(QLatin1String("%DEMO-PATTERNS%")));
+    QVERIFY(!page.contains(QLatin1String("%I18N-JSON%")));
+    QVERIFY(!page.contains(QLatin1String("%DIRECTION%")));
+
+    const QJsonArray statuses = SelfTestPage::collectToolStatuses();
+    QCOMPARE(statuses.size(), 7);
+
+    QStringList ids;
+    for (const QJsonValue &value : statuses) {
+        const QJsonObject status = value.toObject();
+        QVERIFY(status.contains(QSL("id")));
+        QVERIFY(status.contains(QSL("label")));
+        QVERIFY(status.contains(QSL("on")));
+        QVERIFY(status.contains(QSL("detail")));
+        QVERIFY(!status.value(QSL("label")).toString().isEmpty());
+        QVERIFY(!status.value(QSL("detail")).toString().isEmpty());
+        ids << status.value(QSL("id")).toString();
+    }
+
+    const QStringList expectedIds = {QSL("adblock"), QSL("httpsonly"), QSL("striptracking"),
+                                     QSL("doh"), QSL("threatblock"), QSL("fingerprint"), QSL("gpc")};
+    for (const QString &id : expectedIds) {
+        QVERIFY(ids.contains(id));
+    }
+
+    // The statuses follow the settings: toggling fingerprint
+    // protection flips its entry.
+    auto *manager = FingerprintManager::instance();
+    const bool enabledBefore = manager->isEnabled();
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), !enabledBefore);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+
+    bool reflected = false;
+    for (const QJsonValue &value : SelfTestPage::collectToolStatuses()) {
+        const QJsonObject status = value.toObject();
+        if (status.value(QSL("id")).toString() == QSL("fingerprint")) {
+            reflected = status.value(QSL("on")).toBool() == !enabledBefore;
+        }
+    }
+    QVERIFY(reflected);
+
+    // The demo patterns are embedded once a seed exists.
+    if (manager->masterSeed() != 0) {
+        QVERIFY(page.contains(QSL("example.com")));
+        QVERIFY(page.contains(QSL("example.org")));
+    }
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), enabledBefore);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+}
+
+void SecurityToolsTest::selfTestPageIntegrationTest()
+{
+    // The real page through the real osza: scheme handler: it must
+    // load, render the seven statuses, run every live check, expose a
+    // correct SHA-256, and measure a canvas digest that is stable
+    // across reloads of the same page.
+    auto *manager = FingerprintManager::instance();
+    const bool enabledBefore = manager->isEnabled();
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    manager->loadSettings();
+    QVERIFY(manager->masterSeed() != 0);
+
+    auto runScript = [](WebPage *page, const QString &script) {
+        QString result;
+        QEventLoop loop;
+        QTimer::singleShot(8000, &loop, &QEventLoop::quit);
+        page->runJavaScript(script, [&result, &loop](const QVariant &value) {
+            result = value.toString();
+            loop.quit();
+        });
+        loop.exec();
+        return result;
+    };
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    auto loadAndSettle = [&]() -> bool {
+        loadFinishedSpy.clear();
+        page.load(QUrl(QSL("osza:selftest")));
+        if (!loadFinishedSpy.wait(20000)) {
+            return false;
+        }
+
+        // Wait until the asynchronous checks (audio) settled too.
+        QElapsedTimer timer;
+        timer.start();
+        while (timer.elapsed() < 20000) {
+            if (runScript(&page, QSL("window.__oszaSelfTest && window.__oszaSelfTest.done ? 'done' : 'busy'")) == QSL("done")) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    QVERIFY(loadAndSettle());
+
+    // The page rendered: seven status rows, the test cards, the
+    // tiles (live page + two demo hosts).
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-statuses li.st-row').length")).toInt(), 7);
+    QVERIFY(runScript(&page, QSL("document.querySelectorAll('.st-test').length")).toInt() >= 8);
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-tile').length")).toInt(), 3);
+
+    // The statuses the page carries match the settings.
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.statuses.filter(function(s) { return s.id === 'fingerprint'; })[0].on")),
+             QSL("true"));
+    QCOMPARE(runScript(&page, QSL("document.querySelector('li[data-id=fingerprint] .st-pill--on') === null ? 'missing' : 'shown'")),
+             QSL("shown"));
+
+    // The self-contained SHA-256 matches the published test vectors.
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.sha256('abc')")),
+             QSL("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.sha256('')")),
+             QSL("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
+
+    // The guard is live on the page and the canvas check passed.
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.results.guard.verdict")), QSL("pass"));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.results.canvas.verdict")), QSL("pass"));
+
+    // A 64 hex character digest, stable across reloads of the page.
+    const QString firstDigest = runScript(&page, QSL("window.__oszaSelfTest.canvasHash"));
+    QCOMPARE(firstDigest.size(), 64);
+    QVERIFY(QRegularExpression(QSL("^[0-9a-f]{64}$")).match(firstDigest).hasMatch());
+
+    QVERIFY(loadAndSettle());
+    QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.canvasHash")), firstDigest);
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), enabledBefore);
+        settings.endGroup();
+    }
+    manager->loadSettings();
 }

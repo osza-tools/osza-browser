@@ -88,6 +88,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_fingerprintToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleFingerprintProtection);
     connect(m_gpcToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleGpc);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
+    connect(m_selfTestButton, &QToolButton::clicked, this, &SecuritySideBar::openSelfTest);
 
     refresh();
 }
@@ -185,6 +186,12 @@ void SecuritySideBar::createLayout()
     mainLayout->addStretch(1);
 
     auto *footerLayout = new QHBoxLayout;
+    m_selfTestButton = new QToolButton(this);
+    m_selfTestButton->setObjectName(QSL("selftestButton"));
+    m_selfTestButton->setText(tr("Security self-test"));
+    m_selfTestButton->setAutoRaise(true);
+    m_selfTestButton->setToolTip(tr("Open the osza:selftest page and watch the fingerprint randomization verify itself live."));
+    footerLayout->addWidget(m_selfTestButton);
     m_resetButton = new QToolButton(this);
     m_resetButton->setText(tr("Reset counters"));
     m_resetButton->setAutoRaise(true);
@@ -388,6 +395,15 @@ void SecuritySideBar::resetCounters()
 {
     SecurityManager::instance()->resetCounters();
     refresh();
+}
+
+void SecuritySideBar::openSelfTest()
+{
+    if (!m_window) {
+        return;
+    }
+
+    m_window->tabWidget()->addView(LoadRequest(QUrl(QSL("osza:selftest"))), Qz::NT_SelectedTab);
 }
 
 void SecuritySideBar::toggleAdBlock(bool enabled)

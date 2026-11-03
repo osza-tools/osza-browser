@@ -51,6 +51,11 @@ private Q_SLOTS:
     void gpcScriptLifecycleTest();
     void gpcDomSignalIntegrationTest();
     void gpcHeaderIntegrationTest();
+
+    void selfTestNoisePatternTest();
+    void selfTestNoiseEquivalenceTest();
+    void selfTestPageBuildTest();
+    void selfTestPageIntegrationTest();
 };
 
 #endif // SECURITYTOOLSTEST_H

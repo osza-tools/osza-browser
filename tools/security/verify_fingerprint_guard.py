@@ -28,6 +28,15 @@
 # seeds on the same host produce different noise, while the
 # same host + seed reproduce identical noise (stable identity).
 #
+# Plus the siteNoisePattern mirror: FingerprintManager::
+# siteNoisePattern() (the C++ helper behind the osza:selftest demo
+# tiles) must predict, pixel by pixel, the deviation the guard applies
+# to the red channel. The Python function below mirrors the C++
+# implementation one to one; it is checked against the real guard
+# running in the Node harness. The in-browser autotest
+# (selfTestNoiseEquivalenceTest) verifies the same equivalence
+# against the compiled C++.
+#
 # Usage:
 #   python3 tools/security/verify_fingerprint_guard.py
 #   (requires node >= 12 on PATH)
@@ -49,6 +58,34 @@ import tempfile
 
 src = open(SRC, encoding="utf-8").read()
 js = re.search(r'R"JS\((.*?)\)JS"', src, re.DOTALL).group(1)
+
+
+# Mirror of FingerprintManager::siteNoisePattern() (and of its
+# mirrorSiteKey/mirrorMix/mirrorPerturbDeviation helpers) in
+# fingerprintmanager.cpp. Keep the three implementations in sync.
+def site_noise_pattern(master_seed, host, size, channel=0):
+    name = host.lower()
+    h = master_seed & 0xFFFFFFFF
+    for ch in name:
+        h ^= ord(ch)
+        h = (h * 0x01000193) & 0xFFFFFFFF
+    site_key = h
+
+    def mix(seed, value):
+        x = (seed ^ ((value * 0x85EBCA77) & 0xFFFFFFFF)) & 0xFFFFFFFF
+        x ^= x >> 13
+        x = (x * 0xC2B2AE3D) & 0xFFFFFFFF
+        x ^= x >> 16
+        return x
+
+    out = []
+    for y in range(size):
+        for x in range(size):
+            value = (((x + 1) * 0x9E3779B1) & 0xFFFFFFFF) \
+                ^ (((y + 1) * 0x85EBCA77) & 0xFFFFFFFF) \
+                ^ ((channel * 0x27D4EB2F) & 0xFFFFFFFF)
+            out.append(mix(site_key, value) % 3 - 1)
+    return out
 
 
 def build(hostname, exclusions, seed):
@@ -236,11 +273,42 @@ runGuard(envC, JS_ALT_SEED);
 const rc = readout(envC);
 check('same host, different seed -> different noise', Array.from(ra.data).some((v, i) => v !== rc.data[i]));
 
+// The red-channel deviations the guard applies to a size x size
+// canvas of solid middle gray, exactly what
+// FingerprintManager::siteNoisePattern() computes in C++. The
+// expected values come from the Python mirror embedded as
+// MIRROR_CASES below.
+function measureNoise(hostname, jsBody, size) {
+    const env = makeContext(hostname);
+    env.ctx2d.getImageData = function (sx, sy, w, h) {
+        const img = { width: w, height: h, data: new Uint8ClampedArray(w * h * 4) };
+        for (let i = 0; i < img.data.length; i++) img.data[i] = 128;
+        return img;
+    };
+    runGuard(env, jsBody);
+    const read = env.ctx2d.getImageData(0, 0, size, size);
+    const devs = [];
+    for (let p = 0; p < size * size; p++) devs.push(read.data[p * 4] - 128);
+    return devs;
+}
+
 // same host + seed on both -> identical (stability across reloads)
 const envD = makeContext('site-one.example');
 runGuard(envD, JS_A);
 const rd = readout(envD);
 check('same host + seed -> identical noise (stable identity)', Array.from(ra.data).every((v, i) => v === rd.data[i]));
+
+// the C++ siteNoisePattern mirror predicts the guard's red-channel
+// noise exactly, for several hosts and seeds (case-insensitive hosts,
+// the empty host of osza: pages, deep subdomains)
+console.log('== siteNoisePattern mirror ==');
+const guardBuilds = { JS_A: JS_A, JS_ALT_SEED: JS_ALT_SEED };
+for (const mirrorCase of MIRROR_CASES) {
+    const measured = measureNoise(mirrorCase.host, guardBuilds[mirrorCase.js], 16);
+    check('mirror matches guard for host ' + JSON.stringify(mirrorCase.host),
+          measured.length === mirrorCase.expected.length
+              && measured.every((v, i) => v === mirrorCase.expected[i]));
+}
 
 console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
 process.exit(failures === 0 ? 0 : 1);
@@ -251,6 +319,21 @@ full = "const JS_A = %s;\nconst JS_B = %s;\nconst JS_ALT_SEED = %s;\n" % (
     json.dumps(build("evil.example.org", ["*.example.org"], 1234567890)),
     json.dumps(build("site-one.example", [], 987654321)),
 )
+
+# Cases for the siteNoisePattern mirror check: the host, the guard
+# build it must run under, and the pattern the Python mirror of the
+# C++ helper predicts for the red channel of a 16x16 canvas.
+mirror_cases = [
+    {"host": "mirror-one.example", "js": "JS_A", "seed": 1234567890},
+    {"host": "MIRROR-Two.Example", "js": "JS_A", "seed": 1234567890},
+    {"host": "mirror-two.example", "js": "JS_ALT_SEED", "seed": 987654321},
+    {"host": "", "js": "JS_A", "seed": 1234567890},
+    {"host": "deep.sub.mirror.example", "js": "JS_A", "seed": 1234567890},
+]
+for case in mirror_cases:
+    case["expected"] = site_noise_pattern(case["seed"], case["host"], 16)
+
+full += "const MIRROR_CASES = %s;\n" % json.dumps(mirror_cases)
 full += harness
 
 with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as f:

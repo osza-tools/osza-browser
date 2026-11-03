@@ -6,6 +6,33 @@ Unreleased
 The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
+Added:
+- Security tools (9): the security self-test page, osza:selftest. The
+  security suite now proves itself: the page measures its own canvas
+  2D, WebGL and audio readouts through the very hooks a fingerprinting
+  site would use - with digests, generic GPU strings and the classic
+  OfflineAudioContext value shown live - verifies the readouts are
+  stable across reloads, and grades every check (pass / attention /
+  failed). The invisible per-site noise is made visible: a live tile
+  shows the +-1 pattern applied to this very page, next to the
+  computed patterns of two example hosts, so "different site, different
+  pattern; same site, same pattern" can be seen instead of believed.
+  The page also lists the on/off state of all seven protections as of
+  the moment it was loaded, checks the Global Privacy Control signal,
+  and links to EFF Cover Your Tracks and BrowserLeaks for verification
+  on a real site. Reachable from the new "Security self-test" button
+  in the security dashboard sidebar, or by typing osza:selftest. The
+  digests are produced by a self-contained SHA-256 in the page (no
+  secure-context dependency), verified against the published test
+  vectors. FingerprintManager gains a C++ mirror of the guard's
+  perturbation (siteNoisePattern) that computes the demo tiles; the
+  in-browser selfTestNoiseEquivalenceTest autotest pins it to the
+  script's actual pixel deviations, and the offline
+  tools/security/verify_fingerprint_guard.py (extended) and the new
+  tools/security/verify_selftest_page.py check both without a Qt
+  build. The offline page verifier is what caught a wrong constant in
+  the page's SHA-256 before it ever shipped.
+
 Fixed:
 - The browser crashed on every launch and no window ever appeared:
   MainApplication called OszaIcons::activateTheme() while still inside

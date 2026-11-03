@@ -228,6 +228,7 @@ set(SRCS ${SRCS}
     security/fingerprintmanager.cpp
     security/gpcmanager.cpp
     security/securitymanager.cpp
+    security/selftestpage.cpp
     security/threatblockmanager.cpp
     session/recoveryjsobject.cpp
     session/restoremanager.cpp
@@ -478,6 +479,7 @@ set(SRCS ${SRCS}
     security/fingerprintmanager.h
     security/gpcmanager.h
     security/securitymanager.h
+    security/selftestpage.h
     security/threatblockmanager.h
     session/recoveryjsobject.h
     session/restoremanager.h

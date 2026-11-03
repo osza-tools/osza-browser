@@ -447,6 +447,11 @@ bool FingerprintManager::isEnabled() const
     return m_enabled;
 }
 
+quint32 FingerprintManager::masterSeed() const
+{
+    return m_masterSeed;
+}
+
 bool FingerprintManager::isExcluded(const QString &host) const
 {
     const QString normalized = host.trimmed().toLower();
@@ -531,6 +536,71 @@ void FingerprintManager::updateScript()
     script.setRunsOnSubFrames(true);
     script.setSourceCode(buildScriptSource(m_masterSeed, m_exclusions));
     profile->scripts()->insert(script);
+}
+
+namespace {
+
+/*
+ * C++ mirrors of the guard script's per-site noise derivation
+ * (siteKey, mix and perturb in kScriptTemplate). They reproduce the
+ * JavaScript arithmetic exactly: every operation runs on 32-bit
+ * unsigned values, so Math.imul's int32 multiply and the >>> shifts
+ * are plain uint32 arithmetic here. Keep in sync with the script.
+ */
+quint32 mirrorSiteKey(quint32 masterSeed, const QString &host)
+{
+    const QString name = host.toLower();
+    quint32 h = masterSeed;
+
+    for (const QChar &c : name) {
+        h ^= static_cast<quint32>(c.unicode());
+        h *= 0x01000193u;
+    }
+
+    return h;
+}
+
+quint32 mirrorMix(quint32 seed, quint32 value)
+{
+    quint32 h = seed ^ (value * 0x85EBCA77u);
+    h ^= h >> 13;
+    h *= 0xC2B2AE3Du;
+    h ^= h >> 16;
+    return h;
+}
+
+int mirrorPerturbDeviation(quint32 siteKey, int x, int y, int channel)
+{
+    const quint32 value = static_cast<quint32>(x + 1) * 0x9E3779B1u
+        ^ static_cast<quint32>(y + 1) * 0x85EBCA77u
+        ^ static_cast<quint32>(channel) * 0x27D4EB2Fu;
+    const quint32 h = mirrorMix(siteKey, value);
+    return static_cast<int>(h % 3) - 1;
+}
+
+} // namespace
+
+QVector<int> FingerprintManager::siteNoisePattern(quint32 masterSeed, const QString &host, int size)
+{
+    QVector<int> pattern;
+
+    if (size <= 0) {
+        return pattern;
+    }
+
+    pattern.reserve(size * size);
+
+    const quint32 siteKey = mirrorSiteKey(masterSeed, host);
+
+    // Row-major walk of a tightly packed RGBA buffer, exactly like
+    // farbleRgbData() in the guard script: x = p % width, y = p / width.
+    for (int y = 0; y < size; ++y) {
+        for (int x = 0; x < size; ++x) {
+            pattern.append(mirrorPerturbDeviation(siteKey, x, y, 0));
+        }
+    }
+
+    return pattern;
 }
 
 QString FingerprintManager::buildScriptSource(quint32 masterSeed, const QStringList &exclusions)

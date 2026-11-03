@@ -24,6 +24,7 @@
 #include "speeddial.h"
 #include "pluginproxy.h"
 #include "plugininterface.h"
+#include "selftestpage.h"
 #include "threatblockmanager.h"
 #include "settings.h"
 #include "datapaths.h"
@@ -62,7 +63,7 @@ void OszaSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     }
 
     QStringList knownPages;
-    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore") << QSL("threatblocked");
+    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore") << QSL("threatblocked") << QSL("selftest");
 
     if (knownPages.contains(job->requestUrl().path()))
         job->reply(QByteArrayLiteral("text/html"), new OszaSchemeReply(job, job));
@@ -134,6 +135,8 @@ void OszaSchemeReply::loadPage()
     } else if (m_pageName == QLatin1String("threatblocked")) {
         contents = mApp->networkManager()->threatBlockManager()->interstitialPage(
             ThreatBlockManager::blockedUrlFromPageUrl(m_job->requestUrl()));
+    } else if (m_pageName == QLatin1String("selftest")) {
+        contents = SelfTestPage::buildPage();
     }
 
     QMutexLocker lock(&m_mutex);

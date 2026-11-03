@@ -45,8 +45,12 @@ and KDE contributors for their work.
   subresources of listed hosts are blocked). The security dashboard
   sidebar keeps live counters of blocked ads, stripped trackers,
   HTTPS upgrades and blocked threats, with quick switches for every
-  protection. Everything lives in Preferences → Privacy → Security
-  tools.
+  protection, and the built-in security self-test page (osza:selftest,
+  one click from the sidebar) measures the browser's own canvas,
+  WebGL, audio and hardware readouts live - through the same hooks a
+  fingerprinting site would use - and verifies the randomization
+  working, with the invisible per-site noise made visible. Everything
+  lives in Preferences → Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS
   feeds, all reachable from collapsible sidebars.

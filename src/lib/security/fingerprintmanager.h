@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QVector>
 
 #include "qzcommon.h"
 
@@ -48,6 +49,14 @@ class QWebEngineProfile;
  * listed host and its subdomains; "*.domain" wildcard entries are
  * supported, like the HTTPS-Only exceptions.
  *
+ * siteNoisePattern() is a C++ mirror of the guard script's
+ * perturbation; the security self-test page uses it to show the
+ * per-site noise of other hosts. It must stay in sync with the
+ * script (siteKey/mix/perturb in kScriptTemplate) - the
+ * selfTestNoiseEquivalenceTest autotest and
+ * tools/security/verify_fingerprint_guard.py verify the two
+ * implementations produce identical values.
+ *
  * All methods run on the UI thread; nothing here is called from the
  * WebEngine IO thread.
  */
@@ -67,6 +76,10 @@ public:
 
     bool isEnabled() const;
 
+    // The per-profile master seed the per-site noise is derived
+    // from. Valid after loadSettings(); 0 before it.
+    quint32 masterSeed() const;
+
     // True when the host matches an exclusion entry (the listed host,
     // any of its subdomains, or a "*.domain" wildcard entry).
     bool isExcluded(const QString &host) const;
@@ -82,6 +95,13 @@ public:
 
     // The script source for the given master seed and exclusions.
     static QString buildScriptSource(quint32 masterSeed, const QStringList &exclusions);
+
+    // Deviation (-1, 0 or +1) the guard applies to the red channel
+    // of every pixel of a tightly packed RGBA buffer on the given
+    // host: the per-site noise pattern, size x size values in row
+    // major order. Mirrors perturb(x, y, 0, value) of the injected
+    // script; used by the security self-test page.
+    static QVector<int> siteNoisePattern(quint32 masterSeed, const QString &host, int size);
 
 private:
     static bool hostMatchesEntry(const QString &host, const QString &entry);

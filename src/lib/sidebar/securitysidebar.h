@@ -34,9 +34,10 @@ class BrowserWindow;
  *
  * Shows live counters for the bundled security tools (blocked ads,
  * stripped trackers, HTTPS upgrades) with totals and per-site values,
- * plus quick switches for every protection. Counters are refreshed on
- * a short timer while the sidebar is visible, so updates coming from
- * the IO thread are picked up without cross-thread signals.
+ * plus quick switches for every protection and a shortcut to the
+ * osza:selftest page. Counters are refreshed on a short timer while
+ * the sidebar is visible, so updates coming from the IO thread are
+ * picked up without cross-thread signals.
  */
 class OSZA_EXPORT SecuritySideBar : public QWidget
 {
@@ -48,6 +49,7 @@ public:
 public Q_SLOTS:
     void refresh();
     void resetCounters();
+    void openSelfTest();
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);
@@ -94,6 +96,7 @@ private:
     QLabel* m_gpcState;
 
     QToolButton* m_resetButton;
+    QToolButton* m_selfTestButton;
 
     QTimer* m_refreshTimer;
 };

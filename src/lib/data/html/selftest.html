@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%TITLE%</title>
+<link rel="stylesheet" href="qrc:html/oszapage.css">
+<style>
+/* Page-specific rules. Dynamic values (translated strings, the live
+   tool statuses, the per-site demo patterns) are substituted by
+   OszaSchemeHandler in this document only. All script below is plain
+   JavaScript on purpose: the page measures the very same readouts a
+   fingerprinting site would, so it must not lean on any library. */
+
+body { direction: %DIRECTION%; }
+
+.st-card { text-align: start; }
+
+/* --- Header ------------------------------------------------------- */
+.st-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-block-end: 4px;
+}
+
+.st-head__icon {
+    inline-size: 54px;
+    block-size: 54px;
+    margin-block-end: 12px;
+    padding: 12px;
+    border: 1px solid var(--osza-accent-soft);
+    border-radius: 17px;
+    background: var(--osza-accent-dim);
+    color: var(--osza-accent);
+    animation: st-pulse 3.2s var(--osza-ease) infinite;
+}
+
+@keyframes st-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--osza-accent-rgb), 0.26); }
+    55% { box-shadow: 0 0 0 13px rgba(var(--osza-accent-rgb), 0); }
+}
+
+.st-intro { color: var(--osza-text-dim); font-size: 13.5px; margin-block-end: 12px; }
+
+/* --- Summary banner ------------------------------------------------ */
+.st-banner {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-block-start: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: var(--osza-radius-sm);
+    background: var(--osza-card-bg);
+    font-size: 14px;
+}
+
+.st-banner__dot {
+    flex: none;
+    inline-size: 9px;
+    block-size: 9px;
+    border-radius: 50%;
+    background: var(--osza-text-faint);
+}
+
+.st-banner--pass {
+    border-color: rgba(var(--osza-accent-rgb), 0.50);
+    background: var(--osza-accent-dim);
+}
+
+.st-banner--pass .st-banner__dot {
+    background: var(--osza-accent);
+    box-shadow: 0 0 10px rgba(var(--osza-accent-rgb), 0.85);
+}
+
+.st-banner--warn {
+    border-color: rgba(255, 180, 84, 0.50);
+    background: rgba(255, 180, 84, 0.10);
+}
+
+.st-banner--warn .st-banner__dot {
+    background: #ffb454;
+    box-shadow: 0 0 10px rgba(255, 180, 84, 0.85);
+}
+
+/* --- Protections list ----------------------------------------------- */
+.st-statuses {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+}
+
+.st-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 9px 13px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: var(--osza-radius-sm);
+    background: rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-color-scheme: light) {
+    .st-row { background: rgba(255, 255, 255, 0.45); }
+}
+
+.st-row__label { font-weight: 600; font-size: 13.5px; }
+
+.st-pill {
+    margin-inline-start: auto;
+    padding: 2px 11px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: 999px;
+    font-family: var(--osza-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--osza-text-faint);
+}
+
+.st-pill--on {
+    border-color: rgba(var(--osza-accent-rgb), 0.55);
+    background: var(--osza-accent-dim);
+    color: var(--osza-accent);
+}
+
+.st-row__detail { flex-basis: 100%; color: var(--osza-text-dim); font-size: 12.5px; }
+
+/* --- Live test cards ------------------------------------------------ */
+.st-tests { display: flex; flex-direction: column; gap: 8px; }
+
+.st-test {
+    padding: 11px 14px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: var(--osza-radius-sm);
+    background: rgba(0, 0, 0, 0.14);
+    animation: st-in 0.5s var(--osza-ease) both;
+}
+
+@media (prefers-color-scheme: light) {
+    .st-test { background: rgba(255, 255, 255, 0.45); }
+}
+
+@keyframes st-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+
+.st-test__head { display: flex; align-items: center; gap: 10px; }
+.st-test__name { font-weight: 600; font-size: 13.5px; }
+
+.st-badge {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 2px 11px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: 999px;
+    font-family: var(--osza-font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--osza-text-faint);
+}
+
+.st-badge::before {
+    content: '';
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.st-badge--pass {
+    border-color: rgba(var(--osza-accent-rgb), 0.50);
+    background: var(--osza-accent-dim);
+    color: var(--osza-accent);
+}
+
+.st-badge--warn {
+    border-color: rgba(255, 180, 84, 0.50);
+    background: rgba(255, 180, 84, 0.10);
+    color: #ffb454;
+}
+
+.st-badge--fail {
+    border-color: rgba(255, 84, 104, 0.50);
+    background: rgba(255, 84, 104, 0.10);
+    color: #ff5468;
+}
+
+@media (prefers-color-scheme: light) {
+    .st-badge--warn { color: #b06200; }
+    .st-badge--fail { color: #c81e3c; }
+}
+
+.st-test__value {
+    margin-block-start: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.28);
+    font-family: var(--osza-font-mono);
+    font-size: 12px;
+    color: var(--osza-text);
+    overflow-wrap: anywhere;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+@media (prefers-color-scheme: light) {
+    .st-test__value { background: rgba(15, 23, 42, 0.05); }
+}
+
+.st-test__note { margin-block-start: 6px; color: var(--osza-text-dim); font-size: 12px; }
+
+/* --- Noise tiles ----------------------------------------------------- */
+.st-tiles { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+
+.st-tilewrap { text-align: center; }
+
+.st-tile {
+    display: block;
+    inline-size: 192px;
+    block-size: 192px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.30);
+    image-rendering: pixelated;
+    transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease);
+}
+
+@media (prefers-color-scheme: light) {
+    .st-tile { background: rgba(15, 23, 42, 0.06); }
+}
+
+.st-tile:hover { border-color: rgba(var(--osza-accent-rgb), 0.55); box-shadow: var(--osza-glow); }
+
+.st-tilewrap--live .st-tile { position: relative; overflow: hidden; }
+
+.st-tilewrap--live .st-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(var(--osza-accent-rgb), 0.10) 50%, transparent 100%);
+    animation: st-scan 3.4s linear infinite;
+}
+
+@keyframes st-scan {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
+}
+
+.st-tilewrap__caption {
+    margin-block-start: 7px;
+    font-family: var(--osza-font-mono);
+    font-size: 11px;
+    color: var(--osza-text-dim);
+}
+
+.st-tilewrap__sub { font-size: 11px; color: var(--osza-text-faint); }
+
+/* --- Links and footer ------------------------------------------------- */
+.st-links { display: flex; flex-wrap: wrap; gap: 18px; }
+
+.st-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-block-start: 26px;
+    padding-block-start: 16px;
+    border-block-start: 1px solid var(--osza-card-border);
+}
+
+.st-footer .vx-note { margin-inline-start: auto; }
+</style>
+</head>
+<body>
+<main class="vx-stage">
+  <section class="vx-card vx-card--wide st-card" id="osza-selftest" aria-label="%TITLE%">
+    <header class="st-head">
+      <svg class="st-head__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5 4.5 5.5v6c0 5 3.2 8.4 7.5 10 4.3-1.6 7.5-5 7.5-10v-6L12 2.5z"></path><path d="m8.8 11.9 2.2 2.2 4.2-4.6"></path></svg>
+      <h1 class="vx-title">%TITLE%</h1>
+      <p class="vx-subtitle">%SUBTITLE%</p>
+    </header>
+
+    <div id="st-summary" class="st-banner" aria-live="polite">
+      <span class="st-banner__dot"></span>
+      <span id="st-summary-text">%SUMMARY-RUNNING%</span>
+    </div>
+
+    <noscript><p class="st-intro">%JAVASCRIPT-DISABLED%</p></noscript>
+
+    <h2 class="vx-h">%STATUS-HEADING%</h2>
+    <p class="st-intro">%STATUS-INTRO%</p>
+    <ul id="st-statuses" class="st-statuses"></ul>
+
+    <h2 class="vx-h">%FP-HEADING%</h2>
+    <p class="st-intro">%FP-INTRO%</p>
+    <div id="st-tests" class="st-tests"></div>
+
+    <h2 class="vx-h">%NOISE-HEADING%</h2>
+    <p class="st-intro">%NOISE-INTRO%</p>
+    <div id="st-tiles" class="st-tiles"></div>
+
+    <h2 class="vx-h">%VERIFY-HEADING%</h2>
+    <p class="st-intro">%VERIFY-INTRO%</p>
+    <p class="st-links">
+      <a href="https://coveryourtracks.eff.org/">Cover Your Tracks (EFF)</a>
+      <a href="https://browserleaks.com/canvas">BrowserLeaks — Canvas</a>
+    </p>
+
+    <div class="st-footer">
+      <button id="st-reload" class="vx-btn vx-btn--primary" type="button">%RELOAD-LABEL%</button>
+      <p class="vx-note">%FOOTER-NOTE%</p>
+    </div>
+  </section>
+</main>
+
+<script>
+'use strict';
+
+/*
+ * Osza Browser security self-test.
+ *
+ * Every check below measures a real readout of this very page, with
+ * the same APIs a fingerprinting site would use, after the fingerprint
+ * guard (and the GPC signal, when enabled) has been injected at
+ * document creation. The statuses and demo patterns of other hosts are
+ * substituted by the browser; everything else is measured live.
+ */
+
+var OSZA_STATUSES = %STATUS-JSON%;
+var OSZA_DEMO = %DEMO-PATTERNS%;
+var OSZA_I18N = %I18N-JSON%;
+var OSZA_TILE_SIZE = 64;
+
+var statusById = {};
+for (var si = 0; si < OSZA_STATUSES.length; si++) {
+    statusById[OSZA_STATUSES[si].id] = OSZA_STATUSES[si];
+}
+
+var fpSettingOn = !!(statusById.fingerprint && statusById.fingerprint.on);
+var gpcSettingOn = !!(statusById.gpc && statusById.gpc.on);
+
+var guardLive = false;
+try {
+    guardLive = window.__oszaFingerprintGuard === 1;
+} catch (e) {
+}
+
+var reducedMotion = false;
+try {
+    reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+} catch (e) {
+}
+
+function t(key) {
+    return OSZA_I18N[key] || key;
+}
+
+function tf(key, args) {
+    var out = t(key);
+    for (var i = 0; i < args.length; i++) {
+        out = out.replace('%' + (i + 1), String(args[i]));
+    }
+    return out;
+}
+
+function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) {
+        node.className = cls;
+    }
+    if (text !== undefined && text !== null) {
+        node.textContent = text;
+    }
+    return node;
+}
+
+/* --- SHA-256 (self-contained, so the page needs no secure context) --- */
+
+var SHA_K = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+];
+
+function rotr(x, n) {
+    return (x >>> n) | (x << (32 - n));
+}
+
+function sha256Bytes(bytes) {
+    var h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var ml = bytes.length;
+    var bitLenHi = Math.floor(ml / 0x20000000);
+    var bitLenLo = (ml * 8) >>> 0;
+    var padded = (((ml + 9 + 63) >> 6) << 6);
+    var msg = new Uint8Array(padded);
+    msg.set(bytes);
+    msg[ml] = 0x80;
+    var dv = new DataView(msg.buffer);
+    dv.setUint32(padded - 8, bitLenHi >>> 0, false);
+    dv.setUint32(padded - 4, bitLenLo >>> 0, false);
+
+    var w = new Int32Array(64);
+    for (var off = 0; off < padded; off += 64) {
+        var i;
+        for (i = 0; i < 16; i++) {
+            w[i] = dv.getInt32(off + i * 4, false);
+        }
+        for (i = 16; i < 64; i++) {
+            var x15 = w[i - 15];
+            var x2 = w[i - 2];
+            var s0 = rotr(x15, 7) ^ rotr(x15, 18) ^ (x15 >>> 3);
+            var s1 = rotr(x2, 17) ^ rotr(x2, 19) ^ (x2 >>> 10);
+            w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+        }
+        var a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+        for (i = 0; i < 64; i++) {
+            var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+            var ch = (e & f) ^ (~e & g);
+            var t1 = (hh + S1 + ch + SHA_K[i] + w[i]) | 0;
+            var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+            var maj = (a & b) ^ (a & c) ^ (b & c);
+            var t2 = (S0 + maj) | 0;
+            hh = g; g = f; f = e; e = (d + t1) | 0;
+            d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        h[0] = (h[0] + a) | 0; h[1] = (h[1] + b) | 0; h[2] = (h[2] + c) | 0; h[3] = (h[3] + d) | 0;
+        h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + hh) | 0;
+    }
+
+    var hex = '';
+    for (var j = 0; j < 8; j++) {
+        hex += ('00000000' + (h[j] >>> 0).toString(16)).slice(-8);
+    }
+    return hex;
+}
+
+function sha256Text(text) {
+    var out = [];
+    for (var i = 0; i < text.length; i++) {
+        var ch = text.charCodeAt(i);
+        if (ch < 0x80) {
+            out.push(ch);
+        } else if (ch < 0x800) {
+            out.push(0xC0 | (ch >> 6), 0x80 | (ch & 0x3F));
+        } else {
+            out.push(0xE0 | (ch >> 12), 0x80 | ((ch >> 6) & 0x3F), 0x80 | (ch & 0x3F));
+        }
+    }
+    return sha256Bytes(new Uint8Array(out));
+}
+
+/* The hash values "decode" into place unless the user asked for
+   reduced motion. */
+
+function showValue(node, text) {
+    if (reducedMotion || typeof requestAnimationFrame !== 'function' || !performance) {
+        node.textContent = text;
+        return;
+    }
+    var start = null;
+    function frame(now) {
+        if (start === null) {
+            start = now;
+        }
+        var p = Math.min(1, (now - start) / 420);
+        var keep = Math.floor(text.length * p);
+        var out = text.slice(0, keep);
+        for (var i = keep; i < text.length; i++) {
+            out += '0123456789abcdef'[(Math.random() * 16) | 0];
+        }
+        node.textContent = out;
+        if (p < 1) {
+            requestAnimationFrame(frame);
+        }
+    }
+    requestAnimationFrame(frame);
+}
+
+/* --- Live measurements ------------------------------------------------ */
+
+function canvasDigest() {
+    try {
+        var c = document.createElement('canvas');
+        c.width = 240;
+        c.height = 140;
+        var ctx = c.getContext('2d');
+        if (!ctx) {
+            return null;
+        }
+        var g = ctx.createLinearGradient(0, 0, c.width, c.height);
+        g.addColorStop(0, '#10e0c8');
+        g.addColorStop(1, '#2b1a4d');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.strokeStyle = '#ff5468';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(c.width * 0.30, c.height * 0.45, Math.min(c.width, c.height) * 0.20, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.beginPath();
+        ctx.moveTo(c.width * 0.55, c.height * 0.72);
+        ctx.lineTo(c.width * 0.75, c.height * 0.28);
+        ctx.lineTo(c.width * 0.85, c.height * 0.72);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#0a0a0f';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText('Osza', 10, 18);
+        var data = ctx.getImageData(0, 0, c.width, c.height);
+        return sha256Bytes(new Uint8Array(data.data.buffer));
+    } catch (e) {
+        return null;
+    }
+}
+
+function webglInfo() {
+    try {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) {
+            return null;
+        }
+        var dbg = gl.getExtension('WEBGL_debug_renderer_info');
+        var vendor;
+        var renderer;
+        if (dbg) {
+            vendor = gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL);
+            renderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
+        } else {
+            vendor = gl.getParameter(gl.VENDOR);
+            renderer = gl.getParameter(gl.RENDERER);
+        }
+        return { unmasked: !!dbg, vendor: String(vendor), renderer: String(renderer) };
+    } catch (e) {
+        return null;
+    }
+}
+
+function webglDigest() {
+    try {
+        var c = document.createElement('canvas');
+        c.width = 96;
+        c.height = 64;
+        var gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) {
+            return null;
+        }
+        var colors = [[0.92, 0.20, 0.32], [0.16, 0.82, 0.51], [0.28, 0.38, 0.92], [0.97, 0.74, 0.18]];
+        gl.enable(gl.SCISSOR_TEST);
+        for (var i = 0; i < 4; i++) {
+            gl.scissor(i * 24, 0, 24, 64);
+            gl.clearColor(colors[i][0], colors[i][1], colors[i][2], 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+        }
+        gl.disable(gl.SCISSOR_TEST);
+        var px = new Uint8Array(96 * 64 * 4);
+        gl.readPixels(0, 0, 96, 64, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        return sha256Bytes(px);
+    } catch (e) {
+        return null;
+    }
+}
+
+function audioFingerprint() {
+    return new Promise(function (resolve, reject) {
+        try {
+            var Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+            if (!Ctx) {
+                reject(new Error('unavailable'));
+                return;
+            }
+            var ctx = new Ctx(1, 44100, 44100);
+            var osc = ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.value = 10000;
+            var comp = ctx.createDynamicsCompressor();
+            comp.threshold.value = -50;
+            comp.knee.value = 40;
+            comp.ratio.value = 12;
+            comp.attack.value = 0;
+            comp.release.value = 0.25;
+            osc.connect(comp);
+            comp.connect(ctx.destination);
+            osc.start(0);
+            ctx.startRendering().then(function (buffer) {
+                var data = buffer.getChannelData(0);
+                var sum = 0;
+                for (var i = 4500; i < 5000; i++) {
+                    sum += Math.abs(data[i]);
+                }
+                resolve(sum);
+            }, reject);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function liveNoiseDeviations() {
+    try {
+        var c = document.createElement('canvas');
+        c.width = OSZA_TILE_SIZE;
+        c.height = OSZA_TILE_SIZE;
+        var ctx = c.getContext('2d');
+        if (!ctx) {
+            return null;
+        }
+        ctx.fillStyle = 'rgb(128, 128, 128)';
+        ctx.fillRect(0, 0, c.width, c.height);
+        var data = ctx.getImageData(0, 0, c.width, c.height).data;
+        var devs = [];
+        for (var p = 0; p < c.width * c.height; p++) {
+            devs.push(data[p * 4] - 128);
+        }
+        return devs;
+    } catch (e) {
+        return null;
+    }
+}
+
+/* --- Test cards --------------------------------------------------------- */
+
+var GENERIC_VENDORS = ['Intel Inc.', 'Apple', 'ARM'];
+var GENERIC_RENDERERS = ['Intel Iris OpenGL Engine', 'Apple GPU', 'Mali-G78'];
+var GENERIC_CPUS = [2, 4, 6, 8];
+var GENERIC_MEMORY = [4, 8];
+
+var results = {};
+var pending = 0;
+var orderIndex = 0;
+var allCardsCreated = false;
+
+window.__oszaSelfTest = {
+    done: false,
+    statuses: OSZA_STATUSES,
+    results: results,
+    sha256: sha256Text,
+    canvasHash: null
+};
+
+function testCard(id, note) {
+    var card = el('div', 'st-test');
+    card.style.animationDelay = (orderIndex * 45) + 'ms';
+    orderIndex += 1;
+
+    var head = el('div', 'st-test__head');
+    head.appendChild(el('span', 'st-test__name', t('test_' + id)));
+    var badge = el('span', 'st-badge', '...');
+    head.appendChild(badge);
+    card.appendChild(head);
+
+    var value = el('div', 'st-test__value', ' ');
+    card.appendChild(value);
+
+    if (note) {
+        card.appendChild(el('p', 'st-test__note', note));
+    }
+
+    document.getElementById('st-tests').appendChild(card);
+    pending += 1;
+
+    return {
+        badge: badge,
+        value: value
+    };
+}
+
+function verdictLabel(verdict) {
+    return t('badge_' + verdict);
+}
+
+function setResult(id, card, verdict, valueText) {
+    card.badge.className = 'st-badge st-badge--' + verdict;
+    card.badge.textContent = verdictLabel(verdict);
+    if (valueText) {
+        showValue(card.value, valueText);
+    } else {
+        card.value.style.display = 'none';
+    }
+    results[id] = { verdict: verdict, value: valueText || '' };
+    pending -= 1;
+    if (pending <= 0 && allCardsCreated) {
+        finish();
+    }
+}
+
+/* --- The checks ---------------------------------------------------------- */
+
+function runGuardCheck() {
+    var card = testCard('guard', t('note_guard'));
+    if (guardLive) {
+        setResult('guard', card, 'pass', t('value_guard_active'));
+    } else if (fpSettingOn) {
+        setResult('guard', card, 'fail', t('value_guard_missing'));
+    } else {
+        setResult('guard', card, 'off', t('value_guard_off'));
+    }
+}
+
+function runCanvasCheck() {
+    var card = testCard('canvas', t('note_canvas'));
+    var digest = canvasDigest();
+    if (!digest) {
+        setResult('canvas', card, 'na', null);
+        return;
+    }
+    window.__oszaSelfTest.canvasHash = digest;
+
+    var prev = null;
+    try {
+        prev = window.localStorage.getItem('osza-selftest/canvas');
+        window.localStorage.setItem('osza-selftest/canvas', digest);
+    } catch (e) {
+    }
+
+    if (!guardLive) {
+        setResult('canvas', card, 'off', digest);
+        return;
+    }
+    setResult('canvas', card, 'pass', digest);
+
+    var stability = testCard('stability', t('note_stability'));
+    if (prev === null) {
+        setResult('stability', stability, 'first', t('value_stability_first'));
+    } else if (prev === digest) {
+        setResult('stability', stability, 'pass', t('value_stability_same'));
+    } else {
+        setResult('stability', stability, 'fail', t('value_stability_changed'));
+    }
+}
+
+function runWebglStringsCheck() {
+    var card = testCard('webgl', t('note_webgl'));
+    var info = webglInfo();
+    if (!info) {
+        setResult('webgl', card, 'na', null);
+        return;
+    }
+    var value = info.vendor + ' \u00b7 ' + info.renderer;
+    if (!guardLive) {
+        setResult('webgl', card, 'off', value);
+        return;
+    }
+    if (GENERIC_VENDORS.indexOf(info.vendor) >= 0 && GENERIC_RENDERERS.indexOf(info.renderer) >= 0) {
+        setResult('webgl', card, 'pass', value);
+    } else {
+        setResult('webgl', card, 'warn', value);
+    }
+}
+
+function runWebglPixelsCheck() {
+    var card = testCard('webglpixels', t('note_webglpixels'));
+    var digest = webglDigest();
+    if (!digest) {
+        setResult('webglpixels', card, 'na', null);
+        return;
+    }
+    if (!guardLive) {
+        setResult('webglpixels', card, 'off', digest);
+        return;
+    }
+    setResult('webglpixels', card, 'pass', digest);
+}
+
+function runAudioCheck() {
+    var card = testCard('audio', t('note_audio'));
+    audioFingerprint().then(function (sum) {
+        var value = String(sum);
+        if (!guardLive) {
+            setResult('audio', card, 'off', value);
+        } else {
+            setResult('audio', card, 'pass', value);
+        }
+    }, function () {
+        setResult('audio', card, 'na', null);
+    });
+}
+
+function runHardwareCheck() {
+    var card = testCard('hardware', t('note_hardware'));
+    var cpu = null;
+    var mem = null;
+    try {
+        cpu = navigator.hardwareConcurrency;
+        mem = navigator.deviceMemory;
+    } catch (e) {
+    }
+    if (cpu === undefined || cpu === null) {
+        setResult('hardware', card, 'na', null);
+        return;
+    }
+    var value = 'hardwareConcurrency ' + cpu + ' \u00b7 deviceMemory ' + (mem === undefined || mem === null ? '\u2014' : mem);
+    if (!guardLive) {
+        setResult('hardware', card, 'off', value);
+        return;
+    }
+    var cpuOk = GENERIC_CPUS.indexOf(cpu) >= 0;
+    var memOk = mem === undefined || mem === null || GENERIC_MEMORY.indexOf(mem) >= 0;
+    if (cpuOk && memOk) {
+        setResult('hardware', card, 'pass', value);
+    } else {
+        setResult('hardware', card, 'warn', value);
+    }
+}
+
+function runGpcCheck() {
+    var card = testCard('gpc', t('note_gpc'));
+    var signal = null;
+    try {
+        signal = navigator.globalPrivacyControl;
+    } catch (e) {
+    }
+    if (signal === true) {
+        setResult('gpc', card, gpcSettingOn ? 'pass' : 'warn', t('value_gpc_true'));
+    } else if (gpcSettingOn) {
+        setResult('gpc', card, 'fail', t('value_gpc_missing'));
+    } else {
+        setResult('gpc', card, 'off', t('value_gpc_undefined'));
+    }
+}
+
+/* --- Noise tiles ----------------------------------------------------------- */
+
+function paintPattern(canvasNode, devs) {
+    var n = OSZA_TILE_SIZE;
+    canvasNode.width = n;
+    canvasNode.height = n;
+    var ctx = canvasNode.getContext('2d');
+    var img = ctx.createImageData(n, n);
+    for (var p = 0; p < n * n; p++) {
+        var i = p * 4;
+        var d = devs[p];
+        if (d > 0) {
+            img.data[i] = 0; img.data[i + 1] = 255; img.data[i + 2] = 209; img.data[i + 3] = 240;
+        } else if (d < 0) {
+            img.data[i] = 139; img.data[i + 1] = 92; img.data[i + 2] = 246; img.data[i + 3] = 240;
+        } else {
+            img.data[i] = 255; img.data[i + 1] = 255; img.data[i + 2] = 255; img.data[i + 3] = 9;
+        }
+    }
+
+    if (reducedMotion || typeof requestAnimationFrame !== 'function') {
+        ctx.putImageData(img, 0, 0);
+        return;
+    }
+
+    // A quick top-to-bottom sweep: the pattern appears the way it is
+    // computed, row by row.
+    var rowsPerFrame = Math.max(1, Math.ceil(n / 22));
+    var row = 0;
+    function frame() {
+        var count = Math.min(rowsPerFrame, n - row);
+        ctx.putImageData(img, 0, 0, 0, row, n, count);
+        row += count;
+        if (row < n) {
+            requestAnimationFrame(frame);
+        }
+    }
+    requestAnimationFrame(frame);
+}
+
+function addTile(parent, devs, caption, sub, live) {
+    var wrap = el('div', 'st-tilewrap' + (live ? ' st-tilewrap--live' : ''));
+    var canvasNode = el('canvas', 'st-tile');
+    wrap.appendChild(canvasNode);
+    wrap.appendChild(el('div', 'st-tilewrap__caption', caption));
+    wrap.appendChild(el('div', 'st-tilewrap__sub', sub));
+    parent.appendChild(wrap);
+    paintPattern(canvasNode, devs);
+}
+
+function runTiles() {
+    var parent = document.getElementById('st-tiles');
+    var live = liveNoiseDeviations();
+    if (live) {
+        var liveSub = guardLive ? t('sub_live') : t('sub_live_flat');
+        addTile(parent, live, t('caption_live'), liveSub, true);
+    }
+    if (fpSettingOn && OSZA_DEMO.length > 0) {
+        for (var i = 0; i < OSZA_DEMO.length; i++) {
+            var entry = OSZA_DEMO[i];
+            var devs = [];
+            for (var p = 0; p < entry.data.length; p++) {
+                devs.push(entry.data.charCodeAt(p) - 48 - 1);
+            }
+            addTile(parent, devs, entry.host, t('sub_demo'), false);
+        }
+    }
+}
+
+/* --- Statuses and summary ---------------------------------------------------- */
+
+function runStatuses() {
+    var list = document.getElementById('st-statuses');
+    for (var i = 0; i < OSZA_STATUSES.length; i++) {
+        var s = OSZA_STATUSES[i];
+        var row = el('li', 'st-row');
+        row.setAttribute('data-id', s.id);
+        row.appendChild(el('span', 'st-row__label', s.label));
+        row.appendChild(el('span', 'st-pill ' + (s.on ? 'st-pill--on' : 'st-pill--off'), s.on ? t('pill_on') : t('pill_off')));
+        row.appendChild(el('span', 'st-row__detail', s.detail));
+        list.appendChild(row);
+    }
+}
+
+function finish() {
+    var banner = document.getElementById('st-summary');
+    var text = document.getElementById('st-summary-text');
+    var passed = 0;
+    var applicable = 0;
+    var failed = 0;
+
+    for (var id in results) {
+        var verdict = results[id].verdict;
+        if (verdict === 'pass') {
+            passed += 1;
+            applicable += 1;
+        } else if (verdict === 'warn' || verdict === 'fail') {
+            applicable += 1;
+            if (verdict === 'fail') {
+                failed += 1;
+            }
+        }
+    }
+
+    if (!fpSettingOn) {
+        text.textContent = t('summary_off');
+        banner.className = 'st-banner';
+    } else if (failed === 0 && passed === applicable && applicable > 0) {
+        text.textContent = tf('summary_verified', [passed, applicable]);
+        banner.className = 'st-banner st-banner--pass';
+    } else {
+        text.textContent = tf('summary_partial', [passed, applicable]);
+        banner.className = 'st-banner st-banner--warn';
+    }
+
+    window.__oszaSelfTest.done = true;
+}
+
+function run() {
+    runStatuses();
+    runGuardCheck();
+    runCanvasCheck();
+    runWebglStringsCheck();
+    runWebglPixelsCheck();
+    runAudioCheck();
+    runHardwareCheck();
+    runGpcCheck();
+    runTiles();
+
+    // Only now may the summary be computed: every test card has been
+    // created, the asynchronous ones will settle into the existing
+    // set instead of growing it.
+    allCardsCreated = true;
+    if (pending <= 0) {
+        finish();
+    }
+
+    document.getElementById('st-reload').addEventListener('click', function () {
+        window.location.reload();
+    });
+}
+
+run();
+</script>
+</body>
+</html>
