@@ -56,10 +56,14 @@ and KDE contributors for their work.
   anything is applied, a preview dialog shows what the file would
   change - per tool and per field, the current value against the
   value after the import - plus what it leaves out and what it would
-  skip, with the reason; a checksum mismatch is called out in the
+  skip, with the reason; a changed site-exception list comes with a
+  one-line summary naming the sites that lose their exception and
+  the sites that gain one, since those are the sites whose treatment
+  actually changes. A checksum mismatch is called out in the
   same dialog and the confirmation becomes an explicit "import
-  anyway". The same per-tool diff is available offline for hand
-  edits, as `tools/security/verify_settings_porter.py --diff FILE
+  anyway". The same per-tool diff, exception summaries included, is
+  available offline for hand edits, as
+  `tools/security/verify_settings_porter.py --diff FILE
   [FILE-or-preset]`. For a quick start, the same places offer
   recommended-baseline presets - Essentials, Recommended baseline
   and Maximum protection - that apply a ready-made configuration of

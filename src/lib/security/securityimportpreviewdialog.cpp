@@ -110,6 +110,24 @@ void SecurityImportPreviewDialog::buildUi(const QString &fileName)
         fieldRow->setText(2, change.nextValue);
         fieldRow->setToolTip(1, change.currentValue);
         fieldRow->setToolTip(2, change.nextValue);
+
+        // The one-line summaries of a site-exception change: which
+        // sites lose their exception and which gain one. Clearing an
+        // exception changes how a site is treated from one load to
+        // the next, so it is spelled out instead of leaving the
+        // reader to diff two comma-joined lists in their head. The
+        // lines come from the porter, translated, so every preview
+        // UI says the same thing.
+        const QStringList summaryLines = SecuritySettingsPorter::exceptionSummaryLines(change);
+        for (const QString &line : summaryLines) {
+            auto *summaryRow = new QTreeWidgetItem(fieldRow);
+            summaryRow->setText(0, line);
+            summaryRow->setToolTip(0, line);
+            summaryRow->setFirstColumnSpanned(true);
+            QFont summaryFont = summaryRow->font(0);
+            summaryFont.setItalic(true);
+            summaryRow->setFont(0, summaryFont);
+        }
     }
 
     m_changesTree->expandAll();

@@ -2136,6 +2136,17 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         return false;
     };
 
+    // The change of one field, for pinning its structured payload.
+    auto findChange = [](const SecuritySettingsPorter::Preview &preview,
+                         const QString &tool, const QString &field) -> const SecuritySettingsPorter::PreviewChange * {
+        for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+            if (change.tool == tool && change.field == field) {
+                return &change;
+            }
+        }
+        return nullptr;
+    };
+
     auto changeCount = [](const SecuritySettingsPorter::Preview &preview, const QString &tool) {
         int count = 0;
         for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
@@ -2186,6 +2197,28 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     // The skipped tool contributes no diff rows.
     QCOMPARE(changeCount(preview, QSL("fingerprintProtection")), 0);
 
+    // A site-exception change names the sites whose treatment
+    // changes: the httpsOnly row clears preview.example, and the
+    // summary line says so in one line.
+    {
+        const SecuritySettingsPorter::PreviewChange *exclusions = findChange(preview, QSL("httpsOnly"), QSL("exclusions"));
+        QVERIFY(exclusions);
+        QCOMPARE(exclusions->clearedEntries, QStringList{QSL("preview.example")});
+        QVERIFY(exclusions->addedEntries.isEmpty());
+        QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*exclusions),
+                 QStringList{QSL("Clears the exception for: preview.example")});
+    }
+
+    // A change that is not a site-exception list carries no entries
+    // and no summary lines.
+    {
+        const SecuritySettingsPorter::PreviewChange *enabled = findChange(preview, QSL("adblock"), QSL("enabled"));
+        QVERIFY(enabled);
+        QVERIFY(enabled->clearedEntries.isEmpty());
+        QVERIFY(enabled->addedEntries.isEmpty());
+        QVERIFY(SecuritySettingsPorter::exceptionSummaryLines(*enabled).isEmpty());
+    }
+
     // The preview touched nothing: every manager still holds the
     // pinned state.
     QCOMPARE(adblock->isEnabled(), true);
@@ -2214,6 +2247,62 @@ void SecurityToolsTest::settingsPorterPreviewTest()
 
         QVERIFY(sourcePreview.ok);
         QCOMPARE(sourcePreview.changes.size(), 0);
+    }
+
+    // A list that keeps some sites and gains others: one line per
+    // direction, cleared before added. The comparison is the
+    // case-insensitive one the tools match hosts with, so an entry
+    // that only changes case is neither cleared nor added - though
+    // the stored list does change, and the row does appear.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyExclusions"),
+                          QStringList{QSL("a.example"), QSL("keep.example")});
+        settings.endGroup();
+        interceptor->loadSettings();
+
+        QJsonObject partial;
+        partial.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        partial.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        partial.insert(QSL("tools"), QJsonObject{
+            {QSL("httpsOnly"), QJsonObject{{QSL("enabled"), true},
+                                           {QSL("exclusions"), QJsonArray{QSL("keep.example"), QSL("new.example")}}}}
+        });
+
+        const SecuritySettingsPorter::Preview partialPreview = SecuritySettingsPorter::previewDocument(partial);
+        QVERIFY(partialPreview.ok);
+
+        const SecuritySettingsPorter::PreviewChange *partialChange = findChange(partialPreview, QSL("httpsOnly"), QSL("exclusions"));
+        QVERIFY(partialChange);
+        QCOMPARE(partialChange->clearedEntries, QStringList{QSL("a.example")});
+        QCOMPARE(partialChange->addedEntries, QStringList{QSL("new.example")});
+        QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*partialChange),
+                 QStringList{QSL("Clears the exception for: a.example"),
+                             QSL("Adds an exception for: new.example")});
+
+        QJsonObject recased;
+        recased.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        recased.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        recased.insert(QSL("tools"), QJsonObject{
+            {QSL("httpsOnly"), QJsonObject{{QSL("enabled"), true},
+                                           {QSL("exclusions"), QJsonArray{QSL("Keep.Example"), QSL("A.Example")}}}}
+        });
+
+        const SecuritySettingsPorter::Preview recasedPreview = SecuritySettingsPorter::previewDocument(recased);
+        QVERIFY(recasedPreview.ok);
+
+        const SecuritySettingsPorter::PreviewChange *recasedChange = findChange(recasedPreview, QSL("httpsOnly"), QSL("exclusions"));
+        QVERIFY(recasedChange);
+        QVERIFY(recasedChange->clearedEntries.isEmpty());
+        QVERIFY(recasedChange->addedEntries.isEmpty());
+        QVERIFY(SecuritySettingsPorter::exceptionSummaryLines(*recasedChange).isEmpty());
+
+        // Back to the pinned state for the blocks below.
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyExclusions"), QStringList{QSL("preview.example")});
+        settings.endGroup();
+        interceptor->loadSettings();
     }
 
     // The preview and the import agree: the same document, applied,
@@ -2494,7 +2583,8 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
     QVERIFY(QTest::qWaitForWindowExposed(&dialog));
 
     // The tree shows one row per changed tool, one child per field,
-    // current value against the value after the import.
+    // current value against the value after the import. A change
+    // without entries carries no rows below its field row.
     auto *tree = dialog.findChild<QTreeWidget*>();
     QVERIFY(tree);
     QCOMPARE(tree->topLevelItemCount(), 2);
@@ -2502,7 +2592,9 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
     QCOMPARE(tree->topLevelItem(0)->childCount(), 1);
     QCOMPARE(tree->topLevelItem(0)->child(0)->text(1), QSL("on"));
     QCOMPARE(tree->topLevelItem(0)->child(0)->text(2), QSL("off"));
+    QCOMPARE(tree->topLevelItem(0)->child(0)->childCount(), 0);
     QCOMPARE(tree->topLevelItem(1)->childCount(), 1);
+    QCOMPARE(tree->topLevelItem(1)->child(0)->childCount(), 0);
 
     // A matching checksum means a plain "Import" and no exception.
     auto *box = dialog.findChild<QDialogButtonBox*>();
@@ -2542,6 +2634,47 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
     cancelBox->button(QDialogButtonBox::Cancel)->click();
     QCOMPARE(cancelled.result(), static_cast<int>(QDialog::Rejected));
     QVERIFY(!cancelled.importDespiteChecksum());
+
+    // A site-exception change carries its one-line summaries as rows
+    // under the field row: which sites lose their exception, which
+    // gain one. The lines are the porter's, translated - the dialog
+    // does not re-derive them from the value columns.
+    SecuritySettingsPorter::Preview exceptions;
+    exceptions.ok = true;
+    exceptions.checksum = SecuritySettingsPorter::ChecksumState::Valid;
+    exceptions.configuredTools = 1;
+
+    SecuritySettingsPorter::PreviewChange exclusions;
+    exclusions.tool = QSL("httpsOnly");
+    exclusions.field = QSL("exclusions");
+    exclusions.currentValue = QSL("bank.example, keep.example");
+    exclusions.nextValue = QSL("keep.example, legacy.example");
+    exclusions.clearedEntries = QStringList{QSL("bank.example")};
+    exclusions.addedEntries = QStringList{QSL("legacy.example")};
+    exceptions.changes.append(exclusions);
+
+    SecurityImportPreviewDialog exceptionDialog(exceptions, QSL("settings.json"));
+    exceptionDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&exceptionDialog));
+
+    auto *exceptionTree = exceptionDialog.findChild<QTreeWidget*>();
+    QVERIFY(exceptionTree);
+    QCOMPARE(exceptionTree->topLevelItemCount(), 1);
+
+    QTreeWidgetItem *exceptionToolRow = exceptionTree->topLevelItem(0);
+    QCOMPARE(exceptionToolRow->text(0), SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly")));
+    QCOMPARE(exceptionToolRow->childCount(), 1);
+
+    QTreeWidgetItem *exceptionFieldRow = exceptionToolRow->child(0);
+    QCOMPARE(exceptionFieldRow->text(0),
+             SecuritySettingsPorter::fieldDisplayName(QSL("httpsOnly"), QSL("exclusions")));
+    QCOMPARE(exceptionFieldRow->childCount(), 2);
+    QCOMPARE(exceptionFieldRow->child(0)->text(0), QSL("Clears the exception for: bank.example"));
+    QCOMPARE(exceptionFieldRow->child(1)->text(0), QSL("Adds an exception for: legacy.example"));
+
+    // The summary rows are set apart from the values they explain.
+    QCOMPARE(exceptionFieldRow->child(0)->font(0).italic(), true);
+    QCOMPARE(exceptionFieldRow->child(1)->font(0).italic(), true);
 }
 
 void SecurityToolsTest::securityPresetsTest()

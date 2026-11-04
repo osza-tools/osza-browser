@@ -34,6 +34,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSaveFile>
+#include <QSet>
 #include <QUrl>
 
 namespace {
@@ -402,6 +403,55 @@ QString listLabel(const QJsonArray &values)
         list.append(entry.toString());
     }
     return listLabel(list);
+}
+
+QStringList stringListFromJson(const QJsonArray &values)
+{
+    QStringList list;
+    for (const QJsonValue &entry : values) {
+        list.append(entry.toString());
+    }
+    return list;
+}
+
+// Which entries a list change takes away and which it adds: entries
+// of the current list missing from the next one, and entries of the
+// next list missing from the current one. The comparison follows the
+// tools themselves - hosts match case-insensitively - so an entry
+// that only changes case is neither cleared nor added. Each result
+// keeps the order of the list its entries come from; a duplicated
+// entry is reported once.
+void listDifference(const QStringList &current, const QStringList &next,
+                    QStringList *cleared, QStringList *added)
+{
+    QSet<QString> nextKeys;
+    for (const QString &entry : next) {
+        nextKeys.insert(entry.toLower());
+    }
+
+    QSet<QString> currentKeys;
+    for (const QString &entry : current) {
+        const QString key = entry.toLower();
+
+        if (currentKeys.contains(key)) {
+            continue;
+        }
+        currentKeys.insert(key);
+
+        if (!nextKeys.contains(key)) {
+            cleared->append(entry);
+        }
+    }
+
+    QSet<QString> addedKeys;
+    for (const QString &entry : next) {
+        const QString key = entry.toLower();
+
+        if (!currentKeys.contains(key) && !addedKeys.contains(key)) {
+            addedKeys.insert(key);
+            added->append(entry);
+        }
+    }
 }
 
 QString modeLabel(DnsOverHttpsManager::Mode mode)
@@ -867,13 +917,17 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
         const QJsonObject currentTool = current.value(plan.key).toObject();
 
         auto addChange = [&preview](const QString &tool, const QString &field,
-                                    const QString &currentValue, const QString &nextValue) {
+                                    const QString &currentValue, const QString &nextValue,
+                                    const QStringList &clearedEntries = QStringList(),
+                                    const QStringList &addedEntries = QStringList()) {
             if (currentValue != nextValue) {
                 PreviewChange change;
                 change.tool = tool;
                 change.field = field;
                 change.currentValue = currentValue;
                 change.nextValue = nextValue;
+                change.clearedEntries = clearedEntries;
+                change.addedEntries = addedEntries;
                 preview.changes.append(change);
             }
         };
@@ -888,9 +942,19 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
             addChange(plan.key, QSL("enabled"),
                       onOffLabel(currentTool.value(QSL("enabled")).toBool()),
                       onOffLabel(plan.enabled));
+
+            // The sites whose treatment changes are the decision:
+            // name them, instead of leaving the reader to diff two
+            // comma-joined lists in their head. The comparison is
+            // the case-insensitive one the tools match hosts with.
+            QStringList clearedExclusions, addedExclusions;
+            listDifference(stringListFromJson(currentTool.value(QSL("exclusions")).toArray()),
+                           plan.exclusions,
+                           &clearedExclusions, &addedExclusions);
             addChange(plan.key, QSL("exclusions"),
                       listLabel(currentTool.value(QSL("exclusions")).toArray()),
-                      listLabel(plan.exclusions));
+                      listLabel(plan.exclusions),
+                      clearedExclusions, addedExclusions);
         } else if (plan.key == QSL("secureDns")) {
             addChange(plan.key, QSL("mode"),
                       modeLabel(static_cast<DnsOverHttpsManager::Mode>(currentTool.value(QSL("mode")).toInt())),
@@ -964,4 +1028,26 @@ QString SecuritySettingsPorter::fieldDisplayName(const QString & /*tool*/, const
         return porterTr("Blocklist source");
     }
     return field;
+}
+
+QStringList SecuritySettingsPorter::exceptionSummaryLines(const PreviewChange &change)
+{
+    // One line per direction, cleared before added: clearing is the
+    // direction that changes how a site is treated from one load to
+    // the next (HTTPS-Only starts forcing https there, fingerprint
+    // randomization starts applying to it), so it leads. The lines
+    // are phrased tool-agnostically on purpose - the row above them
+    // already names the tool, and both tools have the same notion of
+    // an exception.
+    QStringList lines;
+
+    if (!change.clearedEntries.isEmpty()) {
+        lines.append(porterTr("Clears the exception for: %1").arg(change.clearedEntries.join(QSL(", "))));
+    }
+
+    if (!change.addedEntries.isEmpty()) {
+        lines.append(porterTr("Adds an exception for: %1").arg(change.addedEntries.join(QSL(", "))));
+    }
+
+    return lines;
 }

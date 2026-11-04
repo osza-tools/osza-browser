@@ -7,6 +7,29 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- The import preview's diff now says, in one line, which site
+  exceptions an import would clear and which it would add. The raw
+  row - "bank.example, shop.example" against "none" - asked the
+  reader to diff two comma-joined lists in their head, exactly for
+  the change whose consequences reach furthest: a cleared HTTPS-Only
+  exception means the site is held to https from the next load on, a
+  cleared fingerprint exception means randomization starts applying
+  to it, and a preset (every baseline resets the exception lists to
+  empty) hits every excluded site at once. The preview now computes
+  the entries the import takes away and the entries it newly adds
+  (compared case-insensitively, the way both tools match hosts, so
+  an entry that only changes case is neither cleared nor added; a
+  duplicate is reported once), carries them as structured data next
+  to the display strings, and the dialog shows them as one-line
+  summaries under the field - "Clears the exception for: ...",
+  "Adds an exception for: ..." - computed and translated in the
+  porter, so every preview UI says the same thing. The offline
+  counterpart grew the same lines:
+  verify_settings_porter.py --diff now prints the cleared and added
+  sites under a changed exception list, and its self-test (59
+  checks) pins the semantics for both directions, the
+  deduplication, and the case-only non-change. The autotests pin
+  the structured payload, the summary lines, and the dialog rows.
 - Security tools (12): informed imports - a per-tool diff preview
   before anything is applied, and preset export from the picker.
   Importing a settings file is no longer a blind yes: after picking

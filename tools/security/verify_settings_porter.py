@@ -39,7 +39,9 @@
 # SecuritySettingsPorter::previewDocument: a missing exclusions
 # field counts as the empty list (the import resets it), a missing
 # blocklist source counts as "not set" (the import keeps the
-# current one).
+# current one), and a changed site-exception list is summarized in
+# one line per direction - which sites lose their exception, which
+# gain one - mirroring exceptionSummaryLines.
 #
 # Usage:
 #   python3 tools/security/verify_settings_porter.py
@@ -475,11 +477,59 @@ def _tool_fields(tool):
     return ()
 
 
+def _exclusion_summary_lines(field, section_a, section_b):
+    """The one-line summaries of a site-exception change, mirroring
+    SecuritySettingsPorter::exceptionSummaryLines: which entries
+    moving from section_a to section_b clears, and which it adds -
+    the sites whose treatment changes, instead of two raw lists.
+    Hosts compare case-insensitively (the way both tools match
+    them), so an entry that only changes case is neither cleared
+    nor added; a duplicate entry is reported once."""
+    if field != "exclusions":
+        return []
+
+    def entries(section):
+        value = section.get("exclusions", [])
+        return value if isinstance(value, list) else []
+
+    list_a = entries(section_a)
+    list_b = entries(section_b)
+
+    keys_b = set(entry.lower() for entry in list_b)
+
+    cleared = []
+    keys_a = set()
+    for entry in list_a:
+        key = entry.lower()
+        if key in keys_a:
+            continue
+        keys_a.add(key)
+        if key not in keys_b:
+            cleared.append(entry)
+
+    added = []
+    added_keys = set()
+    for entry in list_b:
+        key = entry.lower()
+        if key not in keys_a and key not in added_keys:
+            added_keys.add(key)
+            added.append(entry)
+
+    lines = []
+    if cleared:
+        lines.append("Clears the exception for: %s" % ", ".join(cleared))
+    if added:
+        lines.append("Adds an exception for: %s" % ", ".join(added))
+    return lines
+
+
 def diff_documents(a, b):
     """Per-tool, per-field diff of two tools sections, mirroring
     SecuritySettingsPorter::previewDocument. Returns a list of
-    (tool, [(field, valueInA, valueInB), ...]) for the tools where
-    the two documents differ, plus two special entries keyed
+    (tool, [(field, valueInA, valueInB, summaryLines), ...]) for the
+    tools where the two documents differ - summaryLines being the
+    one-line cleared/added summaries of a site-exception change,
+    empty for every other field - plus two special entries keyed
     "__only_a__" / "__only_b__" listing tools configured by only one
     of the documents."""
     tools_a = a.get("tools", {}) if isinstance(a, dict) else {}
@@ -504,7 +554,7 @@ def diff_documents(a, b):
             continue
 
         if not isinstance(section_a, dict) or not isinstance(section_b, dict):
-            differences.append((tool, [("(the section is malformed)", "", "")]))
+            differences.append((tool, [("(the section is malformed)", "", "", [])]))
             continue
 
         fields = []
@@ -512,7 +562,8 @@ def diff_documents(a, b):
             label_a = _field_label(tool, field, section_a)
             label_b = _field_label(tool, field, section_b)
             if label_a != label_b:
-                fields.append((field, label_a, label_b))
+                fields.append((field, label_a, label_b,
+                               _exclusion_summary_lines(field, section_a, section_b)))
 
         if fields:
             differences.append((tool, fields))
@@ -529,8 +580,10 @@ def format_diff(differences, only_a, only_b, name_a, name_b):
 
     for tool, fields in differences:
         lines.append("  %s" % tool)
-        for field, value_a, value_b in fields:
+        for field, value_a, value_b, summary in fields:
             lines.append("    %s: %s -> %s" % (field, value_a, value_b))
+            for line in summary:
+                lines.append("      %s" % line)
 
     for tool in only_a:
         lines.append("  %s: configured only by %s" % (tool, name_a))
@@ -797,7 +850,7 @@ def self_test():
         edited["tools"].pop("globalPrivacyControl")  # absent tool
 
         differences, only_a, only_b = diff_documents(edited, rebuilt["recommended-baseline"])
-        diff_map = {tool: dict((f, (va, vb)) for f, va, vb in fields)
+        diff_map = {tool: dict((f, (va, vb)) for f, va, vb, _ in fields)
                     for tool, fields in differences}
         check(diff_map.get("adblock") == {"enabled": ("off", "on")},
               "the adblock toggle must appear in the diff: %r" % diff_map)
@@ -815,6 +868,50 @@ def self_test():
         text = format_diff(differences, only_a, only_b, "edited", "baseline")
         check("adblock" in text and "enabled: off -> on" in text,
               "the formatted diff must show the change: %r" % text)
+
+        # The one-line exception summaries, mirroring
+        # SecuritySettingsPorter::exceptionSummaryLines: a changed
+        # site-exception list names the sites that lose their
+        # exception and the sites that gain one.
+        with_exceptions = json.loads(json.dumps(rebuilt["recommended-baseline"]))
+        with_exceptions["tools"]["httpsOnly"]["exclusions"] = ["legacy.example", "keep.example", "legacy.example"]
+        with_exceptions["tools"]["fingerprintProtection"]["exclusions"] = ["gone.example"]
+
+        # Direction: from the baseline (empty lists) to the file, the
+        # sites are added; duplicates are reported once.
+        differences, only_a, only_b = diff_documents(rebuilt["recommended-baseline"], with_exceptions)
+        summary_map = {tool: dict((f, summary) for f, _va, _vb, summary in fields)
+                       for tool, fields in differences}
+        check(summary_map.get("httpsOnly") == {"exclusions":
+              ["Adds an exception for: legacy.example, keep.example"]},
+              "moving to a longer exception list must name the added sites, deduplicated: %r" % summary_map)
+        check(summary_map.get("fingerprintProtection") == {"exclusions":
+              ["Adds an exception for: gone.example"]},
+              "the fingerprint exceptions must be summarized too: %r" % summary_map)
+
+        # The other direction clears them - what an import of the
+        # baseline would do to a profile holding these exceptions.
+        differences, only_a, only_b = diff_documents(with_exceptions, rebuilt["recommended-baseline"])
+        summary_map = {tool: dict((f, summary) for f, _va, _vb, summary in fields)
+                       for tool, fields in differences}
+        check(summary_map.get("httpsOnly") == {"exclusions":
+              ["Clears the exception for: legacy.example, keep.example"]},
+              "resetting an exception list must name the cleared sites: %r" % summary_map)
+
+        text = format_diff(differences, only_a, only_b, "with-exceptions", "baseline")
+        check("Clears the exception for: legacy.example, keep.example" in text,
+              "the formatted diff must show the cleared-sites line: %r" % text)
+
+        # An entry that only changes case matches the same hosts, so
+        # it is neither cleared nor added - the field row appears
+        # (the stored list changes), but no summary line does.
+        recased = json.loads(json.dumps(with_exceptions))
+        recased["tools"]["httpsOnly"]["exclusions"] = ["LEGACY.EXAMPLE", "Keep.Example"]
+        differences, only_a, only_b = diff_documents(with_exceptions, recased)
+        summary_map = {tool: dict((f, summary) for f, _va, _vb, summary in fields)
+                       for tool, fields in differences}
+        check(summary_map.get("httpsOnly") == {"exclusions": []},
+              "a change of case only must not clear or add any site: %r" % summary_map)
 
     if failures:
         print("self-test FAILED:")

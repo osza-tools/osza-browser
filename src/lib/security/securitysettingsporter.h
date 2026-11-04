@@ -76,9 +76,12 @@ class QJsonObject;
  * tool and per field, what a document would change in this profile
  * (and what it would skip, with the reason) without touching
  * anything, so the UI can show a diff before the first setting
- * moves. The preview is computed by the very same validation the
- * import applies - there is no second, weaker code path that could
- * disagree with the apply step.
+ * moves. For the site-exception lists the preview also names the
+ * entries it would clear and the entries it would add - the sites
+ * whose treatment changes are the point of the decision, not the
+ * raw lists on either side of the arrow. The preview is computed by
+ * the very same validation the import applies - there is no second,
+ * weaker code path that could disagree with the apply step.
  *
  * Deliberate scope decisions:
  *
@@ -155,6 +158,19 @@ public:
         QString field;         // stable field key, e.g. "exclusions"
         QString currentValue;  // live value, for display
         QString nextValue;     // value after the import, for display
+
+        // For the site-exception lists only: the entries this import
+        // clears (in the current live list, gone after the import)
+        // and the entries it newly adds, each in the order of the
+        // list it comes from. Compared the way the tools themselves
+        // match hosts - case-insensitively - so an entry that only
+        // changes case is neither cleared nor added, and a duplicate
+        // entry is reported once. Computed here, once, so every
+        // consumer shows the same one-line summary without parsing
+        // display strings. Empty for non-list fields and for changes
+        // that clear and add nothing.
+        QStringList clearedEntries;
+        QStringList addedEntries;
     };
 
     // What a document would do to this profile, without doing it.
@@ -251,6 +267,15 @@ public:
     // ("httpsOnly", "exclusions" -> "Site exceptions"); unknown
     // fields come back unchanged.
     static QString fieldDisplayName(const QString &tool, const QString &field);
+
+    // The one-line summaries of a site-exception change, ready to
+    // show under the field in a diff: "Clears the exception for:
+    // bank.example, shop.example" and "Adds an exception for:
+    // legacy.example" - at most one line per direction, cleared
+    // first, translated here so every preview UI says the same
+    // thing. Empty for changes that neither clear nor add anything
+    // and for every change that is not a site-exception list.
+    static QStringList exceptionSummaryLines(const PreviewChange &change);
 
 private:
     SecuritySettingsPorter() = default;
