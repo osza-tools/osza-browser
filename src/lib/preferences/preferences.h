@@ -66,6 +66,7 @@ private Q_SLOTS:
     void openFingerprintExceptions();
     void exportSecuritySettings();
     void importSecuritySettings();
+    void saveSecurityPresetToFile();
     void applySecurityPreset();
     void updateThreatBlockNow();
     void updateThreatBlockStatus();

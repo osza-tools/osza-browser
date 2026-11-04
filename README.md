@@ -52,11 +52,22 @@ and KDE contributors for their work.
   corrupted after the export is refused on import (with an explicit
   "import anyway" for deliberate hand edits, and
   `tools/security/verify_settings_porter.py --update-checksum` to
-  re-seal an edited file). For a quick start, the same places offer
+  re-seal an edited file). Imports are informed, not blind: before
+  anything is applied, a preview dialog shows what the file would
+  change - per tool and per field, the current value against the
+  value after the import - plus what it leaves out and what it would
+  skip, with the reason; a checksum mismatch is called out in the
+  same dialog and the confirmation becomes an explicit "import
+  anyway". The same per-tool diff is available offline for hand
+  edits, as `tools/security/verify_settings_porter.py --diff FILE
+  [FILE-or-preset]`. For a quick start, the same places offer
   recommended-baseline presets - Essentials, Recommended baseline
   and Maximum protection - that apply a ready-made configuration of
-  all seven tools through the same validation as an import. The
-  per-profile fingerprint seed is deliberately never part of it. The
+  all seven tools through the same validation as an import, and the
+  picker also saves any preset as a regular checksum-verified
+  settings file, so a baseline can be shared without applying it
+  first. The per-profile fingerprint seed is deliberately never
+  part of it. The
   security dashboard sidebar keeps live counters of blocked ads,
   stripped trackers, HTTPS upgrades and blocked threats, with quick
   switches for every protection, and the built-in security self-test

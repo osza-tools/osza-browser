@@ -61,6 +61,9 @@ private Q_SLOTS:
     void settingsPorterRoundTripTest();
     void settingsPorterValidationTest();
     void settingsPorterChecksumTest();
+    void settingsPorterPreviewTest();
+    void settingsPorterPresetExportTest();
+    void securityImportPreviewDialogTest();
     void securityPresetsTest();
 };
 

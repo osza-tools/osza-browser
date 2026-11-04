@@ -2744,6 +2744,22 @@ or in bulk from the fingerprint exceptions dialog.</string>
                   </widget>
                  </item>
                  <item>
+                  <widget class="QPushButton" name="securityPresetSaveButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Save the selected preset as a security settings file, without applying it to this profile. The file is a regular export: it carries a checksum and can be imported on any Osza machine or profile.</string>
+                   </property>
+                   <property name="text">
+                    <string>Save to file...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacerSecurityPreset">
                    <property name="orientation">
                     <enum>Qt::Orientation::Horizontal</enum>

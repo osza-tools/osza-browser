@@ -227,6 +227,7 @@ set(SRCS ${SRCS}
     preferences/useragentdialog.cpp
     security/fingerprintmanager.cpp
     security/gpcmanager.cpp
+    security/securityimportpreviewdialog.cpp
     security/securitymanager.cpp
     security/securitypresets.cpp
     security/securitysettingsporter.cpp
@@ -480,6 +481,7 @@ set(SRCS ${SRCS}
     preferences/useragentdialog.h
     security/fingerprintmanager.h
     security/gpcmanager.h
+    security/securityimportpreviewdialog.h
     security/securitymanager.h
     security/securitypresets.h
     security/securitysettingsporter.h

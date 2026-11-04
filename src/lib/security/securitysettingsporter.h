@@ -43,6 +43,7 @@ class QJsonObject;
  *   "format": "osza-security-settings",
  *   "version": 1,
  *   "exportedAt": "2026-01-31T12:00:00Z",
+ *   "preset": "recommended-baseline",       // optional provenance
  *   "checksum": { "algorithm": "sha256",
  *                 "tools": "<sha-256 of the canonical tools object>" },
  *   "tools": {
@@ -71,6 +72,14 @@ class QJsonObject;
  * Documents without a checksum - exports of older versions and
  * intentional hand edits - import as before.
  *
+ * Imports are informed, not blind: previewDocument() reports, per
+ * tool and per field, what a document would change in this profile
+ * (and what it would skip, with the reason) without touching
+ * anything, so the UI can show a diff before the first setting
+ * moves. The preview is computed by the very same validation the
+ * import applies - there is no second, weaker code path that could
+ * disagree with the apply step.
+ *
  * Deliberate scope decisions:
  *
  *  - The fingerprint master seed is never exported. It is the
@@ -86,6 +95,11 @@ class QJsonObject;
  *  - Import goes through the live manager APIs, so scripts,
  *    interceptors and engine configuration update immediately,
  *    exactly like the corresponding toggle in the dashboard.
+ *  - A preview can predict every skip reason except one: the secure
+ *    DNS engine may still reject a configuration at apply time (the
+ *    preview shows the values that would be persisted; the import
+ *    summary reports the rejection, and the engine keeps running
+ *    with system DNS).
  */
 class OSZA_EXPORT SecuritySettingsPorter
 {
@@ -130,6 +144,40 @@ public:
         Allow
     };
 
+    // One field of one tool that an import would change: the human
+    // readable current live value against the value after the
+    // import. Values are formatted for display; the stable keys
+    // (tool, field) are the ones toolDisplayName() and
+    // fieldDisplayName() translate.
+    struct PreviewChange
+    {
+        QString tool;          // stable tool key, e.g. "httpsOnly"
+        QString field;         // stable field key, e.g. "exclusions"
+        QString currentValue;  // live value, for display
+        QString nextValue;     // value after the import, for display
+    };
+
+    // What a document would do to this profile, without doing it.
+    // ok is false only when the document cannot be imported at all
+    // (wrong format, newer version, malformed tools container);
+    // changes/skippedTools/unchangedTools are then empty.
+    struct Preview
+    {
+        bool ok = false;
+        QString error;
+
+        // State of the document's checksum field. A mismatch does
+        // not stop the preview - the point is to judge a changed
+        // file on its content before deciding - but the import still
+        // needs the explicit ChecksumPolicy::Allow.
+        ChecksumState checksum = ChecksumState::NoChecksum;
+
+        int configuredTools = 0;    // sections the document carries
+        QList<PreviewChange> changes;         // only actual differences
+        QStringList skippedTools;   // "tool: reason", like ImportResult
+        QStringList unchangedTools; // tool keys without a section
+    };
+
     // Snapshot of the current configuration. Reads the live managers
     // (not stale settings) wherever a manager owns the state.
     static QJsonObject buildDocument();
@@ -146,9 +194,36 @@ public:
     // fail safe, never fail open.
     static ChecksumState checkChecksum(const QJsonObject &document);
 
+    // Reads a file and parses it as JSON, without validating or
+    // applying anything. The companion of previewDocument(): load
+    // first, show the diff, then applyDocument() the very same object
+    // the user has seen. Returns false and fills error when the file
+    // does not exist, cannot be read or is not a JSON object.
+    static bool loadDocument(const QString &path, QJsonObject *document, QString *error = nullptr);
+
+    // Computes what the document would change in this profile, tool
+    // by tool and field by field, through the same validation an
+    // import applies. Never touches any manager or setting.
+    static Preview previewDocument(const QJsonObject &document);
+
     // Serializes buildDocument() and writes it atomically. Returns
     // false and fills error when the file cannot be written.
     static bool exportToFile(const QString &path, QString *error = nullptr);
+
+    // Writes the given document (for example one of the built-in
+    // presets) as a settings file, atomically. The output is a
+    // regular export of the document's tools section: fresh
+    // exportedAt stamp, fresh checksum - so a preset saved from the
+    // picker is tamper-evident exactly like a live export and
+    // imports on any profile without the mismatch warning. A
+    // "preset" provenance field travels with the file when the
+    // document carries one. Returns false and fills error when the
+    // document is not an Osza security settings document or the
+    // file cannot be written; a failed write never destroys an
+    // existing file.
+    static bool exportDocumentToFile(const QJsonObject &document,
+                                     const QString &path,
+                                     QString *error = nullptr);
 
     // Reads, validates and applies a document in one step. A checksum
     // mismatch is fatal unless policy allows it.
@@ -165,6 +240,17 @@ public:
     // and fills error when the document cannot be an Osza security
     // settings file at all.
     static bool validateDocumentHeader(const QJsonObject &document, QString *error = nullptr);
+
+    // Translated, human-readable name of a tool key ("httpsOnly" ->
+    // "HTTPS-Only mode"); unknown keys come back unchanged. Shared
+    // by the import preview UIs so a tool is called the same thing
+    // everywhere.
+    static QString toolDisplayName(const QString &tool);
+
+    // Translated, human-readable name of a field of a tool
+    // ("httpsOnly", "exclusions" -> "Site exceptions"); unknown
+    // fields come back unchanged.
+    static QString fieldDisplayName(const QString &tool, const QString &field);
 
 private:
     SecuritySettingsPorter() = default;

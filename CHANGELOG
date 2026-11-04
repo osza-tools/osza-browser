@@ -7,6 +7,54 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (12): informed imports - a per-tool diff preview
+  before anything is applied, and preset export from the picker.
+  Importing a settings file is no longer a blind yes: after picking
+  the file, a preview dialog shows what it would change in this
+  profile, per tool and per field - the current live value against
+  the value after the import - plus the tools the file does not
+  mention (left unchanged) and the sections that will be skipped,
+  with the reason the import would give. A mismatching checksum is
+  called out in the same dialog and turns the confirmation button
+  into an explicit "Import anyway" (with Cancel as the safe
+  default), so the decision to import a file that was changed after
+  its export is made with the diff in view. The preview is computed
+  by the very same validation the import applies - the per-tool
+  checks now live in one place (buildPlans) that both the apply
+  step and the preview consume, so a preview can never drift from
+  what the import actually does - and it reads the current values
+  through the same live-manager snapshot an export uses. The
+  preview itself never touches a setting. The fingerprint master
+  seed stays out of it, exactly as it stays out of exports. The
+  same dialog now also replaces the old question-box flow in both
+  places an import starts: Preferences > Privacy > Security tools
+  and the security dashboard's "Import / Export" menu. The offline
+  counterpart for hand edits is
+  tools/security/verify_settings_porter.py --diff FILE [AGAINST],
+  which prints the same per-tool diff against another settings file
+  or one of the built-in presets - the presets are rebuilt by
+  parsing securitypresets.cpp, so the offline diff is against what
+  the browser actually recommends; the verifier self-test pins the
+  parser and the diff semantics (a missing exclusions field counts
+  as the empty list the import resets to, a missing blocklist
+  source counts as not set). The second half: a baseline can be
+  handed to another machine or profile without first applying it
+  here - the preset picker saves any of the three presets as a
+  regular settings file ("Save to file..." next to the picker in
+  Preferences, "Save baseline to file..." in the dashboard's
+  "Import / Export" menu). The saved file is a first-class export
+  of the preset's document: fresh exportedAt stamp, fresh
+  checksum, tamper-evident - so it imports anywhere without the
+  mismatch warning - and it keeps the "preset" provenance field,
+  so a re-exported baseline still names itself. Three new
+  autotests pin it all: the preview (per-tool diffs, the
+  no-mutation guarantee, agreement between the announced skips and
+  the import result, checksum-mismatch previews, the shared
+  display names), the preset export (format, provenance,
+  checksum, byte-identical tools, clean import, atomic overwrite,
+  and that a refused export never destroys an existing file), and
+  the preview dialog (the diff tree, and that "Import anyway" is
+  recorded only for an accepted mismatching checksum).
 - Security tools (11): recommended-baseline presets and
   checksum-verified settings files. A hardened setup no longer
   requires clicking through seven toggles: the new preset picker

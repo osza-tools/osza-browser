@@ -53,6 +53,7 @@ public Q_SLOTS:
     void openSelfTest();
     void exportSecuritySettings();
     void importSecuritySettings();
+    void saveSecurityPresetToFile(const QString &id);
     void applySecurityPreset(const QString &id);
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);

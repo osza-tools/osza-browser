@@ -27,6 +27,7 @@
 #include "mainapplication.h"
 #include "qzcommon.h"
 #include "securitymanager.h"
+#include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "securitysidebar.h"
@@ -46,6 +47,9 @@
 #include <QSet>
 #include <QTemporaryDir>
 #include <QToolButton>
+#include <QTreeWidget>
+#include <QDialogButtonBox>
+#include <QPushButton>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineScript>
@@ -2055,6 +2059,489 @@ void SecurityToolsTest::settingsPorterChecksumTest()
     adblock->setEnabled(adblockBefore);
     QCOMPARE(adblock->isEnabled(), adblockBefore);
     QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
+}
+
+void SecurityToolsTest::settingsPorterPreviewTest()
+{
+    auto *adblock = AdBlockManager::instance();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    auto *fingerprint = FingerprintManager::instance();
+    auto *gpc = GpcManager::instance();
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+
+    // Snapshot every piece of state the preview must leave untouched.
+    const bool adblockBefore = adblock->isEnabled();
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+    const bool stripTrackingBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+    const bool gpcBefore = gpc->isEnabled();
+    const bool threatEnabledBefore = threatBlock->isEnabled();
+    const QString threatSourceBefore = threatBlock->sourceUrl();
+    const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
+    const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const auto dohModeBefore = doh->mode();
+    const QStringList dohServersBefore = doh->serverTemplates();
+
+    // Pin a known state the diff is computed against.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), true);
+        settings.setValue(QSL("HttpsOnlyExclusions"), QStringList{QSL("preview.example")});
+        settings.setValue(QSL("StripTrackingQuery"), true);
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.setValue(QSL("FingerprintExclusions"), QStringList{QSL("preview.example")});
+        settings.setValue(QSL("GlobalPrivacyControl"), true);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(true);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(true);
+    threatBlock->setEnabled(true);
+    threatBlock->setSourceUrl(QSL("https://preview.example/hosts"));
+    if (dohSupported) {
+        doh->setConfiguration(DnsOverHttpsManager::SecureWithFallback,
+                              {DnsOverHttpsManager::defaultServerTemplate()});
+    }
+
+    // The document under preview: some changes, one absent tool, one
+    // malformed section, one field the file does not state.
+    QJsonObject tools;
+    tools.insert(QSL("adblock"), QJsonObject{{QSL("enabled"), false}});
+    tools.insert(QSL("httpsOnly"), QJsonObject{{QSL("enabled"), true}, {QSL("exclusions"), QJsonArray{}}});
+    tools.insert(QSL("secureDns"), QJsonObject{{QSL("mode"), 0}, {QSL("servers"), QJsonArray{}}});
+    tools.insert(QSL("threatBlock"), QJsonObject{{QSL("enabled"), true},
+                                                 {QSL("sourceUrl"), QSL("https://after.example/hosts")}});
+    tools.insert(QSL("fingerprintProtection"), QJsonObject{{QSL("enabled"), QSL("yes")}});
+    tools.insert(QSL("globalPrivacyControl"), QJsonObject{{QSL("enabled"), true}});
+
+    QJsonObject document;
+    document.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+    document.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+    document.insert(QSL("tools"), tools);
+
+    auto hasChange = [](const SecuritySettingsPorter::Preview &preview,
+                        const QString &tool, const QString &field,
+                        const QString &currentValue, const QString &nextValue) {
+        for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+            if (change.tool == tool && change.field == field) {
+                return change.currentValue == currentValue && change.nextValue == nextValue;
+            }
+        }
+        return false;
+    };
+
+    auto changeCount = [](const SecuritySettingsPorter::Preview &preview, const QString &tool) {
+        int count = 0;
+        for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+            if (change.tool == tool) {
+                ++count;
+            }
+        }
+        return count;
+    };
+
+    const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(document);
+
+    QVERIFY(preview.ok);
+    QVERIFY(preview.error.isEmpty());
+    QCOMPARE(preview.checksum, SecuritySettingsPorter::ChecksumState::NoChecksum);
+
+    // The absent tool is reported as unchanged, not as skipped.
+    QCOMPARE(preview.configuredTools, 6);
+    QCOMPARE(preview.unchangedTools, QStringList{QSL("trackingParameters")});
+
+    // The malformed section is reported with the reason the import
+    // would give (and the build limitation, when it applies).
+    if (dohSupported) {
+        QCOMPARE(preview.skippedTools.size(), 1);
+        QVERIFY(preview.skippedTools.constFirst().startsWith(QSL("fingerprintProtection")));
+    } else {
+        QCOMPARE(preview.skippedTools.size(), 2);
+        QVERIFY(preview.skippedTools.constFirst().startsWith(QSL("secureDns")));
+    }
+
+    // The diff: exactly the fields whose effective value changes.
+    QVERIFY(hasChange(preview, QSL("adblock"), QSL("enabled"), QSL("on"), QSL("off")));
+    // httpsOnly stays on; its exception list is reset by the empty one.
+    QVERIFY(hasChange(preview, QSL("httpsOnly"), QSL("exclusions"), QSL("preview.example"), QSL("none")));
+    QCOMPARE(changeCount(preview, QSL("httpsOnly")), 1);
+    if (dohSupported) {
+        QVERIFY(hasChange(preview, QSL("secureDns"), QSL("mode"),
+                          QSL("on, with fallback to the system resolver"), QSL("off")));
+        QVERIFY(hasChange(preview, QSL("secureDns"), QSL("servers"),
+                          DnsOverHttpsManager::defaultServerTemplate(), QSL("none")));
+    }
+    // threatBlock stays on; only the stated source changes.
+    QVERIFY(hasChange(preview, QSL("threatBlock"), QSL("sourceUrl"),
+                      QSL("https://preview.example/hosts"), QSL("https://after.example/hosts")));
+    QCOMPARE(changeCount(preview, QSL("threatBlock")), 1);
+    // gpc stays on - no change, no row.
+    QCOMPARE(changeCount(preview, QSL("globalPrivacyControl")), 0);
+    // The skipped tool contributes no diff rows.
+    QCOMPARE(changeCount(preview, QSL("fingerprintProtection")), 0);
+
+    // The preview touched nothing: every manager still holds the
+    // pinned state.
+    QCOMPARE(adblock->isEnabled(), true);
+    QCOMPARE(interceptor->isEnabled(), true);
+    QVERIFY(interceptor->hasExplicitExclusion(QSL("preview.example")));
+    QCOMPARE(threatBlock->sourceUrl(), QSL("https://preview.example/hosts"));
+    QCOMPARE(fingerprint->isEnabled(), true);
+    QVERIFY(fingerprint->isExcluded(QSL("preview.example")));
+    QCOMPARE(gpc->isEnabled(), true);
+    if (dohSupported) {
+        QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureWithFallback);
+        QCOMPARE(doh->serverTemplates(), QStringList{DnsOverHttpsManager::defaultServerTemplate()});
+    }
+
+    // A missing threatBlock sourceUrl field keeps the current source:
+    // no sourceUrl row appears in the diff.
+    {
+        QJsonObject single;
+        single.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        single.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        single.insert(QSL("tools"), QJsonObject{
+            {QSL("threatBlock"), QJsonObject{{QSL("enabled"), true}}}
+        });
+
+        const SecuritySettingsPorter::Preview sourcePreview = SecuritySettingsPorter::previewDocument(single);
+
+        QVERIFY(sourcePreview.ok);
+        QCOMPARE(sourcePreview.changes.size(), 0);
+    }
+
+    // The preview and the import agree: the same document, applied,
+    // reports the same skips the preview announced.
+    {
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(document);
+
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+        QCOMPARE(result.skippedTools, preview.skippedTools);
+
+        if (dohSupported) {
+            QCOMPARE(result.appliedTools, 5);
+        } else {
+            QCOMPARE(result.appliedTools, 4);
+        }
+
+        // The announced diff was the truth: the changed values hold.
+        QCOMPARE(adblock->isEnabled(), false);
+        QVERIFY(!interceptor->hasExplicitExclusion(QSL("preview.example")));
+        QCOMPARE(threatBlock->sourceUrl(), QSL("https://after.example/hosts"));
+        if (dohSupported) {
+            QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
+        }
+    }
+
+    // A mismatching checksum does not stop the preview: the diff is
+    // shown so the changed file can be judged on its content.
+    {
+        QJsonObject mismatching;
+        mismatching.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        mismatching.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+
+        QJsonObject checksum;
+        checksum.insert(QSL("algorithm"), SecuritySettingsPorter::checksumAlgorithm());
+        checksum.insert(QSL("tools"), QSL("0000000000000000000000000000000000000000000000000000000000000000"));
+        mismatching.insert(QSL("checksum"), checksum);
+        mismatching.insert(QSL("tools"), QJsonObject{
+            {QSL("adblock"), QJsonObject{{QSL("enabled"), false}}}
+        });
+
+        const SecuritySettingsPorter::Preview mismatchPreview = SecuritySettingsPorter::previewDocument(mismatching);
+
+        QVERIFY(mismatchPreview.ok);
+        QCOMPARE(mismatchPreview.checksum, SecuritySettingsPorter::ChecksumState::Mismatch);
+        QCOMPARE(mismatchPreview.changes.size(), adblock->isEnabled() == false ? 0 : 1);
+    }
+
+    // A document that cannot be imported has no preview either.
+    {
+        QJsonObject broken;
+        broken.insert(QSL("format"), QSL("something-else"));
+        broken.insert(QSL("version"), 1);
+
+        const SecuritySettingsPorter::Preview brokenPreview = SecuritySettingsPorter::previewDocument(broken);
+
+        QVERIFY(!brokenPreview.ok);
+        QVERIFY(!brokenPreview.error.isEmpty());
+        QCOMPARE(brokenPreview.changes.size(), 0);
+        QCOMPARE(brokenPreview.skippedTools.size(), 0);
+    }
+    {
+        QJsonObject broken;
+        broken.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        broken.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        broken.insert(QSL("tools"), 42);
+
+        QVERIFY(!SecuritySettingsPorter::previewDocument(broken).ok);
+    }
+
+    // The shared names: every known tool has one, they are distinct,
+    // and unknown keys pass through untouched.
+    {
+        const QStringList keys{QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
+                               QSL("secureDns"), QSL("threatBlock"),
+                               QSL("fingerprintProtection"), QSL("globalPrivacyControl")};
+        QSet<QString> names;
+
+        for (const QString &key : keys) {
+            const QString name = SecuritySettingsPorter::toolDisplayName(key);
+            QVERIFY(!name.isEmpty());
+            QVERIFY(!names.contains(name));
+            names.insert(name);
+
+            QVERIFY(!SecuritySettingsPorter::fieldDisplayName(key, QSL("enabled")).isEmpty());
+        }
+
+        QCOMPARE(SecuritySettingsPorter::toolDisplayName(QSL("unknownTool")), QSL("unknownTool"));
+        QCOMPARE(SecuritySettingsPorter::fieldDisplayName(QSL("adblock"), QSL("unknownField")), QSL("unknownField"));
+        QVERIFY(!SecuritySettingsPorter::fieldDisplayName(QSL("threatBlock"), QSL("sourceUrl")).isEmpty());
+    }
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), httpsExclusionsBefore);
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingBefore);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("FingerprintExclusions"), fingerprintExclusionsBefore);
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcBefore);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockBefore);
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+}
+
+void SecurityToolsTest::settingsPorterPresetExportTest()
+{
+    auto *adblock = AdBlockManager::instance();
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    auto *doh = mApp->networkManager()->dnsOverHttpsManager();
+    auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    auto *fingerprint = FingerprintManager::instance();
+    auto *gpc = GpcManager::instance();
+
+    const bool dohSupported = DnsOverHttpsManager::isSupported();
+
+    // Snapshot every piece of state the exports touch.
+    const bool adblockBefore = adblock->isEnabled();
+    const bool httpsOnlyBefore = interceptor->isEnabled();
+    const bool stripTrackingBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/StripTrackingQuery"), true).toBool();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+    const bool gpcBefore = gpc->isEnabled();
+    const bool threatEnabledBefore = threatBlock->isEnabled();
+    const QString threatSourceBefore = threatBlock->sourceUrl();
+    const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
+    const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const auto dohModeBefore = doh->mode();
+    const QStringList dohServersBefore = doh->serverTemplates();
+
+    QTemporaryDir dir;
+
+    // Each preset exports as a regular, checksum-verified settings
+    // file that keeps its provenance and imports without warnings.
+    for (const SecurityPresets::Preset &preset : SecurityPresets::presets()) {
+        const QString path = dir.filePath(QSL("preset-%1.json").arg(preset.id));
+
+        QString error;
+        QVERIFY(SecuritySettingsPorter::exportDocumentToFile(preset.document, path, &error));
+
+        QJsonObject written;
+        QVERIFY(SecuritySettingsPorter::loadDocument(path, &written, &error));
+
+        QCOMPARE(written.value(QSL("format")).toString(), SecuritySettingsPorter::formatIdentifier());
+        QCOMPARE(written.value(QSL("version")).toInt(), SecuritySettingsPorter::formatVersion());
+        QCOMPARE(written.value(QSL("preset")).toString(), preset.id);
+        QVERIFY(!written.value(QSL("exportedAt")).toString().isEmpty());
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(written),
+                 SecuritySettingsPorter::ChecksumState::Valid);
+
+        // The tools section is the preset's, byte for byte, and no
+        // seed travels with the file.
+        QCOMPARE(QJsonDocument(written.value(QSL("tools")).toObject()).toJson(QJsonDocument::Compact),
+                 QJsonDocument(preset.document.value(QSL("tools")).toObject()).toJson(QJsonDocument::Compact));
+        QVERIFY(!QJsonDocument(written).toJson(QJsonDocument::Compact).contains("seed"));
+
+        // The saved preset imports cleanly through the regular path.
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+
+        QVERIFY(result.ok);
+        QVERIFY(!result.checksumMismatch);
+        QCOMPARE(result.skippedTools.size(), dohSupported ? 0 : 1);
+    }
+
+    // Exporting again to the same path overwrites atomically.
+    {
+        const QString path = dir.filePath(QSL("preset-recommended-baseline.json"));
+        const SecurityPresets::Preset preset = SecurityPresets::presetById(QSL("maximum-protection"));
+
+        QString error;
+        QVERIFY(SecuritySettingsPorter::exportDocumentToFile(preset.document, path, &error));
+
+        QJsonObject written;
+        QVERIFY(SecuritySettingsPorter::loadDocument(path, &written, &error));
+        QCOMPARE(written.value(QSL("preset")).toString(), QSL("maximum-protection"));
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(written), SecuritySettingsPorter::ChecksumState::Valid);
+    }
+
+    // Refusal cases: no path, a document that is not Osza security
+    // settings, a malformed tools container.
+    {
+        QString error;
+        QVERIFY(!SecuritySettingsPorter::exportDocumentToFile(SecurityPresets::presetById(QSL("essentials")).document,
+                                                              QString(), &error));
+        QVERIFY(!error.isEmpty());
+
+        QJsonObject wrongFormat;
+        wrongFormat.insert(QSL("format"), QSL("something-else"));
+        wrongFormat.insert(QSL("version"), 1);
+        QVERIFY(!SecuritySettingsPorter::exportDocumentToFile(wrongFormat, dir.filePath(QSL("no.json")), &error));
+
+        QJsonObject brokenTools;
+        brokenTools.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
+        brokenTools.insert(QSL("version"), SecuritySettingsPorter::formatVersion());
+        brokenTools.insert(QSL("tools"), 42);
+        QVERIFY(!SecuritySettingsPorter::exportDocumentToFile(brokenTools, dir.filePath(QSL("no.json")), &error));
+    }
+
+    // A refused export never destroys an existing file: the valid
+    // export from before is still there, checksum and all.
+    {
+        const QString path = dir.filePath(QSL("preset-essentials.json"));
+
+        QJsonObject wrongFormat;
+        wrongFormat.insert(QSL("format"), QSL("something-else"));
+        wrongFormat.insert(QSL("version"), 1);
+
+        QString error;
+        QVERIFY(!SecuritySettingsPorter::exportDocumentToFile(wrongFormat, path, &error));
+
+        QJsonObject written;
+        QVERIFY(SecuritySettingsPorter::loadDocument(path, &written, &error));
+        QCOMPARE(written.value(QSL("preset")).toString(), QSL("essentials"));
+        QCOMPARE(SecuritySettingsPorter::checkChecksum(written), SecuritySettingsPorter::ChecksumState::Valid);
+    }
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        settings.setValue(QSL("HttpsOnlyExclusions"), httpsExclusionsBefore);
+        settings.setValue(QSL("StripTrackingQuery"), stripTrackingBefore);
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("FingerprintExclusions"), fingerprintExclusionsBefore);
+        settings.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        settings.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->setEnabled(gpcBefore);
+    mApp->networkManager()->loadSettings();
+    adblock->setEnabled(adblockBefore);
+    threatBlock->setEnabled(threatEnabledBefore);
+    threatBlock->setSourceUrl(threatSourceBefore);
+    if (dohSupported) {
+        doh->setConfiguration(dohModeBefore, dohServersBefore);
+    }
+}
+
+void SecurityToolsTest::securityImportPreviewDialogTest()
+{
+    // A preview with a diff, a skip and an absent tool.
+    SecuritySettingsPorter::Preview preview;
+    preview.ok = true;
+    preview.checksum = SecuritySettingsPorter::ChecksumState::Valid;
+    preview.configuredTools = 5;
+
+    SecuritySettingsPorter::PreviewChange adblock;
+    adblock.tool = QSL("adblock");
+    adblock.field = QSL("enabled");
+    adblock.currentValue = QSL("on");
+    adblock.nextValue = QSL("off");
+    preview.changes.append(adblock);
+
+    SecuritySettingsPorter::PreviewChange dns;
+    dns.tool = QSL("secureDns");
+    dns.field = QSL("mode");
+    dns.currentValue = QSL("off");
+    dns.nextValue = QSL("on, secure DNS only");
+    preview.changes.append(dns);
+
+    preview.skippedTools.append(QSL("fingerprintProtection: a field is missing or has the wrong type"));
+    preview.unchangedTools.append(QSL("globalPrivacyControl"));
+
+    SecurityImportPreviewDialog dialog(preview, QSL("settings.json"));
+    dialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&dialog));
+
+    // The tree shows one row per changed tool, one child per field,
+    // current value against the value after the import.
+    auto *tree = dialog.findChild<QTreeWidget*>();
+    QVERIFY(tree);
+    QCOMPARE(tree->topLevelItemCount(), 2);
+    QCOMPARE(tree->topLevelItem(0)->text(0), SecuritySettingsPorter::toolDisplayName(QSL("adblock")));
+    QCOMPARE(tree->topLevelItem(0)->childCount(), 1);
+    QCOMPARE(tree->topLevelItem(0)->child(0)->text(1), QSL("on"));
+    QCOMPARE(tree->topLevelItem(0)->child(0)->text(2), QSL("off"));
+    QCOMPARE(tree->topLevelItem(1)->childCount(), 1);
+
+    // A matching checksum means a plain "Import" and no exception.
+    auto *box = dialog.findChild<QDialogButtonBox*>();
+    QVERIFY(box);
+    QCOMPARE(box->button(QDialogButtonBox::Ok)->text(), QSL("Import"));
+    QVERIFY(!dialog.importDespiteChecksum());
+
+    box->button(QDialogButtonBox::Ok)->click();
+    QCOMPARE(dialog.result(), static_cast<int>(QDialog::Accepted));
+    QVERIFY(!dialog.importDespiteChecksum());
+
+    // A mismatching checksum turns the confirmation into the
+    // explicit "import anyway" the ChecksumPolicy::Allow needs.
+    SecuritySettingsPorter::Preview mismatched = preview;
+    mismatched.checksum = SecuritySettingsPorter::ChecksumState::Mismatch;
+
+    SecurityImportPreviewDialog warningDialog(mismatched, QSL("changed.json"));
+    warningDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&warningDialog));
+
+    auto *warningBox = warningDialog.findChild<QDialogButtonBox*>();
+    QVERIFY(warningBox);
+    QCOMPARE(warningBox->button(QDialogButtonBox::Ok)->text(), QSL("Import anyway"));
+    QVERIFY(!warningDialog.importDespiteChecksum());
+
+    warningBox->button(QDialogButtonBox::Ok)->click();
+    QCOMPARE(warningDialog.result(), static_cast<int>(QDialog::Accepted));
+    QVERIFY(warningDialog.importDespiteChecksum());
+
+    // Cancelling is no import, whatever the checksum says.
+    SecurityImportPreviewDialog cancelled(mismatched, QSL("changed.json"));
+    cancelled.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&cancelled));
+
+    auto *cancelBox = cancelled.findChild<QDialogButtonBox*>();
+    QVERIFY(cancelBox);
+    cancelBox->button(QDialogButtonBox::Cancel)->click();
+    QCOMPARE(cancelled.result(), static_cast<int>(QDialog::Rejected));
+    QVERIFY(!cancelled.importDespiteChecksum());
 }
 
 void SecurityToolsTest::securityPresetsTest()

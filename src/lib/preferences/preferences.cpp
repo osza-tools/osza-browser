@@ -35,6 +35,7 @@
 #include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "fingerprintmanager.h"
+#include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "desktopnotificationsfactory.h"
@@ -64,6 +65,7 @@
 
 #include <QSettings>
 #include <QDir>
+#include <QFileInfo>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -626,6 +628,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
+    connect(ui->securityPresetSaveButton, &QAbstractButton::clicked, this, &Preferences::saveSecurityPresetToFile);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
@@ -898,22 +901,41 @@ void Preferences::importSecuritySettings()
         return;
     }
 
-    SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
+    // Load first, preview next, apply last - the user decides on the
+    // very same document object that would be applied.
+    QJsonObject document;
+    QString error;
 
-    // A mismatching checksum means the file was hand-edited or
-    // corrupted after the export. That can be legitimate (a
-    // deliberate hand edit, checked with the offline verifier), so
-    // the choice belongs to the user - but it must be explicit.
-    if (!result.ok && result.checksumMismatch) {
-        const QMessageBox::StandardButton answer = QMessageBox::question(
-            this, tr("Import Security Settings"),
-            tr("The file's checksum does not match its contents. It was changed or corrupted after it was exported.\n\nImport it anyway?"),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-
-        if (answer == QMessageBox::Yes) {
-            result = SecuritySettingsPorter::importFromFile(path, SecuritySettingsPorter::ChecksumPolicy::Allow);
-        }
+    if (!SecuritySettingsPorter::loadDocument(path, &document, &error)) {
+        QMessageBox::warning(this, tr("Import Security Settings"),
+                             tr("The file could not be read:\n%1").arg(error));
+        return;
     }
+
+    // What the import would change, per tool and per field, computed
+    // without touching anything - and before the checksum question,
+    // so a changed file can be judged on its content.
+    const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(document);
+
+    if (!preview.ok) {
+        QMessageBox::warning(this, tr("Import Security Settings"),
+                             tr("The file cannot be imported:\n%1").arg(preview.error));
+        return;
+    }
+
+    SecurityImportPreviewDialog dialog(preview, QFileInfo(path).fileName(), this);
+
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+
+    // The dialog says "Import anyway" for a checksum mismatch and
+    // records that explicit decision; the import is allowed for
+    // exactly this case and refused otherwise.
+    const SecuritySettingsPorter::ChecksumPolicy policy = dialog.importDespiteChecksum()
+        ? SecuritySettingsPorter::ChecksumPolicy::Allow
+        : SecuritySettingsPorter::ChecksumPolicy::Reject;
+    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(document, policy);
 
     if (!result.ok) {
         QMessageBox::warning(this, tr("Import Security Settings"),
@@ -936,6 +958,37 @@ void Preferences::importSecuritySettings()
     }
 
     QMessageBox::information(this, tr("Import Security Settings"), summary);
+}
+
+void Preferences::saveSecurityPresetToFile()
+{
+    const QString id = ui->securityPresetCombo->currentData().toString();
+    const SecurityPresets::Preset preset = SecurityPresets::presetById(id);
+
+    if (preset.id.isEmpty()) {
+        return;
+    }
+
+    const QString suggested = QDir::homePath() + QSL("/osza-security-%1.json").arg(preset.id);
+    const QString path = QzTools::getSaveFileName(QSL("SecuritySettings-Export"), this, tr("Save Security Preset"),
+                                                  suggested, tr("JSON files (*.json);;All files (*)"));
+
+    if (path.isEmpty()) {
+        return;
+    }
+
+    // A preset saved to a file is a regular export of the preset's
+    // document: stamped, checksummed, tamper-evident - so it imports
+    // on any profile or machine without the mismatch warning.
+    QString error;
+    if (SecuritySettingsPorter::exportDocumentToFile(preset.document, path, &error)) {
+        QMessageBox::information(this, tr("Save Security Preset"),
+                                 tr("The preset \"%1\" was saved to %2.\n\nIt is a regular security settings file and can be imported on any Osza profile or machine.")
+                                     .arg(preset.name, QDir::toNativeSeparators(path)));
+    } else {
+        QMessageBox::warning(this, tr("Save Security Preset"),
+                             tr("The preset could not be saved:\n%1").arg(error));
+    }
 }
 
 void Preferences::applySecurityPreset()

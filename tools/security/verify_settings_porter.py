@@ -30,6 +30,17 @@
 #     against securitypresets.cpp, so the offline picture of what
 #     the browser recommends cannot drift either
 #
+# With --diff, the offline counterpart of the in-browser import
+# preview: it prints, per tool and per field, what one document
+# would change relative to another - a second file, or one of the
+# built-in presets (parsed from securitypresets.cpp the same way
+# the constants above are parsed, so the diff is against what the
+# browser actually recommends). The field semantics mirror
+# SecuritySettingsPorter::previewDocument: a missing exclusions
+# field counts as the empty list (the import resets it), a missing
+# blocklist source counts as "not set" (the import keeps the
+# current one).
+#
 # Usage:
 #   python3 tools/security/verify_settings_porter.py
 #     (no arguments: run the built-in self-test)
@@ -39,6 +50,10 @@
 #     (after an intentional hand edit: validate the file, then
 #      write a fresh checksum into it so the import needs no
 #      "import anyway" confirmation)
+#   python3 tools/security/verify_settings_porter.py --diff FILE [AGAINST]
+#     (print the per-tool diff of FILE against another settings
+#      file or a built-in preset id; AGAINST defaults to
+#      recommended-baseline)
 #
 # Copyright (C) 2026 Osza Tools contributors
 # GPL-3.0-or-later
@@ -55,6 +70,10 @@ PORTER_SOURCE = os.path.join(HERE, os.pardir, os.pardir,
                              "src", "lib", "security", "securitysettingsporter.cpp")
 PRESETS_SOURCE = os.path.join(HERE, os.pardir, os.pardir,
                               "src", "lib", "security", "securitypresets.cpp")
+THREAT_SOURCE = os.path.join(HERE, os.pardir, os.pardir,
+                             "src", "lib", "security", "threatblockmanager.cpp")
+DOH_SOURCE = os.path.join(HERE, os.pardir, os.pardir,
+                          "src", "lib", "network", "dnsoverhttpsmanager.cpp")
 
 # The schema of one tool section: which fields exist and how they
 # are checked. Keep in sync with SecuritySettingsPorter::applyDocument.
@@ -100,6 +119,96 @@ def preset_ids_from_source():
         return re.findall(r'preset\.id = QSL\("([^"]+)"\)', source)
     except OSError:
         return []
+
+
+def _default_threat_source():
+    """ThreatBlockManager::defaultSourceUrl() from the C++ source."""
+    try:
+        with open(THREAT_SOURCE, encoding="utf-8") as f:
+            source = f.read()
+        m = re.search(r'ThreatBlockManager::defaultSourceUrl\(\)\s*\n\{\s*'
+                      r'return QSL\("([^"]+)"\);', source)
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
+def _default_dns_template():
+    """The first known provider's template - what
+    DnsOverHttpsManager::defaultServerTemplate() returns."""
+    try:
+        with open(DOH_SOURCE, encoding="utf-8") as f:
+            source = f.read()
+        m = re.search(r'knownProviders\(\)\s*\n\{\s*return \{\s*'
+                      r'\{QSL\("[^"]+"\), QSL\("([^"]+)"\)\}', source)
+        return m.group(1) if m else None
+    except OSError:
+        return None
+
+
+# DnsOverHttpsManager::Mode values as written in securitypresets.cpp.
+DNS_MODES = {"Disabled": 0, "SecureWithFallback": 1, "SecureOnly": 2}
+
+
+def preset_document_from_source(preset_id):
+    """Rebuild one built-in preset document by parsing
+    securitypresets.cpp, the same source the picker reads. Strict on
+    purpose: when the C++ shape changes in a way the parser does not
+    recognize, it fails loudly instead of guessing what
+    "recommended" means."""
+    try:
+        with open(PRESETS_SOURCE, encoding="utf-8") as f:
+            source = f.read()
+    except OSError as e:
+        raise ValueError("cannot read %s: %s" % (PRESETS_SOURCE, e))
+
+    block = re.search(r'preset\.id = QSL\("%s"\);(.*?)result\.append\(preset\);'
+                      % re.escape(preset_id), source, re.DOTALL)
+    if not block:
+        raise ValueError("preset %r not found in securitypresets.cpp" % preset_id)
+
+    body = block.group(1)
+    tools = {}
+
+    for m in re.finditer(r'tools\.insert\(QSL\("([^"]+)"\),\s*([a-zA-Z]+)'
+                         r'\(((?:[^()]|\([^()]*\))*)\)\);', body):
+        key, helper, args = m.group(1), m.group(2), m.group(3)
+
+        if helper == "boolTool":
+            tools[key] = {"enabled": args.strip() == "true"}
+        elif helper == "exclusionsTool":
+            tools[key] = {"enabled": args.strip() == "true", "exclusions": []}
+        elif helper == "secureDnsTool":
+            mode_name = args.strip().replace("DnsOverHttpsManager::", "")
+            if mode_name not in DNS_MODES:
+                raise ValueError("unknown DNS mode %r in securitypresets.cpp" % mode_name)
+            mode = DNS_MODES[mode_name]
+            servers = []
+            if mode != 0:
+                template = _default_dns_template()
+                if template is None:
+                    raise ValueError("cannot parse the default DNS template "
+                                     "from dnsoverhttpsmanager.cpp")
+                servers = [template]
+            tools[key] = {"mode": mode, "servers": servers}
+        elif helper == "threatBlockTool":
+            enabled, source_arg = [part.strip() for part in args.split(",", 1)]
+            if source_arg != "ThreatBlockManager::defaultSourceUrl()":
+                raise ValueError("unexpected blocklist source %r in "
+                                 "securitypresets.cpp" % source_arg)
+            default_source = _default_threat_source()
+            if default_source is None:
+                raise ValueError("cannot parse the default blocklist source "
+                                 "from threatblockmanager.cpp")
+            tools[key] = {"enabled": enabled == "true", "sourceUrl": default_source}
+        else:
+            raise ValueError("unknown preset helper %r in securitypresets.cpp" % helper)
+
+    if len(tools) != 7:
+        raise ValueError("preset %r does not state all seven tools in "
+                         "securitypresets.cpp" % preset_id)
+
+    return {"format": FORMAT, "version": VERSION, "preset": preset_id, "tools": tools}
 
 
 FORMAT, VERSION, ALGORITHM = constants_from_source()
@@ -309,6 +418,176 @@ def validate_file(path):
     return report
 
 
+# The fixed tool order of the apply step and the preview, from
+# lightest (request path) to deepest (profile and resolver).
+TOOL_ORDER = ("adblock", "httpsOnly", "trackingParameters", "secureDns",
+              "threatBlock", "fingerprintProtection", "globalPrivacyControl")
+
+
+def _on_off(value):
+    return "on" if value else "off"
+
+
+def _mode_label(mode):
+    # Mirrors the labels of SecuritySettingsPorter::previewDocument.
+    if mode == 2:
+        return "on, secure DNS only"
+    if mode == 1:
+        return "on, with fallback to the system resolver"
+    return "off"
+
+
+def _list_label(values):
+    return "none" if not values else ", ".join(values)
+
+
+def _field_label(tool, field, section):
+    """The display value of one field of one section, with the same
+    effective-value semantics the import applies: a missing
+    exclusions field is the empty list (the import resets it), a
+    missing blocklist source is not set (the import keeps the
+    current one)."""
+    if field == "enabled":
+        return _on_off(section.get("enabled"))
+    if field == "exclusions":
+        return _list_label(section.get("exclusions", []))
+    if field == "mode":
+        mode = canonicalize(section.get("mode"))
+        return _mode_label(mode if isinstance(mode, int) else 0)
+    if field == "servers":
+        servers = section.get("servers", [])
+        return _list_label(servers if isinstance(servers, list) else [])
+    if field == "sourceUrl":
+        source = section.get("sourceUrl")
+        return source if isinstance(source, str) else "(not set)"
+    return repr(section.get(field))
+
+
+def _tool_fields(tool):
+    if tool in BOOL_TOOLS:
+        return ("enabled",)
+    if tool in EXCLUSION_TOOLS:
+        return ("enabled", "exclusions")
+    if tool == "secureDns":
+        return ("mode", "servers")
+    if tool == "threatBlock":
+        return ("enabled", "sourceUrl")
+    return ()
+
+
+def diff_documents(a, b):
+    """Per-tool, per-field diff of two tools sections, mirroring
+    SecuritySettingsPorter::previewDocument. Returns a list of
+    (tool, [(field, valueInA, valueInB), ...]) for the tools where
+    the two documents differ, plus two special entries keyed
+    "__only_a__" / "__only_b__" listing tools configured by only one
+    of the documents."""
+    tools_a = a.get("tools", {}) if isinstance(a, dict) else {}
+    tools_b = b.get("tools", {}) if isinstance(b, dict) else {}
+
+    only_a = []
+    only_b = []
+    differences = []
+
+    for tool in TOOL_ORDER:
+        section_a = tools_a.get(tool)
+        section_b = tools_b.get(tool)
+
+        if section_a is None and section_b is None:
+            continue
+
+        if section_b is None:
+            only_a.append(tool)
+            continue
+        if section_a is None:
+            only_b.append(tool)
+            continue
+
+        if not isinstance(section_a, dict) or not isinstance(section_b, dict):
+            differences.append((tool, [("(the section is malformed)", "", "")]))
+            continue
+
+        fields = []
+        for field in _tool_fields(tool):
+            label_a = _field_label(tool, field, section_a)
+            label_b = _field_label(tool, field, section_b)
+            if label_a != label_b:
+                fields.append((field, label_a, label_b))
+
+        if fields:
+            differences.append((tool, fields))
+
+    return differences, only_a, only_b
+
+
+def format_diff(differences, only_a, only_b, name_a, name_b):
+    lines = ["diff: %s against %s" % (name_a, name_b)]
+
+    if not differences and not only_a and not only_b:
+        lines.append("  no differences in the seven security tools")
+        return "\n".join(lines)
+
+    for tool, fields in differences:
+        lines.append("  %s" % tool)
+        for field, value_a, value_b in fields:
+            lines.append("    %s: %s -> %s" % (field, value_a, value_b))
+
+    for tool in only_a:
+        lines.append("  %s: configured only by %s" % (tool, name_a))
+    for tool in only_b:
+        lines.append("  %s: configured only by %s" % (tool, name_b))
+
+    return "\n".join(lines)
+
+
+def load_for_diff(path):
+    """Load and validate a file for diffing; returns (document, ok)."""
+    report = validate_file(path)
+    if not report.ok:
+        print(report.summary())
+        return None, False
+    if report.warnings:
+        print(report.summary())
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f), True
+    except (OSError, json.JSONDecodeError) as e:
+        print("%s: cannot read the file: %s" % (path, e))
+        return None, False
+
+
+def run_diff(path, against):
+    """The offline counterpart of the in-browser import preview: the
+    per-tool diff of one settings file against another file or a
+    built-in preset."""
+    if os.path.isfile(against):
+        name_b = against
+        document_b, ok = load_for_diff(against)
+    elif against in EXPECTED_PRESET_IDS:
+        name_b = "%s (preset)" % against
+        try:
+            document_b = preset_document_from_source(against)
+            ok = True
+        except ValueError as e:
+            print("cannot rebuild the preset from the C++ source: %s" % e)
+            return False
+    else:
+        print("--diff: %r is neither an existing file nor a built-in preset "
+              "(one of: %s)" % (against, ", ".join(EXPECTED_PRESET_IDS)))
+        return False
+
+    if not ok:
+        return False
+
+    document_a, ok = load_for_diff(path)
+    if not ok:
+        return False
+
+    differences, only_a, only_b = diff_documents(document_a, document_b)
+    print(format_diff(differences, only_a, only_b, path, name_b))
+    return True
+
+
 def self_test():
     """Checks the validator against fixtures that mirror the C++
     autotests (SecurityToolsTest::settingsPorter*Test)."""
@@ -476,6 +755,67 @@ def self_test():
           "the built-in preset ids must match securitypresets.cpp: %r"
           % preset_ids_from_source())
 
+    # --- per-tool diff, mirroring settingsPorterPreviewTest ---
+
+    # The presets rebuild from the C++ source: three documents, each
+    # stating all seven tools with the pinned content.
+    try:
+        rebuilt = {pid: preset_document_from_source(pid)
+                   for pid in EXPECTED_PRESET_IDS}
+        for pid, document in rebuilt.items():
+            check(document["format"] == FORMAT and document["version"] == VERSION,
+                  "the rebuilt preset %s must carry the format header" % pid)
+            tools = document["tools"]
+            check(len(tools) == 7,
+                  "the rebuilt preset %s must state all seven tools" % pid)
+        check(rebuilt["essentials"]["tools"]["secureDns"]["mode"] == 0,
+              "essentials must disable secure DNS")
+        check(rebuilt["essentials"]["tools"]["fingerprintProtection"]["enabled"] is False,
+              "essentials must disable fingerprint protection")
+        check(rebuilt["recommended-baseline"]["tools"]["secureDns"]["mode"] == 1,
+              "the recommended baseline must use secure DNS with fallback")
+        check(len(rebuilt["recommended-baseline"]["tools"]["secureDns"]["servers"]) == 1,
+              "the recommended baseline must name one DNS server")
+        check(rebuilt["maximum-protection"]["tools"]["secureDns"]["mode"] == 2,
+              "maximum protection must use secure DNS only")
+    except ValueError as e:
+        check(False, "the preset parser must be able to read securitypresets.cpp: %s" % e)
+        rebuilt = {}
+
+    # Identical documents have no differences.
+    if rebuilt:
+        differences, only_a, only_b = diff_documents(rebuilt["recommended-baseline"],
+                                                    rebuilt["recommended-baseline"])
+        check(not differences and not only_a and not only_b,
+              "diffing a document against itself must find nothing")
+
+        # A hand edit shows up as exactly the changed field.
+        edited = json.loads(json.dumps(rebuilt["recommended-baseline"]))
+        edited["tools"]["adblock"]["enabled"] = False
+        edited["tools"]["httpsOnly"].pop("exclusions")  # absent resets to none
+        edited["tools"]["threatBlock"].pop("sourceUrl")  # absent stays unset
+        edited["tools"].pop("globalPrivacyControl")  # absent tool
+
+        differences, only_a, only_b = diff_documents(edited, rebuilt["recommended-baseline"])
+        diff_map = {tool: dict((f, (va, vb)) for f, va, vb in fields)
+                    for tool, fields in differences}
+        check(diff_map.get("adblock") == {"enabled": ("off", "on")},
+              "the adblock toggle must appear in the diff: %r" % diff_map)
+        # An absent exclusions field means the same as an empty one
+        # (the import resets the list), so it is no difference.
+        check("httpsOnly" not in diff_map,
+              "an absent exclusions field must count as none: %r" % diff_map)
+        check(diff_map.get("threatBlock") == {"sourceUrl": ("(not set)", rebuilt["recommended-baseline"]["tools"]["threatBlock"]["sourceUrl"])},
+              "an absent blocklist source must count as not set: %r" % diff_map)
+        check("globalPrivacyControl" in only_b,
+              "a tool the file leaves out must be reported: %r" % only_b)
+        check("globalPrivacyControl" not in diff_map,
+              "an absent tool must not produce field diffs")
+
+        text = format_diff(differences, only_a, only_b, "edited", "baseline")
+        check("adblock" in text and "enabled: off -> on" in text,
+              "the formatted diff must show the change: %r" % text)
+
     if failures:
         print("self-test FAILED:")
         for what in failures:
@@ -530,6 +870,7 @@ def update_checksum(path):
 def main():
     args = sys.argv[1:]
     update_mode = False
+    diff_mode = False
 
     if "--update-checksum" in args:
         args.remove("--update-checksum")
@@ -538,8 +879,19 @@ def main():
             print("usage: verify_settings_porter.py --update-checksum FILE [FILE...]")
             return 1
 
+    if "--diff" in args:
+        args.remove("--diff")
+        diff_mode = True
+        if not args or len(args) > 2:
+            print("usage: verify_settings_porter.py --diff FILE [AGAINST]")
+            return 1
+
     if not args:
         return 0 if self_test() else 1
+
+    if diff_mode:
+        against = args[1] if len(args) > 1 else "recommended-baseline"
+        return 0 if run_diff(args[0], against) else 1
 
     if update_mode:
         all_ok = True
