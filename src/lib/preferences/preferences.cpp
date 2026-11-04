@@ -21,6 +21,7 @@
 #include "bookmarkstoolbar.h"
 #include "history.h"
 #include "tabwidget.h"
+#include "loadrequest.h"
 #include "cookiejar.h"
 #include "locationbar.h"
 #include "autofillmanager.h"
@@ -38,6 +39,7 @@
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
+#include "settingsdiffpage.h"
 #include "desktopnotificationsfactory.h"
 #include "desktopnotification.h"
 #include "thememanager.h"
@@ -629,6 +631,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
     connect(ui->securityPresetSaveButton, &QAbstractButton::clicked, this, &Preferences::saveSecurityPresetToFile);
+    connect(ui->securityPresetPreviewButton, &QAbstractButton::clicked, this, &Preferences::previewSecurityPreset);
     connect(ui->searchEngines, &QAbstractButton::clicked, this, &Preferences::openSearchEnginesManager);
     connect(ui->certificateManager, &QAbstractButton::clicked, this, &Preferences::openCertificateManager);
     connect(ui->protocolHandlers, &QAbstractButton::clicked, this, &Preferences::openProtocolHandlersManager);
@@ -1032,6 +1035,20 @@ void Preferences::applySecurityPreset()
     }
 
     QMessageBox::information(this, tr("Apply Security Preset"), summary);
+}
+
+void Preferences::previewSecurityPreset()
+{
+    // The diff page for the selected baseline, in a tab - the same
+    // preview the import dialog shows, as a page. Nothing is applied;
+    // the page says where applying happens.
+    const QString id = ui->securityPresetCombo->currentData().toString();
+
+    if (id.isEmpty() || !m_window) {
+        return;
+    }
+
+    m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl(id)), Qz::NT_SelectedTab);
 }
 
 void Preferences::updateSecurityToolsWidgets()

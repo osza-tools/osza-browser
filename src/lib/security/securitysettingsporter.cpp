@@ -885,6 +885,14 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
     // the explicit ChecksumPolicy::Allow.
     preview.checksum = checkChecksum(document);
 
+    // Provenance, reported verbatim: a file saved from a preset
+    // still names it, known or not - where a file came from is part
+    // of judging it.
+    const QJsonValue presetValue = document.value(QSL("preset"));
+    if (presetValue.isString()) {
+        preview.presetId = presetValue.toString();
+    }
+
     const QJsonValue toolsValue = document.value(QSL("tools"));
 
     if (!toolsValue.isObject() && !toolsValue.isUndefined()) {

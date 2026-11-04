@@ -32,6 +32,7 @@
 #include "securitysettingsporter.h"
 #include "securitysidebar.h"
 #include "selftestpage.h"
+#include "settingsdiffpage.h"
 #include "settings.h"
 #include "threatblockmanager.h"
 #include "webpage.h"
@@ -2395,6 +2396,22 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QVERIFY(!SecuritySettingsPorter::fieldDisplayName(QSL("threatBlock"), QSL("sourceUrl")).isEmpty());
     }
 
+    // Provenance: a document that names a preset carries its id into
+    // the preview verbatim, known or not; a document without the
+    // field (or with one of the wrong type) previews with an empty
+    // one. The document under test carries none.
+    QCOMPARE(preview.presetId, QString());
+
+    QJsonObject withPreset = document;
+    withPreset.insert(QSL("preset"), QSL("recommended-baseline"));
+    QCOMPARE(SecuritySettingsPorter::previewDocument(withPreset).presetId, QSL("recommended-baseline"));
+
+    withPreset.insert(QSL("preset"), QSL("not-a-baseline"));
+    QCOMPARE(SecuritySettingsPorter::previewDocument(withPreset).presetId, QSL("not-a-baseline"));
+
+    withPreset.insert(QSL("preset"), 42);
+    QCOMPARE(SecuritySettingsPorter::previewDocument(withPreset).presetId, QString());
+
     // restore the state the other tests expect
     {
         Settings settings;
@@ -2675,6 +2692,44 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
     // The summary rows are set apart from the values they explain.
     QCOMPARE(exceptionFieldRow->child(0)->font(0).italic(), true);
     QCOMPARE(exceptionFieldRow->child(1)->font(0).italic(), true);
+
+    // The preset provenance a file carries: named when the file
+    // states it, resolved to the built-in's name when it is one of
+    // them, and shown as the plain text it is when it is not.
+    // Without the field there is nothing to say and nothing shown.
+    SecuritySettingsPorter::Preview fromPreset = exceptions;
+    fromPreset.presetId = QSL("recommended-baseline");
+
+    SecurityImportPreviewDialog presetDialog(fromPreset, QSL("baseline.json"));
+    presetDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&presetDialog));
+
+    auto *presetLabel = presetDialog.findChild<QLabel*>(QSL("presetLabel"));
+    QVERIFY(presetLabel);
+    QVERIFY(presetLabel->isVisible());
+    QCOMPARE(presetLabel->text(),
+             QSL("The file was saved from the built-in preset \"%1\".")
+                 .arg(SecurityPresets::presetById(QSL("recommended-baseline")).name));
+    QCOMPARE(presetLabel->textFormat(), Qt::PlainText);
+    QVERIFY(!presetLabel->toolTip().isEmpty());
+
+    // An id that is not one of the built-ins is reported as the raw
+    // id, never dropped and never resolved to something else.
+    fromPreset.presetId = QSL("someone-elses-baseline");
+
+    SecurityImportPreviewDialog unknownDialog(fromPreset, QSL("strange.json"));
+    unknownDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&unknownDialog));
+
+    auto *unknownLabel = unknownDialog.findChild<QLabel*>(QSL("presetLabel"));
+    QVERIFY(unknownLabel);
+    QCOMPARE(unknownLabel->text(),
+             QSL("The file names the preset \"someone-elses-baseline\", which is not one of the built-ins. Its contents are previewed the same way."));
+    QCOMPARE(unknownLabel->textFormat(), Qt::PlainText);
+
+    // No provenance, no line: the first dialog of this test carried
+    // no preset id, so its provenance label is hidden.
+    QVERIFY(dialog.findChild<QLabel*>(QSL("presetLabel"))->isHidden());
 }
 
 void SecurityToolsTest::securityPresetsTest()
@@ -2905,4 +2960,229 @@ void SecurityToolsTest::securityPresetsTest()
     QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
     QCOMPARE(doh->mode(), dohModeBefore);
     QCOMPARE(doh->serverTemplates(), dohServersBefore);
+}
+
+void SecurityToolsTest::settingsDiffPageBuildTest()
+{
+    // The page builds for every shape it can be asked for - the
+    // overview, each built-in baseline's diff, and the dead end for
+    // an id that is not one of the built-ins - with every
+    // placeholder substituted.
+    const QString overview = SettingsDiffPage::buildPage();
+
+    QVERIFY(overview.contains(QLatin1String("osza-settingsdiff")));
+    QVERIFY(overview.contains(QSL("Security settings diff")));
+    QVERIFY(!overview.contains(QLatin1String("%TITLE%")));
+    QVERIFY(!overview.contains(QLatin1String("%SUBTITLE%")));
+    QVERIFY(!overview.contains(QLatin1String("%OVERVIEW-HEADING%")));
+    QVERIFY(!overview.contains(QLatin1String("%DATA-JSON%")));
+    QVERIFY(!overview.contains(QLatin1String("%I18N-JSON%")));
+    QVERIFY(!overview.contains(QLatin1String("%DIRECTION%")));
+
+    // The overview data: one entry per built-in baseline, each with
+    // the number of settings it would change here right now - the
+    // same count the porter's preview computes.
+    const QJsonObject overviewData = SettingsDiffPage::diffData();
+    QCOMPARE(overviewData.value(QSL("mode")).toString(), QSL("overview"));
+
+    const QJsonArray overviewPresets = overviewData.value(QSL("presets")).toArray();
+    QCOMPARE(overviewPresets.size(), SecurityPresets::presets().size());
+
+    for (const SecurityPresets::Preset &preset : SecurityPresets::presets()) {
+        const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(preset.document);
+        QVERIFY(preview.ok);
+
+        bool found = false;
+        for (const QJsonValue &value : overviewPresets) {
+            const QJsonObject entry = value.toObject();
+            if (entry.value(QSL("id")).toString() != preset.id) {
+                continue;
+            }
+
+            found = true;
+            QCOMPARE(entry.value(QSL("name")).toString(), preset.name);
+            QCOMPARE(entry.value(QSL("description")).toString(), preset.description);
+            QCOMPARE(entry.value(QSL("changes")).toInt(), preview.changes.size());
+        }
+        QVERIFY(found);
+
+        // A baseline's diff page and data: the preset, the preview
+        // shaped for the page, and the shared display names.
+        const QJsonObject data = SettingsDiffPage::diffData(preset.id);
+        QCOMPARE(data.value(QSL("mode")).toString(), QSL("diff"));
+        QCOMPARE(data.value(QSL("preset")).toObject().value(QSL("id")).toString(), preset.id);
+        QCOMPARE(data.value(QSL("preset")).toObject().value(QSL("name")).toString(), preset.name);
+
+        const QJsonObject previewObject = data.value(QSL("preview")).toObject();
+        QVERIFY(previewObject.value(QSL("ok")).toBool());
+        QCOMPARE(previewObject.value(QSL("configuredTools")).toInt(), preview.configuredTools);
+        QCOMPARE(previewObject.value(QSL("totalTools")).toInt(), 7);
+        QCOMPARE(previewObject.value(QSL("changes")).toArray().size(), preview.changes.size());
+
+        const QString page = SettingsDiffPage::buildPage(preset.id);
+        QVERIFY(page.contains(QLatin1String("osza-settingsdiff")));
+        QVERIFY(page.contains(preset.name));
+
+        // Every change row carries the stable keys, the display
+        // names and the porter's own summary lines - the same lines
+        // the import preview dialog shows.
+        const QJsonArray changes = previewObject.value(QSL("changes")).toArray();
+        for (int i = 0; i < changes.size(); ++i) {
+            const QJsonObject change = changes.at(i).toObject();
+            const QString tool = change.value(QSL("tool")).toString();
+            const QString field = change.value(QSL("field")).toString();
+            QVERIFY(!tool.isEmpty());
+            QVERIFY(!field.isEmpty());
+            QCOMPARE(change.value(QSL("toolName")).toString(), SecuritySettingsPorter::toolDisplayName(tool));
+            QCOMPARE(change.value(QSL("fieldName")).toString(), SecuritySettingsPorter::fieldDisplayName(tool, field));
+            QVERIFY(change.contains(QSL("current")));
+            QVERIFY(change.contains(QSL("next")));
+            QVERIFY(change.contains(QSL("summary")));
+        }
+
+        // Presets state all seven sections; the page accounts for
+        // every one of them: changed, skipped or already matching.
+        int quiet = 0;
+        for (const QJsonValue &value : previewObject.value(QSL("quietTools")).toArray()) {
+            QVERIFY(!value.toString().isEmpty());
+            ++quiet;
+        }
+
+        QSet<QString> accounted;
+        for (const QJsonValue &value : changes) {
+            accounted.insert(value.toObject().value(QSL("tool")).toString());
+        }
+        for (const QString &entry : preview.skippedTools) {
+            accounted.insert(entry.left(entry.indexOf(QSL(": "))));
+        }
+        QCOMPARE(quiet + accounted.size(), 7);
+    }
+
+    // An id that is not one of the built-ins is a dead end with a
+    // way back, never an error page.
+    const QJsonObject unknownData = SettingsDiffPage::diffData(QSL("no-such-baseline"));
+    QCOMPARE(unknownData.value(QSL("mode")).toString(), QSL("unknown"));
+    QCOMPARE(unknownData.value(QSL("presetId")).toString(), QSL("no-such-baseline"));
+    QCOMPARE(unknownData.value(QSL("presets")).toArray().size(), SecurityPresets::presets().size());
+
+    const QString unknownPage = SettingsDiffPage::buildPage(QSL("no-such-baseline"));
+    QVERIFY(unknownPage.contains(QLatin1String("osza-settingsdiff")));
+    QVERIFY(!unknownPage.contains(QLatin1String("%DATA-JSON%")));
+
+    // The URL shape and its reader agree, for every id they can be
+    // handed: no item means the overview, whitespace is trimmed, and
+    // the round trip carries the id through.
+    QCOMPARE(SettingsDiffPage::pageUrl().toString(), QSL("osza:settings-diff"));
+    QCOMPARE(SettingsDiffPage::presetIdFromUrl(SettingsDiffPage::pageUrl()), QString());
+    QCOMPARE(SettingsDiffPage::presetIdFromUrl(QUrl(QSL("osza:settings-diff?preset=essentials"))), QSL("essentials"));
+    QCOMPARE(SettingsDiffPage::presetIdFromUrl(QUrl(QSL("osza:settings-diff?preset=%20essentials%20"))), QSL("essentials"));
+    QCOMPARE(SettingsDiffPage::presetIdFromUrl(SettingsDiffPage::pageUrl(QSL("maximum-protection"))), QSL("maximum-protection"));
+    QVERIFY(SettingsDiffPage::pageUrl(QSL("essentials")).toString().contains(QSL("preset=essentials")));
+}
+
+void SecurityToolsTest::settingsDiffPageIntegrationTest()
+{
+    // The real page through the real osza: scheme handler: the
+    // overview renders a card per baseline, a baseline's diff
+    // renders exactly the changes the porter's preview computes, and
+    // the dead end answers an unknown id. The diff follows the
+    // settings - a change of state changes the page.
+    auto *fingerprint = FingerprintManager::instance();
+    const bool enabledBefore = fingerprint->isEnabled();
+
+    auto runScript = [](WebPage *page, const QString &script) {
+        QString result;
+        QEventLoop loop;
+        QTimer::singleShot(8000, &loop, &QEventLoop::quit);
+        page->runJavaScript(script, [&result, &loop](const QVariant &value) {
+            result = value.toString();
+            loop.quit();
+        });
+        loop.exec();
+        return result;
+    };
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    auto loadAndSettle = [&](const QUrl &url) -> bool {
+        loadFinishedSpy.clear();
+        page.load(url);
+        return loadFinishedSpy.wait(20000);
+    };
+
+    // The overview: a card per baseline, linking to its diff.
+    QVERIFY(loadAndSettle(QUrl(QSL("osza:settings-diff"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("overview"));
+    QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.presetCards)")),
+             QString::number(SecurityPresets::presets().size()));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-preset').length")),
+             QString::number(SecurityPresets::presets().size()));
+    QVERIFY(runScript(&page, QSL("document.querySelector('a.sd-preset').getAttribute('href')")).contains(QSL("osza:settings-diff?preset=")));
+
+    // A baseline's diff: the banner, one section per changed tool,
+    // one row per changed field - the same counts the porter's
+    // preview computes for the same document.
+    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QSL("recommended-baseline"));
+    QVERIFY(!baseline.id.isEmpty());
+
+    const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(baseline.document);
+    QVERIFY(preview.ok);
+
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("recommended-baseline"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("diff"));
+    QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.changeRows)")),
+             QString::number(preview.changes.size()));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-change').length")),
+             QString::number(preview.changes.size()));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-change__summary').length")),
+             QString::number([preview]() {
+                 int count = 0;
+                 for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+                     count += SecuritySettingsPorter::exceptionSummaryLines(change).size();
+                 }
+                 return count;
+             }()));
+    QVERIFY(runScript(&page, QSL("document.querySelector('.sd-banner') === null ? 'missing' : 'shown'")) == QSL("shown"));
+
+    // An unknown id: the dead end, with the baselines to go back to.
+    QVERIFY(loadAndSettle(QUrl(QSL("osza:settings-diff?preset=definitely-not-a-baseline"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("unknown"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-banner--warn').length")), QSL("1"));
+    QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.presetCards)")),
+             QString::number(SecurityPresets::presets().size()));
+
+    // The diff follows the settings: with fingerprint protection on,
+    // the essentials baseline (it turns the protection off) shows a
+    // change for it; turned off, the section disappears.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"))));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection]').length")), QSL("1"));
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), false);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"))));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection]').length")), QSL("0"));
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), enabledBefore);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
 }

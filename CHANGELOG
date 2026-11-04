@@ -7,6 +7,67 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- The osza:settings-diff page: the import preview's diff, as a page -
+  and imports that name the preset they came from say so. The
+  dashboard's baseline menu ("Preview what a baseline would
+  change...") and the preset picker's new "Preview..." button open an
+  internal page that shows what a recommended baseline would change
+  in this profile, computed live at request time through
+  previewDocument() - the one validation the apply step and the
+  preview both consume, so the page can never disagree with what
+  applying the baseline would actually do, and it reads the current
+  values through the same live-manager snapshot an export uses. The
+  overview lists the three built-in baselines with the number of
+  settings each would change here right now; a baseline's diff
+  renders one section per changed tool and one row per changed
+  field - the current value against the value with the baseline -
+  plus the porter's one-line exception summaries ("Clears the
+  exception for: ...") reused as-is through exceptionSummaryLines(),
+  so the page, the import dialog and the offline --diff all say the
+  same thing about the same change; the sections that would be
+  skipped with their reasons; the tools the baseline does not
+  mention; and the tools this profile already runs exactly as the
+  baseline wants, named instead of left as an absence - every one of
+  the seven sections is accounted for. An id that is not one of the
+  built-ins is a dead end with the baselines linked back, never an
+  error page. The page is deliberately a preview and nothing more:
+  applying stays a confirmed step in the Qt UI (the dashboard's
+  "Import / Export" menu or Preferences), and loading the page
+  writes no setting. Every dynamic string is inserted through
+  textContent - nothing a settings file could carry can inject
+  markup - and "<" is escaped in the embedded JSON. The URL shape
+  exists once (SettingsDiffPage::pageUrl / presetIdFromUrl), shared
+  by the menu entries, the picker button and the page's own links.
+  Preset provenance now travels to the import UIs: a file saved from
+  a preset carries the "preset" field, the porter's Preview reports
+  it verbatim (whether it is one of the built-ins is the preset
+  catalog's judgment, not the porter's), and the import preview
+  dialog names it - resolved to the built-in's name with its
+  description as tooltip when it is one of them, shown as the plain
+  text it is when it is not, and no line at all when the file states
+  no origin. A new offline verifier,
+  tools/security/verify_settings_diff_page.py (46 checks, needs
+  node), pins the page without a Qt build: the placeholder contract
+  between the HTML and buildPage() (every token each side carries
+  exists on the other), the no-innerHTML rule (the mock DOM throws
+  on it), the URL shape on all three sides (page links, pageUrl(),
+  the scheme handler registration), the data and i18n contracts
+  between the page script and diffData()/i18nJson(), and the page
+  script running in a Node VM for every shape diffData() can
+  produce - overview, diff, no-change diff, unknown preset, broken
+  preview. Two new autotests pin it in the build: the build test
+  (every shape builds with every placeholder substituted, the
+  overview counts equal the porter's preview counts, all seven
+  sections accounted for as changed, skipped or already matching,
+  and the URL round trips, whitespace trimmed) and the integration
+  test (the real page through the real osza: scheme handler: the
+  rendered cards, rows and summary lines equal what the porter
+  computes for the same document, and the diff follows the
+  settings - toggling fingerprint protection changes the essentials
+  diff). The preview test pins the provenance propagation (a string
+  carried verbatim, known or not; a non-string ignored), and the
+  dialog test pins both provenance lines and that no provenance
+  shows no line.
 - The import preview's diff now says, in one line, which site
   exceptions an import would clear and which it would add. The raw
   row - "bank.example, shop.example" against "none" - asked the

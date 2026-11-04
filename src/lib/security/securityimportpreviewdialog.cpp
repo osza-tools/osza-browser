@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
 #include "securityimportpreviewdialog.h"
+#include "securitypresets.h"
 
 #include <QDialogButtonBox>
 #include <QFont>
@@ -78,6 +79,27 @@ void SecurityImportPreviewDialog::buildUi(const QString &fileName)
     }
 
     layout->addWidget(m_introLabel);
+
+    // Provenance the file states about itself: a baseline saved
+    // from the picker still names the preset it came from. Known or
+    // not, the id is shown as the plain text it is - it comes from
+    // an arbitrary file, so it is never interpreted as markup.
+    m_presetLabel = new QLabel(this);
+    m_presetLabel->setObjectName(QSL("presetLabel"));
+    m_presetLabel->setWordWrap(true);
+    m_presetLabel->setTextFormat(Qt::PlainText);
+    if (!m_preview.presetId.isEmpty()) {
+        const SecurityPresets::Preset preset = SecurityPresets::presetById(m_preview.presetId);
+        if (!preset.id.isEmpty()) {
+            m_presetLabel->setText(tr("The file was saved from the built-in preset \"%1\".").arg(preset.name));
+            m_presetLabel->setToolTip(preset.description);
+        } else {
+            m_presetLabel->setText(tr("The file names the preset \"%1\", which is not one of the built-ins. Its contents are previewed the same way.").arg(m_preview.presetId));
+        }
+    } else {
+        m_presetLabel->hide();
+    }
+    layout->addWidget(m_presetLabel);
 
     // The diff itself: one top-level row per tool, one child row per
     // changed field. Current and future value sit next to each

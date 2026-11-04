@@ -70,7 +70,17 @@ and KDE contributors for their work.
   all seven tools through the same validation as an import, and the
   picker also saves any preset as a regular checksum-verified
   settings file, so a baseline can be shared without applying it
-  first. The per-profile fingerprint seed is deliberately never
+  first. Baselines can be judged before they are applied: the
+  osza:settings-diff page (from the dashboard's baseline menu or the
+  picker's "Preview..." button) shows what a baseline would change
+  in this profile, tool by tool, computed live through the same
+  preview the import dialog uses - exception summaries included -
+  with the number of changes per baseline on the overview and the
+  tools already at the baseline's settings named; the page is a
+  preview only, applying stays a separate, confirmed step. A file
+  saved from a preset still names the preset it came from, and the
+  import preview says so - known presets by name, unknown ids
+  verbatim. The per-profile fingerprint seed is deliberately never
   part of it. The
   security dashboard sidebar keeps live counters of blocked ads,
   stripped trackers, HTTPS upgrades and blocked threats, with quick

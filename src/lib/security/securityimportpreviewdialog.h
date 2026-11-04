@@ -72,6 +72,7 @@ private:
     SecuritySettingsPorter::Preview m_preview;
 
     QLabel* m_introLabel;
+    QLabel* m_presetLabel;
     QTreeWidget* m_changesTree;
     QLabel* m_skipLabel;
     QLabel* m_unchangedLabel;

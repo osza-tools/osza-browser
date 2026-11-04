@@ -2728,6 +2728,22 @@ or in bulk from the fingerprint exceptions dialog.</string>
                   </widget>
                  </item>
                  <item>
+                  <widget class="QPushButton" name="securityPresetPreviewButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>Show what the selected preset would change in this profile, tool by tool, on the osza:settings-diff page. Nothing is applied by the preview.</string>
+                   </property>
+                   <property name="text">
+                    <string>Preview...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QPushButton" name="securityBaselineButton">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

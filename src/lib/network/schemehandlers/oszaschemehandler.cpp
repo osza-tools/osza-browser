@@ -21,6 +21,7 @@
 #include "browserwindow.h"
 #include "mainapplication.h"
 #include "networkmanager.h"
+#include "settingsdiffpage.h"
 #include "speeddial.h"
 #include "pluginproxy.h"
 #include "plugininterface.h"
@@ -63,7 +64,7 @@ void OszaSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
     }
 
     QStringList knownPages;
-    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore") << QSL("threatblocked") << QSL("selftest");
+    knownPages << QSL("about") << QSL("start") << QSL("speeddial") << QSL("config") << QSL("restore") << QSL("threatblocked") << QSL("selftest") << QSL("settings-diff");
 
     if (knownPages.contains(job->requestUrl().path()))
         job->reply(QByteArrayLiteral("text/html"), new OszaSchemeReply(job, job));
@@ -137,6 +138,11 @@ void OszaSchemeReply::loadPage()
             ThreatBlockManager::blockedUrlFromPageUrl(m_job->requestUrl()));
     } else if (m_pageName == QLatin1String("selftest")) {
         contents = SelfTestPage::buildPage();
+    } else if (m_pageName == QLatin1String("settings-diff")) {
+        // The baseline the request asks for rides in the "preset"
+        // query item; the page answers every value it can be handed
+        // (overview, diff, dead end) and never applies anything.
+        contents = SettingsDiffPage::buildPage(SettingsDiffPage::presetIdFromUrl(m_job->requestUrl()));
     }
 
     QMutexLocker lock(&m_mutex);

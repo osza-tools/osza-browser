@@ -15,6 +15,7 @@
         <file>html/restore.user.js</file>
         <file>html/threatblocked.html</file>
         <file>html/selftest.html</file>
+        <file>html/settingsdiff.html</file>
         <file>html/tabcrash.html</file>
         <file>html/close.svg</file>
         <file>html/configure.svg</file>

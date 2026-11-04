@@ -232,6 +232,7 @@ set(SRCS ${SRCS}
     security/securitypresets.cpp
     security/securitysettingsporter.cpp
     security/selftestpage.cpp
+    security/settingsdiffpage.cpp
     security/threatblockmanager.cpp
     session/recoveryjsobject.cpp
     session/restoremanager.cpp
@@ -486,6 +487,7 @@ set(SRCS ${SRCS}
     security/securitypresets.h
     security/securitysettingsporter.h
     security/selftestpage.h
+    security/settingsdiffpage.h
     security/threatblockmanager.h
     session/recoveryjsobject.h
     session/restoremanager.h

@@ -55,6 +55,7 @@ public Q_SLOTS:
     void importSecuritySettings();
     void saveSecurityPresetToFile(const QString &id);
     void applySecurityPreset(const QString &id);
+    void previewSecurityBaselines();
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);

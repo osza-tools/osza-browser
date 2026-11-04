@@ -29,6 +29,7 @@
 #include "securitymanager.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
+#include "settingsdiffpage.h"
 #include "settings.h"
 #include "tabwidget.h"
 #include "tabbedwebview.h"
@@ -117,6 +118,14 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
             applySecurityPreset(id);
         });
     }
+
+    // The informed path to the same decision: the diff page shows
+    // what a baseline would change here, per tool, before anything
+    // is applied.
+    presetsMenu->addSeparator();
+    QAction *previewAction = presetsMenu->addAction(tr("Preview what a baseline would change..."));
+    previewAction->setToolTip(tr("Open the osza:settings-diff page: what each recommended baseline would change in this profile, computed live. Nothing is applied by the preview."));
+    connect(previewAction, &QAction::triggered, this, &SecuritySideBar::previewSecurityBaselines);
 
     // A baseline can also be handed to another machine or profile
     // without first applying it here: the picker saves any preset
@@ -455,6 +464,18 @@ void SecuritySideBar::openSelfTest()
     }
 
     m_window->tabWidget()->addView(LoadRequest(QUrl(QSL("osza:selftest"))), Qz::NT_SelectedTab);
+}
+
+void SecuritySideBar::previewSecurityBaselines()
+{
+    // The baselines overview: one card per baseline with the number
+    // of settings it would change here right now, linking to its
+    // full diff. A preview only - the page applies nothing.
+    if (!m_window) {
+        return;
+    }
+
+    m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl()), Qz::NT_SelectedTab);
 }
 
 void SecuritySideBar::exportSecuritySettings()

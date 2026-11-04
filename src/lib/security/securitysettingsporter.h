@@ -188,6 +188,15 @@ public:
         // needs the explicit ChecksumPolicy::Allow.
         ChecksumState checksum = ChecksumState::NoChecksum;
 
+        // Provenance the document states about itself: the id of the
+        // built-in preset it was saved from (the "preset" field a
+        // preset export carries), empty when the document does not
+        // name one. Reported verbatim, known or not, so every import
+        // UI can say where a file came from; whether the id is one
+        // of the built-ins is the preset catalog's judgment
+        // (SecurityPresets::presetById), not the porter's.
+        QString presetId;
+
         int configuredTools = 0;    // sections the document carries
         QList<PreviewChange> changes;         // only actual differences
         QStringList skippedTools;   // "tool: reason", like ImportResult

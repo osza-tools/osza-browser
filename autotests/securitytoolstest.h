@@ -65,6 +65,8 @@ private Q_SLOTS:
     void settingsPorterPresetExportTest();
     void securityImportPreviewDialogTest();
     void securityPresetsTest();
+    void settingsDiffPageBuildTest();
+    void settingsDiffPageIntegrationTest();
 };
 
 #endif // SECURITYTOOLSTEST_H

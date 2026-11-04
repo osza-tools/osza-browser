@@ -68,6 +68,7 @@ private Q_SLOTS:
     void importSecuritySettings();
     void saveSecurityPresetToFile();
     void applySecurityPreset();
+    void previewSecurityPreset();
     void updateThreatBlockNow();
     void updateThreatBlockStatus();
     void threatBlockUpdateFailed(const QString &error);
