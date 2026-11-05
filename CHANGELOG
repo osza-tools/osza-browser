@@ -7,6 +7,46 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (16): the copy-link action on the self-test page's
+  sections - the security self-test joins the deep links. Each of the
+  page's four parts (the protections snapshot, the live fingerprint
+  checks, the noise tiles, the verify-on-a-real-site links) now
+  carries its own "#" anchor on its heading, and a plain click on it
+  copies that section's address to the clipboard - the "#" becomes a
+  checkmark in the accent color while the address sits there, then
+  says "#" again - so a single part of the self-test can be pointed
+  at, pasted into a note or a bug report, shared or bookmarked.
+  Everything else that reads an href keeps its own meaning: modified
+  clicks, middle-click, the context menu's "Copy link address",
+  bookmarks. The copy prefers the async Clipboard API
+  (navigator.clipboard.writeText) and falls back to the legacy
+  execCommand path when the API is missing or refuses, exactly like
+  the diff page's anchors - on the very clipboard the previous
+  release taught the browser to answer for its own pages. The
+  address is osza:selftest?section=<id> (the ids: protections,
+  fingerprint, noise, verify), and the URL shape exists once:
+  SelfTestPage::pageUrl() builds it, sectionIdFromUrl() reads it
+  back, the scheme handler hands the requested section to the page,
+  and the page's own script spells the same shape for its anchors -
+  the same contract the settings-diff page's deep links follow. A
+  request asking for a section lands focused on it: marked,
+  scrolled to, introduced by a note that names the section by its
+  own heading; an address naming a section the page does not have
+  is answered with a note over the whole page, everything shown
+  from the top, never an error - which sections exist is the page's
+  judgment, and the browser stays a pipe for the one value. The
+  offline verifier for the page grew from 29 to 76 checks: the URL
+  shape is pinned on all four sides (pageUrl(), sectionIdFromUrl(),
+  the scheme handler, the page's own anchor builder), and the copy
+  action and the landing run in the mocked DOM on every path they
+  can take - the async copy, the refused-then-legacy copy, nothing
+  copying at all, the double click appending its state once, the
+  modified click left to the browser, the focused and the unknown
+  section. A new autotest pins the URL helpers (the shapes, the
+  trimming, the round trip, the verbatim pass-through of an unknown
+  id) and the real page through the scheme handler: the four
+  anchors carry the pageUrl() addresses, the focused section is
+  marked and noted, the unknown one is answered.
 - Security tools (15): the copy-link action on the diff page's
   section anchors, and the padlock menu's per-site entries join the
   deep links. The "#" anchor of a tool's section carried the URL
@@ -387,6 +427,26 @@ Added:
   the page's SHA-256 before it ever shipped.
 
 Fixed:
+- Three latent bugs in the security autotests, none of which had
+  ever executed anywhere: the fast build check only compiles them,
+  and the local builds had been broken for the same stretch, so the
+  suite's first full run today was its first run at all. The padlock
+  deep-link test crashed with a null view: it asked a freshly
+  created window for the page it is showing, but a window builds
+  its first tab in postLaunch(), deferred to the event loop, so
+  there was no tab to ask about yet - the test now waits for one
+  (QTRY_VERIFY). The porter document test demanded an "enabled"
+  field from all seven tool sections, but secure DNS carries its
+  mode instead - the mode is the enabled state there, 0 being
+  Disabled, exactly as the format documentation spells it - so the
+  test now asserts secure DNS by its own shape. And the diff page
+  integration test compared the unknown-tool warning's diff against
+  a preview computed before the test itself turned the fingerprint
+  protection off, one change the page rightly no longer shows; the
+  expected count is now recomputed from the profile as it stands.
+  The whole suite passes: 42 checks, plus the neighbouring autotest
+  binaries (adblock, qztools, sqldatabase, cookies, locationbar,
+  opensearch, password backends) re-run green.
 - The build was broken on every push since the settings-diff deep
   links landed, in two places the fast build check never got far
   enough to report at once. First, SecurityImportPreviewDialog's

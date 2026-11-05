@@ -57,6 +57,7 @@ private Q_SLOTS:
     void selfTestNoisePatternTest();
     void selfTestNoiseEquivalenceTest();
     void selfTestPageBuildTest();
+    void selfTestSectionUrlTest();
     void selfTestPageIntegrationTest();
 
     void settingsPorterDocumentTest();

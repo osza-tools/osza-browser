@@ -37,6 +37,13 @@ import os
 SRC = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    os.pardir, os.pardir,
                    "src", "lib", "data", "html", "selftest.html")
+PAGE_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        os.pardir, os.pardir,
+                        "src", "lib", "security", "selftestpage.cpp")
+HANDLER_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           os.pardir, os.pardir,
+                           "src", "lib", "network", "schemehandlers",
+                           "oszaschemehandler.cpp")
 
 import re
 import json
@@ -45,6 +52,55 @@ import tempfile
 
 html = open(SRC, encoding="utf-8").read()
 script = re.search(r"<script>(.*?)</script>", html, re.DOTALL).group(1)
+page_cpp = open(PAGE_CPP, encoding="utf-8").read()
+handler_cpp = open(HANDLER_CPP, encoding="utf-8").read()
+
+
+# ------------------------------------------------------------------
+# 0. The section deep links: the URL shape and its landing, pinned
+#    statically on every side that spells it
+# ------------------------------------------------------------------
+print("== section deep links: the URL shape, on every side ==")
+
+checks = [0]
+def static_check(label, ok):
+    print(("  PASS " if ok else "  FAIL ") + label)
+    checks[0] += 0 if ok else 1
+
+static_check("pageUrl() spells the one address shape",
+      'url.setPath(QSL("selftest"))' in page_cpp
+      and 'query.addQueryItem(QSL("section")' in page_cpp)
+static_check("pageUrl() drops an empty section, keeping the plain address",
+      re.search(r"const QString trimmed = sectionId\.trimmed\(\);\s*\n\s*if \(!trimmed\.isEmpty\(\)\)",
+                page_cpp) is not None)
+static_check("sectionIdFromUrl() reads the same item back",
+      'queryItemValue(QSL("section")).trimmed()' in page_cpp)
+static_check("the scheme handler hands the item to the page",
+      re.search(r"SelfTestPage::buildPage\(SelfTestPage::sectionIdFromUrl\(m_job->requestUrl\(\)\)\)",
+                handler_cpp) is not None)
+static_check("the page script spells the same URL shape",
+      "'osza:selftest?section=' + encodeURIComponent(sectionId)" in script)
+static_check("the four sections carry their stable ids in order",
+      re.findall(r'data-section="([a-z]+)"', html)
+      == ["protections", "fingerprint", "noise", "verify"])
+static_check("every heading keeps its translated text in the name span",
+      len(re.findall(r'<span class="st-h__text">%[A-Z-]+%</span>', html)) == 4)
+static_check("the focus note has its dedicated element",
+      'id="st-focus-note"' in html)
+static_check("the anchors are wired into the headings",
+      "wireCopyLink(deepLink, deepLinkHref)" in script
+      and "heading.appendChild(deepLink)" in script)
+static_check("the focus lands before the checks run",
+      re.search(r"function run\(\) \{\s*\n\s*wireSectionLinks\(\);\s*\n\s*focusRequestedSection\(\);\s*\n\s*runStatuses\(\);",
+                script) is not None)
+static_check("the link titles and focus notes are translated in the page class",
+      all(key in page_cpp for key in (
+          'QSL("section_link_title")', 'QSL("section_link_copied_title")',
+          'QSL("section_link_copy_failed_title")',
+          'QSL("focus_note")', 'QSL("focus_unknown")')))
+if checks[0]:
+    print("STATIC CHECK(S) FAILED")
+    exit(1)
 
 
 # Mirror of FingerprintManager::siteNoisePattern(), used to build the
@@ -80,8 +136,8 @@ def digits(pattern):
     return "".join(str(d + 1) for d in pattern)
 
 
-def build_page_script(fingerprint_on, gpc_on):
-    statuses = [
+def build_statuses(fingerprint_on, gpc_on):
+    return [
         {"id": "adblock", "label": "AdBlock", "on": True, "detail": "d"},
         {"id": "httpsonly", "label": "HTTPS-Only mode", "on": False, "detail": "d"},
         {"id": "striptracking", "label": "Strip tracking parameters", "on": True, "detail": "d"},
@@ -90,33 +146,62 @@ def build_page_script(fingerprint_on, gpc_on):
         {"id": "fingerprint", "label": "Fingerprint protection", "on": fingerprint_on, "detail": "d"},
         {"id": "gpc", "label": "Global Privacy Control", "on": gpc_on, "detail": "d"},
     ]
-    demo = [
+
+
+def build_demo():
+    return [
         {"host": "example.com", "data": digits(site_noise_pattern(1234567890, "example.com", 64))},
         {"host": "example.org", "data": digits(site_noise_pattern(1234567890, "example.org", 64))},
     ]
-    page = script
-    page = page.replace("%STATUS-JSON%", json.dumps(statuses))
-    page = page.replace("%DEMO-PATTERNS%", json.dumps(demo))
-    page = page.replace("%I18N-JSON%", "{}")
-    return page
 
 
 harness = r'''
 const vm = require('vm');
 
-function makeElement(id) {
-    return {
-        id: id,
+function makeElement(tag, id) {
+    // The mock DOM refuses innerHTML: the page must build its nodes
+    // and set every dynamic string through textContent. textContent
+    // aggregates like the real DOM: own text, then the children's.
+    // scrollIntoView records that it ran, so a focused section's
+    // landing can be asserted; select() and removeChild() let the
+    // copy action's legacy fallback run the same way it runs in a
+    // browser.
+    const node = {
+        tag: tag,
+        id: id || '',
         children: [],
         style: {},
         className: '',
-        textContent: '',
         attrs: {},
         listeners: {},
+        scrolledIntoView: false,
+        selected: false,
         appendChild: function (c) { this.children.push(c); return c; },
-        setAttribute: function (k, v) { this.attrs[k] = v; },
-        addEventListener: function (type, fn) { this.listeners[type] = fn; }
+        removeChild: function (c) {
+            const i = this.children.indexOf(c);
+            if (i !== -1) {
+                this.children.splice(i, 1);
+            }
+            return c;
+        },
+        setAttribute: function (k, v) { this.attrs[k] = String(v); },
+        getAttribute: function (k) { return (k in this.attrs) ? this.attrs[k] : null; },
+        addEventListener: function (type, fn) { this.listeners[type] = fn; },
+        scrollIntoView: function () { this.scrolledIntoView = true; },
+        select: function () { this.selected = true; }
     };
+    let ownText = '';
+    Object.defineProperty(node, 'textContent', {
+        get: function () {
+            let out = ownText;
+            for (let i = 0; i < node.children.length; i++) {
+                out += node.children[i].textContent;
+            }
+            return out;
+        },
+        set: function (v) { ownText = String(v); }
+    });
+    return node;
 }
 
 // A 2D canvas faithful enough for the page: solid full-canvas fills
@@ -215,14 +300,61 @@ class FakeOfflineAudioContext {
 }
 
 function makeSandbox(options) {
+    // options.clipboard: 'async-ok' (the async API answers with a
+    //   resolved promise), 'async-fail' (it refuses) or absent (no
+    //   async API at all); options.execCommand: whether the legacy
+    //   copy path succeeds. Everything the copy action needs is
+    //   recorded - the texts written, the commands run, the timers
+    //   scheduled - so the scenarios assert what really happened.
     const storage = options.storage;
+    const state = { clipboardWrites: [], execCommandCalls: [] };
+    const timers = [];
+    let timerId = 0;
+
     const elements = {};
-    for (const id of ['st-summary', 'st-summary-text', 'st-statuses', 'st-tests', 'st-tiles', 'st-reload']) {
-        elements[id] = makeElement(id);
+    for (const id of ['st-summary', 'st-summary-text', 'st-focus-note', 'st-reload']) {
+        elements[id] = makeElement(null, id);
     }
+
+    // The four sections the static template carries, mocked with
+    // the same shape the page's own script looks for: a wrapper with
+    // data-section, a heading row, the translated name in its span,
+    // and the section's content container (which the checks render
+    // into through the ids they already know).
+    const sections = [];
+    const sectionSpecs = [
+        ['protections', 'Protections', 'st-statuses'],
+        ['fingerprint', 'Fingerprint randomization', 'st-tests'],
+        ['noise', 'The invisible noise', 'st-tiles'],
+        ['verify', 'Verify on a real site', null]
+    ];
+    for (const spec of sectionSpecs) {
+        const section = makeElement('section');
+        section.setAttribute('data-section', spec[0]);
+        const heading = makeElement('h2');
+        heading.className = 'vx-h st-h';
+        const text = makeElement('span');
+        text.className = 'st-h__text';
+        text.textContent = spec[1];
+        heading.appendChild(text);
+        section.appendChild(heading);
+        if (spec[2]) {
+            const content = makeElement(null, spec[2]);
+            content.id = spec[2];
+            elements[spec[2]] = content;
+            section.appendChild(content);
+        }
+        sections.push(section);
+    }
+
     const document = {
         getElementById: function (id) { return elements[id] || null; },
-        querySelectorAll: function () { return []; },
+        querySelectorAll: function (selector) {
+            if (selector === '.st-sec') {
+                return sections.slice();
+            }
+            return [];
+        },
         createElement: function (tag) {
             if (tag === 'canvas') {
                 const c = { width: 0, height: 0 };
@@ -234,7 +366,12 @@ function makeSandbox(options) {
                 };
                 return c;
             }
-            return makeElement(null);
+            return makeElement(tag);
+        },
+        body: makeElement('body'),
+        execCommand: function (command) {
+            state.execCommandCalls.push(command);
+            return !!options.execCommand;
         }
     };
     const sandbox = {
@@ -243,6 +380,7 @@ function makeSandbox(options) {
         Uint8Array: Uint8Array, Uint8ClampedArray: Uint8ClampedArray,
         Int32Array: Int32Array, Float32Array: Float32Array, DataView: DataView,
         isFinite: isFinite, JSON: JSON,
+        encodeURIComponent: encodeURIComponent,
         document: document,
         navigator: options.navigator,
         location: { reload: function () {} },
@@ -251,18 +389,55 @@ function makeSandbox(options) {
             setItem: function (k, v) { storage[k] = String(v); }
         },
         matchMedia: function () { return { matches: true }; },
-        requestAnimationFrame: function (fn) { return setTimeout(fn, 0); },
+        requestAnimationFrame: function () {},
         performance: { now: function () { return 0; } },
         OfflineAudioContext: FakeOfflineAudioContext,
-        setTimeout: setTimeout
+        setTimeout: function (fn, delay) {
+            timerId += 1;
+            timers.push({ id: timerId, fn: fn });
+            return timerId;
+        },
+        clearTimeout: function (id) {
+            for (let i = 0; i < timers.length; i++) {
+                if (timers[i].id === id) {
+                    timers.splice(i, 1);
+                    return;
+                }
+            }
+        }
     };
+    if (options.clipboard === 'async-ok' || options.clipboard === 'async-fail') {
+        const writes = state.clipboardWrites;
+        const mode = options.clipboard;
+        sandbox.navigator = {
+            hardwareConcurrency: 4,
+            deviceMemory: 8,
+            clipboard: {
+                writeText: function (text) {
+                    writes.push(text);
+                    return mode === 'async-ok'
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('write refused'));
+                }
+            }
+        };
+    }
     if (options.guardLive) {
         sandbox.__oszaFingerprintGuard = 1;
     }
     sandbox.window = sandbox;
     sandbox.self = sandbox;
     sandbox.globalThis = sandbox;
-    return { ctx: vm.createContext(sandbox), sandbox: sandbox, elements: elements };
+
+    function runTimers() {
+        const pending = timers.splice(0);
+        for (let i = 0; i < pending.length; i++) {
+            pending[i].fn();
+        }
+    }
+
+    return { ctx: vm.createContext(sandbox), sandbox: sandbox, elements: elements,
+             sections: sections, state: state, timers: timers, runTimers: runTimers };
 }
 
 let failures = 0;
@@ -273,6 +448,14 @@ function check(label, ok) {
 
 const sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
 
+// The copy action settles its promises on the microtask queue, so
+// the assertions about its answers run one turn later.
+function afterMicrotasks(fn) {
+    return Promise.resolve().then(function () {
+        return Promise.resolve();
+    }).then(fn);
+}
+
 async function runScenario(name, pageScript, options) {
     console.log('== ' + name + ' ==');
     const run = makeSandbox(options);
@@ -281,7 +464,24 @@ async function runScenario(name, pageScript, options) {
 
     const st = run.sandbox.window.__oszaSelfTest;
     check('page script settled (done)', st && st.done === true);
-    return { st: st, elements: run.elements, sandbox: run.sandbox };
+    return { st: st, elements: run.elements, sandbox: run.sandbox,
+             sections: run.sections, state: run.state, timers: run.timers,
+             runTimers: run.runTimers };
+}
+
+// The section anchors, in document order, straight from the mocked
+// headings the page wired them into.
+function sectionLinks(run) {
+    const out = [];
+    for (const section of run.sections) {
+        const heading = section.children[0];
+        for (const child of heading.children) {
+            if (child.className && child.className.indexOf('st-link') !== -1) {
+                out.push(child);
+            }
+        }
+    }
+    return out;
 }
 
 (async function () {
@@ -332,6 +532,154 @@ async function runScenario(name, pageScript, options) {
                                 { guardLive: true, navigator: { hardwareConcurrency: 4, deviceMemory: 8 }, storage: {} });
     check('gpc check fails loudly', c.st.results.gpc.verdict === 'fail');
 
+    // D: a section deep link lands focused on its section.
+    const focusI18n = {
+        section_link_title: 'Copy a link to this section of the self-test',
+        section_link_copied_title: 'Link copied to the clipboard',
+        section_link_copy_failed_title: "Could not copy the link - the context menu's Copy link address still works",
+        focus_note: 'Showing the %1 section of the self-test.',
+        focus_unknown: 'The address asked for a section this page does not have; everything is shown from the top.'
+    };
+    const d = await runScenario('D: focused on the noise section',
+                                buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('the focused section is marked',
+          d.sections[2].className.indexOf('st-sec--focus') !== -1);
+    check('only the asked-for section is marked',
+          d.sections.filter(function (s) { return s.className.indexOf('st-sec--focus') !== -1; }).length === 1);
+    check('the focused section is scrolled to', d.sections[2].scrolledIntoView === true);
+    check('the note names the section by its own heading',
+          d.elements['st-focus-note'].style.display === 'block'
+          && d.elements['st-focus-note'].textContent === 'Showing the The invisible noise section of the self-test.');
+    check('every section carries a wired anchor',
+          sectionLinks(d).length === 4
+          && sectionLinks(d).every(function (l) { return typeof l.listeners['click'] === 'function'; }));
+    check('the anchors carry the pageUrl() address shape',
+          sectionLinks(d).every(function (l, i) {
+              return String(l.href) === 'osza:selftest?section='
+                     + ['protections', 'fingerprint', 'noise', 'verify'][i];
+          }));
+
+    // E: an address naming no section is answered, never an error.
+    const e = await runScenario('E: unknown section in the address',
+                                buildScript({ fingerprint: true, gpc: true, section: 'nosector', i18n: focusI18n }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('nothing is marked for an unknown section',
+          e.sections.every(function (s) { return s.className.indexOf('st-sec--focus') === -1; }));
+    check('nothing is scrolled for an unknown section',
+          e.sections.every(function (s) { return s.scrolledIntoView === false; }));
+    check('the note says the address asked for too much',
+          e.elements['st-focus-note'].style.display === 'block'
+          && e.elements['st-focus-note'].textContent === focusI18n.focus_unknown);
+
+    // F: a plain click on a section anchor copies the deep link; the
+    // async Clipboard API first, the legacy path as the fallback,
+    // the honest title when nothing copies, modified clicks left to
+    // the browser.
+    const f = await runScenario('F: copy link, async clipboard',
+                                buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                { guardLive: true, storage: {}, clipboard: 'async-ok' });
+    const fLinks = sectionLinks(f);
+    let fPrevented = false;
+    fLinks[2].listeners['click']({ button: 0, preventDefault: function () { fPrevented = true; } });
+
+    await afterMicrotasks(function () {
+        check('a plain click does not follow the anchor', fPrevented === true);
+        check('the section address is written to the clipboard',
+              f.state.clipboardWrites.length === 1
+              && f.state.clipboardWrites[0] === 'osza:selftest?section=noise');
+        check('the legacy path was not needed', f.state.execCommandCalls.length === 0);
+        check('the checkmark shows while the address sits in the clipboard',
+              fLinks[2].className.indexOf('st-link--copied') !== -1
+              && fLinks[2].textContent === '\u2713');
+        check('the title says the link was copied',
+              fLinks[2].attrs['title'] === 'Link copied to the clipboard'
+              && fLinks[2].attrs['aria-label'] === 'Link copied to the clipboard');
+        check('the revert is scheduled with the answer, not the click',
+              f.timers.length === 1);
+
+        f.runTimers();
+        check('the anchor says "#" again after the revert',
+              fLinks[2].className.indexOf('st-link--copied') === -1
+              && fLinks[2].textContent === '#'
+              && fLinks[2].attrs['title'] === 'Copy a link to this section of the self-test');
+    });
+
+    // F2: the async API refuses; the legacy path answers instead.
+    const f2 = await runScenario('F2: copy link, async refuses',
+                                 buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                 { guardLive: true, storage: {}, clipboard: 'async-fail', execCommand: true });
+    const f2Links = sectionLinks(f2);
+    let f2Prevented = false;
+    f2Links[0].listeners['click']({ button: 0, preventDefault: function () { f2Prevented = true; } });
+
+    await afterMicrotasks(function () {
+        check('the refused write falls back to the legacy path',
+              f2.state.execCommandCalls.length === 1
+              && f2.state.execCommandCalls[0] === 'copy');
+        check('the fallback copies the same address',
+              f2Links[0].textContent === '\u2713');
+        check('the anchor was not followed either', f2Prevented === true);
+
+        f2.runTimers();
+        check('the fallback reverts too',
+              f2Links[0].textContent === '#'
+              && f2Links[0].className.indexOf('st-link--copied') === -1);
+    });
+
+    // F3: nothing can copy: the anchor is honest about it.
+    const f3 = await runScenario('F3: copy link, nothing copies',
+                                 buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                 { guardLive: true, storage: {}, execCommand: false });
+    const f3Links = sectionLinks(f3);
+    let f3Prevented = false;
+    f3Links[3].listeners['click']({ button: 0, preventDefault: function () { f3Prevented = true; } });
+
+    await afterMicrotasks(function () {
+        check('without any clipboard the anchor is honest',
+              f3Links[3].attrs['title'] === focusI18n.section_link_copy_failed_title
+              && f3Links[3].attrs['aria-label'] === focusI18n.section_link_copy_failed_title);
+        check('no checkmark without a copy', f3Links[3].textContent === '#');
+        check('the anchor was still not followed', f3Prevented === true);
+    });
+
+    // F4: a modified click keeps the browser's own meaning.
+    const f4 = await runScenario('F4: modified clicks',
+                                 buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                 { guardLive: true, storage: {}, clipboard: 'async-ok' });
+    const f4Links = sectionLinks(f4);
+    let ctrlPrevented = false;
+    let middlePrevented = false;
+    f4Links[1].listeners['click']({ button: 0, ctrlKey: true, preventDefault: function () { ctrlPrevented = true; } });
+    f4Links[1].listeners['click']({ button: 1, preventDefault: function () { middlePrevented = true; } });
+
+    await afterMicrotasks(function () {
+        check('a ctrl-click is left to the browser',
+              ctrlPrevented === false && f4.state.clipboardWrites.length === 0);
+        check('a middle click is left to the browser',
+              middlePrevented === false && f4.state.execCommandCalls.length === 0);
+        check('the anchor keeps its href for everything else',
+              String(f4Links[1].href) === 'osza:selftest?section=fingerprint');
+    });
+
+    // F5: a double click writes the address twice, appends the copied
+    // state once, and exactly one revert stays pending.
+    const f5 = await runScenario('F5: double click',
+                                 buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
+                                 { guardLive: true, storage: {}, clipboard: 'async-ok' });
+    const f5Links = sectionLinks(f5);
+    f5Links[0].listeners['click']({ button: 0, preventDefault: function () {} });
+    f5Links[0].listeners['click']({ button: 0, preventDefault: function () {} });
+
+    await afterMicrotasks(function () {
+        check('a double click writes the address twice',
+              f5.state.clipboardWrites.length === 2);
+        check('the copied state is appended once',
+              f5Links[0].className.split('st-link--copied').length - 1 === 1);
+        check('exactly one revert stays pending',
+              f5.timers.length === 1);
+    });
+
     console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
     process.exit(failures === 0 ? 0 : 1);
 })().catch(function (e) {
@@ -340,10 +688,23 @@ async function runScenario(name, pageScript, options) {
 });
 '''
 
-full = "const PAGE_SCRIPT_ON = %s;\nconst PAGE_SCRIPT_OFF = %s;\n" % (
-    json.dumps(build_page_script(True, True)),
-    json.dumps(build_page_script(False, True)),
-)
+full = "const RAW_SCRIPT = %s;\n" % json.dumps(script)
+full += "const STATUSES_ON = %s;\n" % json.dumps(build_statuses(True, True))
+full += "const STATUSES_OFF = %s;\n" % json.dumps(build_statuses(False, True))
+full += "const DEMO = %s;\n" % json.dumps(build_demo())
+full += r'''
+function buildScript(opts) {
+    opts = opts || {};
+    let page = RAW_SCRIPT;
+    page = page.replace("%STATUS-JSON%", JSON.stringify(opts.fingerprint === false ? STATUSES_OFF : STATUSES_ON));
+    page = page.replace("%DEMO-PATTERNS%", JSON.stringify(DEMO));
+    page = page.replace("%FOCUS-JSON%", JSON.stringify({ section: opts.section || "" }));
+    page = page.replace("%I18N-JSON%", JSON.stringify(opts.i18n || {}));
+    return page;
+}
+const PAGE_SCRIPT_ON = buildScript({ fingerprint: true, gpc: true });
+const PAGE_SCRIPT_OFF = buildScript({ fingerprint: false, gpc: true });
+'''
 full += harness
 
 with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as f:

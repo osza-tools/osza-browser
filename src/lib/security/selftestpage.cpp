@@ -31,6 +31,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QUrlQuery>
 
 namespace {
 
@@ -44,11 +45,12 @@ const char kDemoHost2[] = "example.org";
 
 } // namespace
 
-QString SelfTestPage::buildPage()
+QString SelfTestPage::buildPage(const QString &sectionId)
 {
     // The translated template is built once; the dynamic values
-    // (statuses, demo patterns) are substituted on every request, the
-    // same split as the speed dial page.
+    // (statuses, demo patterns, the requested section) are
+    // substituted on every request, the same split as the speed
+    // dial page.
     static QString sPage;
 
     if (sPage.isEmpty()) {
@@ -81,6 +83,7 @@ QString SelfTestPage::buildPage()
     QString page = sPage;
     page.replace(QLatin1String("%STATUS-JSON%"), statusesJson());
     page.replace(QLatin1String("%DEMO-PATTERNS%"), demoPatternsJson());
+    page.replace(QLatin1String("%FOCUS-JSON%"), focusJson(sectionId));
     return page;
 }
 
@@ -189,6 +192,40 @@ QJsonArray SelfTestPage::collectToolStatuses()
     return statuses;
 }
 
+QString SelfTestPage::focusJson(const QString &sectionId)
+{
+    // What a request asks the page to focus: the verbatim trimmed
+    // "section" item, passed through untouched. Whether the string
+    // names one of the page's sections is the page's own judgment -
+    // it owns the sections - exactly like the diff page judges a
+    // "tool" item against the porter's key list. The browser stays
+    // a pipe for this one value.
+    QJsonObject focus;
+    focus.insert(QSL("section"), sectionId.trimmed());
+    return jsonToScriptLiteral(QJsonDocument(focus));
+}
+
+QUrl SelfTestPage::pageUrl(const QString &sectionId)
+{
+    QUrl url;
+    url.setScheme(QSL("osza"));
+    url.setPath(QSL("selftest"));
+
+    const QString trimmed = sectionId.trimmed();
+    if (!trimmed.isEmpty()) {
+        QUrlQuery query;
+        query.addQueryItem(QSL("section"), trimmed);
+        url.setQuery(query);
+    }
+
+    return url;
+}
+
+QString SelfTestPage::sectionIdFromUrl(const QUrl &url)
+{
+    return QUrlQuery(url).queryItemValue(QSL("section")).trimmed();
+}
+
 QString SelfTestPage::statusesJson()
 {
     return jsonToScriptLiteral(QJsonDocument(collectToolStatuses()));
@@ -280,6 +317,15 @@ QString SelfTestPage::i18nJson()
     strings.insert(QSL("sub_live"), tr("measured now"));
     strings.insert(QSL("sub_live_flat"), tr("no noise \u2014 protection is off"));
     strings.insert(QSL("sub_demo"), tr("computed for comparison"));
+
+    // Section deep links
+    strings.insert(QSL("section_link_title"), tr("Copy a link to this section of the self-test"));
+    strings.insert(QSL("section_link_copied_title"), tr("Link copied to the clipboard"));
+    strings.insert(QSL("section_link_copy_failed_title"), tr("Could not copy the link - the context menu's Copy link address still works"));
+
+    // The focused section's note
+    strings.insert(QSL("focus_note"), tr("Showing the %1 section of the self-test."));
+    strings.insert(QSL("focus_unknown"), tr("The address asked for a section this page does not have; everything is shown from the top."));
 
     return jsonToScriptLiteral(QJsonDocument(strings));
 }

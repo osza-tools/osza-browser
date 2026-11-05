@@ -269,6 +269,60 @@ body { direction: %DIRECTION%; }
 
 .st-tilewrap__sub { font-size: 11px; color: var(--osza-text-faint); }
 
+/* --- Section deep links and their landing ------------------------------ */
+/* The heading row becomes a flex line so the "#" anchor can sit at
+   its end; the anchor itself is the same shape the diff page's tool
+   sections carry. */
+.st-h { display: flex; align-items: baseline; gap: 9px; }
+
+.st-link {
+    flex: none;
+    /* At the far end of the heading line, mirroring the diff page's
+       per-tool rows. */
+    margin-inline-start: auto;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-family: var(--osza-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--osza-text-faint);
+    text-decoration: none;
+    transition: color var(--osza-speed) var(--osza-ease), background var(--osza-speed) var(--osza-ease);
+}
+
+.st-link:hover, .st-link:focus-visible {
+    color: var(--osza-accent);
+    background: var(--osza-accent-dim);
+}
+
+/* The copy action's answer: while the address sits in the clipboard
+   the anchor carries the accent, exactly like the diff page's. */
+.st-link--copied {
+    color: var(--osza-accent);
+    background: var(--osza-accent-dim);
+    box-shadow: var(--osza-glow);
+}
+
+/* The landing of a section deep link: the focused section's heading
+   is marked, the section itself is the scroll target. */
+.st-sec { scroll-margin-block-start: 14px; }
+
+.st-sec--focus > .st-h .st-h__text { color: var(--osza-accent); }
+
+.st-sec--focus > .st-h {
+    border-block-end-color: rgba(var(--osza-accent-rgb), 0.65);
+}
+
+.st-focus-note {
+    margin-block: 10px 0;
+    padding: 8px 13px;
+    border: 1px dashed rgba(var(--osza-accent-rgb), 0.45);
+    border-radius: var(--osza-radius-sm);
+    color: var(--osza-text-dim);
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
 /* --- Links and footer ------------------------------------------------- */
 .st-links { display: flex; flex-wrap: wrap; gap: 18px; }
 
@@ -301,24 +355,36 @@ body { direction: %DIRECTION%; }
 
     <noscript><p class="st-intro">%JAVASCRIPT-DISABLED%</p></noscript>
 
-    <h2 class="vx-h">%STATUS-HEADING%</h2>
-    <p class="st-intro">%STATUS-INTRO%</p>
-    <ul id="st-statuses" class="st-statuses"></ul>
+    <!-- The focused section's note: filled and shown by the page's
+         own script, only when the address asked for a section. -->
+    <p id="st-focus-note" class="st-focus-note" style="display: none;"></p>
 
-    <h2 class="vx-h">%FP-HEADING%</h2>
-    <p class="st-intro">%FP-INTRO%</p>
-    <div id="st-tests" class="st-tests"></div>
+    <section class="st-sec" data-section="protections">
+      <h2 class="vx-h st-h"><span class="st-h__text">%STATUS-HEADING%</span></h2>
+      <p class="st-intro">%STATUS-INTRO%</p>
+      <ul id="st-statuses" class="st-statuses"></ul>
+    </section>
 
-    <h2 class="vx-h">%NOISE-HEADING%</h2>
-    <p class="st-intro">%NOISE-INTRO%</p>
-    <div id="st-tiles" class="st-tiles"></div>
+    <section class="st-sec" data-section="fingerprint">
+      <h2 class="vx-h st-h"><span class="st-h__text">%FP-HEADING%</span></h2>
+      <p class="st-intro">%FP-INTRO%</p>
+      <div id="st-tests" class="st-tests"></div>
+    </section>
 
-    <h2 class="vx-h">%VERIFY-HEADING%</h2>
-    <p class="st-intro">%VERIFY-INTRO%</p>
-    <p class="st-links">
-      <a href="https://coveryourtracks.eff.org/">Cover Your Tracks (EFF)</a>
-      <a href="https://browserleaks.com/canvas">BrowserLeaks — Canvas</a>
-    </p>
+    <section class="st-sec" data-section="noise">
+      <h2 class="vx-h st-h"><span class="st-h__text">%NOISE-HEADING%</span></h2>
+      <p class="st-intro">%NOISE-INTRO%</p>
+      <div id="st-tiles" class="st-tiles"></div>
+    </section>
+
+    <section class="st-sec" data-section="verify">
+      <h2 class="vx-h st-h"><span class="st-h__text">%VERIFY-HEADING%</span></h2>
+      <p class="st-intro">%VERIFY-INTRO%</p>
+      <p class="st-links">
+        <a href="https://coveryourtracks.eff.org/">Cover Your Tracks (EFF)</a>
+        <a href="https://browserleaks.com/canvas">BrowserLeaks — Canvas</a>
+      </p>
+    </section>
 
     <div class="st-footer">
       <button id="st-reload" class="vx-btn vx-btn--primary" type="button">%RELOAD-LABEL%</button>
@@ -344,6 +410,7 @@ var OSZA_STATUSES = %STATUS-JSON%;
 var OSZA_DEMO = %DEMO-PATTERNS%;
 var OSZA_I18N = %I18N-JSON%;
 var OSZA_TILE_SIZE = 64;
+var OSZA_FOCUS = %FOCUS-JSON%;
 
 var statusById = {};
 for (var si = 0; si < OSZA_STATUSES.length; si++) {
@@ -386,6 +453,251 @@ function el(tag, cls, text) {
         node.textContent = text;
     }
     return node;
+}
+
+/* --- Section deep links ------------------------------------------------ */
+
+/* The address of one section's part of the page, spelled the same way
+   SelfTestPage::pageUrl() spells it - the one URL shape, kept in step
+   by the offline verifier the same way the diff page's is. */
+function sectionUrl(sectionId) {
+    return 'osza:selftest?section=' + encodeURIComponent(sectionId);
+}
+
+/* The async Clipboard API first - the browser answers the clipboard
+   feature for its own osza: pages, exactly as
+   WebPage::featurePermissionRequested decides. When the API is
+   missing or refuses, the legacy execCommand path - which internal
+   pages may use too (JavascriptCanAccessClipboard is set for them)
+   - is the fallback, so the anchor works on every Qt WebEngine
+   Osza runs on. */
+function copyTextToClipboard(text, onDone, onFail)
+{
+    if (typeof navigator === 'object' && navigator.clipboard
+            && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(text).then(onDone, function () {
+            if (legacyCopyText(text)) {
+                onDone();
+            } else {
+                onFail();
+            }
+        });
+        return;
+    }
+
+    if (legacyCopyText(text)) {
+        onDone();
+    } else {
+        onFail();
+    }
+}
+
+function legacyCopyText(text)
+{
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    /* Off the layout and invisible, so nothing jumps while the
+       command reads the selection. */
+    area.style.position = 'fixed';
+    area.style.top = '0';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+
+    var copied = false;
+    try {
+        copied = document.execCommand('copy');
+    } catch (e) {
+        copied = false;
+    }
+
+    document.body.removeChild(area);
+    return copied;
+}
+
+/* The anchor's answer: the "#" becomes a checkmark and the title
+   says which of the two things happened - copied, or not copied
+   (the context menu's "Copy link address" still works then) - and
+   after a moment the anchor says "#" again. */
+function setLinkFeedback(anchor, state)
+{
+    if (state === 'copied') {
+        if (anchor.className.indexOf('st-link--copied') === -1) {
+            anchor.className = anchor.className + ' st-link--copied';
+        }
+        anchor.textContent = '\u2713';
+        anchor.setAttribute('title', t('section_link_copied_title'));
+        anchor.setAttribute('aria-label', t('section_link_copied_title'));
+    } else if (state === 'failed') {
+        anchor.setAttribute('title', t('section_link_copy_failed_title'));
+        anchor.setAttribute('aria-label', t('section_link_copy_failed_title'));
+    } else {
+        anchor.className = anchor.className.replace(' st-link--copied', '');
+        anchor.textContent = '#';
+        anchor.setAttribute('title', t('section_link_title'));
+        anchor.setAttribute('aria-label', t('section_link_title'));
+    }
+}
+
+function scheduleLinkRevert(anchor)
+{
+    if (anchor.copyTimer && typeof clearTimeout === 'function') {
+        clearTimeout(anchor.copyTimer);
+    }
+
+    if (typeof setTimeout !== 'function') {
+        return;
+    }
+
+    anchor.copyTimer = setTimeout(function () {
+        setLinkFeedback(anchor, 'idle');
+    }, 1600);
+}
+
+function wireCopyLink(anchor, href)
+{
+    anchor.addEventListener('click', function (event) {
+        /* Only a plain click copies. Clicks with a modifier, or with
+           another button, keep the browser's own meaning - new tab,
+           new window - and so does everything else that reads the
+           href: middle-click, the context menu's "Copy link
+           address", bookmarks. */
+        if (event && typeof event.button === 'number' && event.button !== 0) {
+            return;
+        }
+        if (event && (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) {
+            return;
+        }
+
+        if (event && event.preventDefault) {
+            event.preventDefault();
+        }
+
+        /* The revert is scheduled when the answer shows, not when
+           the click lands: a slow clipboard cannot leave the anchor
+           stuck in its "copied" state, and a copy that never settles
+           shows nothing that would need reverting. */
+        copyTextToClipboard(href, function () {
+            setLinkFeedback(anchor, 'copied');
+            scheduleLinkRevert(anchor);
+        }, function () {
+            setLinkFeedback(anchor, 'failed');
+            scheduleLinkRevert(anchor);
+        });
+    });
+}
+
+/* Every section of the page, in document order: the wrapper the
+   anchors' landing scrolls to, found through the class the static
+   template gives them. */
+function sectionElements()
+{
+    var out = [];
+    var nodes = document.querySelectorAll('.st-sec');
+    if (!nodes || !nodes.length) {
+        return out;
+    }
+    for (var i = 0; i < nodes.length; i++) {
+        out.push(nodes[i]);
+    }
+    return out;
+}
+
+/* The section's heading row, and the translated name it carries -
+   the deep link's note names the section by its own heading, not by
+   a second list that could drift from it. */
+function sectionHeading(section)
+{
+    var kids = section.children || [];
+    for (var i = 0; i < kids.length; i++) {
+        if (kids[i].className && kids[i].className.indexOf('st-h') !== -1) {
+            return kids[i];
+        }
+    }
+    return null;
+}
+
+function sectionName(section)
+{
+    var heading = sectionHeading(section);
+    if (!heading) {
+        return '';
+    }
+    var kids = heading.children || [];
+    for (var i = 0; i < kids.length; i++) {
+        if (kids[i].className && kids[i].className.indexOf('st-h__text') !== -1) {
+            return kids[i].textContent || '';
+        }
+    }
+    return '';
+}
+
+function wireSectionLinks()
+{
+    var sections = sectionElements();
+    for (var i = 0; i < sections.length; i++) {
+        var heading = sectionHeading(sections[i]);
+        var id = sections[i].getAttribute('data-section');
+        if (!heading || !id) {
+            continue;
+        }
+
+        /* The section's own deep link: the URL that opens this page
+           focused here. A plain click copies that address to the
+           clipboard - so it can be pasted into a note, a bug report,
+           a message - and everything else that reads an href
+           (middle-click, the context menu, bookmarks) still works
+           its own way. */
+        var deepLinkHref = sectionUrl(id);
+        var deepLink = el('a', 'st-link');
+        deepLink.href = deepLinkHref;
+        deepLink.textContent = '#';
+        deepLink.setAttribute('title', t('section_link_title'));
+        deepLink.setAttribute('aria-label', t('section_link_title'));
+        wireCopyLink(deepLink, deepLinkHref);
+        heading.appendChild(deepLink);
+    }
+}
+
+/* The landing of a section deep link: the requested section is
+   marked and scrolled to, and a note says why the reader arrived
+   mid-page. An address naming no section is answered, not ignored -
+   a note over the whole page, everything shown from the top, never
+   an error - and an address naming none at all means the plain
+   page. */
+function focusRequestedSection()
+{
+    var requested = (OSZA_FOCUS && OSZA_FOCUS.section) || '';
+    if (!requested) {
+        return;
+    }
+
+    var sections = sectionElements();
+    var target = null;
+    for (var i = 0; i < sections.length; i++) {
+        if (sections[i].getAttribute('data-section') === requested) {
+            target = sections[i];
+            break;
+        }
+    }
+
+    var note = document.getElementById('st-focus-note');
+    if (note) {
+        if (target) {
+            note.textContent = tf('focus_note', [sectionName(target)]);
+        } else {
+            note.textContent = t('focus_unknown');
+        }
+        note.style.display = 'block';
+    }
+
+    if (target) {
+        target.className += ' st-sec--focus';
+        if (target.scrollIntoView) {
+            target.scrollIntoView();
+        }
+    }
 }
 
 /* --- SHA-256 (self-contained, so the page needs no secure context) --- */
@@ -958,6 +1270,9 @@ function finish() {
 }
 
 function run() {
+    wireSectionLinks();
+    focusRequestedSection();
+
     runStatuses();
     runGuardCheck();
     runCanvasCheck();

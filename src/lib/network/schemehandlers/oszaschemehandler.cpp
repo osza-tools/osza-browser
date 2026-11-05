@@ -137,7 +137,11 @@ void OszaSchemeReply::loadPage()
         contents = mApp->networkManager()->threatBlockManager()->interstitialPage(
             ThreatBlockManager::blockedUrlFromPageUrl(m_job->requestUrl()));
     } else if (m_pageName == QLatin1String("selftest")) {
-        contents = SelfTestPage::buildPage();
+        // The "section" query item names the part of the page the
+        // request asks to focus; the page answers every value it can
+        // be handed (a known section focused, an unknown one noted
+        // over the whole page, none at all meaning the plain page).
+        contents = SelfTestPage::buildPage(SelfTestPage::sectionIdFromUrl(m_job->requestUrl()));
     } else if (m_pageName == QLatin1String("settings-diff")) {
         // The baseline the request asks for rides in the "preset"
         // query item, the tool to focus in the "tool" item; the page

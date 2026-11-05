@@ -396,6 +396,11 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
     QVERIFY(window);
 
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the padlock asks for the page the window is
+    // showing, so the tab has to exist first.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
     auto *padlock = new SiteInfoWidget(window);
     padlock->show();
     QVERIFY(QTest::qWaitForWindowExposed(padlock));
@@ -1410,6 +1415,7 @@ void SecurityToolsTest::selfTestPageBuildTest()
     QVERIFY(!page.contains(QLatin1String("%STATUS-JSON%")));
     QVERIFY(!page.contains(QLatin1String("%DEMO-PATTERNS%")));
     QVERIFY(!page.contains(QLatin1String("%I18N-JSON%")));
+    QVERIFY(!page.contains(QLatin1String("%FOCUS-JSON%")));
     QVERIFY(!page.contains(QLatin1String("%DIRECTION%")));
 
     const QJsonArray statuses = SelfTestPage::collectToolStatuses();
@@ -1469,6 +1475,36 @@ void SecurityToolsTest::selfTestPageBuildTest()
         settings.endGroup();
     }
     manager->loadSettings();
+}
+
+void SecurityToolsTest::selfTestSectionUrlTest()
+{
+    // The section deep links' URL shape: one spelling, built by
+    // pageUrl() and read back by sectionIdFromUrl(), the same
+    // contract the settings-diff page's deep links follow.
+    QCOMPARE(SelfTestPage::pageUrl().toString(), QSL("osza:selftest"));
+    QCOMPARE(SelfTestPage::pageUrl(QString()).toString(), QSL("osza:selftest"));
+    QCOMPARE(SelfTestPage::pageUrl(QSL("noise")).toString(), QSL("osza:selftest?section=noise"));
+    QCOMPARE(SelfTestPage::pageUrl(QSL("  noise  ")).toString(), QSL("osza:selftest?section=noise"));
+
+    // An id the page does not know is passed through verbatim: which
+    // sections exist is the page's own judgment, not the URL's.
+    QCOMPARE(SelfTestPage::pageUrl(QSL("nosector")).toString(), QSL("osza:selftest?section=nosector"));
+
+    // The reader answers every shape the builder can build.
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(SelfTestPage::pageUrl()), QString());
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(SelfTestPage::pageUrl(QSL("verify"))), QSL("verify"));
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(QUrl(QSL("osza:selftest?section=protections"))), QSL("protections"));
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(QUrl(QSL("osza:selftest?section=%20fingerprint%20"))), QSL("fingerprint"));
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(QUrl(QSL("osza:selftest"))), QString());
+    QCOMPARE(SelfTestPage::sectionIdFromUrl(QUrl(QSL("osza:selftest?section="))), QString());
+
+    // The page is handed the requested section verbatim, trimmed,
+    // and nothing else decides about it.
+    const QString focused = SelfTestPage::buildPage(QSL(" noise "));
+    QVERIFY(focused.contains(QLatin1String("var OSZA_FOCUS = {\"section\":\"noise\"};")));
+    const QString unfocused = SelfTestPage::buildPage();
+    QVERIFY(unfocused.contains(QLatin1String("var OSZA_FOCUS = {\"section\":\"\"};")));
 }
 
 void SecurityToolsTest::selfTestPageIntegrationTest()
@@ -1554,6 +1590,33 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
     QVERIFY(loadAndSettle());
     QCOMPARE(runScript(&page, QSL("window.__oszaSelfTest.canvasHash")), firstDigest);
 
+    // Every section carries a "#" anchor wired for copying, and its
+    // href is exactly the address pageUrl() builds - the one URL
+    // shape, on the real page.
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec > .st-h > a.st-link').length")).toInt(), 4);
+    QCOMPARE(runScript(&page, QSL("Array.prototype.map.call(document.querySelectorAll('.st-sec > .st-h > a.st-link'), function(a) { return a.href; }).join(' ')")),
+             QStringList({QSL("osza:selftest?section=protections"), QSL("osza:selftest?section=fingerprint"),
+                          QSL("osza:selftest?section=noise"), QSL("osza:selftest?section=verify")}).join(QLatin1Char(' ')));
+
+    // A section deep link lands focused on its section: the wrapper
+    // is marked, scrolled to, and the note says where the reader
+    // landed; nothing else is marked.
+    loadFinishedSpy.clear();
+    page.load(SelfTestPage::pageUrl(QSL("noise")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec--focus').length")).toInt(), 1);
+    QCOMPARE(runScript(&page, QSL("document.querySelector('.st-sec--focus').getAttribute('data-section')")), QSL("noise"));
+    QVERIFY(runScript(&page, QSL("document.getElementById('st-focus-note').style.display")).contains(QLatin1String("block")));
+    QVERIFY(runScript(&page, QSL("document.getElementById('st-focus-note').textContent")).contains(QSL("noise")));
+
+    // An address naming no section is answered, not an error: the
+    // whole page, nothing marked, the note says so.
+    loadFinishedSpy.clear();
+    page.load(SelfTestPage::pageUrl(QSL("nosector")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec--focus').length")).toInt(), 0);
+    QVERIFY(runScript(&page, QSL("document.getElementById('st-focus-note').textContent")).contains(QSL("does not have")));
+
     // restore the state the other tests expect
     {
         Settings settings;
@@ -1577,7 +1640,10 @@ void SecurityToolsTest::settingsPorterDocumentTest()
     QCOMPARE(document.value(QSL("version")).toInt(), 1);
     QVERIFY(QDateTime::fromString(document.value(QSL("exportedAt")).toString(), Qt::ISODate).isValid());
 
-    // All seven bundled tools are covered, each with an enabled state.
+    // All seven bundled tools are covered. Six carry a plain enabled
+    // state; secure DNS carries its mode instead - the mode is the
+    // enabled state there (0 is Disabled), with the servers beside
+    // it - so it is asserted by its own shape, not by "enabled".
     const QJsonObject tools = document.value(QSL("tools")).toObject();
     const QStringList expectedTools = {QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
                                        QSL("secureDns"), QSL("threatBlock"), QSL("fingerprintProtection"),
@@ -1586,7 +1652,12 @@ void SecurityToolsTest::settingsPorterDocumentTest()
 
     for (const QString &id : expectedTools) {
         QVERIFY(tools.value(id).isObject());
-        QVERIFY(tools.value(id).toObject().contains(QSL("enabled")));
+        if (id == QSL("secureDns")) {
+            QVERIFY(tools.value(id).toObject().contains(QSL("mode")));
+            QVERIFY(tools.value(id).toObject().contains(QSL("servers")));
+        } else {
+            QVERIFY(tools.value(id).toObject().contains(QSL("enabled")));
+        }
     }
 
     // The exported state follows the live managers, not stale keys:
@@ -2941,11 +3012,14 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
 
     // Selecting a tool's row retargets the link to that tool's
     // section, and says so: the deep link is visible in the label,
-    // not only in where it lands.
+    // not only in where it lands. The label is rich text, so the
+    // address appears in it escaped - compared here the same way the
+    // dashboard's and the padlock's link labels are.
     auto *presetTree = presetDialog.findChild<QTreeWidget*>();
     QVERIFY(presetTree);
     presetTree->setCurrentItem(presetTree->topLevelItem(0));
-    QVERIFY(viewPageLabel->text().contains(QSL("osza:settings-diff?preset=recommended-baseline&tool=httpsOnly")));
+    QVERIFY(viewPageLabel->text().contains(
+        SettingsDiffPage::pageUrl(QSL("recommended-baseline"), QSL("httpsOnly")).toString().toHtmlEscaped()));
     QVERIFY(viewPageLabel->text().contains(SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly"))));
 
     // Selecting a field row under the tool focuses the same tool.
@@ -3592,13 +3666,17 @@ void SecurityToolsTest::settingsDiffPageIntegrationTest()
             .contains(QSL("already at the baseline's settings")));
 
     // A "tool" item naming no security tool: a warning line over the
-    // full diff, which still renders exactly the porter's preview.
+    // full diff, which still renders exactly the porter's preview -
+    // the preview of the profile as it stands right now, recomputed
+    // here because the steps above turned the fingerprint
+    // protection off, and the essentials baseline no longer changes
+    // it.
     QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"), QSL("definitely-not-a-tool"))));
     QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("diff"));
     QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.data.unknownTool")), QSL("definitely-not-a-tool"));
     QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-banner--warn').length")), QSL("1"));
     QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.changeRows)")),
-             QString::number(essentialsPreview.changes.size()));
+             QString::number(SecuritySettingsPorter::previewDocument(essentials.document).changes.size()));
 
     // Without a preset the tool item means nothing: the overview.
     QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QString(), QSL("secureDns"))));
