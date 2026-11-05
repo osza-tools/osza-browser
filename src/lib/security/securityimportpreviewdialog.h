@@ -80,7 +80,7 @@ public:
     // case - and only for it.
     bool importDespiteChecksum() const;
 
-signals:
+Q_SIGNALS:
     // The "view as page" link was used: the osza:settings-diff URL
     // of the preset this file was saved from, focused on the
     // selected tool's section when the tree selection names one. The

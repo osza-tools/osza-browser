@@ -387,6 +387,43 @@ Added:
   the page's SHA-256 before it ever shipped.
 
 Fixed:
+- The build was broken on every push since the settings-diff deep
+  links landed, in two places the fast build check never got far
+  enough to report at once. First, SecurityImportPreviewDialog's
+  header declared its diffPageRequested signal through the bare
+  "signals:" keyword - the only such spelling in the whole tree. The
+  project builds through KDECompilerSettings, whose modern-code
+  definitions include -DQT_NO_KEYWORDS: under it Qt defines only the
+  always-available Q_SIGNALS spelling, so the AUTOMOC unity
+  translation unit (mocs_compilation.cpp) failed with "'signals'
+  does not name a type" right at the class. The declaration now uses
+  Q_SIGNALS, like every other header; the keyword sweep found no
+  other bare signals/slots/emit anywhere. Second - unmasked only
+  once the first was fixed - WebPage::featurePermissionRequested
+  switched on QWebEnginePage::ClipboardSanitizedWrite behind a
+  "Qt 6.6 split" guard, but no Qt release ever shipped that
+  enumerator: Qt maps both of Chromium's clipboard permissions,
+  sanitized write and read-write, onto the one combined
+  QWebEnginePage::ClipboardReadWrite feature (in every version from
+  6.4 through 6.11, both through the legacy signal and through
+  QWebEnginePermission), so the case compiled nowhere. The osza:
+  clipboard answer is now the one combined feature, granted - the
+  same trust the legacy execCommand write path already extends to
+  the browser's own pages, whose content is all browser-shipped with
+  dynamic strings rendered through textContent; a read cannot be
+  told apart from a write by this API, and no page the browser
+  ships reads the clipboard. The autotests had two masked errors of
+  their own from the same stretch (they had not compiled since the
+  import-diff commits): SecurityToolsTest used QLabel without
+  including it, and passed a brace-initialized two-element
+  QStringList straight into QCOMPARE, where the comma split the
+  macro's arguments; the include is added and the list is
+  parenthesized. The diff-page verifier's static clipboard pins
+  follow the corrected policy (one combined feature, granted, no
+  version guard, no reference to the enumerator Qt never had).
+  Verified by a full local compile of every target including the
+  autotests against Qt 6.8 with the same ECM definitions the CI
+  uses, and by all four offline security verifiers.
 - The browser crashed on every launch and no window ever appeared:
   MainApplication called OszaIcons::activateTheme() while still inside
   its constructor, before Settings::createSettings() had run, and

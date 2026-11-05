@@ -291,28 +291,30 @@ check("a modified click is left to the browser",
 
 # The C++ side of the clipboard: the async API asks for a feature
 # permission, and for the browser's own pages the policy is pinned
-# here - a sanitized write granted, a read denied (Qt >= 6.6, where
-# the two are separate features), the combined feature granted on
-# older Qt where it is the write. Everything else still goes through
-# the HTML5 permission manager.
+# here. Qt's clipboard permission is one combined feature in every
+# version - Chromium asks for its sanitized write as
+# QWebEnginePage::ClipboardReadWrite too, so no Qt release ever
+# delivered a separate one - and for the trusted internal pages it
+# is granted, the same trust the legacy execCommand path already
+# extends to them. Everything else still goes through the HTML5
+# permission manager.
 osza_clipboard_block = re.search(
     r'if \(origin\.scheme\(\) == QL1S\("osza"\)\) \{(.*?)\n    \}',
     webpage_cpp, re.DOTALL)
-check("the clipboard features are answered for osza: pages",
+check("the clipboard feature is answered for osza: pages",
       osza_clipboard_block is not None)
 if osza_clipboard_block:
     block = osza_clipboard_block.group(1)
-    check("a sanitized clipboard write is granted for osza: pages",
-          re.search(r"case QWebEnginePage::ClipboardSanitizedWrite:.*?PermissionGrantedByUser",
+    check("the combined clipboard feature is granted for osza: pages",
+          re.search(r"case QWebEnginePage::ClipboardReadWrite:.*?PermissionGrantedByUser",
                     block, re.DOTALL) is not None)
-    check("a clipboard read is denied for osza: pages",
+    check("no clipboard feature that Qt never shipped is referenced",
+          "ClipboardSanitizedWrite" not in block)
+    check("the grant is not behind a Qt version guard",
+          "QT_VERSION_CHECK" not in block)
+    check("no clipboard read is denied behind the grant",
           re.search(r"case QWebEnginePage::ClipboardReadWrite:.*?PermissionDeniedByUser",
-                    block, re.DOTALL) is not None)
-    check("the sanitized write is behind the Qt 6.6 feature split",
-          "QT_VERSION_CHECK(6, 6, 0)" in block)
-    check("older Qt still gets its combined-feature write",
-          re.search(r"#else\s+case QWebEnginePage::ClipboardReadWrite:.*?PermissionGrantedByUser",
-                    block, re.DOTALL) is not None)
+                    block, re.DOTALL) is None)
 check("every other feature still asks the permission manager",
       "html5PermissionsManager()->requestPermissions" in webpage_cpp)
 

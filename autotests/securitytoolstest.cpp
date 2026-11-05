@@ -45,6 +45,7 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QFile>
+#include <QLabel>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -2469,8 +2470,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QCOMPARE(partialChange->clearedEntries, QStringList{QSL("a.example")});
         QCOMPARE(partialChange->addedEntries, QStringList{QSL("new.example")});
         QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*partialChange),
-                 QStringList{QSL("Clears the exception for: a.example"),
-                             QSL("Adds an exception for: new.example")});
+                 (QStringList{QSL("Clears the exception for: a.example"),
+                              QSL("Adds an exception for: new.example")}));
 
         QJsonObject recased;
         recased.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());

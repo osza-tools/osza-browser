@@ -408,36 +408,24 @@ void WebPage::featurePermissionRequested(const QUrl &origin, const QWebEnginePag
     // feature permission instead, and the HTML5 permission manager
     // has no site-settings row for it: its request would warn about
     // an unknown feature and never be answered, leaving the page's
-    // promise pending forever. So the clipboard features are
-    // answered here, for these trusted pages only.
+    // promise pending forever. So the clipboard feature is answered
+    // here, for these trusted pages only.
     if (origin.scheme() == QL1S("osza")) {
         switch (feature) {
-#if QTWEBENGINECORE_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-        case QWebEnginePage::ClipboardSanitizedWrite:
-            // Writing text the page itself produced (the settings
-            // diff page's "copy link" anchors): granted, the same
-            // thing the legacy path already allows.
+        case QWebEnginePage::ClipboardReadWrite:
+            // The clipboard permission is one combined feature in
+            // every Qt Osza builds on: Chromium asks for its
+            // sanitized write (navigator.clipboard.writeText - the
+            // settings diff page's "copy link" anchors) as this very
+            // feature, so a write and a read cannot be told apart
+            // here. The osza: pages are the browser's own, with
+            // every dynamic string rendered through textContent, so
+            // the write is granted - the same trust the legacy path
+            // already extends to them - and no page the browser
+            // ships reads the clipboard; JavascriptCanPaste stays
+            // off for them either way.
             setFeaturePermission(origin, feature, PermissionGrantedByUser);
             return;
-        case QWebEnginePage::ClipboardReadWrite:
-            // Reading the clipboard is a different power - denied,
-            // matching JavascriptCanPaste, which stays off for
-            // internal pages. Answering (not ignoring) keeps the
-            // page's promise settling, so its own fallbacks can
-            // react.
-            setFeaturePermission(origin, feature, PermissionDeniedByUser);
-            return;
-#else
-        case QWebEnginePage::ClipboardReadWrite:
-            // Before 6.6 there is one combined feature and the
-            // writes arrive as it; reads cannot be told apart. The
-            // internal pages are trusted either way - their content
-            // is the browser's own, with every dynamic string
-            // rendered through textContent - so the write works on
-            // them, like the legacy path already does.
-            setFeaturePermission(origin, feature, PermissionGrantedByUser);
-            return;
-#endif
         default:
             break;
         }
