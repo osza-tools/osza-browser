@@ -24,7 +24,10 @@
 #include <QUrl>
 
 #include "qzcommon.h"
+#include "securitypresets.h"
 #include "securitysettingsporter.h"
+
+class BrowserWindow;
 
 /*
  * The osza:settings-diff security settings diff page.
@@ -133,6 +136,23 @@ public:
     // SecuritySettingsPorter::toolKeys() by diffData(), which knows
     // what to answer either way.
     static QString toolIdFromUrl(const QUrl &url);
+
+    // The recommended baseline, resolved through the preset catalog:
+    // the referent of every "what would the recommended setting
+    // for this tool be?" affordance - the security dashboard's tool
+    // rows, the padlock menu's per-site entries. A Preset with an
+    // empty id when the catalog does not carry it.
+    static SecurityPresets::Preset recommendedBaseline();
+
+    // Open the recommended baseline's diff focused on the given
+    // tool's section, in a new tab of the window. The one place
+    // every such deep link lands: the tool's stable key is judged
+    // by the porter's own list (the same judgment the page applies
+    // to a "tool" query item) and the baseline by the catalog, and
+    // a key that names no tool, or none at all, opens the baselines
+    // overview - where every baseline this Osza knows is listed -
+    // never an error page. Without a window it is a no-op.
+    static void openToolDiff(BrowserWindow *window, const QString &toolKey);
 
 private:
     SettingsDiffPage() = default;

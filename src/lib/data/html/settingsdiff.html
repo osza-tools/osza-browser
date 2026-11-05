@@ -230,6 +230,14 @@ body { direction: %DIRECTION%; }
     background: var(--osza-accent-dim);
 }
 
+/* The copy action's answer: while the address sits in the clipboard
+   the anchor carries the same accent the focused section does. */
+.sd-tool__link--copied {
+    color: var(--osza-accent);
+    background: var(--osza-accent-dim);
+    box-shadow: var(--osza-glow);
+}
+
 /* --- Diff: one tool focused by a per-tool deep link ------------------- */
 .sd-tool { scroll-margin-block-start: 14px; }
 
@@ -374,7 +382,7 @@ body { direction: %DIRECTION%; }
     .sd-head__icon { animation: none; }
     .sd-in { animation: none; }
     .sd-preset, .sd-preset:hover, .sd-preset:focus-visible { transition: none; }
-    .sd-tool__link, .sd-tool__link:hover, .sd-tool__link:focus-visible { transition: none; }
+    .sd-tool__link, .sd-tool__link:hover, .sd-tool__link:focus-visible, .sd-tool__link--copied { transition: none; }
 }
 </style>
 </head>
@@ -529,6 +537,132 @@ function toolsWithChanges(changes) {
     return groups;
 }
 
+/* --- Copy link: the section anchors' plain-click action --------- */
+
+/* The async Clipboard API first - the browser answers a sanitized
+   write for its own osza: pages, and denies a read, exactly as
+   WebPage::featurePermissionRequested decides. When the API is
+   missing or refuses, the legacy execCommand path - which internal
+   pages may use too (JavascriptCanAccessClipboard is set for them)
+   - is the fallback, so the anchor works on every Qt WebEngine
+   Osza runs on. */
+function copyTextToClipboard(text, onDone, onFail)
+{
+    if (typeof navigator === 'object' && navigator.clipboard
+            && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(text).then(onDone, function () {
+            if (legacyCopyText(text)) {
+                onDone();
+            } else {
+                onFail();
+            }
+        });
+        return;
+    }
+
+    if (legacyCopyText(text)) {
+        onDone();
+    } else {
+        onFail();
+    }
+}
+
+function legacyCopyText(text)
+{
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    /* Off the layout and invisible, so nothing jumps while the
+       command reads the selection. */
+    area.style.position = 'fixed';
+    area.style.top = '0';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+
+    var copied = false;
+    try {
+        copied = document.execCommand('copy');
+    } catch (e) {
+        copied = false;
+    }
+
+    document.body.removeChild(area);
+    return copied;
+}
+
+/* The anchor's answer: the "#" becomes a checkmark and the title
+   says which of the two things happened - copied, or not copied
+   (the context menu's "Copy link address" still works then) - and
+   after a moment the anchor says "#" again. */
+function setLinkFeedback(anchor, state)
+{
+    if (state === 'copied') {
+        if (anchor.className.indexOf('sd-tool__link--copied') === -1) {
+            anchor.className = anchor.className + ' sd-tool__link--copied';
+        }
+        anchor.textContent = '\u2713';
+        anchor.setAttribute('title', t('tool_link_copied_title'));
+        anchor.setAttribute('aria-label', t('tool_link_copied_title'));
+    } else if (state === 'failed') {
+        anchor.setAttribute('title', t('tool_link_copy_failed_title'));
+        anchor.setAttribute('aria-label', t('tool_link_copy_failed_title'));
+    } else {
+        anchor.className = anchor.className.replace(' sd-tool__link--copied', '');
+        anchor.textContent = '#';
+        anchor.setAttribute('title', t('tool_link_title'));
+        anchor.setAttribute('aria-label', t('tool_link_title'));
+    }
+}
+
+function scheduleLinkRevert(anchor)
+{
+    if (anchor.copyTimer && typeof clearTimeout === 'function') {
+        clearTimeout(anchor.copyTimer);
+    }
+
+    if (typeof setTimeout !== 'function') {
+        return;
+    }
+
+    anchor.copyTimer = setTimeout(function () {
+        setLinkFeedback(anchor, 'idle');
+    }, 1600);
+}
+
+function wireCopyLink(anchor, href)
+{
+    anchor.addEventListener('click', function (event) {
+        /* Only a plain click copies. Clicks with a modifier, or with
+           another button, keep the browser's own meaning - new tab,
+           new window - and so does everything else that reads the
+           href: middle-click, the context menu's "Copy link
+           address", bookmarks. */
+        if (event && typeof event.button === 'number' && event.button !== 0) {
+            return;
+        }
+        if (event && (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) {
+            return;
+        }
+
+        if (event && event.preventDefault) {
+            event.preventDefault();
+        }
+
+        /* The revert is scheduled when the answer shows, not when
+           the click lands: a slow clipboard cannot leave the anchor
+           stuck in its "copied" state, and a copy that never settles
+           shows nothing that would need reverting. */
+        copyTextToClipboard(href, function () {
+            setLinkFeedback(anchor, 'copied');
+            scheduleLinkRevert(anchor);
+        }, function () {
+            setLinkFeedback(anchor, 'failed');
+            scheduleLinkRevert(anchor);
+        });
+    });
+}
+
 function renderChangeRow(parent, change) {
     var row = el('div', 'sd-change');
 
@@ -653,14 +787,19 @@ function renderDiff(root) {
 
             /* The section's own deep link: the URL that opens this
                page focused here, built the same way pageUrl() builds
-               it, so a per-tool link can be copied, shared or
-               bookmarked straight from the section it points at. */
+               it. A plain click copies that address to the clipboard
+               - so it can be pasted into a note, a bug report, a
+               message - and everything else that reads an href
+               (middle-click, the context menu, bookmarks) still
+               works its own way. */
             var deepLink = el('a', 'sd-tool__link');
-            deepLink.href = 'osza:settings-diff?preset=' + encodeURIComponent(preset.id)
-                          + '&tool=' + encodeURIComponent(group.tool);
+            var deepLinkHref = 'osza:settings-diff?preset=' + encodeURIComponent(preset.id)
+                             + '&tool=' + encodeURIComponent(group.tool);
+            deepLink.href = deepLinkHref;
             deepLink.textContent = '#';
             deepLink.setAttribute('title', t('tool_link_title'));
             deepLink.setAttribute('aria-label', t('tool_link_title'));
+            wireCopyLink(deepLink, deepLinkHref);
             head.appendChild(deepLink);
 
             section.appendChild(head);

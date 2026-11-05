@@ -27,8 +27,12 @@
 #include "networkmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "fingerprintmanager.h"
+#include "securitypresets.h"
+#include "securitysettingsporter.h"
+#include "settingsdiffpage.h"
 #include "settings.h"
 
+#include <QLabel>
 #include <QToolTip>
 
 SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
@@ -113,6 +117,12 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     updateHttpsOnlyState();
     updateFingerprintState();
 
+    // The per-site entries' "diff" links: the same deep links the
+    // security dashboard's tool rows carry, beside the entries they
+    // answer for.
+    setupToolDiffLink(ui->httpsOnlyDiffLink, QSL("httpsOnly"));
+    setupToolDiffLink(ui->fingerprintProtectionDiffLink, QSL("fingerprintProtection"));
+
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
     connect(ui->httpsOnlyButton, &QPushButton::clicked, this, &SiteInfoWidget::httpsOnlyButtonClicked);
@@ -156,6 +166,7 @@ void SiteInfoWidget::updateHttpsOnlyState()
     if (scheme != QL1S("http") && scheme != QL1S("https")) {
         ui->httpsOnlyLabel->hide();
         ui->httpsOnlyButton->hide();
+        ui->httpsOnlyDiffLink->hide();
         return;
     }
 
@@ -205,6 +216,44 @@ void SiteInfoWidget::httpsOnlyButtonClicked()
     close();
 }
 
+void SiteInfoWidget::setupToolDiffLink(QLabel *link, const QString &toolKey)
+{
+    // The same deep link the security dashboard's tool rows carry:
+    // this tool's part of the recommended baseline's diff - the
+    // answer to "what would the recommended setting for this tool
+    // be?" one click away from the per-site entry. Built only when
+    // it can be honest: the porter's key list must know the key
+    // (the same judgment the diff page applies to a "tool" query
+    // item) and the preset catalog must carry the recommended
+    // baseline, so the padlock menu can never promise a section the
+    // page has no answer for.
+    link->setTextFormat(Qt::RichText);
+    // osza: URLs belong to the browser, never the OS.
+    link->setOpenExternalLinks(false);
+
+    const SecurityPresets::Preset baseline = SettingsDiffPage::recommendedBaseline();
+
+    if (!SecuritySettingsPorter::toolKeys().contains(toolKey) || baseline.id.isEmpty()) {
+        link->hide();
+        return;
+    }
+
+    const QUrl url = SettingsDiffPage::pageUrl(baseline.id, toolKey);
+    link->setText(QSL("<a href=\"%1\">%2</a>")
+                      .arg(url.toString().toHtmlEscaped(), tr("diff").toHtmlEscaped()));
+    link->setToolTip(tr("What the %1 would change for %2 - opens the settings diff page focused on its section. Nothing is applied by the preview.")
+                         .arg(baseline.name, SecuritySettingsPorter::toolDisplayName(toolKey)));
+
+    // The label never opens anything itself: the click hands the
+    // tool's stable key to the shared openToolDiff() - the one
+    // place the landing is decided, the same one the dashboard's
+    // rows use - so the visible link and where it lands cannot
+    // drift apart.
+    connect(link, &QLabel::linkActivated, this, [this, toolKey](const QString &) {
+        SettingsDiffPage::openToolDiff(m_window, toolKey);
+    });
+}
+
 void SiteInfoWidget::updateFingerprintState()
 {
     const QString scheme = m_window->weView()->url().scheme();
@@ -212,6 +261,7 @@ void SiteInfoWidget::updateFingerprintState()
     if (scheme != QL1S("http") && scheme != QL1S("https")) {
         ui->fingerprintLabel->hide();
         ui->fingerprintButton->hide();
+        ui->fingerprintProtectionDiffLink->hide();
         return;
     }
 

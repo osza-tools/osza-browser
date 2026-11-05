@@ -7,6 +7,61 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (15): the copy-link action on the diff page's
+  section anchors, and the padlock menu's per-site entries join the
+  deep links. The "#" anchor of a tool's section carried the URL
+  that opens the diff focused there, but taking that address
+  anywhere meant reading it out of a tooltip-less hover or the
+  context menu. A plain click on the anchor now copies the deep link
+  to the clipboard - the "#" becomes a checkmark in the accent color
+  while the address sits there, then says "#" again - and everything
+  else that reads an href keeps its own meaning: modified clicks,
+  middle-click, the context menu's "Copy link address", bookmarks.
+  When nothing can be copied the anchor says so in its title, and
+  the context menu's way still works. The copy prefers the async
+  Clipboard API (navigator.clipboard.writeText) and falls back to
+  the legacy execCommand path when the API is missing or refuses,
+  so the anchor works on every Qt WebEngine Osza runs on. The
+  clipboard itself needed a look: the async API asks for a feature
+  permission, and the HTML5 permission manager has no site-settings
+  row for it - on the browser's own osza: pages the request would
+  warn about an unknown feature and never be answered, leaving the
+  page's promise pending. WebPage::featurePermissionRequested now
+  answers the clipboard features for osza: origins: a sanitized
+  write is granted (the same thing the legacy path already allows
+  for internal pages), a clipboard read is denied - matching
+  JavascriptCanPaste, which stays off for them - and before Qt 6.6,
+  where the two are one combined feature that the writes arrive as,
+  it is granted, the pages being the browser's own either way.
+  Every other feature still goes through the permission manager.
+  The padlock menu's per-site entries (HTTPS-Only mode, fingerprint
+  protection) carry the same "diff" link the dashboard's rows do -
+  the answer to "what would the recommended setting for this tool
+  be?" one click away from the per-site state - and the landing is
+  shared now: SettingsDiffPage::recommendedBaseline() resolves the
+  baseline through the preset catalog in the one place, and
+  SettingsDiffPage::openToolDiff() decides where a tool key lands
+  (the focused diff, or the baselines overview when the request
+  cannot be answered honestly - never an error page), with the
+  dashboard's slot delegating to it, so the two can never drift
+  apart. The links hide with their rows on the browser's own pages,
+  exactly like the entries they belong to. The offline verifier grew
+  from 70 to 111 checks: the URL shape is pinned on five sides now -
+  the page's links, pageUrl(), the scheme handler, the dashboard's
+  rows and the padlock's entries, all through the one resolver and
+  the one shared landing - and the copy action runs in the mocked
+  DOM on every path it can take (the async copy, the refused-then-
+  legacy copy, nothing copying at all, the modified click left to
+  the browser), with the clipboard policy of webpage.cpp pinned
+  statically: the grant, the deny, the Qt 6.6 split, older Qt's
+  combined feature. A new autotest pins the padlock's side: exactly
+  the two per-site tools carry a link, each showing the pageUrl()
+  address of the recommended baseline focused on its tool, each
+  tooltip naming the baseline and the tool, external links off,
+  hidden with the rows on the browser's own pages - and the shared
+  landing, with a real window, opens the very address the link
+  shows, trims whitespace around a key, answers an unknown key with
+  the overview and is a no-op without a window.
 - Security tools (14): the dashboard's per-tool rows link to their
   part of the recommended baseline's diff. The osza:settings-diff
   page answers a "tool" query item and the import flow links to it,

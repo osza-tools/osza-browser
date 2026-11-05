@@ -133,14 +133,31 @@
        </widget>
       </item>
       <item row="5" column="2">
-       <widget class="QLabel" name="httpsOnlyLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <layout class="QHBoxLayout" name="httpsOnlyRowLayout">
+        <property name="spacing">
+         <number>4</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="httpsOnlyLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="httpsOnlyDiffLink">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="6" column="2">
        <widget class="QPushButton" name="httpsOnlyButton">
@@ -153,14 +170,31 @@
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="QLabel" name="fingerprintLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <layout class="QHBoxLayout" name="fingerprintRowLayout">
+        <property name="spacing">
+         <number>4</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="fingerprintLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="fingerprintProtectionDiffLink">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="8" column="2">
        <widget class="QPushButton" name="fingerprintButton">

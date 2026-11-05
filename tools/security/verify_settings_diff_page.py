@@ -21,19 +21,31 @@
 #
 #   3. The URL shape agrees on all sides: the page's links, the
 #      pageUrl() builder in settingsdiffpage.cpp, the page name
-#      registered in the scheme handler (oszaschemehandler.cpp) and
-#      the security dashboard's per-tool row links
-#      (securitysidebar.cpp) all spell
-#      osza:settings-diff[?preset=<id>][&tool=<key>], and whether a
-#      "tool" item names one of the tools is judged by the porter's
-#      own key list (toolKeys()) - the dashboard's rows included.
+#      registered in the scheme handler (oszaschemehandler.cpp), the
+#      security dashboard's per-tool row links (securitysidebar.cpp)
+#      and the padlock menu's per-site entry links
+#      (siteinfowidget.cpp) all spell
+#      osza:settings-diff[?preset=<id>][&tool=<key>], the baseline
+#      they refer to is resolved through the preset catalog in one
+#      place (SettingsDiffPage::recommendedBaseline()), and whether
+#      a "tool" item names one of the tools is judged by the porter's
+#      own key list (toolKeys()) - the dashboard's rows and the
+#      padlock's entries included.
 #
 #   4. The data contract the page script reads is exactly the one
 #      diffData() writes: every OSZA_DIFF.* field referenced by the
 #      script is present in the C++ producer (static cross-check
 #      of the JSON keys).
 #
-#   5. The page script runs (Node VM, mocked DOM) for every shape
+#   5. The copy action on the section anchors and the clipboard it
+#      needs: a plain click copies the deep link through the async
+#      Clipboard API with the legacy execCommand path as the
+#      fallback, modified clicks are left to the browser, and the
+#      C++ side answers the clipboard feature permissions for
+#      internal osza: pages (a sanitized write granted, a read
+#      denied - webpage.cpp pins the policy).
+#
+#   6. The page script runs (Node VM, mocked DOM) for every shape
 #      diffData() can produce, with scenarios mirroring the
 #      autotests: the overview (a card per built-in baseline,
 #      linking to its diff), a baseline's diff (the banner, one
@@ -43,8 +55,10 @@
 #      focused diff (the tool's section marked and scrolled to,
 #      the note rendered as text; a tool with no section answered
 #      by its note alone), an unknown tool over the full diff, the
-#      no-change diff, the unknown-preset dead end and the
-#      defensive broken-preview shape.
+#      no-change diff, the unknown-preset dead end, the defensive
+#      broken-preview shape, and the copy action of a section
+#      anchor on every path it can take (async copy, refused then
+#      legacy copy, nothing copies at all, modified click).
 #
 # Usage:
 #   python3 tools/security/verify_settings_diff_page.py
@@ -63,6 +77,8 @@ PAGE_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "settingsdiffpage.c
 HANDLER_CPP_PATH = os.path.join(ROOT, "src", "lib", "network", "schemehandlers", "oszaschemehandler.cpp")
 PRESETS_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "securitypresets.cpp")
 SIDEBAR_CPP_PATH = os.path.join(ROOT, "src", "lib", "sidebar", "securitysidebar.cpp")
+SITEINFO_CPP_PATH = os.path.join(ROOT, "src", "lib", "other", "siteinfowidget.cpp")
+WEBPAGE_CPP_PATH = os.path.join(ROOT, "src", "lib", "webengine", "webpage.cpp")
 
 import copy
 import json
@@ -76,6 +92,8 @@ page_cpp = open(PAGE_CPP_PATH, encoding="utf-8").read()
 handler_cpp = open(HANDLER_CPP_PATH, encoding="utf-8").read()
 presets_cpp = open(PRESETS_CPP_PATH, encoding="utf-8").read()
 sidebar_cpp = open(SIDEBAR_CPP_PATH, encoding="utf-8").read()
+siteinfo_cpp = open(SITEINFO_CPP_PATH, encoding="utf-8").read()
+webpage_cpp = open(WEBPAGE_CPP_PATH, encoding="utf-8").read()
 
 failures = 0
 checks = 0
@@ -162,15 +180,43 @@ check("whether a tool item names a tool is the porter's judgment",
 # The security dashboard's per-tool rows are the fourth side: they
 # link to a tool's part of a baseline's diff with the same address,
 # built by the same pageUrl(), for a baseline resolved through the
-# catalog and a key judged by the porter's own list.
+# catalog and a key judged by the porter's own list. The catalog
+# resolution lives in SettingsDiffPage now - the one resolver every
+# consumer asks - so "recommended" cannot mean two things.
 check("the dashboard's per-tool links go through pageUrl()",
       "SettingsDiffPage::pageUrl(" in sidebar_cpp)
-check("the dashboard's per-tool links resolve the baseline through the catalog",
-      re.search(r"presetById\(QLatin1String\(kRecommendedBaselineId\)\)", sidebar_cpp) is not None)
+check("the recommended baseline is resolved through the catalog, in one place",
+      re.search(r"presetById\(QLatin1String\(kRecommendedBaselineId\)\)", page_cpp) is not None
+      and "recommended-baseline" in page_cpp)
+check("the dashboard's per-tool links ask the one resolver",
+      "SettingsDiffPage::recommendedBaseline()" in sidebar_cpp)
 check("the dashboard's baseline is one the catalog carries",
       "recommended-baseline" in CATALOG_IDS)
 check("the dashboard builds a row link only for a key the porter knows",
       "SecuritySettingsPorter::toolKeys().contains(" in sidebar_cpp)
+check("the dashboard's links land in the shared openToolDiff()",
+      "SettingsDiffPage::openToolDiff(m_window, toolKey)" in sidebar_cpp)
+
+# The padlock menu's per-site entries are the fifth side: the two
+# tools with per-site state in the menu (HTTPS-Only mode, fingerprint
+# protection) carry the same "diff" link beside their entry, built
+# and landed the same way as the dashboard's rows.
+check("the padlock's per-site entries are the two per-site tools",
+      'setupToolDiffLink(ui->httpsOnlyDiffLink, QSL("httpsOnly"))' in siteinfo_cpp
+      and 'setupToolDiffLink(ui->fingerprintProtectionDiffLink, QSL("fingerprintProtection"))' in siteinfo_cpp)
+check("the padlock's per-site links ask the one resolver",
+      "SettingsDiffPage::recommendedBaseline()" in siteinfo_cpp)
+check("the padlock's per-site links go through pageUrl()",
+      "SettingsDiffPage::pageUrl(baseline.id, toolKey)" in siteinfo_cpp)
+check("the padlock builds a link only for a key the porter knows",
+      "SecuritySettingsPorter::toolKeys().contains(toolKey)" in siteinfo_cpp)
+check("the padlock's links land in the shared openToolDiff()",
+      "SettingsDiffPage::openToolDiff(m_window, toolKey)" in siteinfo_cpp)
+check("the padlock's osza: links belong to the browser, never the OS",
+      "setOpenExternalLinks(false)" in siteinfo_cpp)
+check("the padlock's links hide with their per-site rows",
+      "ui->httpsOnlyDiffLink->hide()" in siteinfo_cpp
+      and "ui->fingerprintProtectionDiffLink->hide()" in siteinfo_cpp)
 
 # ------------------------------------------------------------------
 # 4. The data contract: every OSZA_DIFF key the script reads is
@@ -226,7 +272,52 @@ if cpp_i18n_keys - js_i18n_keys:
     print("        unused in the page: %s" % sorted(cpp_i18n_keys - js_i18n_keys))
 
 # ------------------------------------------------------------------
-# 5. The page script, in a Node VM with a mocked DOM, for every
+# 5. The copy action on the section anchors, and the clipboard it
+#    needs on both sides of the scheme handler
+# ------------------------------------------------------------------
+print("== copy link: the anchors' action, and the clipboard it needs ==")
+
+check("every section anchor is wired for copying",
+      "wireCopyLink(deepLink, deepLinkHref)" in script)
+check("the anchor announces the copy, not just a link",
+      "t('tool_link_title')" in script
+      and "Copy a link to this tool's part of the diff" in page_cpp)
+check("the copy prefers the async Clipboard API",
+      "navigator.clipboard.writeText" in script)
+check("the copy falls back to the legacy execCommand path",
+      "document.execCommand('copy')" in script)
+check("a modified click is left to the browser",
+      "event.ctrlKey" in script)
+
+# The C++ side of the clipboard: the async API asks for a feature
+# permission, and for the browser's own pages the policy is pinned
+# here - a sanitized write granted, a read denied (Qt >= 6.6, where
+# the two are separate features), the combined feature granted on
+# older Qt where it is the write. Everything else still goes through
+# the HTML5 permission manager.
+osza_clipboard_block = re.search(
+    r'if \(origin\.scheme\(\) == QL1S\("osza"\)\) \{(.*?)\n    \}',
+    webpage_cpp, re.DOTALL)
+check("the clipboard features are answered for osza: pages",
+      osza_clipboard_block is not None)
+if osza_clipboard_block:
+    block = osza_clipboard_block.group(1)
+    check("a sanitized clipboard write is granted for osza: pages",
+          re.search(r"case QWebEnginePage::ClipboardSanitizedWrite:.*?PermissionGrantedByUser",
+                    block, re.DOTALL) is not None)
+    check("a clipboard read is denied for osza: pages",
+          re.search(r"case QWebEnginePage::ClipboardReadWrite:.*?PermissionDeniedByUser",
+                    block, re.DOTALL) is not None)
+    check("the sanitized write is behind the Qt 6.6 feature split",
+          "QT_VERSION_CHECK(6, 6, 0)" in block)
+    check("older Qt still gets its combined-feature write",
+          re.search(r"#else\s+case QWebEnginePage::ClipboardReadWrite:.*?PermissionGrantedByUser",
+                    block, re.DOTALL) is not None)
+check("every other feature still asks the permission manager",
+      "html5PermissionsManager()->requestPermissions" in webpage_cpp)
+
+# ------------------------------------------------------------------
+# 6. The page script, in a Node VM with a mocked DOM, for every
 #    shape diffData() can produce
 # ------------------------------------------------------------------
 
@@ -354,7 +445,9 @@ I18N = {
     "unknown_title": "Unknown baseline",
     "unknown_text": '"%1" is not one of the built-in presets.',
     "unknown_tool_text": '"%1" is not one of the security tools - the whole diff follows.',
-    "tool_link_title": "Link to this tool's part of the diff",
+    "tool_link_title": "Copy a link to this tool's part of the diff",
+    "tool_link_copied_title": "Link copied to the clipboard",
+    "tool_link_copy_failed_title": "Could not copy the link - the context menu's Copy link address still works",
     "broken_text": "The baseline's document did not pass validation: %1",
 }
 
@@ -385,7 +478,9 @@ function makeElement(tag, id) {
     // and set every dynamic string through textContent. textContent
     // aggregates like the real DOM: own text, then the children's.
     // scrollIntoView records that it ran, so a focused section's
-    // landing can be asserted.
+    // landing can be asserted; select() and removeChild() let the
+    // copy action's legacy fallback run the same way it runs in a
+    // browser.
     const node = {
         tag: tag,
         id: id || '',
@@ -396,9 +491,17 @@ function makeElement(tag, id) {
         listeners: {},
         scrolledIntoView: false,
         appendChild: function (c) { this.children.push(c); return c; },
+        removeChild: function (c) {
+            const i = this.children.indexOf(c);
+            if (i !== -1) {
+                this.children.splice(i, 1);
+            }
+            return c;
+        },
         setAttribute: function (k, v) { this.attrs[k] = String(v); },
         addEventListener: function (type, fn) { this.listeners[type] = fn; },
         scrollIntoView: function () { this.scrolledIntoView = true; },
+        select: function () { this.selected = true; },
         set innerHTML(v) { throw new Error('innerHTML is forbidden on this page'); },
         get innerHTML() { throw new Error('innerHTML is forbidden on this page'); }
     };
@@ -416,8 +519,18 @@ function makeElement(tag, id) {
     return node;
 }
 
-function makeSandbox() {
+function makeSandbox(options) {
+    // options.clipboard: 'async-ok' (the async API answers with a
+    //   resolved promise), 'async-fail' (it refuses) or absent (no
+    //   async API at all); options.execCommand: whether the legacy
+    //   copy path succeeds. Everything the copy action needs is
+    //   recorded - the texts written, the commands run, the timers
+    //   scheduled - so the scenarios assert what really happened.
+    options = options || {};
+
     const elements = {};
+    const timers = [];
+    const state = { clipboardWrites: [], execCommandCalls: [] };
 
     const document = {
         createElement: function (tag) { return makeElement(tag); },
@@ -426,10 +539,16 @@ function makeSandbox() {
                 elements[id] = makeElement('div', id);
             }
             return elements[id];
+        },
+        body: makeElement('body'),
+        execCommand: function (command) {
+            state.execCommandCalls.push(command);
+            return !!options.execCommand;
         }
     };
 
     let reloaded = false;
+    let timerId = 0;
     const sandbox = {
         document: document,
         location: { reload: function () { reloaded = true; } },
@@ -438,12 +557,43 @@ function makeSandbox() {
         performance: {},
         encodeURIComponent: encodeURIComponent,
         String: String,
-        Math: Math
+        Math: Math,
+        setTimeout: function (fn, delay) { timerId += 1; timers.push({id: timerId, fn: fn}); return timerId; },
+        clearTimeout: function (id) {
+            for (let i = 0; i < timers.length; i++) {
+                if (timers[i].id === id) {
+                    timers.splice(i, 1);
+                    return;
+                }
+            }
+        }
     };
+
+    if (options.clipboard === 'async-ok' || options.clipboard === 'async-fail') {
+        sandbox.navigator = {
+            clipboard: {
+                writeText: function (text) {
+                    state.clipboardWrites.push(text);
+                    return options.clipboard === 'async-ok'
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('write refused'));
+                }
+            }
+        };
+    }
+
     sandbox.window = sandbox;
     sandbox.self = sandbox;
     sandbox.globalThis = sandbox;
-    return { ctx: vm.createContext(sandbox), sandbox: sandbox, elements: elements, get reloaded() { return reloaded; } };
+    return {
+        ctx: vm.createContext(sandbox),
+        sandbox: sandbox,
+        elements: elements,
+        state: state,
+        timers: timers,
+        runTimers: function () { while (timers.length) { timers.shift().fn(); } },
+        get reloaded() { return reloaded; }
+    };
 }
 
 let failures = 0;
@@ -452,8 +602,8 @@ function check(label, ok) {
     if (!ok) failures++;
 }
 
-function runPage(pageScript) {
-    const run = makeSandbox();
+function runPage(pageScript, options) {
+    const run = makeSandbox(options);
     vm.runInContext(pageScript, run.ctx);
     return run;
 }
@@ -617,7 +767,7 @@ function scenarioFocus() {
               === links.map(function (l) { return String(l.href).split('&tool=')[1]; }).join(','));
     check('the deep links are titled',
           links.every(function (l) {
-              return l.attrs['title'] === 'Link to this tool\'s part of the diff';
+              return l.attrs['title'] === "Copy a link to this tool's part of the diff";
           }));
 }
 
@@ -665,17 +815,143 @@ function scenarioBroken() {
           fail.length === 1 && fail[0].children[0].textContent.indexOf('The tools section is malformed.') !== -1);
 }
 
-scenarioDiff();
-scenarioOverview();
-scenarioUnknown();
-scenarioNoChange();
-scenarioBroken();
-scenarioFocus();
-scenarioFocusQuiet();
-scenarioUnknownTool();
+function afterMicrotasks(fn) {
+    // The copy action settles its promises on the microtask queue,
+    // so the assertions about its answers run one turn later.
+    return Promise.resolve().then(function () {
+        return Promise.resolve();
+    }).then(fn);
+}
 
-console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
-process.exit(failures === 0 ? 0 : 1);
+function scenarioCopyLink() {
+    // A section anchor's plain click copies the deep link instead of
+    // following it. The copy goes through the async Clipboard API
+    // when the page has one, falls back to the legacy execCommand
+    // path when the API refuses or is missing, says "copied" with a
+    // checkmark while the address sits in the clipboard and reverts
+    // after a moment, says the honest thing when nothing could be
+    // copied, and leaves modified clicks to the browser.
+    const run = runPage(SCENARIOS.copylink.script, {clipboard: 'async-ok'});
+    const links = collect(run.elements['sd-content'], 'sd-tool__link');
+
+    check('the anchors are wired for copying', links.length === 3
+          && links.every(function (l) {
+              return typeof l.listeners['click'] === 'function';
+          }));
+
+    let prevented = false;
+    links[0].listeners['click']({button: 0, preventDefault: function () { prevented = true; }});
+
+    const link = links[0];
+
+    return afterMicrotasks(function () {
+        check('a plain click does not follow the anchor', prevented === true);
+        check('the deep link is written to the clipboard',
+              run.state.clipboardWrites.length === 1
+              && run.state.clipboardWrites[0] === String(link.href)
+              && String(link.href).indexOf('osza:settings-diff?preset=recommended-baseline&tool=adblock') === 0);
+        check('the legacy path was not needed', run.state.execCommandCalls.length === 0);
+        check('the checkmark shows while the link is copied',
+              link.className.indexOf('sd-tool__link--copied') !== -1
+              && link.textContent === '\u2713');
+        check('the title says the link was copied',
+              link.attrs['title'] === 'Link copied to the clipboard'
+              && link.attrs['aria-label'] === 'Link copied to the clipboard');
+        check('the revert is scheduled with the answer, not the click',
+              run.timers.length === 1);
+
+        run.runTimers();
+        check('the anchor says "#" again after the revert',
+              link.className.indexOf('sd-tool__link--copied') === -1
+              && link.textContent === '#'
+              && link.attrs['title'] === "Copy a link to this tool's part of the diff");
+
+        // The async API refuses: the legacy path answers instead.
+        const fallback = runPage(SCENARIOS.copylink.script, {clipboard: 'async-fail', execCommand: true});
+        const fallbackLinks = collect(fallback.elements['sd-content'], 'sd-tool__link');
+        let fallbackPrevented = false;
+        fallbackLinks[1].listeners['click']({button: 0, preventDefault: function () { fallbackPrevented = true; }});
+
+        return afterMicrotasks(function () {
+            check('the refused write falls back to the legacy path',
+                  fallback.state.execCommandCalls.length === 1
+                  && fallback.state.execCommandCalls[0] === 'copy');
+            check('the fallback copies the same address',
+                  fallback.state.clipboardWrites.length === 1
+                  && fallbackLinks[1].textContent === '\u2713');
+            check('the anchor was not followed either', fallbackPrevented === true);
+
+            fallback.runTimers();
+            check('the fallback reverts too',
+                  fallbackLinks[1].textContent === '#'
+                  && fallbackLinks[1].className.indexOf('sd-tool__link--copied') === -1);
+
+            // A double click: the address is written twice, but the
+            // copied state is appended once and exactly one revert
+            // stays pending - the second answer replaces the first.
+            const double = runPage(SCENARIOS.copylink.script, {clipboard: 'async-ok'});
+            const doubleLinks = collect(double.elements['sd-content'], 'sd-tool__link');
+            doubleLinks[0].listeners['click']({button: 0, preventDefault: function () {}});
+            doubleLinks[0].listeners['click']({button: 0, preventDefault: function () {}});
+
+            return afterMicrotasks(function () {
+                check('a double click writes the address twice',
+                      double.state.clipboardWrites.length === 2);
+                check('the copied state is appended once',
+                      doubleLinks[0].className.split('sd-tool__link--copied').length - 1 === 1);
+                check('exactly one revert stays pending',
+                      double.timers.length === 1);
+
+                // No async API, and the legacy path refuses too: the
+                // anchor says so - the context menu's "Copy link
+                // address" still works.
+                const failed = runPage(SCENARIOS.copylink.script, {execCommand: false});
+                const failedLinks = collect(failed.elements['sd-content'], 'sd-tool__link');
+                let failedPrevented = false;
+                failedLinks[2].listeners['click']({button: 0, preventDefault: function () { failedPrevented = true; }});
+
+                check('without any clipboard the anchor is honest',
+                      failedLinks[2].attrs['title'] === "Could not copy the link - the context menu's Copy link address still works"
+                      && failedLinks[2].attrs['aria-label'] === "Could not copy the link - the context menu's Copy link address still works");
+                check('no checkmark without a copy', failedLinks[2].textContent === '#');
+                check('the anchor was still not followed', failedPrevented === true);
+
+                // A modified click keeps the browser's own meaning:
+                // nothing copied, nothing prevented.
+                const modified = runPage(SCENARIOS.copylink.script, {clipboard: 'async-ok'});
+                const modifiedLinks = collect(modified.elements['sd-content'], 'sd-tool__link');
+                let ctrlPrevented = false;
+                let middlePrevented = false;
+                modifiedLinks[0].listeners['click']({button: 0, ctrlKey: true, preventDefault: function () { ctrlPrevented = true; }});
+                modifiedLinks[0].listeners['click']({button: 1, preventDefault: function () { middlePrevented = true; }});
+
+                return afterMicrotasks(function () {
+                    check('a ctrl-click is left to the browser',
+                          ctrlPrevented === false && modified.state.clipboardWrites.length === 0);
+                    check('a middle click is left to the browser',
+                          middlePrevented === false && modified.state.execCommandCalls.length === 0);
+                    check('the anchor keeps its href for everything else',
+                          String(modifiedLinks[0].href).indexOf('osza:settings-diff?preset=recommended-baseline&tool=adblock') === 0);
+                });
+            });
+        });
+    });
+}
+
+Promise.resolve()
+    .then(scenarioDiff)
+    .then(scenarioOverview)
+    .then(scenarioUnknown)
+    .then(scenarioNoChange)
+    .then(scenarioBroken)
+    .then(scenarioFocus)
+    .then(scenarioFocusQuiet)
+    .then(scenarioUnknownTool)
+    .then(scenarioCopyLink)
+    .then(function () {
+        console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
+        process.exit(failures === 0 ? 0 : 1);
+    });
 '''
 
 print("== page script, mocked DOM, every shape ==")
@@ -688,6 +964,7 @@ blob = {
     "focus": {"data": FOCUS_DATA, "script": substitute(FOCUS_DATA)},
     "focusquiet": {"data": FOCUS_QUIET_DATA, "script": substitute(FOCUS_QUIET_DATA)},
     "unknowntool": {"data": UNKNOWN_TOOL_DATA, "script": substitute(UNKNOWN_TOOL_DATA)},
+    "copylink": {"data": DIFF_DATA, "script": substitute(DIFF_DATA)},
 }
 node_program = node_program.replace("SCENARIO_BLOB", json.dumps(blob))
 

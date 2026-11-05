@@ -23,6 +23,8 @@
 #include "qzcommon.h"
 #include <locationbarpopup.h>
 
+class QLabel;
+
 namespace Ui
 {
 class SiteInfoWidget;
@@ -44,6 +46,13 @@ private:
     void httpsOnlyButtonClicked();
     void updateFingerprintState();
     void fingerprintButtonClicked();
+
+    // Configure the "diff" link of a per-site entry: the same deep
+    // link the security dashboard's tool rows carry - this tool's
+    // part of the recommended baseline's diff, built only when it
+    // can be honest (the porter's key list must know the key, the
+    // catalog must carry the baseline), hidden otherwise.
+    void setupToolDiffLink(QLabel *link, const QString &toolKey);
 
     Ui::SiteInfoWidget* ui;
     BrowserWindow* m_window;

@@ -56,13 +56,6 @@ namespace {
 
 const int kRefreshIntervalMs = 1000;
 
-// The baseline the per-tool rows link to the diff of: the project's
-// recommendation for everyday browsing, resolved through the preset
-// catalog - the same id the Preferences picker defaults to - so the
-// link says "recommended" because the catalog says so, not because
-// a second copy of the baseline lives here.
-const char kRecommendedBaselineId[] = "recommended-baseline";
-
 QLabel* headingLabel(const QString &text)
 {
     auto *label = new QLabel(text);
@@ -335,7 +328,7 @@ QWidget* SecuritySideBar::createToolRow(QCheckBox *toggle, const QString &toolKe
 
     layout->addWidget(toggle, 1);
 
-    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QLatin1String(kRecommendedBaselineId));
+    const SecurityPresets::Preset baseline = SettingsDiffPage::recommendedBaseline();
 
     if (SecuritySettingsPorter::toolKeys().contains(toolKey) && !baseline.id.isEmpty()) {
         const QUrl url = SettingsDiffPage::pageUrl(baseline.id, toolKey);
@@ -536,30 +529,14 @@ void SecuritySideBar::previewSecurityBaselines()
 
 void SecuritySideBar::openToolDiff(const QString &toolKey)
 {
-    // A tool row's deep link: the recommended baseline's diff,
-    // focused on that tool's section - the same address the diff
-    // page's own "#" anchor for the section carries, built by the
-    // same pageUrl(), so the dashboard, the page and the import
-    // preview all spell it once. A preview only: the page applies
-    // nothing, it says where applying happens.
-    if (!m_window) {
-        return;
-    }
-
-    const QString tool = toolKey.trimmed();
-    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QLatin1String(kRecommendedBaselineId));
-
-    // The links are only built for a key the porter knows and a
-    // baseline the catalog carries; the slot still answers anything
-    // it can be handed, and its answer is the honest one: without a
-    // tool to focus or a baseline to diff, the overview - where
-    // every baseline this Osza knows is listed - not an error.
-    if (tool.isEmpty() || !SecuritySettingsPorter::toolKeys().contains(tool) || baseline.id.isEmpty()) {
-        m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl()), Qz::NT_SelectedTab);
-        return;
-    }
-
-    m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl(baseline.id, tool)), Qz::NT_SelectedTab);
+    // A tool row's deep link lands in SettingsDiffPage::openToolDiff()
+    // - the one place the "what would the recommended setting for
+    // this tool be?" answer lives, shared with the padlock menu's
+    // per-site entries, so every affordance lands the same way: the
+    // recommended baseline's diff, focused on the row's tool, or the
+    // baselines overview when the request cannot be answered
+    // honestly - never an error page.
+    SettingsDiffPage::openToolDiff(m_window, toolKey);
 }
 
 void SecuritySideBar::exportSecuritySettings()

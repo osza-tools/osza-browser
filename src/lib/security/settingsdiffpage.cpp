@@ -16,8 +16,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
 #include "settingsdiffpage.h"
+#include "browserwindow.h"
 #include "qztools.h"
 #include "securitypresets.h"
+#include "tabwidget.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -30,6 +32,12 @@ namespace {
 // only consumer; the porter's buildPlans() is the authority for the
 // sections themselves.
 const int kTotalTools = 7;
+
+// The id of the project's recommendation for everyday browsing -
+// the preset the Preferences picker defaults to, and the referent
+// of "the recommended baseline" wherever a deep link answers "what
+// would the recommended setting for this tool be?".
+const char kRecommendedBaselineId[] = "recommended-baseline";
 
 // "secureDns: a secure mode needs at least one server" becomes
 // "Secure DNS (DNS-over-HTTPS): a secure mode needs at least one
@@ -329,6 +337,40 @@ QUrl SettingsDiffPage::pageUrl(const QString &presetId, const QString &toolId)
     return url;
 }
 
+SecurityPresets::Preset SettingsDiffPage::recommendedBaseline()
+{
+    return SecurityPresets::presetById(QLatin1String(kRecommendedBaselineId));
+}
+
+void SettingsDiffPage::openToolDiff(BrowserWindow *window, const QString &toolKey)
+{
+    // A tool deep link's landing: the recommended baseline's diff,
+    // focused on that tool's section - the same address the diff
+    // page's own "#" anchor for the section carries, built by the
+    // same pageUrl(), so the dashboard, the page, the import
+    // preview and the padlock menu can never land in different
+    // places. A preview only: the page applies nothing, it says
+    // where applying happens.
+    if (!window) {
+        return;
+    }
+
+    const QString tool = toolKey.trimmed();
+    const SecurityPresets::Preset baseline = recommendedBaseline();
+
+    // The links are only built for a key the porter knows and a
+    // baseline the catalog carries; the slot still answers anything
+    // it can be handed, and its answer is the honest one: without a
+    // tool to focus or a baseline to diff, the overview - where
+    // every baseline this Osza knows is listed - not an error page.
+    if (tool.isEmpty() || !SecuritySettingsPorter::toolKeys().contains(tool) || baseline.id.isEmpty()) {
+        window->tabWidget()->addView(LoadRequest(pageUrl()), Qz::NT_SelectedTab);
+        return;
+    }
+
+    window->tabWidget()->addView(LoadRequest(pageUrl(baseline.id, tool)), Qz::NT_SelectedTab);
+}
+
 QString SettingsDiffPage::presetIdFromUrl(const QUrl &url)
 {
     // The verbatim "preset" item, trimmed: the overview for no item
@@ -375,8 +417,13 @@ QString SettingsDiffPage::i18nJson()
     // Unknown tool of a known baseline
     strings.insert(QSL("unknown_tool_text"), tr("\"%1\" is not one of the security tools - the whole diff follows."));
 
-    // Per-tool deep links
-    strings.insert(QSL("tool_link_title"), tr("Link to this tool's part of the diff"));
+    // Per-tool deep links. The copy action's answers: what the
+    // anchor says it does, what it says while the link sits in the
+    // clipboard, and what it says when nothing could be copied -
+    // the context menu's "Copy link address" still works then.
+    strings.insert(QSL("tool_link_title"), tr("Copy a link to this tool's part of the diff"));
+    strings.insert(QSL("tool_link_copied_title"), tr("Link copied to the clipboard"));
+    strings.insert(QSL("tool_link_copy_failed_title"), tr("Could not copy the link - the context menu's Copy link address still works"));
 
     // Not-importable preview (the defensive shape)
     strings.insert(QSL("broken_text"), tr("The baseline's document did not pass validation: %1"));

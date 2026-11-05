@@ -35,6 +35,7 @@
 #include "selftestpage.h"
 #include "settingsdiffpage.h"
 #include "settings.h"
+#include "siteinfowidget.h"
 #include "tabwidget.h"
 #include "tabbedwebview.h"
 #include "threatblockmanager.h"
@@ -372,6 +373,92 @@ void SecurityToolsTest::securityDashboardToolDiffLinksTest()
     dashboard.openToolDiff(QSL("not-a-tool"));
     QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 3);
     QTRY_COMPARE(window->weView()->url(), SettingsDiffPage::pageUrl());
+
+    delete window;
+}
+
+void SecurityToolsTest::padlockMenuToolDiffLinksTest()
+{
+    // The padlock menu's per-site entries carry the same deep links
+    // the security dashboard's tool rows carry: this tool's part of
+    // the recommended baseline's diff, one click away from the
+    // per-site state. Exactly the two tools with per-site entries in
+    // the menu (HTTPS-Only mode, fingerprint protection), built the
+    // same honest way - the porter's key list must know the key, the
+    // catalog must carry the baseline - and landed by the same
+    // shared SettingsDiffPage::openToolDiff() the dashboard's rows
+    // use, so the two can never land in different places.
+    const SecurityPresets::Preset baseline = SettingsDiffPage::recommendedBaseline();
+    QVERIFY(!baseline.id.isEmpty());
+    QCOMPARE(baseline.id, QSL("recommended-baseline"));
+
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    auto *padlock = new SiteInfoWidget(window);
+    padlock->show();
+    QVERIFY(QTest::qWaitForWindowExposed(padlock));
+
+    // Exactly the two per-site entries carry a link under the
+    // dashboard's naming scheme - no strays, none missing.
+    const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection")};
+    const auto links = padlock->findChildren<QLabel*>(QRegularExpression(QSL("^[A-Za-z]+DiffLink$")));
+    QCOMPARE(links.size(), perSiteToolKeys.size());
+
+    for (const QString &toolKey : perSiteToolKeys) {
+        auto *link = padlock->findChild<QLabel*>(QSL("%1DiffLink").arg(toolKey));
+        QVERIFY(link);
+
+        // Rich text with external links off: osza: URLs belong to
+        // the browser, never the OS - the same rule as the
+        // dashboard's rows and the import dialog's "view as page"
+        // link.
+        QCOMPARE(link->textFormat(), Qt::RichText);
+        QVERIFY(!link->openExternalLinks());
+
+        // The visible address is exactly what pageUrl() builds -
+        // the URL shape that exists once.
+        const QString href = SettingsDiffPage::pageUrl(baseline.id, toolKey).toString();
+        QCOMPARE(href, QSL("osza:settings-diff?preset=recommended-baseline&tool=%1").arg(toolKey));
+        QVERIFY(link->text().contains(href.toHtmlEscaped()));
+
+        // The tooltip says where the link goes and for which tool.
+        QVERIFY(!link->toolTip().isEmpty());
+        QVERIFY(link->toolTip().contains(baseline.name));
+        QVERIFY(link->toolTip().contains(SecuritySettingsPorter::toolDisplayName(toolKey)));
+
+        // The new tab the window opened is the browser's own start
+        // page, not a web page - the per-site rows, and their links
+        // with them, are hidden there by design.
+        QVERIFY(!link->isVisible());
+    }
+
+    delete padlock;
+
+    // The shared landing, with a real window: the very address the
+    // link shows - the recommended baseline's diff, focused on the
+    // entry's tool. Whitespace around a key is trimmed, exactly
+    // like the page trims its query items, and a key that names no
+    // security tool opens the overview, never an error page.
+    const int tabsBefore = window->tabWidget()->count();
+
+    SettingsDiffPage::openToolDiff(window, QSL("httpsOnly"));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 1);
+    QTRY_COMPARE(window->weView()->url(),
+                 SettingsDiffPage::pageUrl(baseline.id, QSL("httpsOnly")));
+
+    SettingsDiffPage::openToolDiff(window, QSL("  fingerprintProtection  "));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 2);
+    QTRY_COMPARE(window->weView()->url(),
+                 SettingsDiffPage::pageUrl(baseline.id, QSL("fingerprintProtection")));
+
+    SettingsDiffPage::openToolDiff(window, QSL("not-a-tool"));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 3);
+    QTRY_COMPARE(window->weView()->url(), SettingsDiffPage::pageUrl());
+
+    // Without a window the shared slot is a no-op, exactly like the
+    // dashboard's own deep-link shortcut.
+    SettingsDiffPage::openToolDiff(nullptr, QSL("httpsOnly"));
 
     delete window;
 }
