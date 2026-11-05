@@ -7,6 +7,47 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (14): the dashboard's per-tool rows link to their
+  part of the recommended baseline's diff. The osza:settings-diff
+  page answers a "tool" query item and the import flow links to it,
+  but the security dashboard - the one place every tool lives as a
+  row with its state and its quick switch - could not reach the diff
+  of a single tool. Every protection row now carries a "diff" link
+  beside its quick switch, and following it opens the recommended
+  baseline's diff focused on exactly that tool's section - the same
+  osza:settings-diff?preset=recommended-baseline&tool=<key> address
+  the page's own "#" anchors and the import dialog's "view as page"
+  link carry, built by the same SettingsDiffPage::pageUrl(), so the
+  dashboard, the page and the import flow can never land in
+  different places. The baseline is resolved through the preset
+  catalog - the id the Preferences picker defaults to, the project's
+  recommendation for everyday browsing, the natural referent for
+  "what would the recommended setting for this tool be?" - and the
+  row link is only built when it can be honest: the porter's
+  toolKeys() must know the key (the same judgment the page applies
+  to a "tool" query item) and the catalog must carry the baseline.
+  The link is rich text with external links off - osza: URLs belong
+  to the browser, never the OS - and it never opens anything itself:
+  it hands the tool's stable key to the new openToolDiff() slot,
+  which builds the address in the one place the URL shape exists and
+  says where it goes in its tooltip, by the baseline's and the
+  tool's own names. The slot answers anything it can be handed: a
+  key that names no tool, or none at all, opens the baselines
+  overview - where every baseline this Osza knows is listed - never
+  an error page; whitespace around a key is trimmed, like the page
+  trims its query items; and without a window it is a no-op,
+  exactly like the dashboard's self-test shortcut. The offline
+  verifier grew to 70 checks: the URL shape is now pinned on four
+  sides - the page's links, pageUrl(), the scheme handler, and the
+  dashboard's row links, which must go through pageUrl(), resolve
+  the baseline through the catalog and build a link only for a key
+  the porter knows. A new autotest pins the rest: exactly one link
+  per tool the porter knows, each showing the pageUrl() address of
+  the recommended baseline focused on its tool, each tooltip naming
+  the baseline and the tool, external links off, the window-less
+  slot a no-op - and with a real browser window, the opened tab's
+  URL is the deep link itself, whitespace around a key is trimmed
+  to it, and an unknown key opens the overview.
 - Security tools (13): per-tool deep links, and the diff page inside
   the import flow. The osza:settings-diff page now answers a "tool"
   query item (osza:settings-diff?preset=recommended-baseline&tool=

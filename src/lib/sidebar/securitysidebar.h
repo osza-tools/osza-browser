@@ -39,6 +39,13 @@ class BrowserWindow;
  * osza:selftest page. Counters are refreshed on a short timer while
  * the sidebar is visible, so updates coming from the IO thread are
  * picked up without cross-thread signals.
+ *
+ * Every protection row also links to its part of the recommended
+ * baseline's diff (openToolDiff): the same osza:settings-diff
+ * address the diff page's own "#" anchors and the import preview
+ * dialog's "view as page" link carry, focused on that tool's
+ * section - so from the row that shows a tool's state, one click
+ * shows what the project's recommendation would change about it.
  */
 class OSZA_EXPORT SecuritySideBar : public QWidget
 {
@@ -56,6 +63,7 @@ public Q_SLOTS:
     void saveSecurityPresetToFile(const QString &id);
     void applySecurityPreset(const QString &id);
     void previewSecurityBaselines();
+    void openToolDiff(const QString &toolKey);
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);
@@ -67,6 +75,7 @@ public Q_SLOTS:
 private:
     QWidget* createCounterTile(const QString &caption, QLabel **valueOut);
     QWidget* createHostRow(const QString &caption, QLabel **valueOut);
+    QWidget* createToolRow(QCheckBox *toggle, const QString &toolKey);
     void createLayout();
     void updateStatus();
     void updateToggles();

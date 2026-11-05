@@ -20,11 +20,13 @@
 #      nothing a settings file could carry can inject markup.
 #
 #   3. The URL shape agrees on all sides: the page's links, the
-#      pageUrl() builder in settingsdiffpage.cpp and the page name
-#      registered in the scheme handler (oszaschemehandler.cpp)
-#      all spell osza:settings-diff[?preset=<id>][&tool=<key>], and
-#      whether a "tool" item names one of the tools is judged by the
-#      porter's own key list (toolKeys()).
+#      pageUrl() builder in settingsdiffpage.cpp, the page name
+#      registered in the scheme handler (oszaschemehandler.cpp) and
+#      the security dashboard's per-tool row links
+#      (securitysidebar.cpp) all spell
+#      osza:settings-diff[?preset=<id>][&tool=<key>], and whether a
+#      "tool" item names one of the tools is judged by the porter's
+#      own key list (toolKeys()) - the dashboard's rows included.
 #
 #   4. The data contract the page script reads is exactly the one
 #      diffData() writes: every OSZA_DIFF.* field referenced by the
@@ -60,6 +62,7 @@ HTML_PATH = os.path.join(ROOT, "src", "lib", "data", "html", "settingsdiff.html"
 PAGE_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "settingsdiffpage.cpp")
 HANDLER_CPP_PATH = os.path.join(ROOT, "src", "lib", "network", "schemehandlers", "oszaschemehandler.cpp")
 PRESETS_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "securitypresets.cpp")
+SIDEBAR_CPP_PATH = os.path.join(ROOT, "src", "lib", "sidebar", "securitysidebar.cpp")
 
 import copy
 import json
@@ -72,6 +75,7 @@ html = open(HTML_PATH, encoding="utf-8").read()
 page_cpp = open(PAGE_CPP_PATH, encoding="utf-8").read()
 handler_cpp = open(HANDLER_CPP_PATH, encoding="utf-8").read()
 presets_cpp = open(PRESETS_CPP_PATH, encoding="utf-8").read()
+sidebar_cpp = open(SIDEBAR_CPP_PATH, encoding="utf-8").read()
 
 failures = 0
 checks = 0
@@ -123,11 +127,16 @@ check("the page script never touches eval",
       re.search(r"\beval\s*\(", script) is None)
 
 # ------------------------------------------------------------------
-# 3. The URL shape, on all three sides
+# 3. The URL shape, on all four sides
 # ------------------------------------------------------------------
-print("== URL shape: page links, pageUrl(), scheme handler ==")
+print("== URL shape: page links, pageUrl(), scheme handler, dashboard ==")
 
 PAGE_URL = "osza:settings-diff"
+
+# The dashboard's row links point at one baseline's diff; the id has
+# to be one the catalog carries, or the links would promise a dead
+# end.
+CATALOG_IDS = parse_presets()
 
 check("the page links build %s?preset=<id>" % PAGE_URL,
       ("'%s?preset=' + encodeURIComponent" % PAGE_URL) in script)
@@ -149,6 +158,19 @@ check("the scheme handler hands the tool query to the page",
       "SettingsDiffPage::toolIdFromUrl" in handler_cpp)
 check("whether a tool item names a tool is the porter's judgment",
       "SecuritySettingsPorter::toolKeys()" in page_cpp)
+
+# The security dashboard's per-tool rows are the fourth side: they
+# link to a tool's part of a baseline's diff with the same address,
+# built by the same pageUrl(), for a baseline resolved through the
+# catalog and a key judged by the porter's own list.
+check("the dashboard's per-tool links go through pageUrl()",
+      "SettingsDiffPage::pageUrl(" in sidebar_cpp)
+check("the dashboard's per-tool links resolve the baseline through the catalog",
+      re.search(r"presetById\(QLatin1String\(kRecommendedBaselineId\)\)", sidebar_cpp) is not None)
+check("the dashboard's baseline is one the catalog carries",
+      "recommended-baseline" in CATALOG_IDS)
+check("the dashboard builds a row link only for a key the porter knows",
+      "SecuritySettingsPorter::toolKeys().contains(" in sidebar_cpp)
 
 # ------------------------------------------------------------------
 # 4. The data contract: every OSZA_DIFF key the script reads is
@@ -208,7 +230,7 @@ if cpp_i18n_keys - js_i18n_keys:
 #    shape diffData() can produce
 # ------------------------------------------------------------------
 
-PRESET_IDS = parse_presets()
+PRESET_IDS = CATALOG_IDS
 
 # A diff shaped exactly like the porter's preview: three tools with
 # changes, one of them an exclusions change carrying the porter's

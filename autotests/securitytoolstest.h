@@ -32,6 +32,7 @@ private Q_SLOTS:
     void dnsOverHttpsConfigurationTest();
     void dnsOverHttpsProvidersTest();
     void securityDashboardWidgetTest();
+    void securityDashboardToolDiffLinksTest();
 
     void threatBlockListParsingTest();
     void threatBlockHostMatchingTest();

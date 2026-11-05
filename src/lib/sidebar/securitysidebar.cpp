@@ -56,6 +56,13 @@ namespace {
 
 const int kRefreshIntervalMs = 1000;
 
+// The baseline the per-tool rows link to the diff of: the project's
+// recommendation for everyday browsing, resolved through the preset
+// catalog - the same id the Preferences picker defaults to - so the
+// link says "recommended" because the catalog says so, not because
+// a second copy of the baseline lives here.
+const char kRecommendedBaselineId[] = "recommended-baseline";
+
 QLabel* headingLabel(const QString &text)
 {
     auto *label = new QLabel(text);
@@ -222,16 +229,19 @@ void SecuritySideBar::createLayout()
     m_gpcState->setContentsMargins(20, 0, 0, 0);
     m_gpcState->setWordWrap(true);
 
-    mainLayout->addWidget(m_adBlockToggle);
-    mainLayout->addWidget(m_httpsOnlyToggle);
-    mainLayout->addWidget(m_stripTrackingToggle);
-    mainLayout->addWidget(m_secureDnsToggle);
+    // One row per tool: the quick switch, and beside it the deep link
+    // to that tool's part of the recommended baseline's diff. The
+    // state labels of the tools that carry one sit under their row.
+    mainLayout->addWidget(createToolRow(m_adBlockToggle, QSL("adblock")));
+    mainLayout->addWidget(createToolRow(m_httpsOnlyToggle, QSL("httpsOnly")));
+    mainLayout->addWidget(createToolRow(m_stripTrackingToggle, QSL("trackingParameters")));
+    mainLayout->addWidget(createToolRow(m_secureDnsToggle, QSL("secureDns")));
     mainLayout->addWidget(m_secureDnsState);
-    mainLayout->addWidget(m_threatBlockToggle);
+    mainLayout->addWidget(createToolRow(m_threatBlockToggle, QSL("threatBlock")));
     mainLayout->addWidget(m_threatBlockState);
-    mainLayout->addWidget(m_fingerprintToggle);
+    mainLayout->addWidget(createToolRow(m_fingerprintToggle, QSL("fingerprintProtection")));
     mainLayout->addWidget(m_fingerprintState);
-    mainLayout->addWidget(m_gpcToggle);
+    mainLayout->addWidget(createToolRow(m_gpcToggle, QSL("globalPrivacyControl")));
     mainLayout->addWidget(m_gpcState);
 
     mainLayout->addStretch(1);
@@ -306,6 +316,52 @@ QWidget* SecuritySideBar::createHostRow(const QString &caption, QLabel **valueOu
     *valueOut = value;
 
     return widget;
+}
+
+QWidget* SecuritySideBar::createToolRow(QCheckBox *toggle, const QString &toolKey)
+{
+    // A tool's row: the quick switch, and beside it the deep link to
+    // that tool's part of the recommended baseline's diff. The link
+    // is only built when it can be honest - the porter's key list
+    // must know the key (the page judges a "tool" item by that same
+    // list) and the preset catalog must carry the recommended
+    // baseline - so a row can never promise a section the page has
+    // no answer for.
+    auto *row = new QWidget(this);
+
+    auto *layout = new QHBoxLayout(row);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(4);
+
+    layout->addWidget(toggle, 1);
+
+    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QLatin1String(kRecommendedBaselineId));
+
+    if (SecuritySettingsPorter::toolKeys().contains(toolKey) && !baseline.id.isEmpty()) {
+        const QUrl url = SettingsDiffPage::pageUrl(baseline.id, toolKey);
+
+        auto *link = new QLabel(row);
+        link->setObjectName(QSL("%1DiffLink").arg(toolKey));
+        link->setTextFormat(Qt::RichText);
+        // osza: URLs belong to the browser, never to the OS.
+        link->setOpenExternalLinks(false);
+        link->setText(QSL("<a href=\"%1\">%2</a>")
+                          .arg(url.toString().toHtmlEscaped(), tr("diff").toHtmlEscaped()));
+        link->setToolTip(tr("What the %1 would change for %2 - opens the settings diff page focused on its section. Nothing is applied by the preview.")
+                             .arg(baseline.name, SecuritySettingsPorter::toolDisplayName(toolKey)));
+
+        // The label never opens anything itself: the click hands the
+        // tool's stable key to openToolDiff(), which builds the
+        // address in the one place the URL shape exists - so the
+        // visible link and where it lands cannot drift apart.
+        connect(link, &QLabel::linkActivated, this, [this, toolKey](const QString &) {
+            openToolDiff(toolKey);
+        });
+
+        layout->addWidget(link);
+    }
+
+    return row;
 }
 
 QString SecuritySideBar::currentHost() const
@@ -476,6 +532,34 @@ void SecuritySideBar::previewSecurityBaselines()
     }
 
     m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl()), Qz::NT_SelectedTab);
+}
+
+void SecuritySideBar::openToolDiff(const QString &toolKey)
+{
+    // A tool row's deep link: the recommended baseline's diff,
+    // focused on that tool's section - the same address the diff
+    // page's own "#" anchor for the section carries, built by the
+    // same pageUrl(), so the dashboard, the page and the import
+    // preview all spell it once. A preview only: the page applies
+    // nothing, it says where applying happens.
+    if (!m_window) {
+        return;
+    }
+
+    const QString tool = toolKey.trimmed();
+    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QLatin1String(kRecommendedBaselineId));
+
+    // The links are only built for a key the porter knows and a
+    // baseline the catalog carries; the slot still answers anything
+    // it can be handed, and its answer is the honest one: without a
+    // tool to focus or a baseline to diff, the overview - where
+    // every baseline this Osza knows is listed - not an error.
+    if (tool.isEmpty() || !SecuritySettingsPorter::toolKeys().contains(tool) || baseline.id.isEmpty()) {
+        m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl()), Qz::NT_SelectedTab);
+        return;
+    }
+
+    m_window->tabWidget()->addView(LoadRequest(SettingsDiffPage::pageUrl(baseline.id, tool)), Qz::NT_SelectedTab);
 }
 
 void SecuritySideBar::exportSecuritySettings()

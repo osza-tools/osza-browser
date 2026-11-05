@@ -84,10 +84,15 @@ and KDE contributors for their work.
   focused on the section - marked, scrolled to, and introduced by a
   note - and a tool the baseline would leave alone is answered by a
   note saying why (skipped with the reason, already matching, or
-  not in the baseline). The import preview dialog meets the page
-  there: it stays window-modal while the decision is pending (so
-  the profile it previews cannot change under it), and a file
-  verifiably saved from a built-in preset - a known preset name
+  not in the baseline). The security dashboard's protection rows
+  link there too: every row's "diff" link, beside its quick switch,
+  opens the recommended baseline's diff focused on that tool's
+  section - the same per-tool address the page's "#" links use - so
+  the row that shows a tool's state is one click from what the
+  recommendation would change about it. The import preview dialog
+  meets the page there: it stays window-modal while the decision is
+  pending (so the profile it previews cannot change under it), and a
+  file verifiably saved from a built-in preset - a known preset name
   plus a matching checksum - carries a "view as page" link that
   follows the selected tool's row and opens the diff as a page in
   a window of its own, readable beside the decision. A file
@@ -97,8 +102,10 @@ and KDE contributors for their work.
   part of it. The
   security dashboard sidebar keeps live counters of blocked ads,
   stripped trackers, HTTPS upgrades and blocked threats, with quick
-  switches for every protection, and the built-in security self-test
-  page (osza:selftest, one click from the sidebar) measures the
+  switches for every protection - each switch's row carrying its
+  "diff" link into the recommended baseline - and the built-in
+  security self-test page (osza:selftest, one click from the
+  sidebar) measures the
   browser's own canvas, WebGL, audio and hardware readouts live -
   through the same hooks a fingerprinting site would use - and
   verifies the randomization

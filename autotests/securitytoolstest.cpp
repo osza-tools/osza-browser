@@ -18,6 +18,7 @@
 #include "autotests.h"
 #include "securitytoolstest.h"
 #include "adblockmanager.h"
+#include "browserwindow.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
 #include "fingerprintmanager.h"
@@ -34,6 +35,8 @@
 #include "selftestpage.h"
 #include "settingsdiffpage.h"
 #include "settings.h"
+#include "tabwidget.h"
+#include "tabbedwebview.h"
 #include "threatblockmanager.h"
 #include "webpage.h"
 
@@ -271,6 +274,106 @@ void SecurityToolsTest::securityDashboardWidgetTest()
     sidebar.toggleThreatBlock(threatBlockBefore);
     sidebar.toggleFingerprintProtection(fingerprintBefore);
     sidebar.toggleGpc(gpcBefore);
+}
+
+void SecurityToolsTest::securityDashboardToolDiffLinksTest()
+{
+    // Every protection row of the dashboard carries a deep link to
+    // that tool's part of the recommended baseline's diff - the same
+    // osza:settings-diff address the page's own "#" anchors and the
+    // import dialog's "view as page" link carry, so the dashboard,
+    // the page and the import flow all land in the same place. The
+    // baseline is resolved through the preset catalog and the tool
+    // keys through the porter's own list - the same judgment the
+    // page applies to a "tool" query item - so the rows cannot point
+    // anywhere the page has no answer for.
+    const SecurityPresets::Preset baseline = SecurityPresets::presetById(QSL("recommended-baseline"));
+    QVERIFY(!baseline.id.isEmpty());
+    QCOMPARE(baseline.id, QSL("recommended-baseline"));
+
+    const QStringList toolKeys = SecuritySettingsPorter::toolKeys();
+    QVERIFY(!toolKeys.isEmpty());
+
+    SecuritySideBar sidebar(nullptr);
+    sidebar.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&sidebar));
+
+    // Exactly one link per tool the porter knows - no strays under
+    // the same naming scheme, none missing.
+    const auto links = sidebar.findChildren<QLabel*>(QRegularExpression(QSL("^[A-Za-z]+DiffLink$")));
+    QCOMPARE(links.size(), toolKeys.size());
+
+    for (const QString &toolKey : toolKeys) {
+        auto *link = sidebar.findChild<QLabel*>(QSL("%1DiffLink").arg(toolKey));
+        QVERIFY(link);
+        QVERIFY(link->isVisible());
+
+        // Rich text with external links off: osza: URLs belong to
+        // the browser, never to the OS - the same rule as the import
+        // dialog's "view as page" link.
+        QCOMPARE(link->textFormat(), Qt::RichText);
+        QVERIFY(!link->openExternalLinks());
+
+        // The visible address is exactly what pageUrl() builds - the
+        // URL shape that exists once - preset and tool both in place.
+        const QString href = SettingsDiffPage::pageUrl(baseline.id, toolKey).toString();
+        QCOMPARE(href, QSL("osza:settings-diff?preset=recommended-baseline&tool=%1").arg(toolKey));
+        QVERIFY(link->text().contains(href.toHtmlEscaped()));
+
+        // The tooltip says where the link goes and for which tool:
+        // the baseline's name and the tool's own display name.
+        QVERIFY(!link->toolTip().isEmpty());
+        QVERIFY(link->toolTip().contains(baseline.name));
+        QVERIFY(link->toolTip().contains(SecuritySettingsPorter::toolDisplayName(toolKey)));
+
+        // Following the link hands the tool's stable key to
+        // openToolDiff(); without a window that is a no-op, and it
+        // must stay one - the dashboard has to survive the
+        // window-less case exactly like its self-test shortcut.
+        Q_EMIT link->linkActivated(href);
+        sidebar.openToolDiff(toolKey);
+    }
+
+    // The slot answers anything it can be handed without a window:
+    // no key, an unknown key, whitespace around a valid one - all
+    // no-ops here, never crashes.
+    sidebar.openToolDiff(QString());
+    sidebar.openToolDiff(QSL("not-a-tool"));
+    sidebar.openToolDiff(QSL("  adblock  "));
+
+    // With a real window the deep link opens the very address it
+    // shows: the recommended baseline's diff, focused on the row's
+    // tool - and a request the slot cannot answer honestly (a key
+    // that names no tool) falls back to the overview, where every
+    // baseline this Osza knows is listed, never an error page.
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    SecuritySideBar dashboard(window);
+    dashboard.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&dashboard));
+
+    const int tabsBefore = window->tabWidget()->count();
+
+    dashboard.openToolDiff(QSL("secureDns"));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 1);
+    QTRY_COMPARE(window->weView()->url(),
+                 SettingsDiffPage::pageUrl(baseline.id, QSL("secureDns")));
+
+    // Whitespace around a key is trimmed, exactly like the page
+    // trims its query items: the row's key arrives as the URL's
+    // tool item, nothing else.
+    dashboard.openToolDiff(QSL("  threatBlock  "));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 2);
+    QTRY_COMPARE(window->weView()->url(),
+                 SettingsDiffPage::pageUrl(baseline.id, QSL("threatBlock")));
+
+    // A key that names no security tool: the overview, not an error.
+    dashboard.openToolDiff(QSL("not-a-tool"));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 3);
+    QTRY_COMPARE(window->weView()->url(), SettingsDiffPage::pageUrl());
+
+    delete window;
 }
 
 void SecurityToolsTest::threatBlockListParsingTest()
