@@ -107,7 +107,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("secureDns"), secureDnsTool(DnsOverHttpsManager::Disabled));
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(false));
-        tools.insert(QSL("globalPrivacyControl"), boolTool(false));
+        tools.insert(QSL("globalPrivacyControl"), exclusionsTool(false));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -126,7 +126,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("secureDns"), secureDnsTool(DnsOverHttpsManager::SecureWithFallback));
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
-        tools.insert(QSL("globalPrivacyControl"), boolTool(true));
+        tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -145,7 +145,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("secureDns"), secureDnsTool(DnsOverHttpsManager::SecureOnly));
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
-        tools.insert(QSL("globalPrivacyControl"), boolTool(true));
+        tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);

@@ -50,6 +50,8 @@ private Q_SLOTS:
     void fingerprintIntegrationTest();
 
     void gpcScriptSourceTest();
+    void gpcExclusionTest();
+    void gpcExceptionsDialogTest();
     void gpcScriptLifecycleTest();
     void gpcDomSignalIntegrationTest();
     void gpcHeaderIntegrationTest();

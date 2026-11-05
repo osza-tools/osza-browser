@@ -31,11 +31,13 @@
 #include "pluginsmanager.h"
 #include "jsoptions.h"
 #include "fingerprintexceptionsdialog.h"
+#include "gpcexceptionsdialog.h"
 #include "httpsonlyexceptionsdialog.h"
 #include "dnsoverhttpsmanager.h"
 #include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "fingerprintmanager.h"
+#include "gpcmanager.h"
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
@@ -627,6 +629,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->jsOptionsButton, &QAbstractButton::clicked, this, &Preferences::openJsOptions);
     connect(ui->httpsOnlyExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openHttpsOnlyExceptions);
     connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
+    connect(ui->gpcExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openGpcExceptions);
     connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
@@ -872,6 +875,22 @@ void Preferences::openFingerprintExceptions()
         // Make the new exclusions effective immediately: the guard
         // script is regenerated with the new list baked in
         FingerprintManager::instance()->loadSettings();
+    }
+}
+
+void Preferences::openGpcExceptions()
+{
+    GpcExceptionsDialog dialog(Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList(), this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        // The manager owns the list's single source of truth: it
+        // persists the result and rebuilds the injected script, so
+        // the DOM half follows at once.
+        GpcManager::instance()->setExclusions(dialog.exclusions());
+
+        // The header half follows the network stack's reload - the
+        // same two-step the padlock menu's per-site control takes.
+        mApp->networkManager()->loadSettings();
     }
 }
 

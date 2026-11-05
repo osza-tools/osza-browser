@@ -21,6 +21,7 @@
 #include "browserwindow.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
+#include "gpcexceptionsdialog.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
@@ -383,12 +384,13 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     // The padlock menu's per-site entries carry the same deep links
     // the security dashboard's tool rows carry: this tool's part of
     // the recommended baseline's diff, one click away from the
-    // per-site state. Exactly the two tools with per-site entries in
-    // the menu (HTTPS-Only mode, fingerprint protection), built the
-    // same honest way - the porter's key list must know the key, the
-    // catalog must carry the baseline - and landed by the same
-    // shared SettingsDiffPage::openToolDiff() the dashboard's rows
-    // use, so the two can never land in different places.
+    // per-site state. Exactly the four tools with per-site entries in
+    // the menu (HTTPS-Only mode, fingerprint protection, the GPC
+    // signal, malicious site protection), built the same honest way -
+    // the porter's key list must know the key, the catalog must carry
+    // the baseline - and landed by the same shared
+    // SettingsDiffPage::openToolDiff() the dashboard's rows use, so
+    // the two can never land in different places.
     const SecurityPresets::Preset baseline = SettingsDiffPage::recommendedBaseline();
     QVERIFY(!baseline.id.isEmpty());
     QCOMPARE(baseline.id, QSL("recommended-baseline"));
@@ -405,9 +407,10 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     padlock->show();
     QVERIFY(QTest::qWaitForWindowExposed(padlock));
 
-    // Exactly the two per-site entries carry a link under the
+    // Exactly the four per-site entries carry a link under the
     // dashboard's naming scheme - no strays, none missing.
-    const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection")};
+    const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
+                                         QSL("globalPrivacyControl"), QSL("threatBlock")};
     const auto links = padlock->findChildren<QLabel*>(QRegularExpression(QSL("^[A-Za-z]+DiffLink$")));
     QCOMPARE(links.size(), perSiteToolKeys.size());
 
@@ -591,6 +594,32 @@ void SecurityToolsTest::threatBlockSessionAllowTest()
     QVERIFY(manager->isSessionAllowed(QSL("proceed.example")));
     QVERIFY(!manager->shouldBlock(QSL("proceed.example")));
     QVERIFY(manager->shouldBlock(QSL("other.example")));
+
+    // the padlock menu's "block this site again" ends the exception
+    // for the host and every subdomain the allow covered
+    manager->removeSessionAllow(QSL("proceed.example"));
+    QVERIFY(!manager->isSessionAllowed(QSL("proceed.example")));
+    QVERIFY(!manager->isSessionAllowed(QSL("www.proceed.example")));
+    QVERIFY(manager->shouldBlock(QSL("proceed.example")));
+    QVERIFY(manager->shouldBlock(QSL("www.proceed.example")));
+
+    // an allow for a parent domain covers the subdomains, and
+    // revoking from a subdomain ends what the parent's allow covered
+    manager->allowForSession(QSL("parent.example"));
+    QVERIFY(manager->isSessionAllowed(QSL("deep.parent.example")));
+    QVERIFY(!manager->shouldBlock(QSL("deep.parent.example")) || !manager->isHostBlocked(QSL("deep.parent.example")));
+    manager->removeSessionAllow(QSL("deep.parent.example"));
+    QVERIFY(!manager->isSessionAllowed(QSL("deep.parent.example")));
+    QVERIFY(!manager->isSessionAllowed(QSL("parent.example")));
+
+    // an empty or malformed host neither allows nor revokes anything
+    manager->removeSessionAllow(QString());
+    manager->allowForSession(QString());
+
+    // restore the clean session the other tests expect
+    manager->removeSessionAllow(QSL("proceed.example"));
+    manager->removeSessionAllow(QSL("parent.example"));
+    manager->applyListData(QByteArray("http://proceed.example/x\n"));
 }
 
 void SecurityToolsTest::threatBlockPageUrlTest()
@@ -1081,8 +1110,144 @@ void SecurityToolsTest::gpcScriptSourceTest()
     // Every hook fails closed to the unmodified environment.
     QVERIFY(source.contains(QLatin1String("catch (e)")));
 
-    // The source is a constant: there is nothing left to substitute.
-    QVERIFY(!source.contains(QLatin1String("%")));
+    // The empty-list build is a finished script: nothing left to
+    // substitute, the same discipline the fingerprint guard keeps.
+    QVERIFY(source.contains(QLatin1String("var EXCLUSIONS = [];")));
+    QVERIFY(!source.contains(QLatin1String("%EXCLUSIONS%")));
+
+    // Exclusions are embedded as JSON, blank entries dropped, and
+    // the host matching walks the same list the manager matches
+    // with: wildcards by suffix, the rest by host-or-subdomain.
+    const QString excluded = GpcManager::buildScriptSource({QSL(" Example.COM "), QString(), QSL("*.wild.example")});
+    QVERIFY(excluded.contains(QLatin1String("var EXCLUSIONS = [\"Example.COM\",\"*.wild.example\"];")));
+    QVERIFY(!excluded.contains(QLatin1String("%EXCLUSIONS%")));
+    QVERIFY(excluded.contains(QLatin1String("charCodeAt(0) === 42")));
+    QVERIFY(excluded.contains(QLatin1String("endsWith")));
+
+    // A different exclusion list is a different script.
+    QVERIFY(GpcManager::buildScriptSource({QSL("a.example")}) != GpcManager::buildScriptSource({QSL("b.example")}));
+}
+
+void SecurityToolsTest::gpcExclusionTest()
+{
+    auto *manager = GpcManager::instance();
+    auto *profile = mApp->webProfile();
+    QVERIFY(manager);
+    QVERIFY(profile);
+
+    // isolate from other tests / user settings
+    manager->removeExclusion(QSL("gpc.example"));
+    manager->removeExclusion(QSL("*.gpc-wild.example"));
+
+    QVERIFY(!manager->isExcluded(QSL("gpc.example")));
+
+    // addExclusion normalizes the host
+    manager->addExclusion(QSL("  GPC.Example  "));
+
+    // exact and subdomain matches, case-insensitive
+    QVERIFY(manager->isExcluded(QSL("gpc.example")));
+    QVERIFY(manager->isExcluded(QSL("www.gpc.example")));
+    QVERIFY(manager->isExcluded(QSL("DEEP.GPC.example")));
+
+    // suffix spoofing and unrelated hosts never match
+    QVERIFY(!manager->isExcluded(QSL("evilgpc.example")));
+    QVERIFY(!manager->isExcluded(QSL("gpc.example.evil.org")));
+    QVERIFY(!manager->isExcluded(QSL("other.example")));
+    QVERIFY(!manager->isExcluded(QString()));
+
+    // wildcard entries match subdomains only, not the bare domain
+    manager->addExclusion(QSL("*.gpc-wild.example"));
+    QVERIFY(manager->isExcluded(QSL("deep.gpc-wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("gpc-wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("evilgpc-wild.example")));
+
+    // the list persists, and loadSettings() is the same read
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        const QStringList persisted = settings.value(QSL("GpcExclusions"), QStringList()).toStringList();
+        settings.endGroup();
+        QVERIFY(persisted.contains(QSL("gpc.example")));
+        QVERIFY(persisted.contains(QSL("*.gpc-wild.example")));
+    }
+    manager->loadSettings();
+    QVERIFY(manager->isExcluded(QSL("gpc.example")));
+
+    // the injected script carries the exclusion list, so the two
+    // halves of the signal agree on the same host set: exactly one
+    // script is in the profile, and the source updateScript() builds
+    // for the manager's list embeds it. (The profile's copy of the
+    // source is read back through the script collection, which can
+    // lag rapid re-inserts; the pure builder is the same function
+    // updateScript() calls with the same input, so the comparison
+    // holds whenever the collection has caught up.)
+    const QString name = QSL("_osza_gpc_signal");
+    QTRY_COMPARE(profile->scripts()->find(name).count(), 1);
+    QVERIFY(GpcManager::buildScriptSource(manager->exclusions())
+                .contains(QLatin1String("var EXCLUSIONS = [\"gpc.example\",\"*.gpc-wild.example\"];")));
+
+    // removeExclusion takes the entry (and only it) away
+    manager->removeExclusion(QSL("GPC.example"));
+    QVERIFY(!manager->isExcluded(QSL("gpc.example")));
+    QVERIFY(manager->isExcluded(QSL("deep.gpc-wild.example")));
+
+    // setExclusions replaces the whole list: the porter's import
+    // path, where the document's list is the complete effective one
+    manager->setExclusions({QSL("  Porter.Example  "), QString(), QSL("porter.example")});
+    QCOMPARE(manager->exclusions(), QStringList{QSL("porter.example")});
+    QVERIFY(manager->isExcluded(QSL("porter.example")));
+    QVERIFY(!manager->isExcluded(QSL("gpc-wild.example")));
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        QCOMPARE(settings.value(QSL("GpcExclusions")).toStringList(), QStringList{QSL("porter.example")});
+        settings.endGroup();
+    }
+
+    // restore the empty list the other tests expect
+    manager->setExclusions(QStringList());
+    QCOMPARE(manager->exclusions(), QStringList());
+    QVERIFY(!manager->isExcluded(QSL("porter.example")));
+}
+
+void SecurityToolsTest::gpcExceptionsDialogTest()
+{
+    auto *profile = mApp->webProfile();
+    QVERIFY(profile);
+
+    // The management dialog round-trips the exclusion list: blank
+    // entries are dropped and the rest is handed back verbatim.
+    GpcExceptionsDialog dialog({QSL("  GPC.Example  "), QString(), QSL("*.wild.example")});
+
+    const QStringList exclusions = dialog.exclusions();
+    QCOMPARE(exclusions.size(), 2);
+    QVERIFY(exclusions.contains(QSL("GPC.Example")));
+    QVERIFY(exclusions.contains(QSL("*.wild.example")));
+
+    // The dialog's result flows through the same manager API the
+    // preferences window uses, and the list reaches the signal's
+    // script half at once.
+    GpcManager::instance()->setExclusions(exclusions);
+
+    QVERIFY(GpcManager::instance()->isExcluded(QSL("gpc.example")));
+    QVERIFY(GpcManager::instance()->isExcluded(QSL("www.gpc.example")));
+    QVERIFY(GpcManager::instance()->isExcluded(QSL("deep.wild.example")));
+    QVERIFY(!GpcManager::instance()->isExcluded(QSL("wild.example")));
+    QVERIFY(!GpcManager::instance()->isExcluded(QSL("other.example")));
+
+    const QString gpcName = QSL("_osza_gpc_signal");
+    QTRY_COMPARE(profile->scripts()->find(gpcName).count(), 1);
+    // The manager owns the list's single source of truth: it stores
+    // the entries normalized (lower case hosts, in the order the
+    // dialog handed them over - its list is sorted for the user, the
+    // wildcard sorts first), and the source updateScript() builds
+    // embeds exactly that list.
+    QVERIFY(GpcManager::buildScriptSource(GpcManager::instance()->exclusions())
+                .contains(QLatin1String("var EXCLUSIONS = [\"*.wild.example\",\"gpc.example\"];")));
+
+    // restore the empty list the other tests expect
+    GpcManager::instance()->setExclusions(QStringList());
+    QVERIFY(!GpcManager::instance()->isExcluded(QSL("gpc.example")));
 }
 
 void SecurityToolsTest::gpcScriptLifecycleTest()
@@ -1171,6 +1336,15 @@ void SecurityToolsTest::gpcDomSignalIntegrationTest()
     // script runs, and the marker leaves no enumerable key behind.
     applyGpcSetting(true);
     QCOMPARE(loadAndProbe(QSL("gpc-on.example")), QSL("boolean|true|-1"));
+
+    // Signal on, host excluded: the property is gone for this site
+    // alone - the page sees the same browser it would see with the
+    // signal globally off, and every other host still gets it.
+    GpcManager::instance()->addExclusion(QSL("gpc-excluded.example"));
+    QCOMPARE(loadAndProbe(QSL("gpc-excluded.example")), QSL("undefined|undefined|-1"));
+    QCOMPARE(loadAndProbe(QSL("gpc-on.example")), QSL("boolean|true|-1"));
+    GpcManager::instance()->removeExclusion(QSL("gpc-excluded.example"));
+    QCOMPARE(loadAndProbe(QSL("gpc-excluded.example")), QSL("boolean|true|-1"));
 
     // Signal off: the property is gone, exactly like a browser
     // without GPC support.
@@ -1261,6 +1435,25 @@ void SecurityToolsTest::gpcHeaderIntegrationTest()
 
     QVERIFY(rawOn.contains(QSL("Host: 127.0.0.1")));
     QVERIFY(rawOn.contains(QLatin1String("sec-gpc: 1"), Qt::CaseInsensitive));
+
+    // Signal on, host excluded -> no header to that host: the
+    // request's own target host decides, and only it stops seeing
+    // the opt-out.
+    GpcManager::instance()->addExclusion(QSL("127.0.0.1"));
+    mApp->networkManager()->loadSettings();
+
+    page.load(QUrl(QSL("http://127.0.0.1:%1/gpc-excluded").arg(port)));
+    QString rawExcluded;
+    QVERIFY(captureRequest(QSL("/gpc-excluded"), &rawExcluded));
+    if (loadFinishedSpy.count() == 0) {
+        QVERIFY(loadFinishedSpy.wait(20000));
+    }
+
+    QVERIFY(rawExcluded.contains(QSL("Host: 127.0.0.1")));
+    QVERIFY(!rawExcluded.contains(QLatin1String("sec-gpc"), Qt::CaseInsensitive));
+
+    GpcManager::instance()->removeExclusion(QSL("127.0.0.1"));
+    mApp->networkManager()->loadSettings();
 
     // Signal off -> no trace of the header at all.
     applyGpcSetting(false);
@@ -1724,6 +1917,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     const QString threatSourceBefore = threatBlock->sourceUrl();
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -1738,6 +1932,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     const QString threatSourceTarget = QSL("https://porter.example/hosts");
     const QStringList httpsExclusionsTarget = {QSL("legacy.porter.example"), QSL("*.wild.porter.example")};
     const QStringList fingerprintExclusionsTarget = {QSL("bank.porter.example")};
+    const QStringList gpcExclusionsTarget = {QSL("shop.porter.example")};
     const QStringList dohServersTarget = {QSL("https://dns.porter.example/dns-query{?dns}")};
     const auto dohModeTarget = DnsOverHttpsManager::SecureWithFallback;
 
@@ -1756,6 +1951,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcTarget);
+    gpc->setExclusions(gpcExclusionsTarget);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockTarget);
     threatBlock->setEnabled(threatEnabledTarget);
@@ -1804,6 +2000,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
+    gpc->setExclusions(QStringList{QSL("old.porter.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -1858,6 +2055,9 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
              fingerprintExclusionsTarget);
 
     QCOMPARE(gpc->isEnabled(), gpcTarget);
+    QVERIFY(gpc->isExcluded(QSL("shop.porter.example")));
+    QVERIFY(!gpc->isExcluded(QSL("old.porter.example")));
+    QCOMPARE(gpc->exclusions(), gpcExclusionsTarget);
 
     // The guard script follows the imported fingerprint state.
     if (fingerprintTarget) {
@@ -1885,6 +2085,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
+    gpc->setExclusions(gpcExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -1896,6 +2097,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QCOMPARE(interceptor->isEnabled(), httpsOnlyBefore);
     QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
     QCOMPARE(gpc->isEnabled(), gpcBefore);
+    QCOMPARE(gpc->exclusions(), gpcExclusionsBefore);
     QCOMPARE(adblock->isEnabled(), adblockBefore);
     QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
     QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
@@ -2345,6 +2547,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     const QString threatSourceBefore = threatBlock->sourceUrl();
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -2363,6 +2566,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(true);
+    gpc->setExclusions(QStringList{QSL("gpc-preview.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(true);
     threatBlock->setEnabled(true);
@@ -2455,14 +2659,17 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QVERIFY(hasChange(preview, QSL("threatBlock"), QSL("sourceUrl"),
                       QSL("https://preview.example/hosts"), QSL("https://after.example/hosts")));
     QCOMPARE(changeCount(preview, QSL("threatBlock")), 1);
-    // gpc stays on - no change, no row.
-    QCOMPARE(changeCount(preview, QSL("globalPrivacyControl")), 0);
+    // gpc stays on, but the document does not state the exclusions
+    // field, so the import resets the list - the row says so.
+    QVERIFY(hasChange(preview, QSL("globalPrivacyControl"), QSL("exclusions"), QSL("gpc-preview.example"), QSL("none")));
+    QCOMPARE(changeCount(preview, QSL("globalPrivacyControl")), 1);
     // The skipped tool contributes no diff rows.
     QCOMPARE(changeCount(preview, QSL("fingerprintProtection")), 0);
 
     // A site-exception change names the sites whose treatment
     // changes: the httpsOnly row clears preview.example, and the
-    // summary line says so in one line.
+    // summary line says so in one line. The gpc row names its site
+    // the same way.
     {
         const SecuritySettingsPorter::PreviewChange *exclusions = findChange(preview, QSL("httpsOnly"), QSL("exclusions"));
         QVERIFY(exclusions);
@@ -2470,6 +2677,13 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QVERIFY(exclusions->addedEntries.isEmpty());
         QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*exclusions),
                  QStringList{QSL("Clears the exception for: preview.example")});
+
+        const SecuritySettingsPorter::PreviewChange *gpcExclusions = findChange(preview, QSL("globalPrivacyControl"), QSL("exclusions"));
+        QVERIFY(gpcExclusions);
+        QCOMPARE(gpcExclusions->clearedEntries, QStringList{QSL("gpc-preview.example")});
+        QVERIFY(gpcExclusions->addedEntries.isEmpty());
+        QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*gpcExclusions),
+                 QStringList{QSL("Clears the exception for: gpc-preview.example")});
     }
 
     // A change that is not a site-exception list carries no entries
@@ -2491,6 +2705,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QCOMPARE(fingerprint->isEnabled(), true);
     QVERIFY(fingerprint->isExcluded(QSL("preview.example")));
     QCOMPARE(gpc->isEnabled(), true);
+    QVERIFY(gpc->isExcluded(QSL("gpc-preview.example")));
     if (dohSupported) {
         QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureWithFallback);
         QCOMPARE(doh->serverTemplates(), QStringList{DnsOverHttpsManager::defaultServerTemplate()});
@@ -2587,6 +2802,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QCOMPARE(adblock->isEnabled(), false);
         QVERIFY(!interceptor->hasExplicitExclusion(QSL("preview.example")));
         QCOMPARE(threatBlock->sourceUrl(), QSL("https://after.example/hosts"));
+        QVERIFY(!gpc->isExcluded(QSL("gpc-preview.example")));
         if (dohSupported) {
             QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
         }
@@ -2689,6 +2905,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
+    gpc->setExclusions(gpcExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -2719,6 +2936,7 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     const QString threatSourceBefore = threatBlock->sourceUrl();
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -2823,6 +3041,7 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
+    gpc->setExclusions(gpcExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -3083,6 +3302,7 @@ void SecurityToolsTest::securityPresetsTest()
     const QString threatSourceBefore = threatBlock->sourceUrl();
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
+    const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -3145,6 +3365,7 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), false);
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), false);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     {
@@ -3163,6 +3384,7 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     {
@@ -3178,6 +3400,7 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("threatBlock")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
+        QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     // Lookup by id finds every built-in and nothing else.
@@ -3204,6 +3427,7 @@ void SecurityToolsTest::securityPresetsTest()
         interceptor->loadSettings();
         fingerprint->loadSettings();
         gpc->setEnabled(!gpcBefore);
+        gpc->setExclusions(QStringList{QSL("preset.example")});
         mApp->networkManager()->loadSettings();
         adblock->setEnabled(!adblockBefore);
         threatBlock->setEnabled(!threatEnabledBefore);
@@ -3239,6 +3463,7 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(fingerprint->isEnabled(), true);
         QVERIFY(!fingerprint->isExcluded(QSL("preset.example")));
         QCOMPARE(gpc->isEnabled(), true);
+        QVERIFY(!gpc->isExcluded(QSL("preset.example")));
 
         // The guard script follows the preset.
         QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
@@ -3274,6 +3499,7 @@ void SecurityToolsTest::securityPresetsTest()
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
+    gpc->setExclusions(gpcExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);

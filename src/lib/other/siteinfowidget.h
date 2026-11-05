@@ -46,6 +46,10 @@ private:
     void httpsOnlyButtonClicked();
     void updateFingerprintState();
     void fingerprintButtonClicked();
+    void updateGpcState();
+    void gpcButtonClicked();
+    void updateThreatBlockState();
+    void threatBlockButtonClicked();
 
     // Configure the "diff" link of a per-site entry: the same deep
     // link the security dashboard's tool rows carry - this tool's

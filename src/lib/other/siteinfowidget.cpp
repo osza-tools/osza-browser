@@ -27,6 +27,8 @@
 #include "networkmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "fingerprintmanager.h"
+#include "gpcmanager.h"
+#include "threatblockmanager.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "settingsdiffpage.h"
@@ -116,17 +118,23 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     updateProtocolHandler();
     updateHttpsOnlyState();
     updateFingerprintState();
+    updateGpcState();
+    updateThreatBlockState();
 
     // The per-site entries' "diff" links: the same deep links the
     // security dashboard's tool rows carry, beside the entries they
     // answer for.
     setupToolDiffLink(ui->httpsOnlyDiffLink, QSL("httpsOnly"));
     setupToolDiffLink(ui->fingerprintProtectionDiffLink, QSL("fingerprintProtection"));
+    setupToolDiffLink(ui->globalPrivacyControlDiffLink, QSL("globalPrivacyControl"));
+    setupToolDiffLink(ui->threatBlockDiffLink, QSL("threatBlock"));
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
     connect(ui->httpsOnlyButton, &QPushButton::clicked, this, &SiteInfoWidget::httpsOnlyButtonClicked);
     connect(ui->fingerprintButton, &QPushButton::clicked, this, &SiteInfoWidget::fingerprintButtonClicked);
+    connect(ui->gpcButton, &QPushButton::clicked, this, &SiteInfoWidget::gpcButtonClicked);
+    connect(ui->threatBlockButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockButtonClicked);
 }
 
 SiteInfoWidget::~SiteInfoWidget()
@@ -303,6 +311,142 @@ void SiteInfoWidget::fingerprintButtonClicked()
 
     // Reload so the changed protection applies to this page right away.
     if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {
+        m_window->weView()->reload();
+    }
+
+    close();
+}
+
+void SiteInfoWidget::updateGpcState()
+{
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->gpcLabel->hide();
+        ui->gpcButton->hide();
+        ui->globalPrivacyControlDiffLink->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *manager = GpcManager::instance();
+
+    if (!manager->isEnabled()) {
+        ui->gpcLabel->setText(tr("The Global Privacy Control signal is <b>off</b>."));
+        ui->gpcButton->setText(tr("Enable GPC signal"));
+    }
+    else if (manager->isExcluded(host)) {
+        ui->gpcLabel->setText(tr("The GPC opt-out is <b>not</b> sent to this site."));
+        ui->gpcButton->setText(tr("Send the opt-out"));
+    } else {
+        ui->gpcLabel->setText(tr("The GPC opt-out is <b>sent</b> to this site."));
+        ui->gpcButton->setText(tr("Do not send the opt-out"));
+    }
+}
+
+void SiteInfoWidget::gpcButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = GpcManager::instance();
+
+    if (!manager->isEnabled()) {
+        // The per-site shortcut needs the signal itself, turn it on.
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("GlobalPrivacyControl"), true);
+        settings.endGroup();
+
+        manager->loadSettings();
+    }
+    else if (manager->isExcluded(url.host())) {
+        manager->removeExclusion(url.host());
+    } else {
+        manager->addExclusion(url.host());
+    }
+
+    // Both halves of the signal read the same persisted list: the
+    // script half is rebuilt by the manager itself, the header half
+    // follows the network stack's reload - and the page is reloaded
+    // so the DOM property and the requests it makes agree at once.
+    mApp->networkManager()->loadSettings();
+
+    if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {
+        m_window->weView()->reload();
+    }
+
+    close();
+}
+
+void SiteInfoWidget::updateThreatBlockState()
+{
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->threatBlockLabel->hide();
+        ui->threatBlockButton->hide();
+        ui->threatBlockDiffLink->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    if (!manager->isEnabled()) {
+        ui->threatBlockLabel->setText(tr("Malicious site protection is <b>off</b>."));
+        ui->threatBlockButton->setText(tr("Enable protection"));
+        return;
+    }
+
+    // First run, or a refresh with nothing cached yet: until the
+    // blocklist arrives there is no coverage to report, and saying
+    // "not on the blocklist" would be a reassurance the browser
+    // cannot honestly make.
+    if (!manager->isListLoaded()) {
+        ui->threatBlockLabel->setText(tr("The malicious-site blocklist is still <b>loading</b>."));
+        ui->threatBlockButton->hide();
+        return;
+    }
+
+    // A session exception is the "proceed anyway" choice from the
+    // interstitial - the one per-site state this tool has. It never
+    // survives a restart, so the entry says so and offers to end it
+    // early; there is no way to create one from here, because the
+    // only path to an exception is the interstitial's explicit
+    // warning-acknowledging choice.
+    if (manager->isSessionAllowed(host)) {
+        ui->threatBlockLabel->setText(tr("Malicious site protection is <b>paused</b> for this site (this session)."));
+        ui->threatBlockButton->setText(tr("Block this site again"));
+        return;
+    }
+
+    // The remaining states carry no per-site action: a listed host
+    // without an exception is not viewable in the first place, and an
+    // unlisted host needs nothing - so the row states the coverage
+    // and the button stays hidden.
+    ui->threatBlockButton->hide();
+
+    if (manager->isHostBlocked(host)) {
+        ui->threatBlockLabel->setText(tr("This site is on the malicious-site <b>blocklist</b>."));
+    } else {
+        ui->threatBlockLabel->setText(tr("This site is <b>not</b> on the malicious-site blocklist."));
+    }
+}
+
+void SiteInfoWidget::threatBlockButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    if (!manager->isEnabled()) {
+        // The per-site shortcut needs the protection itself, turn it
+        // on; the blocklist is already in place from the last update.
+        manager->setEnabled(true);
+    }
+    else if (manager->isSessionAllowed(url.host())) {
+        // End the "proceed anyway" exception now, not at the next
+        // restart - the reload lands on the interstitial again if
+        // the host is still listed.
+        manager->removeSessionAllow(url.host());
         m_window->weView()->reload();
     }
 

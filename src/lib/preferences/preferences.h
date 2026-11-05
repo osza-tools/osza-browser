@@ -64,6 +64,7 @@ private Q_SLOTS:
     void openJsOptions();
     void openHttpsOnlyExceptions();
     void openFingerprintExceptions();
+    void openGpcExceptions();
     void exportSecuritySettings();
     void importSecuritySettings();
     void saveSecurityPresetToFile();

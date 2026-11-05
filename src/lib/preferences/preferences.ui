@@ -2628,7 +2628,9 @@ or in bulk from the fingerprint exceptions dialog.</string>
                <item row="19" column="2">
                 <widget class="QCheckBox" name="globalPrivacyControl">
                  <property name="toolTip">
-                  <string>Send the Global Privacy Control opt-out with every request (Sec-GPC: 1 header) and report it to page scripts (navigator.globalPrivacyControl). Where the law recognizes GPC (California, Colorado, Connecticut and others), sites must honor it as an opt-out from the sale or sharing of personal data.</string>
+                  <string>Send the Global Privacy Control opt-out with every request (Sec-GPC: 1 header) and report it to page scripts (navigator.globalPrivacyControl). Where the law recognizes GPC (California, Colorado, Connecticut and others), sites must honor it as an opt-out from the sale or sharing of personal data.
+Individual sites can be excluded from the padlock menu,
+or in bulk from the GPC exceptions dialog.</string>
                  </property>
                  <property name="text">
                   <string>Send Global Privacy Control signal (Sec-GPC)</string>
@@ -2656,13 +2658,36 @@ or in bulk from the fingerprint exceptions dialog.</string>
                 </widget>
                </item>
                <item row="21" column="0">
+                <widget class="QLabel" name="labelGpcExceptions">
+                 <property name="text">
+                  <string>Manage GPC exceptions</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="21" column="2">
+                <widget class="QPushButton" name="gpcExceptionsButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>Sites on this list are not sent the GPC opt-out - neither the Sec-GPC: 1 request header nor navigator.globalPrivacyControl. The current site can also be excluded from the padlock menu.</string>
+                 </property>
+                 <property name="text">
+                  <string>GPC exceptions</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="0">
                 <widget class="QLabel" name="labelSecurityBackup">
                  <property name="text">
                   <string>Backup security settings</string>
                  </property>
                 </widget>
                </item>
-               <item row="21" column="2">
+               <item row="22" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayoutSecurityBackup">
                  <item>
                   <widget class="QPushButton" name="securityExportButton">
@@ -2711,14 +2736,14 @@ or in bulk from the fingerprint exceptions dialog.</string>
                  </item>
                 </layout>
                </item>
-               <item row="22" column="0">
+               <item row="23" column="0">
                 <widget class="QLabel" name="labelSecurityPreset">
                  <property name="text">
                   <string>Recommended baseline</string>
                  </property>
                 </widget>
                </item>
-               <item row="22" column="2">
+               <item row="23" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayoutSecurityPreset">
                  <item>
                   <widget class="QComboBox" name="securityPresetCombo">
@@ -2790,7 +2815,7 @@ or in bulk from the fingerprint exceptions dialog.</string>
                  </item>
                 </layout>
                </item>
-               <item row="23" column="0" colspan="3">
+               <item row="24" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

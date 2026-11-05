@@ -304,6 +304,35 @@ void ThreatBlockManager::allowForSession(const QString &host)
     }
 }
 
+void ThreatBlockManager::removeSessionAllow(const QString &host)
+{
+    const QString name = normalizeHost(host);
+
+    if (name.isEmpty()) {
+        return;
+    }
+
+    {
+        QMutexLocker lock(&m_mutex);
+
+        // The revoke covers what the allow covered: the host and its
+        // subdomains. An allow created for "example" is what keeps
+        // "www.example" out of the interstitial, so removing only the
+        // exact name would leave the protection paused for the names
+        // the user actually sees - the mirror of isSessionAllowedLocked.
+        m_sessionAllowed.remove(name);
+        QString parent = name;
+        for (;;) {
+            const int dot = parent.indexOf(QLatin1Char('.'));
+            if (dot < 0 || dot + 1 >= parent.size()) {
+                break;
+            }
+            parent = parent.mid(dot + 1);
+            m_sessionAllowed.remove(parent);
+        }
+    }
+}
+
 void ThreatBlockManager::checkForUpdate()
 {
     QDateTime updated;

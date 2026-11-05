@@ -72,8 +72,14 @@ void NetworkUrlInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
     // Global Privacy Control: the network half of the signal (the DOM
     // half is navigator.globalPrivacyControl, installed by GpcManager).
     // Sent with every request, navigations and subresources alike, as
-    // the GPC specification requires.
-    if (m_sendGPC) {
+    // the GPC specification requires - except to the hosts the user
+    // excluded from the signal, where the request's own target host
+    // decides. That anchor keeps the exclusion as narrow as the choice
+    // it expresses: while browsing an excluded site, every request to
+    // every other host still carries the opt-out, and the excluded
+    // host's own servers stop seeing it - the same host set whose
+    // frames GpcManager leaves untouched.
+    if (m_sendGPC && !gpcHostExcludedLocked(info.requestUrl().host())) {
         info.setHttpHeader(QByteArrayLiteral("Sec-GPC"), QByteArrayLiteral("1"));
     }
 
@@ -166,9 +172,45 @@ void NetworkUrlInterceptor::loadSettings()
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_sendDNT = settings.value(QSL("DoNotTrack"), false).toBool();
     m_sendGPC = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
+    m_gpcExclusions = settings.value(QSL("GpcExclusions"), QStringList()).toStringList();
     m_stripTrackingQuery = settings.value(QSL("StripTrackingQuery"), true).toBool();
     settings.endGroup();
 
     m_usePerDomainUserAgent = mApp->userAgentManager()->usePerDomainUserAgents();
     m_userAgentsList = mApp->userAgentManager()->perDomainUserAgentsList();
+}
+
+bool NetworkUrlInterceptor::gpcHostExcludedLocked(const QString &host) const
+{
+    const QString normalized = host.trimmed();
+
+    if (normalized.isEmpty()) {
+        return false;
+    }
+
+    for (const QString &entry : m_gpcExclusions) {
+        if (hostMatchesExclusionEntry(normalized, entry)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool NetworkUrlInterceptor::hostMatchesExclusionEntry(const QString &host, const QString &entry)
+{
+    const QString trimmed = entry.trimmed();
+
+    if (trimmed.isEmpty() || host.isEmpty()) {
+        return false;
+    }
+
+    // Wildcard pattern: *.example.com matches every subdomain.
+    if (trimmed.startsWith(QSL("*"))) {
+        return host.endsWith(trimmed.mid(1), Qt::CaseInsensitive);
+    }
+
+    // Exact host or any subdomain of the entry.
+    return host.compare(trimmed, Qt::CaseInsensitive) == 0
+        || host.endsWith(QSL(".") + trimmed, Qt::CaseInsensitive);
 }

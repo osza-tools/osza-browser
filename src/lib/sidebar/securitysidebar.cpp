@@ -454,22 +454,33 @@ void SecuritySideBar::updateStatus()
     if (!gpc) {
         m_gpcState->setText(tr("The Global Privacy Control signal is off."));
     } else {
-        m_gpcState->setText(tr("Every request carries the Sec-GPC: 1 opt-out, and pages see navigator.globalPrivacyControl = true."));
+        const QString host = currentHost();
+        if (!host.isEmpty() && GpcManager::instance()->isExcluded(host)) {
+            m_gpcState->setText(tr("The opt-out is sent everywhere except to %1 (excluded from the padlock menu).").arg(host.toHtmlEscaped()));
+        } else {
+            m_gpcState->setText(tr("Every request carries the Sec-GPC: 1 opt-out, and pages see navigator.globalPrivacyControl = true."));
+        }
     }
 
-    // Malicious-site protection state, honest about the list.
+    // Malicious-site protection state, honest about the list and
+    // about the one per-site state the tool has.
     if (!threatBlock->isEnabled()) {
         m_threatBlockState->setText(tr("Malicious site protection is off."));
-    } else if (threatBlock->isUpdating()) {
-        m_threatBlockState->setText(tr("Updating the blocklist..."));
-    } else if (threatBlock->hostCount() == 0) {
-        m_threatBlockState->setText(tr("Blocklist not downloaded yet. It is fetched from the configured source."));
     } else {
-        const QString count = QLocale().toString(threatBlock->hostCount());
-        const QString updated = threatBlock->lastUpdate().isValid()
-            ? QLocale().toString(threatBlock->lastUpdate().toLocalTime(), QLocale::ShortFormat)
-            : tr("unknown date");
-        m_threatBlockState->setText(tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated));
+        const QString host = currentHost();
+        if (!host.isEmpty() && threatBlock->isSessionAllowed(host)) {
+            m_threatBlockState->setText(tr("Paused for %1 in this session (\"proceed anyway\" from the warning page).").arg(host.toHtmlEscaped()));
+        } else if (threatBlock->isUpdating()) {
+            m_threatBlockState->setText(tr("Updating the blocklist..."));
+        } else if (threatBlock->hostCount() == 0) {
+            m_threatBlockState->setText(tr("Blocklist not downloaded yet. It is fetched from the configured source."));
+        } else {
+            const QString count = QLocale().toString(threatBlock->hostCount());
+            const QString updated = threatBlock->lastUpdate().isValid()
+                ? QLocale().toString(threatBlock->lastUpdate().toLocalTime(), QLocale::ShortFormat)
+                : tr("unknown date");
+            m_threatBlockState->setText(tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated));
+        }
     }
 }
 

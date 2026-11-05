@@ -89,9 +89,14 @@ public:
     // protection enabled, host listed, no session exception.
     bool shouldBlock(const QString &host) const;
 
-    // Session-scoped "proceed anyway" decisions.
+    // Session-scoped "proceed anyway" decisions. They are
+    // deliberately never persisted: a standing allow for a host a
+    // blocklist calls malicious must not survive a restart (or a
+    // blocklist refresh) silently. The padlock menu surfaces the
+    // paused state per site and revokes it through removeSessionAllow.
     bool isSessionAllowed(const QString &host) const;
     void allowForSession(const QString &host);
+    void removeSessionAllow(const QString &host);
 
     // List lifecycle. checkForUpdate() only fetches when the list is
     // missing or older than the refresh interval.

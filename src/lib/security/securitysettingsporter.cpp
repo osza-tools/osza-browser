@@ -134,9 +134,10 @@ struct ToolPlan
     QString reason;       // skip reason when present && !apply
 
     bool enabled = false;          // the "enabled" field (every tool but secureDns)
-    QStringList exclusions;        // httpsOnly / fingerprintProtection; the
-                                   // effective list after the import - a
-                                   // missing field resets it, like the apply step
+    QStringList exclusions;        // httpsOnly / fingerprintProtection /
+                                   // globalPrivacyControl; the effective
+                                   // list after the import - a missing field
+                                   // resets it, like the apply step
     bool statedExclusions = false; // the document stated the field itself
     DnsOverHttpsManager::Mode mode = DnsOverHttpsManager::Disabled; // secureDns
     QStringList servers;           // secureDns; sanitized
@@ -366,12 +367,22 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
 
         if (value.isObject()) {
             const QJsonObject tool = value.toObject();
-            bool fieldOk = false;
-            plan.enabled = boolFieldValue(tool, &fieldOk);
-            if (fieldOk) {
+
+            bool enabledOk = false;
+            plan.enabled = boolFieldValue(tool, &enabledOk);
+
+            bool exclusionsOk = true;
+            QStringList exclusions;
+            if (tool.contains(QSL("exclusions"))) {
+                plan.statedExclusions = true;
+                exclusions = stringListFieldValue(tool, &exclusionsOk);
+            }
+
+            if (enabledOk && exclusionsOk) {
                 plan.apply = true;
+                plan.exclusions = sanitizeHostList(exclusions);
             } else {
-                plan.reason = porterTr("the enabled field is missing or not a boolean");
+                plan.reason = porterTr("a field is missing or has the wrong type");
             }
         } else if (plan.present) {
             plan.reason = porterTr("the section is not an object");
@@ -596,6 +607,8 @@ QJsonObject SecuritySettingsPorter::buildDocument()
     {
         QJsonObject tool;
         tool.insert(QSL("enabled"), GpcManager::instance()->isEnabled());
+        tool.insert(QSL("exclusions"),
+                    QJsonArray::fromStringList(GpcManager::instance()->exclusions()));
         tools.insert(QSL("globalPrivacyControl"), tool);
     }
 
@@ -859,9 +872,12 @@ SecuritySettingsPorter::ImportResult SecuritySettingsPorter::applyDocument(const
             FingerprintManager::instance()->loadSettings();
         } else if (plan.key == QSL("globalPrivacyControl")) {
             // setEnabled persists the preference and installs or
-            // removes the DOM signal script; reloading the network
-            // stack makes the Sec-GPC header follow immediately.
+            // removes the DOM signal script; the effective exclusion
+            // list is written in the same breath, so the script is
+            // rebuilt from the document's list; reloading the network
+            // stack makes the Sec-GPC header half follow immediately.
             GpcManager::instance()->setEnabled(plan.enabled);
+            GpcManager::instance()->setExclusions(plan.exclusions);
             mApp->networkManager()->loadSettings();
         }
 
@@ -941,12 +957,12 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
         };
 
         if (plan.key == QSL("adblock")
-            || plan.key == QSL("trackingParameters")
-            || plan.key == QSL("globalPrivacyControl")) {
+            || plan.key == QSL("trackingParameters")) {
             addChange(plan.key, QSL("enabled"),
                       onOffLabel(currentTool.value(QSL("enabled")).toBool()),
                       onOffLabel(plan.enabled));
-        } else if (plan.key == QSL("httpsOnly") || plan.key == QSL("fingerprintProtection")) {
+        } else if (plan.key == QSL("httpsOnly") || plan.key == QSL("fingerprintProtection")
+                   || plan.key == QSL("globalPrivacyControl")) {
             addChange(plan.key, QSL("enabled"),
                       onOffLabel(currentTool.value(QSL("enabled")).toBool()),
                       onOffLabel(plan.enabled));

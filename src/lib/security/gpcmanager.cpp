@@ -20,6 +20,8 @@
 #include "settings.h"
 #include "webpage.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QWebEngineProfile>
 #include <QWebEngineScript>
 #include <QWebEngineScriptCollection>
@@ -37,15 +39,16 @@ const char kScriptName[] = "_osza_gpc_signal";
  * in every frame, before any page script, so the property is already
  * in place when privacy-aware scripts first look at it.
  *
- * The script has no per-profile or per-site inputs: the signal is one
- * global user preference, so unlike the fingerprint guard there is
- * nothing to substitute and the source is a constant.
+ * The only per-site input is the exclusion list: hosts whose frames
+ * must be left exactly as a browser without GPC would leave them.
+ * The list is substituted by buildScriptSource(), so the same
+ * template serves every profile state.
  *
  * Everything fails closed to the unmodified environment, and the
  * marker is non-enumerable so the script adds no enumerable key to
  * window (the same discipline as the fingerprint guard).
  */
-const char kScriptSource[] = R"JS((function () {
+const char kScriptTemplate[] = R"JS((function () {
     'use strict';
 
     // Osza Browser Global Privacy Control signal.
@@ -61,6 +64,38 @@ const char kScriptSource[] = R"JS((function () {
             configurable: false
         });
     } catch (e) {
+        return;
+    }
+
+    var EXCLUSIONS = %EXCLUSIONS%;
+
+    function hostExcluded() {
+        try {
+            var host = location.hostname.toLowerCase();
+            if (!host) {
+                return false;
+            }
+            for (var i = 0; i < EXCLUSIONS.length; i++) {
+                var entry = EXCLUSIONS[i];
+                if (!entry) {
+                    continue;
+                }
+                if (entry.charCodeAt(0) === 42) {
+                    if (host.endsWith(entry.slice(1).toLowerCase())) {
+                        return true;
+                    }
+                    continue;
+                }
+                if (host === entry.toLowerCase() || host.endsWith('.' + entry.toLowerCase())) {
+                    return true;
+                }
+            }
+        } catch (e) {
+        }
+        return false;
+    }
+
+    if (hostExcluded()) {
         return;
     }
 
@@ -84,6 +119,7 @@ const char kScriptSource[] = R"JS((function () {
 GpcManager::GpcManager(QObject *parent)
     : QObject(parent)
     , m_enabled(true)
+    , m_exclusions()
 {
 }
 
@@ -97,6 +133,7 @@ void GpcManager::loadSettings()
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
     m_enabled = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
+    m_exclusions = settings.value(QSL("GpcExclusions"), QStringList()).toStringList();
     settings.endGroup();
 
     updateScript();
@@ -129,7 +166,7 @@ void GpcManager::setEnabled(bool enabled)
 
 QString GpcManager::signalScriptSource()
 {
-    return QString::fromLatin1(kScriptSource);
+    return buildScriptSource(QStringList());
 }
 
 void GpcManager::updateScript()
@@ -155,6 +192,128 @@ void GpcManager::updateScript()
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
     script.setWorldId(WebPage::UnsafeJsWorld);
     script.setRunsOnSubFrames(true);
-    script.setSourceCode(signalScriptSource());
+    script.setSourceCode(buildScriptSource(m_exclusions));
     profile->scripts()->insert(script);
+}
+
+bool GpcManager::isExcluded(const QString &host) const
+{
+    const QString normalized = host.trimmed().toLower();
+
+    if (normalized.isEmpty()) {
+        return false;
+    }
+
+    for (const QString &entry : m_exclusions) {
+        if (hostMatchesEntry(normalized, entry)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QStringList GpcManager::exclusions() const
+{
+    return m_exclusions;
+}
+
+void GpcManager::addExclusion(const QString &host)
+{
+    const QString trimmed = host.trimmed().toLower();
+
+    if (trimmed.isEmpty()) {
+        return;
+    }
+
+    if (!m_exclusions.contains(trimmed, Qt::CaseInsensitive)) {
+        m_exclusions.append(trimmed);
+    }
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("GpcExclusions"), m_exclusions);
+    settings.endGroup();
+
+    updateScript();
+}
+
+void GpcManager::removeExclusion(const QString &host)
+{
+    const QString trimmed = host.trimmed().toLower();
+
+    if (trimmed.isEmpty()) {
+        return;
+    }
+
+    for (int i = m_exclusions.size() - 1; i >= 0; --i) {
+        if (m_exclusions.at(i).trimmed().compare(trimmed, Qt::CaseInsensitive) == 0) {
+            m_exclusions.removeAt(i);
+        }
+    }
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("GpcExclusions"), m_exclusions);
+    settings.endGroup();
+
+    updateScript();
+}
+
+void GpcManager::setExclusions(const QStringList &hosts)
+{
+    m_exclusions.clear();
+
+    for (const QString &host : hosts) {
+        const QString trimmed = host.trimmed().toLower();
+
+        if (!trimmed.isEmpty() && !m_exclusions.contains(trimmed, Qt::CaseInsensitive)) {
+            m_exclusions.append(trimmed);
+        }
+    }
+
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    settings.setValue(QSL("GpcExclusions"), m_exclusions);
+    settings.endGroup();
+
+    updateScript();
+}
+
+QString GpcManager::buildScriptSource(const QStringList &exclusions)
+{
+    QJsonArray array;
+
+    for (const QString &entry : exclusions) {
+        const QString trimmed = entry.trimmed();
+
+        if (!trimmed.isEmpty()) {
+            array.append(trimmed);
+        }
+    }
+
+    const QString exclusionsJson = QString::fromUtf8(QJsonDocument(array).toJson(QJsonDocument::Compact));
+
+    QString source = QString::fromLatin1(kScriptTemplate);
+    source.replace(QLatin1String("%EXCLUSIONS%"), exclusionsJson);
+    return source;
+}
+
+bool GpcManager::hostMatchesEntry(const QString &host, const QString &entry)
+{
+    const QString trimmed = entry.trimmed();
+
+    if (trimmed.isEmpty() || host.isEmpty()) {
+        return false;
+    }
+
+    // Wildcard pattern: *.example.com matches every subdomain.
+    if (trimmed.startsWith(QSL("*"))) {
+        return host.endsWith(trimmed.mid(1), Qt::CaseInsensitive);
+    }
+
+    // Exact host or any subdomain of the entry: example.com matches
+    // example.com and www.example.com.
+    return host.compare(trimmed, Qt::CaseInsensitive) == 0
+        || host.endsWith(QSL(".") + trimmed, Qt::CaseInsensitive);
 }

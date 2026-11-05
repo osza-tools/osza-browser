@@ -7,6 +7,56 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (17): per-site state for the two tools whose state
+  was invisible in the padlock menu - the GPC signal and malicious
+  site protection. The padlock menu now carries four per-site rows
+  (HTTPS-Only mode, fingerprint protection, the GPC signal,
+  malicious site protection), each with its own "diff" deep link
+  into the recommended baseline's settings-diff page, built by the
+  same honest gate the first two rows use. The GPC row states
+  whether the opt-out is sent to this site and toggles a per-site
+  exclusion: a persisted host list (the same "host and subdomains,
+  *.wildcard" matching the fingerprint and HTTPS-Only exceptions
+  use) that both halves of the signal honor - the injected script
+  leaves navigator.globalPrivacyControl off the excluded host's
+  environment, and the network interceptor skips the Sec-GPC
+  header for requests whose own target host is excluded, so while
+  browsing an excluded site every request to every other host
+  still carries the opt-out. The design decision went to
+  persistence for GPC (it is a preference about a site, like the
+  other per-site exception lists, managed from the padlock menu
+  for the current site and from a new GPC exceptions dialog in
+  Preferences in bulk) and to the session for threat-block: a
+  "proceed anyway" for a host the blocklist calls malicious must
+  not survive a restart silently, so the padlock menu's row only
+  makes the paused state visible and revocable - "Block this site
+  again" ends the session exception now (the new
+  ThreatBlockManager::removeSessionAllow, which removes the
+  covers-the-subdomains exception the interstitial created), and
+  the only way to create one remains the interstitial's explicit
+  warning-acknowledging choice. The row is honest about the states
+  it cannot act on: the blocklist still loading, a flagged host,
+  an unflagged host. The sidebar's GPC and threat-block state
+  lines and the self-test page's GPC line follow: both name the
+  current site's exclusion or session pause instead of claiming
+  "every request". The settings porter's globalPrivacyControl
+  section gained the exclusions field (exported from the live
+  manager, validated on import, applied through
+  GpcManager::setExclusions, and diffed with the sites whose
+  treatment changes named - a missing field resets the list, the
+  same contract httpsOnly and fingerprintProtection follow), and
+  the three presets state the field with an empty list, so a
+  preset stays a complete replacement of the configuration. New
+  autotests: the GPC exclusion manager (matching, normalization,
+  persistence, the script carrying the list, setExclusions as the
+  porter's path), the GPC exceptions dialog round trip, the
+  end-to-end DOM and header halves on an excluded host (the
+  property absent while the signal is on, the header absent to the
+  excluded host alone), the threat-block session revoke (the
+  exact host, the subdomains, the parent-domain allow revoked from
+  a subdomain, the empty host), the porter round trip, preview and
+  presets with the new field, and the padlock menu's four diff
+  links.
 - Security tools (16): the copy-link action on the self-test page's
   sections - the security self-test joins the deep links. Each of the
   page's four parts (the protections snapshot, the live fingerprint

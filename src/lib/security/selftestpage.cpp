@@ -185,9 +185,18 @@ QJsonArray SelfTestPage::collectToolStatuses()
 
     // Global Privacy Control
     const bool gpc = GpcManager::instance()->isEnabled();
-    statuses.append(toolStatus(QSL("gpc"), tr("Global Privacy Control"), gpc,
-                               gpc ? tr("Every request carries the Sec-GPC: 1 opt-out; pages see navigator.globalPrivacyControl = true.")
-                                   : tr("No opt-out signal is sent.")));
+    QString gpcDetail;
+    if (!gpc) {
+        gpcDetail = tr("No opt-out signal is sent.");
+    } else {
+        const QStringList gpcExclusions = GpcManager::instance()->exclusions();
+        if (gpcExclusions.isEmpty()) {
+            gpcDetail = tr("Every request carries the Sec-GPC: 1 opt-out; pages see navigator.globalPrivacyControl = true.");
+        } else {
+            gpcDetail = tr("The opt-out is sent everywhere except to %n excluded host(s); pages there see no opt-out.", nullptr, gpcExclusions.size());
+        }
+    }
+    statuses.append(toolStatus(QSL("gpc"), tr("Global Privacy Control"), gpc, gpcDetail));
 
     return statuses;
 }
