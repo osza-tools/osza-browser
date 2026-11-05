@@ -77,7 +77,20 @@ and KDE contributors for their work.
   preview the import dialog uses - exception summaries included -
   with the number of changes per baseline on the overview and the
   tools already at the baseline's settings named; the page is a
-  preview only, applying stays a separate, confirmed step. A file
+  preview only, applying stays a separate, confirmed step. Each
+  tool's part of a baseline has its own address
+  (osza:settings-diff?preset=…&tool=secureDns): every section of
+  the diff carries a "#" link to exactly that URL, opening the page
+  focused on the section - marked, scrolled to, and introduced by a
+  note - and a tool the baseline would leave alone is answered by a
+  note saying why (skipped with the reason, already matching, or
+  not in the baseline). The import preview dialog meets the page
+  there: it stays window-modal while the decision is pending (so
+  the profile it previews cannot change under it), and a file
+  verifiably saved from a built-in preset - a known preset name
+  plus a matching checksum - carries a "view as page" link that
+  follows the selected tool's row and opens the diff as a page in
+  a window of its own, readable beside the decision. A file
   saved from a preset still names the preset it came from, and the
   import preview says so - known presets by name, unknown ids
   verbatim. The per-profile fingerprint seed is deliberately never

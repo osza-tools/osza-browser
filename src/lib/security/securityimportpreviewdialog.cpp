@@ -17,6 +17,7 @@
 * ============================================================ */
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
+#include "settingsdiffpage.h"
 
 #include <QDialogButtonBox>
 #include <QFont>
@@ -50,6 +51,7 @@ SecurityImportPreviewDialog::SecurityImportPreviewDialog(const SecuritySettingsP
                                                          QWidget *parent)
     : QDialog(parent)
     , m_preview(preview)
+    , m_changesTree(nullptr)
 {
     buildUi(fileName);
 }
@@ -57,7 +59,6 @@ SecurityImportPreviewDialog::SecurityImportPreviewDialog(const SecuritySettingsP
 void SecurityImportPreviewDialog::buildUi(const QString &fileName)
 {
     setWindowTitle(tr("Import Security Settings"));
-    setModal(true);
 
     auto *layout = new QVBoxLayout(this);
     layout->setSpacing(8);
@@ -100,6 +101,44 @@ void SecurityImportPreviewDialog::buildUi(const QString &fileName)
         m_presetLabel->hide();
     }
     layout->addWidget(m_presetLabel);
+
+    // The diff as a page, for the files that verifiably are a
+    // baseline: a matching checksum over the preset's own export is
+    // the guarantee that the osza:settings-diff page for the preset
+    // shows this very diff, so the link promises exactly what it
+    // opens. A file that only names a preset, or whose checksum is
+    // absent or wrong, could be anything - no link for it, rather
+    // than a page that lies about the file in view.
+    //
+    // The link never opens anything itself: it hands the URL to the
+    // caller through diffPageRequested, because only the caller
+    // knows where a page belongs. osza: URLs belong to the browser,
+    // so openExternalLinks stays off - the OS must never see them.
+    m_viewPageLabel = new QLabel(this);
+    m_viewPageLabel->setObjectName(QSL("viewPageLabel"));
+    m_viewPageLabel->setWordWrap(true);
+    m_viewPageLabel->setTextFormat(Qt::RichText);
+    m_viewPageLabel->setOpenExternalLinks(false);
+    m_viewPageLabel->hide();
+
+    if (!m_preview.presetId.isEmpty()
+            && !SecurityPresets::presetById(m_preview.presetId).id.isEmpty()
+            && m_preview.checksum == SecuritySettingsPorter::ChecksumState::Valid) {
+        m_presetId = m_preview.presetId;
+        m_viewPageLabel->setToolTip(tr("Opens the osza:settings-diff page for this baseline in its own window, to be read beside this decision. Select a tool's row to link straight to its section."));
+        m_viewPageLabel->show();
+        updateDiffPageLink();
+    }
+
+    connect(m_viewPageLabel, &QLabel::linkActivated, this, [this](const QString &href) {
+        const QUrl url(href);
+
+        if (url.isValid() && url.scheme() == QSL("osza")) {
+            Q_EMIT diffPageRequested(url);
+        }
+    });
+
+    layout->addWidget(m_viewPageLabel);
 
     // The diff itself: one top-level row per tool, one child row per
     // changed field. Current and future value sit next to each
@@ -158,6 +197,14 @@ void SecurityImportPreviewDialog::buildUi(const QString &fileName)
     } else {
         m_changesTree->hide();
     }
+
+    // The "view as page" link follows the selection: selecting a
+    // tool's row (or any field under it) retargets the link to that
+    // tool's section of the page. Without a page-worthy file there
+    // is nothing to follow, and without a selection the link stays
+    // on the baseline as a whole.
+    connect(m_changesTree, &QTreeWidget::itemSelectionChanged,
+            this, &SecurityImportPreviewDialog::updateDiffPageLink);
 
     layout->addWidget(m_changesTree, 1);
 
@@ -235,14 +282,56 @@ QTreeWidgetItem* SecurityImportPreviewDialog::toolItem(const QString &toolKey)
 {
     // Top-level rows are created on demand, in the preview's fixed
     // tool order, so the diff reads the same top to bottom as the
-    // security dashboard.
+    // security dashboard. The row carries the stable key for the
+    // per-tool deep link - the selection alone cannot know it.
     auto *row = new QTreeWidgetItem(m_changesTree);
     row->setText(0, SecuritySettingsPorter::toolDisplayName(toolKey));
+    row->setData(0, Qt::UserRole, toolKey);
     row->setFirstColumnSpanned(true);
     QFont boldFont = row->font(0);
     boldFont.setBold(true);
     row->setFont(0, boldFont);
     return row;
+}
+
+QString SecurityImportPreviewDialog::selectedToolKey() const
+{
+    // The selected row, walked up to its tool row: a field row and a
+    // summary row under it belong to the same tool's section, so any
+    // of them focuses that tool. No tree yet (the link is set up
+    // before the diff is built), no selection, or a selection
+    // outside the tree - all of them focus nothing.
+    if (!m_changesTree) {
+        return QString();
+    }
+
+    QTreeWidgetItem *item = m_changesTree->currentItem();
+
+    while (item && item->parent()) {
+        item = item->parent();
+    }
+
+    return item ? item->data(0, Qt::UserRole).toString() : QString();
+}
+
+void SecurityImportPreviewDialog::updateDiffPageLink()
+{
+    // The URL is built in the one place the URL shape exists; the
+    // text says what the link will open, so following the selection
+    // is visible in the link itself, not only in where it lands.
+    if (m_presetId.isEmpty()) {
+        return;
+    }
+
+    const QString toolKey = selectedToolKey();
+    const QUrl url = SettingsDiffPage::pageUrl(m_presetId, toolKey);
+
+    const QString label = toolKey.isEmpty()
+        ? tr("View this diff as a page")
+        : tr("View the %1 changes as a page").arg(SecuritySettingsPorter::toolDisplayName(toolKey));
+
+    m_viewPageLabel->setText(QSL("<a href=\"%1\">%2</a>")
+                                 .arg(url.toString().toHtmlEscaped(), label.toHtmlEscaped()));
 }
 
 bool SecurityImportPreviewDialog::importDespiteChecksum() const

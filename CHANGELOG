@@ -7,6 +7,60 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (13): per-tool deep links, and the diff page inside
+  the import flow. The osza:settings-diff page now answers a "tool"
+  query item (osza:settings-diff?preset=recommended-baseline&tool=
+  secureDns): the diff opens focused on that tool's section - marked,
+  scrolled to, and introduced by a note - and every tool section
+  carries its own "#" link whose address is exactly that URL, so a
+  single tool's part of a baseline can be pointed at, copied,
+  shared, or bookmarked from the section it lands on. The focus is
+  computed from the same porter preview the page already renders,
+  and every request is answered: a tool the baseline would change
+  gets its marked section; a tool it would leave alone gets a note
+  saying which of the three reasons applies (the section would be
+  skipped, with the porter's reason; the profile already runs the
+  tool exactly as the baseline wants; or the baseline does not
+  configure the tool at all); a "tool" item naming no security tool
+  is answered with a warning line over the full diff, never an error
+  page. Whether a string names one of the tools is judged by the new
+  SecuritySettingsPorter::toolKeys(), derived from buildPlans() -
+  the same authority that validates and applies sections - so no
+  second list can drift. The import flow and the page now meet: the
+  import preview dialog is shown with open() (window-modal, not
+  application-modal), so while the decision is pending its parent
+  window - and with it the profile being previewed - stays
+  input-blocked, exactly as previewed, and a file saved from a
+  built-in preset with a matching checksum carries a "view as page"
+  link: a matching checksum over the preset's own export is the
+  guarantee that the osza:settings-diff page for that preset shows
+  the very diff in the dialog, so the link promises exactly what it
+  opens. The link follows the tree's selection tool by tool (it
+  retargets to ?preset=<id>&tool=<key> and says so in its own
+  wording), hands its URL to the caller through the new
+  diffPageRequested signal - the dialog never opens anything itself
+  - and the import flows open it in a browser window of its own
+  (mApp->createWindow), readable beside the decision. Files that
+  only name a preset, or carry no checksum or a mismatching one, get
+  no link: the page would promise a diff it cannot honestly show.
+  Both import entry points (the dashboard's Import / Export menu and
+  Preferences) apply on acceptance of the modeless dialog through
+  the same continuation as before - same validation, same
+  ChecksumPolicy::Allow only for a confirmed "import anyway", same
+  summary. The offline verifier for the page grew to 66 checks: the
+  URL shape now pins the "&tool=" deep links on all sides (page
+  links, pageUrl(), the scheme handler's toolIdFromUrl(), the
+  porter's key judgment), the data and i18n contracts cover the
+  focus answers, and the Node VM scenarios gained the focused diff
+  (marked and scrolled section, note as text), the quiet focus, and
+  the unknown tool over the full diff. The autotests pin the rest:
+  the URL round trips, focusTool data for every tool of every
+  baseline (note matching what the preview says), the unknown tool
+  and the tool-without-preset shapes, the page through the real
+  scheme handler (focus marking, deep-link hrefs, the warning
+  banner), and the dialog's link - shown exactly for verifiable
+  baseline files, retargeting with the selection, and emitting the
+  URL it shows.
 - The osza:settings-diff page: the import preview's diff, as a page -
   and imports that name the preset they came from say so. The
   dashboard's baseline menu ("Preview what a baseline would

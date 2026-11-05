@@ -59,6 +59,18 @@
  *             baseline's settings
  *  - other    a dead end that says so and links back - the page is
  *             served for arbitrary queries, so it must answer one
+ *
+ * A diff can additionally be asked for one tool in particular: the
+ * "tool" query item (toolIdFromUrl) carries a stable tool key like
+ * "secureDns", and the page opens focused on that tool's section -
+ * scrolled to, highlighted, and introduced by a note - or, when the
+ * baseline has nothing to say about that tool right now, the note
+ * says that instead (skipped, already at the baseline's settings,
+ * or not in the baseline at all). A "tool" item that does not name
+ * one of the security tools is answered with a warning line and
+ * the full diff, never an error page. The item only means something
+ * together with a known preset; on the overview and on the unknown
+ * preset dead end it is ignored.
  */
 class OSZA_EXPORT SettingsDiffPage : public QObject
 {
@@ -66,11 +78,15 @@ class OSZA_EXPORT SettingsDiffPage : public QObject
 
 public:
     // The complete HTML document (translated, with the diff data of
-    // the requested preset). Called for every page request, so the
-    // diff always reflects the settings at request time. An empty
-    // presetId renders the overview; an id that is not one of the
-    // built-ins renders the dead end, never an error page.
-    static QString buildPage(const QString &presetId = QString());
+    // the requested preset, focused on the requested tool when one
+    // is given). Called for every page request, so the diff always
+    // reflects the settings at request time. An empty presetId
+    // renders the overview; an id that is not one of the built-ins
+    // renders the dead end, never an error page. An empty toolId
+    // renders the plain diff; a toolId that names one of the tools
+    // focuses the page on it, and anything else is answered with a
+    // warning line over the full diff.
+    static QString buildPage(const QString &presetId = QString(), const QString &toolId = QString());
 
     // The data the page renders, shaped for its script:
     //
@@ -85,29 +101,47 @@ public:
     //                                 "summary": [lines] } ],
     //                  "skippedTools": [display entries],
     //                  "unchangedTools": [display names],
-    //                  "quietTools": [display names] } }
+    //                  "quietTools": [display names] },
+    //     "focusTool": { "key", "name", "note" },   // with a "tool" item
+    //     "unknownTool": <as requested> }              // naming no tool
     //
     //   { "mode": "unknown", "presetId": <as requested> }
     //
-    // Public for the autotests; the page embeds it verbatim.
-    static QJsonObject diffData(const QString &presetId = QString());
+    // focusTool.note is translated here, complete, exactly like the
+    // porter's exception summaries: one sentence saying why the
+    // reader landed mid-page (a section is focused) or why there is
+    // no section to focus (skipped, already matching, or not in the
+    // baseline). Public for the autotests; the page embeds it
+    // verbatim.
+    static QJsonObject diffData(const QString &presetId = QString(), const QString &toolId = QString());
 
     // The osza:settings-diff URL for a preset: without a query for
-    // the overview, with ?preset=<id> for a baseline's diff. The one
+    // the overview, with ?preset=<id> for a baseline's diff, and
+    // with &tool=<key> to focus that tool's section of it. The one
     // place the URL shape exists, so links and menu entries cannot
     // drift apart.
-    static QUrl pageUrl(const QString &presetId = QString());
+    static QUrl pageUrl(const QString &presetId = QString(), const QString &toolId = QString());
 
     // The preset a request asks for: the verbatim "preset" query
     // item, trimmed; empty when the request carries none (or asks
     // for an empty one - the same overview).
     static QString presetIdFromUrl(const QUrl &url);
 
+    // The tool a request asks to focus: the verbatim "tool" query
+    // item, trimmed; empty when the request carries none. Whether
+    // the string names one of the security tools is decided against
+    // SecuritySettingsPorter::toolKeys() by diffData(), which knows
+    // what to answer either way.
+    static QString toolIdFromUrl(const QUrl &url);
+
 private:
     SettingsDiffPage() = default;
 
     static QJsonObject previewJson(const SecuritySettingsPorter::Preview &preview,
                                    const QJsonObject &toolsOfDocument);
+    static QJsonObject focusToolJson(const SecuritySettingsPorter::Preview &preview,
+                                     const QJsonObject &toolsOfDocument,
+                                     const QString &toolId);
     static QString i18nJson();
     static QString jsonToScriptLiteral(const QJsonObject &object);
 };

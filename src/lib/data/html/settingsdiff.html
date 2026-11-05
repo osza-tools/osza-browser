@@ -212,6 +212,42 @@ body { direction: %DIRECTION%; }
     box-shadow: 0 0 8px rgba(var(--osza-accent-rgb), 0.6);
 }
 
+/* --- Diff: per-tool deep links ---------------------------------------- */
+.sd-tool__link {
+    flex: none;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-family: var(--osza-font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--osza-text-faint);
+    text-decoration: none;
+    transition: color var(--osza-speed) var(--osza-ease), background var(--osza-speed) var(--osza-ease);
+}
+
+.sd-tool__link:hover, .sd-tool__link:focus-visible {
+    color: var(--osza-accent);
+    background: var(--osza-accent-dim);
+}
+
+/* --- Diff: one tool focused by a per-tool deep link ------------------- */
+.sd-tool { scroll-margin-block-start: 14px; }
+
+.sd-tool--focus {
+    border-color: rgba(var(--osza-accent-rgb), 0.65);
+    box-shadow: var(--osza-glow);
+}
+
+.sd-focus-note {
+    margin-block: 10px 0;
+    padding: 8px 13px;
+    border: 1px dashed rgba(var(--osza-accent-rgb), 0.45);
+    border-radius: var(--osza-radius-sm);
+    color: var(--osza-text-dim);
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
 /* --- Diff: one row per changed field ---------------------------------- */
 .sd-change {
     display: flex;
@@ -338,6 +374,7 @@ body { direction: %DIRECTION%; }
     .sd-head__icon { animation: none; }
     .sd-in { animation: none; }
     .sd-preset, .sd-preset:hover, .sd-preset:focus-visible { transition: none; }
+    .sd-tool__link, .sd-tool__link:hover, .sd-tool__link:focus-visible { transition: none; }
 }
 </style>
 </head>
@@ -535,6 +572,8 @@ function plainList(root, headingKey, listKey, entries) {
 function renderDiff(root) {
     var preset = OSZA_DIFF.preset;
     var preview = OSZA_DIFF.preview;
+    var focus = OSZA_DIFF.focusTool || null;
+    var unknownTool = OSZA_DIFF.unknownTool || '';
 
     if (!preview || !preview.ok) {
         var broken = el('div', 'sd-banner sd-banner--fail');
@@ -571,6 +610,23 @@ function renderDiff(root) {
 
     root.appendChild(banner);
 
+    /* A "tool" query item that names no security tool is answered,
+       not ignored: a warning line, then the whole diff - the page
+       says what it cannot do and still does what it can. */
+    if (unknownTool) {
+        var unknownToolBanner = el('div', 'sd-banner sd-banner--warn');
+        unknownToolBanner.appendChild(el('span', 'sd-banner__text', tf('unknown_tool_text', [unknownTool])));
+        root.appendChild(unknownToolBanner);
+    }
+
+    /* The focused tool's note: why the reader landed mid-page, or why
+       there is no section to land on (skipped, already at the
+       baseline's settings, or not in the baseline at all). One line,
+       complete, exactly as the browser worded it. */
+    if (focus) {
+        root.appendChild(el('p', 'sd-focus-note', focus.note));
+    }
+
     /* The notation legend, once: Now -> With the baseline. */
     if (changeCount > 0) {
         root.appendChild(el('h2', 'vx-h', '%CHANGES-HEADING%'));
@@ -582,16 +638,31 @@ function renderDiff(root) {
         root.appendChild(legend);
 
         var tools = el('div', 'sd-tools');
+        var sectionByTool = {};
 
         for (var g = 0; g < groups.length; g++) {
             var group = groups[g];
             var section = el('section', 'sd-tool sd-in');
             stagger(section, g);
             section.setAttribute('data-tool', group.tool);
+            sectionByTool[group.tool] = section;
 
             var head = el('div', 'sd-tool__head');
             head.appendChild(el('span', 'sd-tool__name', group.changes[0].toolName));
             head.appendChild(el('span', 'sd-tool__count', String(group.changes.length)));
+
+            /* The section's own deep link: the URL that opens this
+               page focused here, built the same way pageUrl() builds
+               it, so a per-tool link can be copied, shared or
+               bookmarked straight from the section it points at. */
+            var deepLink = el('a', 'sd-tool__link');
+            deepLink.href = 'osza:settings-diff?preset=' + encodeURIComponent(preset.id)
+                          + '&tool=' + encodeURIComponent(group.tool);
+            deepLink.textContent = '#';
+            deepLink.setAttribute('title', t('tool_link_title'));
+            deepLink.setAttribute('aria-label', t('tool_link_title'));
+            head.appendChild(deepLink);
+
             section.appendChild(head);
 
             for (var c = 0; c < group.changes.length; c++) {
@@ -600,6 +671,15 @@ function renderDiff(root) {
 
             tools.appendChild(section);
             counts.toolSections++;
+        }
+
+        /* The per-tool deep link's landing: the focused section is
+           scrolled to and marked, after every section exists, so the
+           reader arrives where the URL promised. A tool without a
+           section has its answer in the note above instead. */
+        if (focus && sectionByTool[focus.key]) {
+            sectionByTool[focus.key].className += ' sd-tool--focus';
+            sectionByTool[focus.key].scrollIntoView();
         }
 
         root.appendChild(tools);

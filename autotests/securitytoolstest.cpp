@@ -2730,6 +2730,71 @@ void SecurityToolsTest::securityImportPreviewDialogTest()
     // No provenance, no line: the first dialog of this test carried
     // no preset id, so its provenance label is hidden.
     QVERIFY(dialog.findChild<QLabel*>(QSL("presetLabel"))->isHidden());
+
+    // The "view as page" link, for exactly the files a page can
+    // honestly show: a known preset plus a matching checksum is that
+    // preset's document, so the osza:settings-diff page for the
+    // preset shows this very diff. Anything else - a tampered file,
+    // an unstamped hand edit, an unknown preset, no preset at all -
+    // gets no link, because the page would promise a diff it cannot
+    // show. The link is rich text with external links off: osza:
+    // URLs belong to the browser, never to the OS.
+    auto *viewPageLabel = presetDialog.findChild<QLabel*>(QSL("viewPageLabel"));
+    QVERIFY(viewPageLabel);
+    QVERIFY(viewPageLabel->isVisible());
+    QCOMPARE(viewPageLabel->textFormat(), Qt::RichText);
+    QVERIFY(!viewPageLabel->openExternalLinks());
+    QVERIFY(viewPageLabel->text().contains(QSL("osza:settings-diff?preset=recommended-baseline")));
+    QVERIFY(!viewPageLabel->text().contains(QSL("tool=")));
+    QVERIFY(viewPageLabel->text().contains(QSL("View this diff as a page")));
+
+    // Selecting a tool's row retargets the link to that tool's
+    // section, and says so: the deep link is visible in the label,
+    // not only in where it lands.
+    auto *presetTree = presetDialog.findChild<QTreeWidget*>();
+    QVERIFY(presetTree);
+    presetTree->setCurrentItem(presetTree->topLevelItem(0));
+    QVERIFY(viewPageLabel->text().contains(QSL("osza:settings-diff?preset=recommended-baseline&tool=httpsOnly")));
+    QVERIFY(viewPageLabel->text().contains(SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly"))));
+
+    // Selecting a field row under the tool focuses the same tool.
+    presetTree->setCurrentItem(presetTree->topLevelItem(0)->child(0));
+    QVERIFY(viewPageLabel->text().contains(QSL("tool=httpsOnly")));
+
+    // Using the link hands the URL to the caller - the dialog never
+    // opens anything itself.
+    QSignalSpy pageSpy(&presetDialog, &SecurityImportPreviewDialog::diffPageRequested);
+    QTest::mouseClick(viewPageLabel, Qt::LeftButton, Qt::NoModifier,
+                      QPoint(10, viewPageLabel->height() / 2));
+    QCOMPARE(pageSpy.count(), 1);
+    QCOMPARE(pageSpy.takeFirst().at(0).toUrl(),
+             SettingsDiffPage::pageUrl(QSL("recommended-baseline"), QSL("httpsOnly")));
+
+    // A mismatching checksum breaks the guarantee the link rests on:
+    // the file claims the preset but no longer verifiably is it.
+    SecuritySettingsPorter::Preview tampered = fromPreset;
+    tampered.checksum = SecuritySettingsPorter::ChecksumState::Mismatch;
+
+    SecurityImportPreviewDialog tamperedDialog(tampered, QSL("changed.json"));
+    tamperedDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&tamperedDialog));
+    QVERIFY(tamperedDialog.findChild<QLabel*>(QSL("viewPageLabel"))->isHidden());
+
+    // So does a missing checksum: a hand edit or an older export
+    // could be anything behind the preset's name.
+    SecuritySettingsPorter::Preview unstamped = fromPreset;
+    unstamped.checksum = SecuritySettingsPorter::ChecksumState::NoChecksum;
+
+    SecurityImportPreviewDialog unstampedDialog(unstamped, QSL("old.json"));
+    unstampedDialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&unstampedDialog));
+    QVERIFY(unstampedDialog.findChild<QLabel*>(QSL("viewPageLabel"))->isHidden());
+
+    // An id that is not one of the built-ins has no page at all.
+    QVERIFY(unknownDialog.findChild<QLabel*>(QSL("viewPageLabel"))->isHidden());
+
+    // And a file that states no origin never had one.
+    QVERIFY(dialog.findChild<QLabel*>(QSL("viewPageLabel"))->isHidden());
 }
 
 void SecurityToolsTest::securityPresetsTest()
@@ -3078,6 +3143,104 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
     QCOMPARE(SettingsDiffPage::presetIdFromUrl(QUrl(QSL("osza:settings-diff?preset=%20essentials%20"))), QSL("essentials"));
     QCOMPARE(SettingsDiffPage::presetIdFromUrl(SettingsDiffPage::pageUrl(QSL("maximum-protection"))), QSL("maximum-protection"));
     QVERIFY(SettingsDiffPage::pageUrl(QSL("essentials")).toString().contains(QSL("preset=essentials")));
+
+    // The per-tool deep link rides in the "tool" item: the preset
+    // first, the tool second, whitespace trimmed, and the reader
+    // carries both through. The porter's key list is the authority
+    // for what a tool item can mean.
+    const QStringList toolKeys = SecuritySettingsPorter::toolKeys();
+    QCOMPARE(toolKeys.size(), 7);
+    QVERIFY(toolKeys.contains(QSL("adblock")));
+    QVERIFY(toolKeys.contains(QSL("httpsOnly")));
+    QVERIFY(toolKeys.contains(QSL("trackingParameters")));
+    QVERIFY(toolKeys.contains(QSL("secureDns")));
+    QVERIFY(toolKeys.contains(QSL("threatBlock")));
+    QVERIFY(toolKeys.contains(QSL("fingerprintProtection")));
+    QVERIFY(toolKeys.contains(QSL("globalPrivacyControl")));
+
+    const QUrl toolUrl = SettingsDiffPage::pageUrl(QSL("essentials"), QSL("secureDns"));
+    QVERIFY(toolUrl.toString().contains(QSL("preset=essentials")));
+    QVERIFY(toolUrl.toString().contains(QSL("tool=secureDns")));
+    QCOMPARE(SettingsDiffPage::presetIdFromUrl(toolUrl), QSL("essentials"));
+    QCOMPARE(SettingsDiffPage::toolIdFromUrl(toolUrl), QSL("secureDns"));
+    QCOMPARE(SettingsDiffPage::toolIdFromUrl(SettingsDiffPage::pageUrl(QSL("essentials"))), QString());
+    QCOMPARE(SettingsDiffPage::toolIdFromUrl(QUrl(QSL("osza:settings-diff?preset=essentials&tool=%20secureDns%20"))), QSL("secureDns"));
+    QCOMPARE(SettingsDiffPage::toolIdFromUrl(SettingsDiffPage::pageUrl(QString(), QSL("secureDns"))), QSL("secureDns"));
+
+    // Focusing every tool of every baseline is answered, with the
+    // note naming the tool and matching what the preview says about
+    // it: a section to show, a skip reason, or already matching.
+    for (const SecurityPresets::Preset &preset : SecurityPresets::presets()) {
+        const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(preset.document);
+        const QJsonObject toolsOfDocument = preset.document.value(QSL("tools")).toObject();
+
+        for (const QString &toolKey : toolKeys) {
+            const QJsonObject data = SettingsDiffPage::diffData(preset.id, toolKey);
+            QCOMPARE(data.value(QSL("mode")).toString(), QSL("diff"));
+            QVERIFY(data.contains(QSL("focusTool")));
+            QVERIFY(!data.contains(QSL("unknownTool")));
+
+            const QJsonObject focus = data.value(QSL("focusTool")).toObject();
+            QCOMPARE(focus.value(QSL("key")).toString(), toolKey);
+            QCOMPARE(focus.value(QSL("name")).toString(), SecuritySettingsPorter::toolDisplayName(toolKey));
+
+            const QString note = focus.value(QSL("note")).toString();
+            QVERIFY(!note.isEmpty());
+            QVERIFY(note.contains(SecuritySettingsPorter::toolDisplayName(toolKey)));
+
+            bool hasChange = false;
+            for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+                if (change.tool == toolKey) {
+                    hasChange = true;
+                    break;
+                }
+            }
+
+            bool isSkipped = false;
+            QString skipReason;
+            for (const QString &entry : preview.skippedTools) {
+                if (entry.startsWith(QSL("%1: ").arg(toolKey))) {
+                    isSkipped = true;
+                    skipReason = entry.mid(toolKey.length() + 2);
+                    break;
+                }
+            }
+
+            if (hasChange) {
+                QVERIFY(note.startsWith(QSL("Showing the changes for")));
+            } else if (isSkipped) {
+                QVERIFY(note.contains(skipReason));
+            } else {
+                // The built-in presets state all seven sections, so
+                // an answered tool without changes is already at the
+                // baseline's settings.
+                QVERIFY(toolsOfDocument.contains(toolKey));
+                QVERIFY(note.contains(QSL("already at the baseline's settings")));
+            }
+        }
+
+        // A "tool" item naming no security tool is answered beside
+        // the full diff, never with an error page.
+        const QJsonObject unknownToolData = SettingsDiffPage::diffData(preset.id, QSL("not-a-tool"));
+        QCOMPARE(unknownToolData.value(QSL("mode")).toString(), QSL("diff"));
+        QCOMPARE(unknownToolData.value(QSL("unknownTool")).toString(), QSL("not-a-tool"));
+        QVERIFY(!unknownToolData.contains(QSL("focusTool")));
+        QVERIFY(unknownToolData.contains(QSL("preview")));
+
+        // The focused page builds like any other.
+        const QString focusedPage = SettingsDiffPage::buildPage(preset.id, QSL("secureDns"));
+        QVERIFY(focusedPage.contains(QLatin1String("osza-settingsdiff")));
+        QVERIFY(!focusedPage.contains(QLatin1String("%DATA-JSON%")));
+    }
+
+    // The tool item only means something together with a known
+    // preset: without one it is the overview, with an unknown one the
+    // dead end - the preset decides the shape, the tool never does.
+    QCOMPARE(SettingsDiffPage::diffData(QString(), QSL("secureDns")).value(QSL("mode")).toString(), QSL("overview"));
+    const QJsonObject unknownWithTool = SettingsDiffPage::diffData(QSL("no-such-baseline"), QSL("secureDns"));
+    QCOMPARE(unknownWithTool.value(QSL("mode")).toString(), QSL("unknown"));
+    QVERIFY(!unknownWithTool.contains(QSL("focusTool")));
+    QVERIFY(!unknownWithTool.contains(QSL("unknownTool")));
 }
 
 void SecurityToolsTest::settingsDiffPageIntegrationTest()
@@ -3176,6 +3339,81 @@ void SecurityToolsTest::settingsDiffPageIntegrationTest()
 
     QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"))));
     QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection]').length")), QSL("0"));
+
+    // The per-tool deep link lands where it promises: with the
+    // protection on (a change, so a section), the focused page marks
+    // that tool's section, scrolls to it, says so in the note, and
+    // every section carries its own deep link back into the page.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"), QSL("fingerprintProtection"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("diff"));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.data.focusTool.key")), QSL("fingerprintProtection"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection]').length")), QSL("1"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section.sd-tool--focus').length")), QSL("1"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection].sd-tool--focus').length")), QSL("1"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-focus-note').length")), QSL("1"));
+    QVERIFY(runScript(&page, QSL("document.querySelector('.sd-focus-note') === null ? 'missing' : document.querySelector('.sd-focus-note').textContent"))
+            .contains(QSL("Showing the changes for")));
+    QVERIFY(runScript(&page, QSL("document.querySelector('.sd-focus-note') === null ? 'missing' : document.querySelector('.sd-focus-note').textContent"))
+            .contains(SecuritySettingsPorter::toolDisplayName(QSL("fingerprintProtection"))));
+
+    const SecurityPresets::Preset essentials = SecurityPresets::presetById(QSL("essentials"));
+    const SecuritySettingsPorter::Preview essentialsPreview = SecuritySettingsPorter::previewDocument(essentials.document);
+    QVERIFY(essentialsPreview.ok);
+
+    int changedTools = 0;
+    QString lastTool;
+    for (const SecuritySettingsPorter::PreviewChange &change : essentialsPreview.changes) {
+        if (change.tool != lastTool) {
+            lastTool = change.tool;
+            ++changedTools;
+        }
+    }
+
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('a.sd-tool__link').length")),
+             QString::number(changedTools));
+    QCOMPARE(runScript(&page, QSL("document.querySelector('section[data-tool=fingerprintProtection] a.sd-tool__link') === null ? 'missing' : document.querySelector('section[data-tool=fingerprintProtection] a.sd-tool__link').getAttribute('href')")),
+             QSL("osza:settings-diff?preset=essentials&tool=fingerprintProtection"));
+
+    // A tool the baseline would not change is still answered: no
+    // section to focus, and the note says the profile already runs
+    // that tool exactly as the baseline wants.
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), false);
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"), QSL("fingerprintProtection"))));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('section[data-tool=fingerprintProtection]').length")), QSL("0"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-tool--focus').length")), QSL("0"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-focus-note').length")), QSL("1"));
+    QVERIFY(runScript(&page, QSL("document.querySelector('.sd-focus-note') === null ? 'missing' : document.querySelector('.sd-focus-note').textContent"))
+            .contains(QSL("already at the baseline's settings")));
+
+    // A "tool" item naming no security tool: a warning line over the
+    // full diff, which still renders exactly the porter's preview.
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QSL("essentials"), QSL("definitely-not-a-tool"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("diff"));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.data.unknownTool")), QSL("definitely-not-a-tool"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.sd-banner--warn').length")), QSL("1"));
+    QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.changeRows)")),
+             QString::number(essentialsPreview.changes.size()));
+
+    // Without a preset the tool item means nothing: the overview.
+    QVERIFY(loadAndSettle(SettingsDiffPage::pageUrl(QString(), QSL("secureDns"))));
+    QCOMPARE(runScript(&page, QSL("window.__oszaSettingsDiff.mode")), QSL("overview"));
+    QCOMPARE(runScript(&page, QSL("String(window.__oszaSettingsDiff.counts.presetCards)")),
+             QString::number(SecurityPresets::presets().size()));
 
     // restore the state the other tests expect
     {

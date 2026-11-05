@@ -926,41 +926,57 @@ void Preferences::importSecuritySettings()
         return;
     }
 
-    SecurityImportPreviewDialog dialog(preview, QFileInfo(path).fileName(), this);
+    // Window-modal, not application-modal: the decision dialog keeps
+    // this window - and with it, the profile it previews -
+    // input-blocked while it is pending, but the diff page a baseline
+    // file can link to opens in a window of its own and can be read
+    // beside the decision. The import itself still runs only on
+    // acceptance, on the very same document the preview showed.
+    auto *dialog = new SecurityImportPreviewDialog(preview, QFileInfo(path).fileName(), this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (dialog.exec() != QDialog::Accepted) {
-        return;
-    }
+    connect(dialog, &SecurityImportPreviewDialog::diffPageRequested,
+            this, [](const QUrl &url) {
+        // A page of the browser belongs to the browser: a window of
+        // its own, loaded straight from the deep link the dialog
+        // computed - per-tool focused when the selection asked for
+        // exactly that.
+        mApp->createWindow(Qz::BW_NewWindow, url);
+    });
 
-    // The dialog says "Import anyway" for a checksum mismatch and
-    // records that explicit decision; the import is allowed for
-    // exactly this case and refused otherwise.
-    const SecuritySettingsPorter::ChecksumPolicy policy = dialog.importDespiteChecksum()
-        ? SecuritySettingsPorter::ChecksumPolicy::Allow
-        : SecuritySettingsPorter::ChecksumPolicy::Reject;
-    const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(document, policy);
+    connect(dialog, &QDialog::accepted, this, [this, dialog, document]() {
+        // The dialog says "Import anyway" for a checksum mismatch and
+        // records that explicit decision; the import is allowed for
+        // exactly this case and refused otherwise.
+        const SecuritySettingsPorter::ChecksumPolicy policy = dialog->importDespiteChecksum()
+            ? SecuritySettingsPorter::ChecksumPolicy::Allow
+            : SecuritySettingsPorter::ChecksumPolicy::Reject;
+        const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::applyDocument(document, policy);
 
-    if (!result.ok) {
-        QMessageBox::warning(this, tr("Import Security Settings"),
-                             tr("The file could not be imported:\n%1").arg(result.error));
-        return;
-    }
+        if (!result.ok) {
+            QMessageBox::warning(this, tr("Import Security Settings"),
+                                 tr("The file could not be imported:\n%1").arg(result.error));
+            return;
+        }
 
-    // The imported values are applied and live already; resync the
-    // widgets so a later OK does not save the stale checkbox states.
-    updateSecurityToolsWidgets();
+        // The imported values are applied and live already; resync the
+        // widgets so a later OK does not save the stale checkbox states.
+        updateSecurityToolsWidgets();
 
-    QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
+        QString summary = tr("Imported the settings of %n security tool(s).", nullptr, result.appliedTools);
 
-    if (result.checksumMismatch) {
-        summary += QSL("\n\n") + tr("The file's checksum did not match; it was imported anyway.");
-    }
+        if (result.checksumMismatch) {
+            summary += QSL("\n\n") + tr("The file's checksum did not match; it was imported anyway.");
+        }
 
-    if (!result.skippedTools.isEmpty()) {
-        summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
-    }
+        if (!result.skippedTools.isEmpty()) {
+            summary += QSL("\n\n") + tr("Skipped:\n%1").arg(result.skippedTools.join(QSL("\n")));
+        }
 
-    QMessageBox::information(this, tr("Import Security Settings"), summary);
+        QMessageBox::information(this, tr("Import Security Settings"), summary);
+    });
+
+    dialog->open();
 }
 
 void Preferences::saveSecurityPresetToFile()

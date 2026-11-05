@@ -140,9 +140,12 @@ void OszaSchemeReply::loadPage()
         contents = SelfTestPage::buildPage();
     } else if (m_pageName == QLatin1String("settings-diff")) {
         // The baseline the request asks for rides in the "preset"
-        // query item; the page answers every value it can be handed
-        // (overview, diff, dead end) and never applies anything.
-        contents = SettingsDiffPage::buildPage(SettingsDiffPage::presetIdFromUrl(m_job->requestUrl()));
+        // query item, the tool to focus in the "tool" item; the page
+        // answers every value either can be handed (overview, diff,
+        // dead end; focused section, answered note, warning line)
+        // and never applies anything.
+        contents = SettingsDiffPage::buildPage(SettingsDiffPage::presetIdFromUrl(m_job->requestUrl()),
+                                               SettingsDiffPage::toolIdFromUrl(m_job->requestUrl()));
     }
 
     QMutexLocker lock(&m_mutex);

@@ -987,6 +987,24 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
     return preview;
 }
 
+QStringList SecuritySettingsPorter::toolKeys()
+{
+    // The sections an import knows, in the fixed order buildPlans()
+    // applies them. Derived from buildPlans() itself - not a second
+    // list that could drift - so any consumer that needs to know
+    // whether a string names one of the security tools (the diff
+    // page validating a "tool" query item, say) judges by the same
+    // authority that validates and applies the sections.
+    QStringList keys;
+    const QList<ToolPlan> plans = buildPlans(QJsonObject());
+
+    for (const ToolPlan &plan : plans) {
+        keys.append(plan.key);
+    }
+
+    return keys;
+}
+
 QString SecuritySettingsPorter::toolDisplayName(const QString &tool)
 {
     if (tool == QSL("adblock")) {

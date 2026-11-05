@@ -22,7 +22,9 @@
 #   3. The URL shape agrees on all sides: the page's links, the
 #      pageUrl() builder in settingsdiffpage.cpp and the page name
 #      registered in the scheme handler (oszaschemehandler.cpp)
-#      all spell osza:settings-diff[?preset=<id>].
+#      all spell osza:settings-diff[?preset=<id>][&tool=<key>], and
+#      whether a "tool" item names one of the tools is judged by the
+#      porter's own key list (toolKeys()).
 #
 #   4. The data contract the page script reads is exactly the one
 #      diffData() writes: every OSZA_DIFF.* field referenced by the
@@ -35,8 +37,12 @@
 #      linking to its diff), a baseline's diff (the banner, one
 #      section per changed tool, one row per changed field, the
 #      porter's exception-summary lines, the skipped/unchanged/
-#      quiet lists), the no-change diff, the unknown-preset dead
-#      end and the defensive broken-preview shape.
+#      quiet lists), the per-tool deep links on every section, a
+#      focused diff (the tool's section marked and scrolled to,
+#      the note rendered as text; a tool with no section answered
+#      by its note alone), an unknown tool over the full diff, the
+#      no-change diff, the unknown-preset dead end and the
+#      defensive broken-preview shape.
 #
 # Usage:
 #   python3 tools/security/verify_settings_diff_page.py
@@ -55,6 +61,7 @@ PAGE_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "settingsdiffpage.c
 HANDLER_CPP_PATH = os.path.join(ROOT, "src", "lib", "network", "schemehandlers", "oszaschemehandler.cpp")
 PRESETS_CPP_PATH = os.path.join(ROOT, "src", "lib", "security", "securitypresets.cpp")
 
+import copy
 import json
 import re
 import subprocess
@@ -124,15 +131,24 @@ PAGE_URL = "osza:settings-diff"
 
 check("the page links build %s?preset=<id>" % PAGE_URL,
       ("'%s?preset=' + encodeURIComponent" % PAGE_URL) in script)
+check("the page links build the &tool=<key> deep links",
+      ("'&tool=' + encodeURIComponent") in script)
 check("the footer links back to the plain %s" % PAGE_URL,
       ('href="%s"' % PAGE_URL) in html)
 check("pageUrl() builds the same scheme and path",
       re.search(r'setScheme\(QSL\("osza"\)\)', page_cpp) is not None
       and re.search(r'setPath\(QSL\("settings-diff"\)\)', page_cpp) is not None)
+check("pageUrl() builds the preset and the tool items",
+      re.search(r'addQueryItem\(QSL\("preset"\)', page_cpp) is not None
+      and re.search(r'addQueryItem\(QSL\("tool"\)', page_cpp) is not None)
 check("the scheme handler serves the page",
       'QSL("settings-diff")' in handler_cpp)
 check("the scheme handler hands the preset query to the page",
       "SettingsDiffPage::presetIdFromUrl" in handler_cpp)
+check("the scheme handler hands the tool query to the page",
+      "SettingsDiffPage::toolIdFromUrl" in handler_cpp)
+check("whether a tool item names a tool is the porter's judgment",
+      "SecuritySettingsPorter::toolKeys()" in page_cpp)
 
 # ------------------------------------------------------------------
 # 4. The data contract: every OSZA_DIFF key the script reads is
@@ -146,7 +162,8 @@ for m in re.finditer(r"(?:preset|preview|presets|changes?|entry)\.([A-Za-z]+)", 
 
 produced_keys = set(re.findall(r'insert\(QSL\("([A-Za-z]+)"\)', page_cpp))
 
-# Keys of the change rows and preset entries the page reads.
+# Keys of the change rows, preset entries and the focus answers the
+# page reads.
 read_keys = {
     # overview entries and the preset object
     "id", "name", "description", "changes",
@@ -158,6 +175,8 @@ read_keys = {
     "summary",
     # the page-level fields
     "mode", "preset", "presetId", "presets", "preview",
+    # the per-tool focus answers
+    "focusTool", "unknownTool", "key", "note",
 }
 
 missing = read_keys - produced_keys
@@ -274,6 +293,28 @@ NO_CHANGE_DATA = {
     },
 }
 
+# The focused shapes: a tool the baseline would change (a section to
+# mark and scroll to), a tool it would not (the note answers alone),
+# and a "tool" item naming no security tool at all (a warning line
+# over the full diff). The notes are whatever diffData() worded - the
+# page renders them as text, it never re-derives them.
+FOCUS_DATA = copy.deepcopy(DIFF_DATA)
+FOCUS_DATA["focusTool"] = {
+    "key": "secureDns",
+    "name": "Secure DNS (DNS-over-HTTPS)",
+    "note": "Showing the changes for Secure DNS (DNS-over-HTTPS).",
+}
+
+FOCUS_QUIET_DATA = copy.deepcopy(DIFF_DATA)
+FOCUS_QUIET_DATA["focusTool"] = {
+    "key": "threatBlock",
+    "name": "Malicious site protection",
+    "note": "Malicious site protection is already at the baseline's settings.",
+}
+
+UNKNOWN_TOOL_DATA = copy.deepcopy(DIFF_DATA)
+UNKNOWN_TOOL_DATA["unknownTool"] = "teleportation"
+
 I18N = {
     "pill_changes_none": "changes nothing here",
     "pill_changes_one": "would change 1 setting",
@@ -290,6 +331,8 @@ I18N = {
     "heading_quiet": "Already at the baseline's settings",
     "unknown_title": "Unknown baseline",
     "unknown_text": '"%1" is not one of the built-in presets.',
+    "unknown_tool_text": '"%1" is not one of the security tools - the whole diff follows.',
+    "tool_link_title": "Link to this tool's part of the diff",
     "broken_text": "The baseline's document did not pass validation: %1",
 }
 
@@ -319,6 +362,8 @@ function makeElement(tag, id) {
     // The mock DOM refuses innerHTML: the page must build its nodes
     // and set every dynamic string through textContent. textContent
     // aggregates like the real DOM: own text, then the children's.
+    // scrollIntoView records that it ran, so a focused section's
+    // landing can be asserted.
     const node = {
         tag: tag,
         id: id || '',
@@ -327,9 +372,11 @@ function makeElement(tag, id) {
         className: '',
         attrs: {},
         listeners: {},
+        scrolledIntoView: false,
         appendChild: function (c) { this.children.push(c); return c; },
         setAttribute: function (k, v) { this.attrs[k] = String(v); },
         addEventListener: function (type, fn) { this.listeners[type] = fn; },
+        scrollIntoView: function () { this.scrolledIntoView = true; },
         set innerHTML(v) { throw new Error('innerHTML is forbidden on this page'); },
         get innerHTML() { throw new Error('innerHTML is forbidden on this page'); }
     };
@@ -515,6 +562,78 @@ function scenarioNoChange() {
     check('the quiet list has every tool', quiet.length === 1 && quiet[0].children.length === 7);
 }
 
+function scenarioFocus() {
+    const run = runPage(SCENARIOS.focus.script);
+    const root = run.elements['sd-content'];
+    const sd = run.sandbox.window.__oszaSettingsDiff;
+
+    const sections = collect(root, 'sd-tool');
+    const notes = collect(root, 'sd-focus-note');
+    const links = collect(root, 'sd-tool__link');
+    const focused = sections.filter(function (s) {
+        return s.className.indexOf('sd-tool--focus') !== -1;
+    });
+
+    check('the focus data carries through',
+          sd.data.focusTool && sd.data.focusTool.key === 'secureDns');
+    check('exactly the focused tool\'s section is marked',
+          focused.length === 1 && focused[0].attrs['data-tool'] === 'secureDns');
+    check('the focused section scrolled into view', focused[0].scrolledIntoView === true);
+    check('the other sections did not scroll',
+          sections.every(function (s) {
+              return s === focused[0] || s.scrolledIntoView === false;
+          }));
+    check('the note renders as text, exactly as worded',
+          notes.length === 1 && notes[0].textContent === SCENARIOS.focus.data.focusTool.note);
+    check('one deep link per section', links.length === sections.length);
+    check('the deep links carry the preset and a tool',
+          links.every(function (l) {
+              return String(l.href).indexOf('osza:settings-diff?preset=recommended-baseline&tool=') === 0;
+          }));
+    check('each section\'s link names its own tool',
+          sections.map(function (s) { return s.attrs['data-tool']; }).join(',')
+              === links.map(function (l) { return String(l.href).split('&tool=')[1]; }).join(','));
+    check('the deep links are titled',
+          links.every(function (l) {
+              return l.attrs['title'] === 'Link to this tool\'s part of the diff';
+          }));
+}
+
+function scenarioFocusQuiet() {
+    const run = runPage(SCENARIOS.focusquiet.script);
+    const root = run.elements['sd-content'];
+
+    const sections = collect(root, 'sd-tool');
+    const focused = collect(root, 'sd-tool--focus');
+    const notes = collect(root, 'sd-focus-note');
+
+    check('a tool without changes has no section',
+          sections.every(function (s) { return s.attrs['data-tool'] !== 'threatBlock'; }));
+    check('nothing is marked or scrolled',
+          focused.length === 0
+          && sections.every(function (s) { return s.scrolledIntoView === false; }));
+    check('the note still answers',
+          notes.length === 1 && notes[0].textContent === SCENARIOS.focusquiet.data.focusTool.note);
+}
+
+function scenarioUnknownTool() {
+    const run = runPage(SCENARIOS.unknowntool.script);
+    const root = run.elements['sd-content'];
+    const sd = run.sandbox.window.__oszaSettingsDiff;
+
+    const warn = collect(root, 'sd-banner--warn');
+    const sections = collect(root, 'sd-tool');
+    const changes = collect(root, 'sd-change');
+    const notes = collect(root, 'sd-focus-note');
+
+    check('the unknown tool is carried through', sd.data.unknownTool === 'teleportation');
+    check('one warning banner, naming the requested id',
+          warn.length === 1 && warn[0].children[0].textContent.indexOf('teleportation') !== -1
+          && warn[0].children[0].textContent.indexOf('not one of the security tools') !== -1);
+    check('the whole diff still renders', sections.length === 3 && changes.length === 4);
+    check('no focus without a tool to focus', notes.length === 0);
+}
+
 function scenarioBroken() {
     const run = runPage(SCENARIOS.broken.script);
     const root = run.elements['sd-content'];
@@ -529,6 +648,9 @@ scenarioOverview();
 scenarioUnknown();
 scenarioNoChange();
 scenarioBroken();
+scenarioFocus();
+scenarioFocusQuiet();
+scenarioUnknownTool();
 
 console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
 process.exit(failures === 0 ? 0 : 1);
@@ -541,6 +663,9 @@ blob = {
     "unknown": {"data": UNKNOWN_DATA, "script": substitute(UNKNOWN_DATA)},
     "nochange": {"data": NO_CHANGE_DATA, "script": substitute(NO_CHANGE_DATA)},
     "broken": {"data": BROKEN_DATA, "script": substitute(BROKEN_DATA)},
+    "focus": {"data": FOCUS_DATA, "script": substitute(FOCUS_DATA)},
+    "focusquiet": {"data": FOCUS_QUIET_DATA, "script": substitute(FOCUS_QUIET_DATA)},
+    "unknowntool": {"data": UNKNOWN_TOOL_DATA, "script": substitute(UNKNOWN_TOOL_DATA)},
 }
 node_program = node_program.replace("SCENARIO_BLOB", json.dumps(blob))
 

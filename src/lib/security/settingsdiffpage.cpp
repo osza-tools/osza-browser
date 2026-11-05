@@ -49,7 +49,7 @@ QString displaySkipEntry(const QString &entry)
 
 } // namespace
 
-QString SettingsDiffPage::buildPage(const QString &presetId)
+QString SettingsDiffPage::buildPage(const QString &presetId, const QString &toolId)
 {
     // The translated template is built once; the diff data is
     // substituted on every request, so the page always describes the
@@ -81,11 +81,11 @@ QString SettingsDiffPage::buildPage(const QString &presetId)
     }
 
     QString page = sPage;
-    page.replace(QLatin1String("%DATA-JSON%"), jsonToScriptLiteral(diffData(presetId)));
+    page.replace(QLatin1String("%DATA-JSON%"), jsonToScriptLiteral(diffData(presetId, toolId)));
     return page;
 }
 
-QJsonObject SettingsDiffPage::diffData(const QString &presetId)
+QJsonObject SettingsDiffPage::diffData(const QString &presetId, const QString &toolId)
 {
     QJsonObject data;
 
@@ -149,9 +149,19 @@ QJsonObject SettingsDiffPage::diffData(const QString &presetId)
     // A built-in preset's document is fixed and valid, so the
     // preview always succeeds; the not-ok shape exists anyway
     // because the page must render every answer the porter gives.
-    data.insert(QSL("preview"),
-                previewJson(SecuritySettingsPorter::previewDocument(preset.document),
-                            preset.document.value(QSL("tools")).toObject()));
+    const SecuritySettingsPorter::Preview preview = SecuritySettingsPorter::previewDocument(preset.document);
+    data.insert(QSL("preview"), previewJson(preview, preset.document.value(QSL("tools")).toObject()));
+
+    // The tool the request asks to focus, answered only after the
+    // preview exists: whether there is a section to focus is
+    // something the preview alone can say. A "tool" item naming no
+    // security tool is answered beside the full diff, not with one.
+    const QJsonObject focusTool = focusToolJson(preview, preset.document.value(QSL("tools")).toObject(), toolId);
+    if (!focusTool.isEmpty()) {
+        data.insert(QSL("focusTool"), focusTool);
+    } else if (!toolId.trimmed().isEmpty()) {
+        data.insert(QSL("unknownTool"), toolId.trimmed());
+    }
 
     return data;
 }
@@ -238,16 +248,81 @@ QJsonObject SettingsDiffPage::previewJson(const SecuritySettingsPorter::Preview 
     return object;
 }
 
-QUrl SettingsDiffPage::pageUrl(const QString &presetId)
+QJsonObject SettingsDiffPage::focusToolJson(const SecuritySettingsPorter::Preview &preview,
+                                           const QJsonObject &toolsOfDocument,
+                                           const QString &toolId)
+{
+    // Nothing asked, nothing focused: the plain diff.
+    const QString trimmed = toolId.trimmed();
+
+    if (trimmed.isEmpty()) {
+        return {};
+    }
+
+    // The judgment is the porter's, not a second list here: the keys
+    // buildPlans() knows are the keys a "tool" query item can mean.
+    if (!SecuritySettingsPorter::toolKeys().contains(trimmed)) {
+        return {};
+    }
+
+    QJsonObject focus;
+    focus.insert(QSL("key"), trimmed);
+    focus.insert(QSL("name"), SecuritySettingsPorter::toolDisplayName(trimmed));
+
+    // A tool the baseline would change has a section to focus; the
+    // note then says what the reader is looking at. The changes come
+    // grouped per tool in the preview's fixed order, so the first
+    // match settles it.
+    for (const SecuritySettingsPorter::PreviewChange &change : preview.changes) {
+        if (change.tool == trimmed) {
+            focus.insert(QSL("note"), tr("Showing the changes for %1.").arg(SecuritySettingsPorter::toolDisplayName(trimmed)));
+            return focus;
+        }
+    }
+
+    // The remaining answers all say why there is no section: the
+    // skip reasons come from the porter, translated, joined with the
+    // tool's display name the same way the skip list phrases them.
+    for (const QString &entry : preview.skippedTools) {
+        if (entry.startsWith(QSL("%1: ").arg(trimmed))) {
+            const QString reason = entry.mid(trimmed.length() + 2);
+            focus.insert(QSL("note"), tr("The baseline carries a %1 section that would be skipped: %2.")
+                                 .arg(SecuritySettingsPorter::toolDisplayName(trimmed), reason));
+            return focus;
+        }
+    }
+
+    // A section that changes nothing here: this profile already runs
+    // the tool exactly as the baseline wants.
+    if (toolsOfDocument.contains(trimmed)) {
+        focus.insert(QSL("note"), tr("%1 is already at the baseline's settings.").arg(SecuritySettingsPorter::toolDisplayName(trimmed)));
+        return focus;
+    }
+
+    // No section at all: the baseline does not configure the tool.
+    focus.insert(QSL("note"), tr("The baseline does not configure %1; it stays as it is.").arg(SecuritySettingsPorter::toolDisplayName(trimmed)));
+    return focus;
+}
+
+QUrl SettingsDiffPage::pageUrl(const QString &presetId, const QString &toolId)
 {
     QUrl url;
     url.setScheme(QSL("osza"));
     url.setPath(QSL("settings-diff"));
 
-    const QString trimmed = presetId.trimmed();
-    if (!trimmed.isEmpty()) {
-        QUrlQuery query;
-        query.addQueryItem(QSL("preset"), trimmed);
+    QUrlQuery query;
+
+    const QString trimmedPreset = presetId.trimmed();
+    if (!trimmedPreset.isEmpty()) {
+        query.addQueryItem(QSL("preset"), trimmedPreset);
+    }
+
+    const QString trimmedTool = toolId.trimmed();
+    if (!trimmedTool.isEmpty()) {
+        query.addQueryItem(QSL("tool"), trimmedTool);
+    }
+
+    if (!query.isEmpty()) {
         url.setQuery(query);
     }
 
@@ -260,6 +335,14 @@ QString SettingsDiffPage::presetIdFromUrl(const QUrl &url)
     // or an empty one, the dead end for anything the preset catalog
     // does not know.
     return QUrlQuery(url).queryItemValue(QSL("preset")).trimmed();
+}
+
+QString SettingsDiffPage::toolIdFromUrl(const QUrl &url)
+{
+    // The verbatim "tool" item, trimmed: no item means the plain
+    // diff; whether an item names one of the tools is answered by
+    // diffData(), which has something to say either way.
+    return QUrlQuery(url).queryItemValue(QSL("tool")).trimmed();
 }
 
 QString SettingsDiffPage::i18nJson()
@@ -288,6 +371,12 @@ QString SettingsDiffPage::i18nJson()
     // Unknown preset
     strings.insert(QSL("unknown_title"), tr("Unknown baseline"));
     strings.insert(QSL("unknown_text"), tr("\"%1\" is not one of the built-in presets. The baselines this Osza knows are linked below."));
+
+    // Unknown tool of a known baseline
+    strings.insert(QSL("unknown_tool_text"), tr("\"%1\" is not one of the security tools - the whole diff follows."));
+
+    // Per-tool deep links
+    strings.insert(QSL("tool_link_title"), tr("Link to this tool's part of the diff"));
 
     // Not-importable preview (the defensive shape)
     strings.insert(QSL("broken_text"), tr("The baseline's document did not pass validation: %1"));

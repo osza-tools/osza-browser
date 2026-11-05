@@ -272,6 +272,15 @@ public:
     // everywhere.
     static QString toolDisplayName(const QString &tool);
 
+    // The tool keys a settings document can carry ("adblock",
+    // "httpsOnly", ...), in the fixed order the import applies them
+    // in. Derived from the same buildPlans() that validates and
+    // applies the sections, so "does this string name one of the
+    // security tools" is judged by the one authority - the diff
+    // page's per-tool deep links use it to answer a "tool" query
+    // item they are handed.
+    static QStringList toolKeys();
+
     // Translated, human-readable name of a field of a tool
     // ("httpsOnly", "exclusions" -> "Site exceptions"); unknown
     // fields come back unchanged.
