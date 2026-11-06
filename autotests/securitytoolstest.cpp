@@ -25,6 +25,8 @@
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
+#include "locationbar.h"
+#include "siteicon.h"
 #include "networkmanager.h"
 #include "mainapplication.h"
 #include "qzcommon.h"
@@ -45,6 +47,7 @@
 #include <QtTest/QtTest>
 #include <QCryptographicHash>
 #include <QDateTime>
+#include <QImage>
 #include <QFile>
 #include <QLabel>
 #include <QJsonArray>
@@ -119,6 +122,134 @@ void SecurityToolsTest::securityManagerPersistenceTest()
     QCOMPARE(security->httpsUpgrades(), expected);
 
     security->resetCounters();
+}
+
+void SecurityToolsTest::relaxedProtectionsQueryTest()
+{
+    // The one query behind the location-bar badge: exactly the four
+    // tools with per-site state, judged the way each padlock-menu
+    // row judges (enabled first, then the site's own exception),
+    // returned as the porter's stable keys in the menu's row order,
+    // and nothing at all for schemes the tools do not cover. A tool
+    // switched off globally must retire the site's exception with
+    // it: a global switch is not per-site state, and the badge must
+    // not outlive the state it reports.
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    auto *fingerprint = FingerprintManager::instance();
+    auto *gpc = GpcManager::instance();
+    auto *threat = mApp->networkManager()->threatBlockManager();
+    QVERIFY(interceptor);
+    QVERIFY(fingerprint);
+    QVERIFY(gpc);
+    QVERIFY(threat);
+
+    // save the state the other tests expect, then have all four
+    // tools enabled
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    const bool httpsOnlyBefore = settings.value(QSL("HttpsOnlyMode"), true).toBool();
+    const bool fingerprintBefore = settings.value(QSL("FingerprintProtection"), true).toBool();
+    const bool gpcBefore = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
+    settings.setValue(QSL("HttpsOnlyMode"), true);
+    settings.setValue(QSL("FingerprintProtection"), true);
+    settings.setValue(QSL("GlobalPrivacyControl"), true);
+    settings.endGroup();
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->loadSettings();
+    const bool threatBefore = threat->isEnabled();
+    threat->setEnabled(true);
+
+    // clean slate on the test host
+    const QString host = QSL("relaxed.example");
+    interceptor->removeExclusion(host);
+    fingerprint->removeExclusion(host);
+    gpc->removeExclusion(host);
+    threat->removeSessionAllow(host);
+
+    // nothing relaxed for a clean site, and the keys it would
+    // return are the porter's - the badge can never name a tool
+    // the porter does not know
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))), QStringList());
+
+    const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
+                                         QSL("globalPrivacyControl"), QSL("threatBlock")};
+    for (const QString &key : perSiteToolKeys) {
+        QVERIFY(SecuritySettingsPorter::toolKeys().contains(key));
+        QVERIFY(!SecuritySettingsPorter::toolDisplayName(key).isEmpty());
+    }
+
+    // each tool joins under its own exception, in the padlock
+    // menu's row order (http and https pages alike)
+    interceptor->addExclusion(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly")});
+
+    fingerprint->addExclusion(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("http://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection")});
+
+    gpc->addExclusion(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")});
+
+    threat->allowForSession(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+
+    // the exceptions cover subdomains; a sibling host stays clean
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://deep.%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://sibling.example/x"))), QStringList());
+
+    // a tool switched off globally retires the site's exception
+    // with it - restored right after, for the checks below
+    {
+        Settings off;
+        off.beginGroup(QSL("Web-Browser-Settings"));
+        off.setValue(QSL("FingerprintProtection"), false);
+        off.endGroup();
+        fingerprint->loadSettings();
+    }
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+    {
+        Settings on;
+        on.beginGroup(QSL("Web-Browser-Settings"));
+        on.setValue(QSL("FingerprintProtection"), true);
+        on.endGroup();
+        fingerprint->loadSettings();
+    }
+
+    // the same holds for a paused threat-block while the tool
+    // itself is off
+    threat->setEnabled(false);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")});
+    threat->setEnabled(true);
+
+    // schemes the tools do not cover carry no per-site state
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("osza:start"))), QStringList());
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("file:///tmp/x"))), QStringList());
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl()), QStringList());
+
+    // restore the state the other tests expect
+    interceptor->removeExclusion(host);
+    fingerprint->removeExclusion(host);
+    gpc->removeExclusion(host);
+    threat->removeSessionAllow(host);
+    {
+        Settings restore;
+        restore.beginGroup(QSL("Web-Browser-Settings"));
+        restore.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        restore.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        restore.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        restore.endGroup();
+    }
+    interceptor->loadSettings();
+    fingerprint->loadSettings();
+    gpc->loadSettings();
+    threat->setEnabled(threatBefore);
 }
 
 void SecurityToolsTest::httpsOnlyExclusionTest()
@@ -468,6 +599,93 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     // Without a window the shared slot is a no-op, exactly like the
     // dashboard's own deep-link shortcut.
     SettingsDiffPage::openToolDiff(nullptr, QSL("httpsOnly"));
+
+    delete window;
+}
+
+void SecurityToolsTest::locationBarProtectionsBadgeTest()
+{
+    // The badge end to end, in a real window's location bar: the
+    // site icon carries the relaxed protections of the site it
+    // shows - composited into the icon itself and named in the
+    // tooltip - it follows a same-scheme navigation to a clean host
+    // (no privacyChanged, no favicon change to help it: only the
+    // URL moving), and it clears on the browser's own osza: pages
+    // the tools do not cover.
+    auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
+    QVERIFY(interceptor);
+
+    // save the state the other tests expect, with HTTPS-Only on
+    Settings settings;
+    settings.beginGroup(QSL("Web-Browser-Settings"));
+    const bool httpsOnlyBefore = settings.value(QSL("HttpsOnlyMode"), true).toBool();
+    const QStringList exclusionsBefore = settings.value(QSL("HttpsOnlyExclusions"), QStringList()).toStringList();
+    settings.setValue(QSL("HttpsOnlyMode"), true);
+    settings.endGroup();
+    interceptor->loadSettings();
+
+    const QString host = QSL("badge.example");
+    interceptor->removeExclusion(host);
+
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the location bar needs its view.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    auto *bar = window->findChild<LocationBar*>();
+    QVERIFY(bar);
+    auto *siteIcon = bar->findChild<SiteIcon*>(QSL("locationbar-siteicon"));
+    QVERIFY(siteIcon);
+
+    const QString page = QSL("<html><body></body></html>");
+
+    // a clean site: no badge, the default tooltip. The security
+    // state is waited for so both snapshots below carry the same
+    // base icon (the padlock), making the image comparisons sound.
+    window->weView()->setHtml(page, QUrl(QSL("https://clean.example/")));
+    QTRY_COMPARE(window->weView()->url().toString(), QSL("https://clean.example/"));
+    QTRY_VERIFY(bar->property("secured").toBool());
+    QTRY_COMPARE(siteIcon->relaxedProtections(), QStringList());
+    const QImage iconWithoutBadge = siteIcon->icon().pixmap(16).toImage();
+
+    // the exception makes the badge: the tool's display name in
+    // the tooltip, an icon that is no longer the plain one
+    interceptor->addExclusion(host);
+    window->weView()->setHtml(page, QUrl(QSL("https://%1/").arg(host)));
+    QTRY_COMPARE(window->weView()->url().toString(), QSL("https://badge.example/"));
+    QTRY_VERIFY(bar->property("secured").toBool());
+    QTRY_COMPARE(siteIcon->relaxedProtections(),
+                 QStringList{SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly"))});
+    QVERIFY(siteIcon->toolTip().contains(SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly"))));
+    const QImage iconWithBadge = siteIcon->icon().pixmap(16).toImage();
+    QVERIFY(iconWithBadge != iconWithoutBadge);
+
+    // a same-scheme navigation to a clean host clears it: only the
+    // urlChanged hook can carry the badge over this one
+    window->weView()->setHtml(page, QUrl(QSL("https://clean2.example/")));
+    QTRY_COMPARE(window->weView()->url().toString(), QSL("https://clean2.example/"));
+    QTRY_VERIFY(bar->property("secured").toBool());
+    QTRY_COMPARE(siteIcon->relaxedProtections(), QStringList());
+    QVERIFY(!siteIcon->toolTip().contains(SecuritySettingsPorter::toolDisplayName(QSL("httpsOnly"))));
+    QCOMPARE(siteIcon->icon().pixmap(16).toImage(), iconWithoutBadge);
+
+    // the browser's own pages carry no per-site state
+    window->weView()->load(QUrl(QSL("osza:start")));
+    QTRY_VERIFY(window->weView()->url().scheme() == QL1S("osza"));
+    QTRY_COMPARE(siteIcon->relaxedProtections(), QStringList());
+
+    // restore the state the other tests expect
+    interceptor->removeExclusion(host);
+    {
+        Settings restore;
+        restore.beginGroup(QSL("Web-Browser-Settings"));
+        restore.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
+        restore.setValue(QSL("HttpsOnlyExclusions"), exclusionsBefore);
+        restore.endGroup();
+    }
+    interceptor->loadSettings();
 
     delete window;
 }

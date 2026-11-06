@@ -27,6 +27,7 @@ class SecurityToolsTest : public QObject
 private Q_SLOTS:
     void securityManagerCountersTest();
     void securityManagerPersistenceTest();
+    void relaxedProtectionsQueryTest();
     void httpsOnlyExclusionTest();
     void httpsOnlyHostMatchingTest();
     void dnsOverHttpsConfigurationTest();
@@ -34,6 +35,7 @@ private Q_SLOTS:
     void securityDashboardWidgetTest();
     void securityDashboardToolDiffLinksTest();
     void padlockMenuToolDiffLinksTest();
+    void locationBarProtectionsBadgeTest();
 
     void threatBlockListParsingTest();
     void threatBlockHostMatchingTest();

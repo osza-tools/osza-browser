@@ -109,7 +109,15 @@ and KDE contributors for their work.
   browser's own canvas, WebGL, audio and hardware readouts live -
   through the same hooks a fingerprinting site would use - and
   verifies the randomization
-  working, with the invisible per-site noise made visible. Everything
+  working, with the invisible per-site noise made visible. The
+  per-site state is visible before any menu is opened: the
+  location bar's site icon (and the popup windows' location bar)
+  carries a small amber badge whenever the current site has a
+  per-site exception - an HTTPS-Only exclusion, a fingerprint or
+  GPC opt-out exclusion, or a threat-block "proceed anyway" paused
+  for the session - and its tooltip names the relaxed protections;
+  clicking the icon opens the padlock menu, where each tool's row
+  states and changes the site's treatment. Everything
   lives in Preferences → Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS

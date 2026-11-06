@@ -21,6 +21,10 @@
 #include "qzcommon.h"
 #include "toolbutton.h"
 
+#include <QRectF>
+#include <QStringList>
+
+class QPainter;
 class QTimer;
 
 class LocationBar;
@@ -38,6 +42,35 @@ public:
     void setWebView(WebView* view);
     void setIcon(const QIcon &icon);
 
+    // The protections-relaxed badge: pass the display names of the
+    // tools that are relaxed for this site (SecurityManager::
+    // relaxedProtections keys resolved through the porter's
+    // toolDisplayName). An empty list hides the badge and restores
+    // the default tooltip; an unchanged list is a no-op, so the
+    // location bar can refresh it on every state change cheaply.
+    void setRelaxedProtections(const QStringList &protections);
+    QStringList relaxedProtections() const;
+
+    // The one drawing code for the badge: the location bar
+    // composites it into the 16 px icon, the popup's location bar
+    // paints it over its own icon area, and the two can never drift
+    // apart. iconArea is the square the icon occupies, in logical
+    // coordinates.
+    static void paintRelaxedBadge(QPainter *painter, const QRectF &iconArea);
+
+    // The badge's tooltip: the relaxed protections by name, with
+    // the review hint where clicking the icon opens the padlock
+    // menu (the popup's location bar has no menu to open, so it
+    // passes false).
+    static QString relaxedProtectionsToolTip(const QStringList &protections, bool clickable);
+
+Q_SIGNALS:
+    // The padlock menu closed: the per-site state may have changed
+    // behind it (an HTTPS-Only exception on an https page does not
+    // even reload the page), so the location bar refreshes the
+    // badge on this signal.
+    void siteInfoClosed();
+
 private Q_SLOTS:
     void updateIcon();
     void popupClosed();
@@ -49,6 +82,7 @@ private:
     void mouseMoveEvent(QMouseEvent* e) override;
 
     bool showPopup();
+    QIcon composeBadgeIcon(const QIcon &icon) const;
 
     BrowserWindow* m_window;
     LocationBar* m_locationBar;
@@ -57,6 +91,7 @@ private:
 
     QPoint m_dragStartPosition;
     QIcon m_icon;
+    QStringList m_relaxedProtections;
 };
 
 #endif // SITEICON_H

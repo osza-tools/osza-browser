@@ -36,6 +36,8 @@
 #include "completer/locationcompleter.h"
 #include "zoomlabel.h"
 #include "networkmanager.h"
+#include "securitymanager.h"
+#include "securitysettingsporter.h"
 
 #include <QTimer>
 #include <QMimeData>
@@ -104,6 +106,11 @@ LocationBar::LocationBar(QWidget *parent)
     connect(mApp->searchEnginesManager(), &SearchEnginesManager::defaultEngineChanged, this, &LocationBar::updatePlaceHolderText);
     connect(mApp, &MainApplication::settingsReloaded, this, &LocationBar::loadSettings);
 
+    // The padlock menu closing is the one moment the per-site state
+    // can change without this bar seeing an urlChanged or a load
+    // (an HTTPS-Only exception on an https page does not reload).
+    connect(m_siteIcon, &SiteIcon::siteInfoClosed, this, &LocationBar::updateProtectionsBadge);
+
     loadSettings();
 
     updateSiteIcon();
@@ -152,6 +159,7 @@ void LocationBar::setWebView(TabbedWebView* view)
     connect(m_webView, &QWebEngineView::loadProgress, this, &LocationBar::loadProgress);
     connect(m_webView, &QWebEngineView::loadFinished, this, &LocationBar::loadFinished);
     connect(m_webView, &QWebEngineView::urlChanged, this, &LocationBar::showUrl);
+    connect(m_webView, &QWebEngineView::urlChanged, this, &LocationBar::updateProtectionsBadge);
     connect(m_webView, &WebView::privacyChanged, this, &LocationBar::setPrivacyState);
 }
 
@@ -382,6 +390,10 @@ void LocationBar::textEdited(const QString &text)
     if (!text.isEmpty()) {
         m_completer->complete(text);
         m_siteIcon->setIcon(QIcon::fromTheme(QSL("edit-find"), QIcon(QSL(":icons/menu/search-icon.svg"))));
+        // The icon is the search icon while typing: the site's
+        // badge has no business riding on it. updateSiteIcon()
+        // recomputes it when the completer closes.
+        m_siteIcon->setRelaxedProtections(QStringList());
     }
     else {
         m_completer->closePopup();
@@ -453,25 +465,56 @@ void LocationBar::loadRequest(const LoadRequest &request)
 void LocationBar::updateSiteIcon()
 {
     if (m_completer->isVisible()) {
+        // Searching: the search icon carries no site state.
+        m_siteIcon->setRelaxedProtections(QStringList());
         m_siteIcon->setIcon(QIcon::fromTheme(QSL("edit-find"), QIcon(QSL(":icons/menu/search-icon.svg"))));
-    } else {
-        QIcon icon = IconProvider::emptyWebIcon();
-        if (property("secured").toBool()) {
-            auto* nm =  mApp->networkManager();
-            auto host = m_webView->url().host();
-
-            if (nm->ignoredSslHosts().contains(host) || nm->ignoredSslErrors().contains(host)) {
-                icon = QIcon::fromTheme(QSL("security-medium"), icon);
-            }
-            else if (nm->rejectedSslErrors().contains(host)) {
-                icon = QIcon::fromTheme(QSL("security-low"), icon);
-            }
-            else {
-                icon = QIcon::fromTheme(QSL("document-encrypted"), icon);
-            }
-        }
-        m_siteIcon->setIcon(QIcon(icon.pixmap(16)));
+        return;
     }
+
+    QIcon icon = IconProvider::emptyWebIcon();
+    if (property("secured").toBool()) {
+        auto* nm =  mApp->networkManager();
+        auto host = m_webView->url().host();
+
+        if (nm->ignoredSslHosts().contains(host) || nm->ignoredSslErrors().contains(host)) {
+            icon = QIcon::fromTheme(QSL("security-medium"), icon);
+        }
+        else if (nm->rejectedSslErrors().contains(host)) {
+            icon = QIcon::fromTheme(QSL("security-low"), icon);
+        }
+        else {
+            icon = QIcon::fromTheme(QSL("document-encrypted"), icon);
+        }
+    }
+    m_siteIcon->setIcon(QIcon(icon.pixmap(16)));
+
+    updateProtectionsBadge();
+}
+
+void LocationBar::updateProtectionsBadge()
+{
+    // The one query and the one naming: the badge's state comes
+    // from SecurityManager::relaxedProtections, its labels from
+    // the porter's catalog - the same names the padlock menu's
+    // rows and the settings diff carry, so the tooltip and the
+    // menu below it can never disagree about what is relaxed.
+    // Called from every place the state can move: urlChanged
+    // (navigation, even same-scheme and even while focused),
+    // updateSiteIcon (privacy change, completer closing, a load
+    // issued from the bar), loadFinished (reloads - the padlock
+    // menu's and the import's changes land here when nothing else
+    // fires), loadSettings (a global switch turned off retires
+    // the site's exception with it) and the padlock menu closing.
+    QStringList protections;
+
+    if (m_webView) {
+        const QStringList keys = SecurityManager::relaxedProtections(m_webView->url());
+        for (const QString &key : keys) {
+            protections.append(SecuritySettingsPorter::toolDisplayName(key));
+        }
+    }
+
+    m_siteIcon->setRelaxedProtections(protections);
 }
 
 void LocationBar::setPrivacyState(bool state)
@@ -692,6 +735,10 @@ void LocationBar::loadFinished()
         m_autofillIcon->setUsernames(page->autoFillUsernames());
         m_autofillIcon->show();
     }
+
+    // A reload changes the per-site state without an urlChanged -
+    // the badge answers for the page as it finished loading.
+    updateProtectionsBadge();
 }
 
 void LocationBar::loadSettings()
@@ -702,6 +749,11 @@ void LocationBar::loadSettings()
     bool customColor = settings.value(QSL("UseCustomProgressColor"), false).toBool();
     m_progressColor = customColor ? settings.value(QSL("CustomProgressColor"), palette().color(QPalette::Highlight)).value<QColor>() : QColor();
     settings.endGroup();
+
+    // A tool switched off globally retires the site's exception
+    // with it (Preferences, imports) - the badge must not outlive
+    // the state it reports.
+    updateProtectionsBadge();
 }
 
 void LocationBar::hideProgress()

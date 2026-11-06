@@ -18,6 +18,13 @@
 #include "securitymanager.h"
 #include "settings.h"
 
+#include "fingerprintmanager.h"
+#include "gpcmanager.h"
+#include "httpsonlyinterceptor.h"
+#include "mainapplication.h"
+#include "networkmanager.h"
+#include "threatblockmanager.h"
+
 #include <QMetaObject>
 #include <QMutexLocker>
 
@@ -49,6 +56,47 @@ SecurityManager *SecurityManager::instance()
 QString SecurityManager::normalizeHost(const QString &host)
 {
     return host.trimmed().toLower();
+}
+
+QStringList SecurityManager::relaxedProtections(const QUrl &url)
+{
+    // The four tools whose state can be per-site - the same four
+    // the padlock menu carries rows for, judged the way each row
+    // judges (enabled first, then the site's own exception), so the
+    // badge in the location bar can never claim a relaxation a
+    // row would deny. The keys are the porter's stable tool keys,
+    // in the padlock menu's row order; the names the chrome shows
+    // for them come from SecuritySettingsPorter::toolDisplayName.
+    const QString scheme = url.scheme();
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        return {};
+    }
+
+    const QString host = url.host();
+
+    QStringList tools;
+
+    const auto *httpsOnly = mApp->networkManager()->httpsOnlyInterceptor();
+    if (httpsOnly && httpsOnly->isEnabled() && httpsOnly->hasExplicitExclusion(host)) {
+        tools.append(QSL("httpsOnly"));
+    }
+
+    const auto *fingerprint = FingerprintManager::instance();
+    if (fingerprint && fingerprint->isEnabled() && fingerprint->isExcluded(host)) {
+        tools.append(QSL("fingerprintProtection"));
+    }
+
+    const auto *gpc = GpcManager::instance();
+    if (gpc && gpc->isEnabled() && gpc->isExcluded(host)) {
+        tools.append(QSL("globalPrivacyControl"));
+    }
+
+    const auto *threatBlock = mApp->networkManager()->threatBlockManager();
+    if (threatBlock && threatBlock->isEnabled() && threatBlock->isSessionAllowed(host)) {
+        tools.append(QSL("threatBlock"));
+    }
+
+    return tools;
 }
 
 void SecurityManager::reportAdBlocked(const QString &host)

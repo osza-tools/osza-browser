@@ -17,12 +17,19 @@
 * ============================================================ */
 #include "popuplocationbar.h"
 #include "popupwebview.h"
+#include "siteicon.h"
 #include "toolbutton.h"
 #include "qztools.h"
 #include "iconprovider.h"
 #include "bookmarksicon.h"
 #include "autofillicon.h"
 #include "webpage.h"
+#include "mainapplication.h"
+#include "securitymanager.h"
+#include "securitysettingsporter.h"
+
+#include <QPainter>
+#include <QRectF>
 
 class OSZA_EXPORT PopupSiteIcon : public QWidget
 {
@@ -33,12 +40,33 @@ public:
         update();
     }
 
+    // The same protections-relaxed badge the location bar
+    // composites into its site icon, painted over this bar's own
+    // icon area - one drawing code, two surfaces, no drift. The
+    // names are the porter's display names, like in the location
+    // bar; the popup has no padlock menu to open, so the tooltip
+    // carries no review hint.
+    void setRelaxedProtections(const QStringList &protections) {
+        if (m_relaxedProtections == protections) {
+            return;
+        }
+        m_relaxedProtections = protections;
+        setToolTip(protections.isEmpty()
+                       ? QString()
+                       : SiteIcon::relaxedProtectionsToolTip(protections, false));
+        update();
+    }
+
 private:
     QIcon m_icon;
+    QStringList m_relaxedProtections;
 
     void paintEvent(QPaintEvent*) override {
         QPainter p(this);
         m_icon.paint(&p, rect());
+        if (!m_relaxedProtections.isEmpty()) {
+            SiteIcon::paintRelaxedBadge(&p, QRectF(rect()));
+        }
     }
 };
 
@@ -75,6 +103,12 @@ void PopupLocationBar::setView(PopupWebView* view)
 
     m_bookmarkIcon->setWebView(m_view);
     m_autofillIcon->setWebView(m_view);
+
+    // The badge follows the URL even when the favicon does not
+    // change (a same-scheme navigation between two sites) and even
+    // before the security state settles - exactly the refreshes
+    // the main window's location bar gives its badge.
+    connect(m_view, &QWebEngineView::urlChanged, this, &PopupLocationBar::showSiteIcon);
 }
 
 void PopupLocationBar::startLoading()
@@ -111,9 +145,27 @@ void PopupLocationBar::showSiteIcon()
         icon = QIcon::fromTheme(QSL("document-encrypted"), icon);
     }
     m_siteIcon->setIcon(QIcon(icon.pixmap(16)));
+
+    // The same per-site state the location bar's badge reports,
+    // through the same one query and the same one naming.
+    QStringList protections;
+
+    if (m_view) {
+        const QStringList keys = SecurityManager::relaxedProtections(m_view->url());
+        for (const QString &key : keys) {
+            protections.append(SecuritySettingsPorter::toolDisplayName(key));
+        }
+    }
+
+    m_siteIcon->setRelaxedProtections(protections);
 }
 
 void PopupLocationBar::setPrivacyState(bool state)
 {
     setProperty("secured", QVariant(state));
+
+    // The padlock follows the security state, the badge the URL;
+    // refreshing here means the icon is right as soon as the state
+    // is, not only the next time the favicon changes.
+    showSiteIcon();
 }

@@ -7,6 +7,44 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (18): the protections-relaxed badge in the location
+  bar. The per-site state the padlock menu answers for was invisible
+  until the menu was opened - a site with an HTTPS-Only exclusion, a
+  fingerprint or GPC opt-out exclusion, or a threat-block "proceed
+  anyway" paused for the session looked exactly like a fully
+  protected one. The site icon now carries a small amber badge
+  (drawn into the icon itself, so it follows wherever the icon goes,
+  and scaled by the icon area's size, so the popup windows' location
+  bar - which paints it over its own icon area through the same one
+  drawing code - shows the same badge) whenever the current site has
+  such an exception, and its tooltip names the relaxed protections
+  by the porter's display names; clicking the icon opens the padlock
+  menu, where each tool's row states and changes the site's
+  treatment. The badge answers only for per-site choices, and only
+  while the tool itself is enabled - a global switch is not per-site
+  state, so turning a protection off everywhere retires the badge
+  with it, and nothing is badged on the browser's own osza: pages.
+  The state is judged in one place, SecurityManager::relaxedProtections()
+  (the same four tools, enabled first then the site's own exception,
+  exactly the way each padlock-menu row judges), and it refreshes
+  everywhere it can move: on every URL change (a same-scheme
+  navigation between two sites carries it without a favicon or
+  privacy change to help), on load-finished (reloads - the padlock
+  menu's per-site toggles land here when they reload the page), on
+  settings reload (a global switch or an import retires exceptions),
+  when the completer closes after typing (the search icon carries no
+  site state, so the badge is cleared while typing), and when the
+  padlock menu closes (an HTTPS-Only exception on an https page
+  reloads nothing - the one change only this hook can catch, through
+  the new SiteIcon::siteInfoClosed signal). New autotests: the query
+  itself (each tool joining under its own exception in the padlock
+  menu's row order, subdomains covered, a sibling host clean, a tool
+  switched off globally retiring the site's exception with it, the
+  osza:/file:/empty scheme gate) and the badge end to end in a real
+  window's location bar (the composited icon and the tooltip naming
+  the tool, the same-scheme navigation to a clean host clearing it,
+  the browser's own pages carrying no state). Verified without a Qt
+  build by tools/security/verify_locationbar_badge.py.
 - Security tools (17): per-site state for the two tools whose state
   was invisible in the padlock menu - the GPC signal and malicious
   site protection. The padlock menu now carries four per-site rows

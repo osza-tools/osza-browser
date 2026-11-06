@@ -23,6 +23,7 @@
 #include "siteinfo.h"
 
 #include <QDrag>
+#include <QPainter>
 #include <QTimer>
 #include <QMimeData>
 #include <QApplication>
@@ -37,7 +38,10 @@ SiteIcon::SiteIcon(LocationBar *parent)
     setObjectName("locationbar-siteicon");
     setToolButtonStyle(Qt::ToolButtonIconOnly);
     setCursor(Qt::ArrowCursor);
-    setToolTip(LocationBar::tr("Show information about this page"));
+    // The default tooltip - the same string setRelaxedProtections()
+    // restores when the badge goes away, so it has exactly one
+    // translation context.
+    setToolTip(tr("Show information about this page"));
     setFocusPolicy(Qt::NoFocus);
 
     m_updateTimer = new QTimer(this);
@@ -56,6 +60,31 @@ void SiteIcon::setWebView(WebView* view)
     m_view = view;
 }
 
+void SiteIcon::setRelaxedProtections(const QStringList &protections)
+{
+    if (m_relaxedProtections == protections) {
+        return;
+    }
+
+    m_relaxedProtections = protections;
+
+    if (m_relaxedProtections.isEmpty()) {
+        setToolTip(tr("Show information about this page"));
+    }
+    else {
+        setToolTip(relaxedProtectionsToolTip(m_relaxedProtections, true));
+    }
+
+    // The base icon is unchanged: only the badge rides on it, so
+    // there is nothing to debounce - the new state shows at once.
+    updateIcon();
+}
+
+QStringList SiteIcon::relaxedProtections() const
+{
+    return m_relaxedProtections;
+}
+
 void SiteIcon::setIcon(const QIcon &icon)
 {
     bool wasNull = m_icon.isNull();
@@ -72,12 +101,83 @@ void SiteIcon::setIcon(const QIcon &icon)
 
 void SiteIcon::updateIcon()
 {
-    ToolButton::setIcon(m_icon);
+    ToolButton::setIcon(composeBadgeIcon(m_icon));
 }
 
 void SiteIcon::popupClosed()
 {
     setDown(false);
+    Q_EMIT siteInfoClosed();
+}
+
+QIcon SiteIcon::composeBadgeIcon(const QIcon &icon) const
+{
+    if (m_relaxedProtections.isEmpty()) {
+        return icon;
+    }
+
+    const QPixmap base = icon.pixmap(QSize(16, 16));
+    if (base.isNull()) {
+        return icon;
+    }
+
+    // The badge is drawn in the icon's own 16-unit space and the
+    // pixmap's device pixel ratio is kept, so a high-dpi source
+    // (32 px at 2x) gets a proportionally sized dot through the
+    // same code path - and wherever the style moves or scales the
+    // icon, the badge rides on it.
+    QPixmap out(base.size());
+    out.setDevicePixelRatio(base.devicePixelRatio());
+    out.fill(Qt::transparent);
+
+    QPainter p(&out);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    p.drawPixmap(0, 0, base);
+    paintRelaxedBadge(&p, QRectF(0, 0, 16, 16));
+    p.end();
+
+    return QIcon(out);
+}
+
+void SiteIcon::paintRelaxedBadge(QPainter *painter, const QRectF &iconArea)
+{
+    // Amber - the color between the suite's calm cyan and the
+    // interstitial's red. A per-site exception is a deliberate,
+    // reviewable choice the user made: attention, not alarm.
+    const QColor dotColor(0xf5, 0xa5, 0x24);
+
+    // A solid dot with a thin dark rim (so it reads on light
+    // backgrounds too) inside a soft wider ring - the quiet glow
+    // of the security pages, scaled down to chrome size. All
+    // geometry derives from the icon area's width, so the 16 px
+    // composite and the popup's larger icon area get the same
+    // badge at their own scale.
+    const qreal width = iconArea.width();
+    const qreal dot = width * 5.5 / 16.0;
+    const qreal gap = width * 0.5 / 16.0;
+    const qreal glow = width * 1.0 / 16.0;
+
+    QRectF dotRect(iconArea.right() - gap - dot, iconArea.bottom() - gap - dot, dot, dot);
+
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(QPen(QColor(dotColor.red(), dotColor.green(), dotColor.blue(), 110), 1.1));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawEllipse(dotRect.adjusted(-glow, -glow, glow, glow));
+
+    painter->setPen(QPen(QColor(0x33, 0x1f, 0x00, 190), 0.9));
+    painter->setBrush(dotColor);
+    painter->drawEllipse(dotRect);
+}
+
+QString SiteIcon::relaxedProtectionsToolTip(const QStringList &protections, bool clickable)
+{
+    const QString names = protections.join(QLatin1String(", "));
+
+    if (clickable) {
+        return tr("Protections are relaxed for this site: %1. Click the icon to review them.").arg(names);
+    }
+
+    return tr("Protections are relaxed for this site: %1.").arg(names);
 }
 
 void SiteIcon::contextMenuEvent(QContextMenuEvent* e)

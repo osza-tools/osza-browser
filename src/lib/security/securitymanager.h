@@ -22,17 +22,22 @@
 #include <QMutex>
 #include <QObject>
 #include <QString>
+#include <QStringList>
+#include <QUrl>
 #include <atomic>
 
 #include "qzcommon.h"
 
 /*
- * Central counter hub for the bundled security tools.
+ * Central hub for the bundled security tools.
  *
- * The request interceptors run on the WebEngine IO thread, while the
- * security dashboard lives on the UI thread. All counters are therefore
- * atomics, and the per-host counters are guarded by a mutex, so both
- * threads can safely report and read them without locks around Qt APIs.
+ * Two halves with different threading rules: the request
+ * interceptors run on the WebEngine IO thread while the security
+ * dashboard lives on the UI thread, so all counters are atomics
+ * and the per-host counters are guarded by a mutex - both threads
+ * can safely report and read them without locks around Qt APIs.
+ * The per-site query below is the chrome's (location bar, padlock
+ * surroundings) and runs on the UI thread only.
  */
 class OSZA_EXPORT SecurityManager : public QObject
 {
@@ -59,6 +64,19 @@ public:
     quint64 trackersStrippedForHost(const QString &host) const;
     quint64 httpsUpgradesForHost(const QString &host) const;
     quint64 threatsBlockedForHost(const QString &host) const;
+
+    // The one per-site query the chrome asks: which of the four
+    // tools with per-site state is currently relaxed for this exact
+    // site - an HTTPS-Only exclusion (the site is never upgraded), a
+    // fingerprint or GPC exclusion (the site's readouts are not
+    // randomized / the opt-out is not sent), or a threat-block
+    // session allow ("proceed anyway"). A tool's entry only counts
+    // while the tool itself is enabled: a global switch is not
+    // per-site state, the padlock menu and Preferences own it.
+    // Returns the porter's stable tool keys in the padlock menu's
+    // row order; empty for schemes the tools do not cover.
+    // UI thread only (Settings-backed managers, no locking).
+    static QStringList relaxedProtections(const QUrl &url);
 
     void loadCounters();
     void saveCounters();

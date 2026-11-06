@@ -84,6 +84,7 @@ private Q_SLOTS:
     void pasteAndGo();
 
     void updateSiteIcon();
+    void updateProtectionsBadge();
     void updatePlaceHolderText();
 
     void setPrivacyState(bool state);
