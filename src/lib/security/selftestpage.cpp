@@ -154,12 +154,22 @@ QJsonArray SelfTestPage::collectToolStatuses()
     } else if (threatBlock->isUpdating()) {
         threatDetail = tr("Updating the blocklist...");
     } else if (threatBlock->hostCount() == 0) {
-        threatDetail = tr("Blocklist not downloaded yet.");
+        if (!threatBlock->lastUpdateError().isEmpty()) {
+            // No escaping here on purpose: the page inserts the detail
+            // through textContent (and the JSON embedding below
+            // already neutralizes "<"), so the error is shown exactly
+            // as the network stack reported it.
+            threatDetail = tr("The blocklist download failed: %1").arg(threatBlock->lastUpdateError());
+        } else {
+            threatDetail = tr("Blocklist not downloaded yet.");
+        }
     } else {
-        const QString updated = threatBlock->lastUpdate().isValid()
-            ? QLocale().toString(threatBlock->lastUpdate().toLocalTime(), QLocale::ShortFormat)
-            : tr("unknown date");
+        const QString updated = ThreatBlockManager::describeListAge(threatBlock->lastUpdate());
         threatDetail = tr("%1 hosts, updated %2.").arg(QLocale().toString(threatBlock->hostCount()), updated);
+
+        if (!threatBlock->lastUpdateError().isEmpty()) {
+            threatDetail += QSL(" ") + tr("The last update failed: %1").arg(threatBlock->lastUpdateError());
+        }
     }
     statuses.append(toolStatus(QSL("threatblock"), tr("Malicious site protection"),
                                threatBlock->isEnabled(), threatDetail));

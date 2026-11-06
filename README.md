@@ -45,7 +45,16 @@ and KDE contributors for their work.
   subresources of listed hosts are blocked; the warning page's "Why
   is this site flagged?" disclosure names the matching blocklist
   entry - the host itself, or the listed parent domain that covers
-  it - together with the list's source, size and last update). The
+  it - together with the list's source, size and last update, and
+  the evidence keeps its freshness visible: the age is spoken in
+  relative terms ("124,000 hosts, updated 3 hours ago"), a refresh
+  in flight and the last refresh's failure are named on the warning
+  page's evidence rows and in the padlock menu's threat-block row,
+  and a "Refresh the blocklist now" action - a link on the warning
+  page, a button in the padlock menu - renews the list in place
+  whenever it is due, so a stale warning never has to be taken on
+  faith; the security sidebar and the self-test page speak the same
+  states live). The
   whole suite can be backed up and moved: the dashboard's
   "Import / Export" button (also in Preferences → Privacy → Security
   tools) saves the configuration of every protection - switches,

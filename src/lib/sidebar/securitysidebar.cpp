@@ -463,7 +463,11 @@ void SecuritySideBar::updateStatus()
     }
 
     // Malicious-site protection state, honest about the list and
-    // about the one per-site state the tool has.
+    // about the one per-site state the tool has. The list's age is
+    // spoken in relative terms (the same describeListAge() the
+    // interstitial and the padlock row use): this row refreshes
+    // every second, so "updated 3 hours ago" ticks live, and a
+    // failed refresh is named alongside the list it left behind.
     if (!threatBlock->isEnabled()) {
         m_threatBlockState->setText(tr("Malicious site protection is off."));
     } else {
@@ -473,13 +477,21 @@ void SecuritySideBar::updateStatus()
         } else if (threatBlock->isUpdating()) {
             m_threatBlockState->setText(tr("Updating the blocklist..."));
         } else if (threatBlock->hostCount() == 0) {
-            m_threatBlockState->setText(tr("Blocklist not downloaded yet. It is fetched from the configured source."));
+            if (!threatBlock->lastUpdateError().isEmpty()) {
+                m_threatBlockState->setText(tr("The blocklist download failed: %1").arg(threatBlock->lastUpdateError().toHtmlEscaped()));
+            } else {
+                m_threatBlockState->setText(tr("Blocklist not downloaded yet. It is fetched from the configured source."));
+            }
         } else {
             const QString count = QLocale().toString(threatBlock->hostCount());
-            const QString updated = threatBlock->lastUpdate().isValid()
-                ? QLocale().toString(threatBlock->lastUpdate().toLocalTime(), QLocale::ShortFormat)
-                : tr("unknown date");
-            m_threatBlockState->setText(tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated));
+            const QString updated = ThreatBlockManager::describeListAge(threatBlock->lastUpdate());
+            QString text = tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated);
+
+            if (!threatBlock->lastUpdateError().isEmpty()) {
+                text += QSL(" - ") + tr("the last update failed: %1").arg(threatBlock->lastUpdateError().toHtmlEscaped());
+            }
+
+            m_threatBlockState->setText(text);
         }
     }
 }

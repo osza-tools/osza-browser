@@ -76,8 +76,39 @@ public:
     int hostCount() const;
     bool isListLoaded() const;
 
-    // True when a refresh is currently running.
+    // True when a refresh is currently running. The interstitial is
+    // rendered on the WebEngine IO thread, so the flag is read under
+    // the mutex like every shared state - the answer is safe to ask
+    // from any thread.
     bool isUpdating() const;
+
+    // The error of the last refresh attempt, empty when the last
+    // attempt succeeded (or none has run). The interstitial's and
+    // the padlock row's "the last update failed" states read it, so
+    // a failed refresh stays visible after the signal has come and
+    // gone - a stale list the browser could not renew is exactly
+    // the state that must not be papered over. Read under the
+    // mutex; cleared when a new attempt starts or a list lands.
+    QString lastUpdateError() const;
+
+    // True when the list in place is empty or older than the
+    // refresh interval - exactly the state the manager's own timer
+    // refreshes through checkForUpdate(), and the state the
+    // interstitial and the padlock row surface with a "refresh
+    // now" action, so the evidence behind a warning can be renewed
+    // deliberately instead of waiting for the timer. Thread safe.
+    bool isListStale() const;
+
+    // The age of a list update in relative terms - "less than a
+    // minute ago", "3 hours ago", "2 days ago" - the phrasing the
+    // surfaces that speak to a decision (the interstitial's
+    // evidence rows, the padlock row, the sidebar's live status)
+    // use, where "how old is this evidence" is the question being
+    // answered; Preferences keeps the clock time, the place the
+    // source is configured. An invalid timestamp falls back to
+    // "unknown date", so the composed "%1 hosts, updated %2"
+    // wording keeps its shape everywhere.
+    static QString describeListAge(const QDateTime &since);
 
     // Blocking queries - thread safe, may be called from the IO thread.
     // A host matches when the host itself or any parent domain is on
@@ -137,6 +168,16 @@ public:
     static QUrl blockedUrlFromPageUrl(const QUrl &pageUrl);
     static bool isProceedPageUrl(const QUrl &pageUrl);
 
+    // The osza: URL the interstitial's "refresh now" action
+    // carries, and its recognizer: the scheme handler answers it by
+    // starting updateNow() and re-serving the interstitial for the
+    // same blocked URL, whose list-state row then reports the
+    // refresh in flight. Shaped exactly like the proceed URL - one
+    // percent-encoded blocked URL, one Osza-owned flag - so the
+    // round trip through blockedUrlFromPageUrl() is the same one.
+    static QUrl refreshListPageUrl(const QUrl &blockedUrl);
+    static bool isRefreshListPageUrl(const QUrl &pageUrl);
+
     // Renders the interstitial page for a blocked URL.
     QString interstitialPage(const QUrl &blockedUrl) const;
 
@@ -163,10 +204,17 @@ protected:
     QSet<QString> m_blockedHosts;
     QSet<QString> m_sessionAllowed;
 
+    // Update-lifecycle state. Both are guarded by the mutex (the
+    // interstitial reads them on the WebEngine IO thread, under the
+    // one lock it already holds for the evidence rows) even though
+    // they are written on the UI thread only - like the list itself,
+    // which the IO thread's queries read under the same lock.
+    bool m_updating;
+    QString m_lastError;
+
     // UI-thread only state
     QNetworkAccessManager *m_nam;
     QNetworkReply *m_reply;
-    bool m_updating;
     int m_refreshTimerId;
 };
 

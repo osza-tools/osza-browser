@@ -7,6 +7,65 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (20): the blocklist update UX - the evidence keeps
+  its freshness visible, and can be renewed in place. The
+  interstitial's "why is this site flagged?" disclosure and the
+  padlock menu's threat-block row both spoke of the list as a bare
+  snapshot ("124,000 hosts, updated 14:32"), with no notion of a
+  refresh in flight, no memory of a refresh that had failed, and no
+  way to renew the evidence where it was being weighed - so a
+  warning could be explained by a list hours or days old, and taken
+  on faith. Both surfaces now speak the whole update lifecycle: the
+  age in relative terms ("124,000 hosts, updated 3 hours ago" - the
+  question a person weighing "proceed anyway" is actually asking),
+  a refresh in flight ("updating now", no action offered while one
+  runs), the last refresh's failure named next to the list it left
+  behind ("the last update failed: ...", with the retry), and, when
+  the list is due, the renewal itself - "Refresh the blocklist
+  now" as a link in the warning page's evidence rows (an osza:
+  address the scheme handler answers by starting the refresh and
+  re-serving the same page, so the row then reports the refresh in
+  flight; never in test mode, like every update trigger) and as a
+  button in the padlock menu, which starts the refresh and stays
+  open: the manager's own signals re-render the row while the menu
+  is open, so the update is witnessed in the place that offered
+  it, ending in either the fresh state or the named failure with
+  the retry. The "due" judgment is spoken once: a new public
+  ThreatBlockManager::isListStale() answers "is this list empty or
+  older than the refresh interval" through the same file-local
+  helper the manager's own timer has always refreshed through, so
+  the timer can never fetch a list the surfaces still call fresh,
+  nor leave alone one they already call due. The failure is
+  remembered, not just announced: a new lastUpdateError() holds the
+  last attempt's error (set before every updateFailed emission,
+  cleared when a new attempt starts or a list lands), so a failed
+  refresh stays visible long after the signal has come and gone -
+  in the warning page, the padlock row, the security sidebar (whose
+  live status now also speaks the relative age, ticking every
+  second) and the self-test page's threat row, all in the same
+  "%1 hosts, updated %2" voice; Preferences keeps the clock time,
+  the configuration surface where the source is set. The age itself
+  comes from one new static, describeListAge() ("less than a minute
+  ago" / "N minute(s) ago" / "N hour(s) ago" / "N day(s) ago",
+  clamped against clock skew), and the in-flight flag became
+  mutex-guarded shared state, read under the one lock the
+  interstitial already holds for its evidence rows (the page is
+  rendered on the WebEngine IO thread). The padlock row's coverage
+  states carry the age in parentheses ("This site is not on the
+  malicious-site blocklist (list updated 3 hours ago).") with the
+  renewal offered exactly when isListStale() says the list is due,
+  the loading states distinguish a download in flight from a failed
+  one, and the per-site actions keep their own button and their
+  close-on-apply behavior. Verified by the new offline
+  tools/security/verify_threat_block_update_ux.py (the staleness
+  boundary, the age buckets, the remembering discipline, the one
+  lock, the href escaping, the handler's test-mode rule and the
+  autotest coverage, all without a Qt build) and by the new
+  threatBlockListUpdateStateTest autotest, which drives every state
+  without the network: a fresh list, a failed refresh through an
+  invalid source, a recovery, and a stale list through a
+  hand-written list file with an old "# updated:" header - the file
+  a real profile carries after a long offline stretch.
 - Security tools (19): the threat-block interstitial's "why is this
   site flagged?" details. The warning page said a blocklist was the
   reason, but not which entry of which list said so - someone

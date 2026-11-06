@@ -102,6 +102,26 @@ bool OszaSchemeHandler::handleRequest(QWebEngineUrlRequestJob *job)
             job->fail(QWebEngineUrlRequestJob::UrlInvalid);
         }
         return true;
+    } else if (job->requestUrl().path() == QL1S("threatblocked")
+               && ThreatBlockManager::isRefreshListPageUrl(job->requestUrl())) {
+        // "Refresh the blocklist now" from the interstitial's
+        // evidence rows: start the refresh and re-serve the same
+        // page, whose list-state row then reports the refresh in
+        // flight. The blocked URL is carried through untouched -
+        // this address renews the evidence, it never decides
+        // anything about the site. Test mode never fetches, the
+        // same rule as every other update trigger.
+        const QUrl blocked = ThreatBlockManager::blockedUrlFromPageUrl(job->requestUrl());
+
+        if (blocked.isValid() && !blocked.host().isEmpty()) {
+            if (!mApp->isTestModeEnabled()) {
+                mApp->networkManager()->threatBlockManager()->updateNow();
+            }
+            job->redirect(ThreatBlockManager::blockPageUrl(blocked));
+        } else {
+            job->fail(QWebEngineUrlRequestJob::UrlInvalid);
+        }
+        return true;
     }
 
     return false;

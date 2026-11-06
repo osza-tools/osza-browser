@@ -50,6 +50,7 @@ private:
     void gpcButtonClicked();
     void updateThreatBlockState();
     void threatBlockButtonClicked();
+    void threatBlockUpdateButtonClicked();
 
     // Configure the "diff" link of a per-site entry: the same deep
     // link the security dashboard's tool rows carry - this tool's

@@ -82,14 +82,28 @@ QString matchingEntry(const QString &host, const QSet<QString> &set)
     }
 }
 
+// The freshness judgment, spoken once: a list is due for a refresh
+// when its last update is older than the refresh interval. The
+// manager's own timer (through checkForUpdate -> isListStale), the
+// public isListStale() the padlock row asks, and the interstitial's
+// list-state row (which already holds the mutex and cannot ask the
+// self-locking query) all read the age through this one helper, so
+// the browser can never consider a list fresh in one place and
+// stale in another. The caller holds the mutex (or owns the value).
+bool listIsStale(const QDateTime &updated)
+{
+    return !updated.isValid() || updated.msecsTo(QDateTime::currentDateTimeUtc()) > kRefreshIntervalMs;
+}
+
 } // namespace
 
 ThreatBlockManager::ThreatBlockManager(QObject *parent)
     : QObject(parent)
     , m_enabled(true)
+    , m_updating(false)
+    , m_lastError()
     , m_nam(nullptr)
     , m_reply(nullptr)
-    , m_updating(false)
     , m_refreshTimerId(0)
 {
 }
@@ -214,7 +228,54 @@ bool ThreatBlockManager::isListLoaded() const
 
 bool ThreatBlockManager::isUpdating() const
 {
+    // The interstitial reads this on the WebEngine IO thread, so the
+    // flag lives under the mutex like every state that page reports
+    // on - written on the UI thread only (fetchList and the reply's
+    // finished handler), read from anywhere.
+    QMutexLocker lock(&m_mutex);
     return m_updating;
+}
+
+QString ThreatBlockManager::lastUpdateError() const
+{
+    QMutexLocker lock(&m_mutex);
+    return m_lastError;
+}
+
+bool ThreatBlockManager::isListStale() const
+{
+    QMutexLocker lock(&m_mutex);
+    return m_blockedHosts.isEmpty() || listIsStale(m_lastUpdate);
+}
+
+QString ThreatBlockManager::describeListAge(const QDateTime &since)
+{
+    if (!since.isValid()) {
+        return tr("unknown date");
+    }
+
+    // The age of the evidence, not the wall-clock time it arrived:
+    // clamped at zero so a clock skew into the future reads as
+    // "just now" instead of a negative age.
+    const qint64 elapsed = qMax<qint64>(0, since.secsTo(QDateTime::currentDateTimeUtc()));
+
+    if (elapsed < 60) {
+        return tr("less than a minute ago");
+    }
+
+    const qint64 minutes = elapsed / 60;
+
+    if (minutes < 60) {
+        return tr("%n minute(s) ago", nullptr, int(minutes));
+    }
+
+    const qint64 hours = minutes / 60;
+
+    if (hours < 24) {
+        return tr("%n hour(s) ago", nullptr, int(hours));
+    }
+
+    return tr("%n day(s) ago", nullptr, int(hours / 24));
 }
 
 bool ThreatBlockManager::isHostBlocked(const QString &host) const
@@ -326,18 +387,11 @@ void ThreatBlockManager::removeSessionAllow(const QString &host)
 
 void ThreatBlockManager::checkForUpdate()
 {
-    QDateTime updated;
-    int count = 0;
-
-    {
-        QMutexLocker lock(&m_mutex);
-        updated = m_lastUpdate;
-        count = m_blockedHosts.size();
-    }
-
-    const bool stale = !updated.isValid() || updated.msecsTo(QDateTime::currentDateTimeUtc()) > kRefreshIntervalMs;
-
-    if (count == 0 || stale) {
+    // The one staleness judgment: the same isListStale() the padlock
+    // row and the interstitial report through, so the timer never
+    // fetches a list those surfaces would still call fresh - nor
+    // leaves alone one they already call due.
+    if (isListStale()) {
         fetchList();
     }
 }
@@ -464,6 +518,11 @@ void ThreatBlockManager::applyList(const QSet<QString> &hosts, const QDateTime &
         QMutexLocker lock(&m_mutex);
         m_blockedHosts = hosts;
         m_lastUpdate = when;
+
+        // A list landed: whatever the last attempt failed with, this
+        // one succeeded - the error state the surfaces report ends
+        // with the success they report.
+        m_lastError.clear();
     }
 
     Q_EMIT listUpdated(hosts.size());
@@ -533,14 +592,32 @@ bool ThreatBlockManager::loadList()
 
 void ThreatBlockManager::fetchList()
 {
-    if (m_updating) {
-        return;
+    {
+        QMutexLocker lock(&m_mutex);
+
+        if (m_updating) {
+            return;
+        }
+
+        // A new attempt is under way: the previous attempt's error
+        // stops being the last word (a success will clear it for
+        // good, a failure replaces it) - while it runs, the surfaces
+        // report the refresh in flight instead of a verdict.
+        m_updating = true;
+        m_lastError.clear();
     }
 
     const QUrl url(sourceUrl());
 
     if (!url.isValid() || (url.scheme() != QSL("https") && url.scheme() != QSL("http") && url.scheme() != QSL("file"))) {
-        Q_EMIT updateFailed(tr("The blocklist source URL is not valid."));
+        QString error;
+        {
+            QMutexLocker lock(&m_mutex);
+            m_updating = false;
+            m_lastError = tr("The blocklist source URL is not valid.");
+            error = m_lastError;
+        }
+        Q_EMIT updateFailed(error);
         return;
     }
 
@@ -556,36 +633,47 @@ void ThreatBlockManager::fetchList()
         request.setHeader(QNetworkRequest::UserAgentHeader, mApp->webProfile()->httpUserAgent());
     }
 
-    m_updating = true;
     m_reply = m_nam->get(request);
 
     connect(m_reply, &QNetworkReply::finished, this, [this]() {
-        m_updating = false;
+        QString error;
+        {
+            QMutexLocker lock(&m_mutex);
+            m_updating = false;
+        }
 
         QNetworkReply *reply = m_reply;
         m_reply = nullptr;
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            Q_EMIT updateFailed(reply->errorString());
-            return;
+            error = reply->errorString();
+        } else {
+            const QByteArray data = reply->readAll();
+
+            if (data.isEmpty()) {
+                error = tr("The blocklist source returned no data.");
+            } else {
+                const int count = applyListData(data);
+
+                if (count == 0) {
+                    error = tr("The blocklist source did not contain any valid hosts.");
+                } else {
+                    qWarning() << "ThreatBlock: blocklist updated with" << count << "hosts";
+                }
+            }
         }
 
-        const QByteArray data = reply->readAll();
-
-        if (data.isEmpty()) {
-            Q_EMIT updateFailed(tr("The blocklist source returned no data."));
-            return;
+        // The failure is remembered, not just announced: the
+        // interstitial and the padlock row answer for it long after
+        // the signal has come and gone, until a retry succeeds.
+        if (!error.isEmpty()) {
+            {
+                QMutexLocker lock(&m_mutex);
+                m_lastError = error;
+            }
+            Q_EMIT updateFailed(error);
         }
-
-        const int count = applyListData(data);
-
-        if (count == 0) {
-            Q_EMIT updateFailed(tr("The blocklist source did not contain any valid hosts."));
-            return;
-        }
-
-        qWarning() << "ThreatBlock: blocklist updated with" << count << "hosts";
     });
 }
 
@@ -640,6 +728,24 @@ bool ThreatBlockManager::isProceedPageUrl(const QUrl &pageUrl)
         && pageUrl.toString(QUrl::FullyEncoded).endsWith(QSL("&proceed=1"));
 }
 
+QUrl ThreatBlockManager::refreshListPageUrl(const QUrl &blockedUrl)
+{
+    // The same single fully percent-encoded query value blockPageUrl
+    // carries, with Osza's own separator - the interstitial's
+    // "refresh now" action rides on the same round trip the "proceed
+    // anyway" choice uses.
+    const QByteArray encoded = QUrl::toPercentEncoding(blockedUrl.toString());
+
+    return QUrl(QSL("osza:threatblocked?url=") + QString::fromLatin1(encoded) + QSL("&update=1"));
+}
+
+bool ThreatBlockManager::isRefreshListPageUrl(const QUrl &pageUrl)
+{
+    return pageUrl.scheme() == QSL("osza")
+        && pageUrl.path() == QSL("threatblocked")
+        && pageUrl.toString(QUrl::FullyEncoded).endsWith(QSL("&update=1"));
+}
+
 QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
 {
     static QString templatePage;
@@ -678,6 +784,7 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
     QString listInfo;
     QString matchInfo;
     QString sourceInfo;
+    bool wantsRefresh = false;
     {
         QMutexLocker lock(&m_mutex);
 
@@ -687,7 +794,27 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
             const QString count = QLocale().toString(m_blockedHosts.size());
             listInfo = tr("%1 hosts, updated %2", "number of hosts in the blocklist, last update time").arg(
                 count,
-                m_lastUpdate.isValid() ? QLocale().toString(m_lastUpdate.toLocalTime(), QLocale::ShortFormat) : tr("unknown date"));
+                describeListAge(m_lastUpdate));
+        }
+
+        // The update lifecycle rides on the same row, read under the
+        // same one lock: a refresh in flight (no action while one
+        // runs), the last refresh's failure (the action says "try
+        // again" in that state), and a list older than the refresh
+        // interval - the same listIsStale() judgment the manager's
+        // own timer refreshes through, spoken by the file-local
+        // helper because the public isListStale() would take this
+        // lock a second time. The blocked-URL-less states cannot be
+        // reached through a real navigation (no list means nothing
+        // is blocked), but a hand-crafted address still gets an
+        // honest row.
+        if (m_updating) {
+            listInfo += tr(" - updating now");
+        } else if (!m_lastError.isEmpty()) {
+            listInfo += tr(" - the last update failed: %1").arg(m_lastError.toHtmlEscaped());
+            wantsRefresh = true;
+        } else if (m_blockedHosts.isEmpty() || listIsStale(m_lastUpdate)) {
+            wantsRefresh = true;
         }
 
         // The entry that matched, and how it matched. The page can be
@@ -711,6 +838,19 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
         // through the default source.
         sourceInfo = (m_sourceUrl.isEmpty() ? defaultSourceUrl() : m_sourceUrl).toHtmlEscaped();
     }
+
+    // The "refresh now" action: an osza: address the scheme handler
+    // answers by starting the refresh and re-serving this page, so
+    // the evidence renews in place - wired like both ways out of the
+    // page, not a script. The separator is escaped for the href
+    // attribute; the blocked URL rides percent-encoded, so the
+    // replace can only touch Osza's own '&'.
+    if (wantsRefresh) {
+        QString refreshHref = refreshListPageUrl(blockedUrl).toString(QUrl::FullyEncoded);
+        refreshHref.replace(QLatin1Char('&'), QSL("&amp;"));
+        listInfo += QSL(" <a href=\"%1\">%2</a>").arg(refreshHref, tr("Refresh the blocklist now").toHtmlEscaped());
+    }
+
     page.replace(QLatin1String("%LIST-INFO%"), listInfo);
     page.replace(QLatin1String("%MATCH-INFO%"), matchInfo);
     page.replace(QLatin1String("%SOURCE-INFO%"), sourceInfo);

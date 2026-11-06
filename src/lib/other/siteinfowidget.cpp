@@ -135,6 +135,17 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     connect(ui->fingerprintButton, &QPushButton::clicked, this, &SiteInfoWidget::fingerprintButtonClicked);
     connect(ui->gpcButton, &QPushButton::clicked, this, &SiteInfoWidget::gpcButtonClicked);
     connect(ui->threatBlockButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockButtonClicked);
+    connect(ui->threatBlockUpdateButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockUpdateButtonClicked);
+
+    // The blocklist can change while the menu is open: a refresh
+    // landing or failing re-renders the threat-block row through the
+    // manager's own signals, so the freshness it reports is never a
+    // snapshot a popup outlived - the row says "updating now" until
+    // it can honestly say "updated less than a minute ago", or name
+    // the failure and offer the retry.
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    connect(threatBlockManager, &ThreatBlockManager::listUpdated, this, &SiteInfoWidget::updateThreatBlockState);
+    connect(threatBlockManager, &ThreatBlockManager::updateFailed, this, &SiteInfoWidget::updateThreatBlockState);
 }
 
 SiteInfoWidget::~SiteInfoWidget()
@@ -384,6 +395,7 @@ void SiteInfoWidget::updateThreatBlockState()
     if (scheme != QL1S("http") && scheme != QL1S("https")) {
         ui->threatBlockLabel->hide();
         ui->threatBlockButton->hide();
+        ui->threatBlockUpdateButton->hide();
         ui->threatBlockDiffLink->hide();
         return;
     }
@@ -391,19 +403,34 @@ void SiteInfoWidget::updateThreatBlockState()
     const QString host = m_window->weView()->url().host();
     auto *manager = mApp->networkManager()->threatBlockManager();
 
+    // Both buttons start hidden; every state below shows exactly the
+    // actions it carries - the per-site one, the list-lifecycle one,
+    // or neither.
+    ui->threatBlockButton->hide();
+    ui->threatBlockUpdateButton->hide();
+
     if (!manager->isEnabled()) {
         ui->threatBlockLabel->setText(tr("Malicious site protection is <b>off</b>."));
         ui->threatBlockButton->setText(tr("Enable protection"));
+        ui->threatBlockButton->show();
         return;
     }
 
     // First run, or a refresh with nothing cached yet: until the
     // blocklist arrives there is no coverage to report, and saying
     // "not on the blocklist" would be a reassurance the browser
-    // cannot honestly make.
+    // cannot honestly make. The download in flight and its failure
+    // are named - the failure with the retry that renews it.
     if (!manager->isListLoaded()) {
-        ui->threatBlockLabel->setText(tr("The malicious-site blocklist is still <b>loading</b>."));
-        ui->threatBlockButton->hide();
+        if (manager->isUpdating()) {
+            ui->threatBlockLabel->setText(tr("The malicious-site blocklist is being <b>downloaded</b> now."));
+        } else if (!manager->lastUpdateError().isEmpty()) {
+            ui->threatBlockLabel->setText(tr("The malicious-site blocklist could not be downloaded: %1").arg(manager->lastUpdateError().toHtmlEscaped()));
+            ui->threatBlockUpdateButton->setText(tr("Try the update again"));
+            ui->threatBlockUpdateButton->show();
+        } else {
+            ui->threatBlockLabel->setText(tr("The malicious-site blocklist is still <b>loading</b>."));
+        }
         return;
     }
 
@@ -416,19 +443,33 @@ void SiteInfoWidget::updateThreatBlockState()
     if (manager->isSessionAllowed(host)) {
         ui->threatBlockLabel->setText(tr("Malicious site protection is <b>paused</b> for this site (this session)."));
         ui->threatBlockButton->setText(tr("Block this site again"));
+        ui->threatBlockButton->show();
         return;
     }
 
-    // The remaining states carry no per-site action: a listed host
-    // without an exception is not viewable in the first place, and an
-    // unlisted host needs nothing - so the row states the coverage
-    // and the button stays hidden.
-    ui->threatBlockButton->hide();
+    // The coverage statement, with the freshness of the list behind
+    // it: the age in relative terms (the same describeListAge() the
+    // interstitial's evidence rows use), a refresh in flight, and -
+    // when the list is due or its last refresh failed - the action
+    // that renews it right here, the same staleness judgment the
+    // manager's own timer refreshes through.
+    const QString coverage = manager->isHostBlocked(host)
+        ? tr("This site is on the malicious-site <b>blocklist</b>.")
+        : tr("This site is <b>not</b> on the malicious-site blocklist.");
 
-    if (manager->isHostBlocked(host)) {
-        ui->threatBlockLabel->setText(tr("This site is on the malicious-site <b>blocklist</b>."));
+    if (manager->isUpdating()) {
+        ui->threatBlockLabel->setText(tr("%1 The list is being refreshed now.").arg(coverage));
+    } else if (!manager->lastUpdateError().isEmpty()) {
+        ui->threatBlockLabel->setText(tr("%1 The last update failed: %2").arg(coverage, manager->lastUpdateError().toHtmlEscaped()));
+        ui->threatBlockUpdateButton->setText(tr("Try the update again"));
+        ui->threatBlockUpdateButton->show();
     } else {
-        ui->threatBlockLabel->setText(tr("This site is <b>not</b> on the malicious-site blocklist."));
+        ui->threatBlockLabel->setText(tr("%1 (list updated %2)").arg(coverage, ThreatBlockManager::describeListAge(manager->lastUpdate())));
+
+        if (manager->isListStale()) {
+            ui->threatBlockUpdateButton->setText(tr("Update the blocklist now"));
+            ui->threatBlockUpdateButton->show();
+        }
     }
 }
 
@@ -451,4 +492,16 @@ void SiteInfoWidget::threatBlockButtonClicked()
     }
 
     close();
+}
+
+void SiteInfoWidget::threatBlockUpdateButtonClicked()
+{
+    // The list-lifecycle action: start the refresh and stay open -
+    // unlike the per-site choices, which take effect and close. The
+    // row re-renders through the manager's own signals ("being
+    // refreshed now", then either the fresh state or the failure
+    // with the retry), so the update is witnessed in the place that
+    // offered it.
+    mApp->networkManager()->threatBlockManager()->updateNow();
+    updateThreatBlockState();
 }

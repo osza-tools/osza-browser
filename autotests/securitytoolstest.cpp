@@ -19,6 +19,7 @@
 #include "securitytoolstest.h"
 #include "adblockmanager.h"
 #include "browserwindow.h"
+#include "datapaths.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
 #include "gpcexceptionsdialog.h"
@@ -917,6 +918,16 @@ void SecurityToolsTest::threatBlockPageUrlTest()
     QVERIFY(ThreatBlockManager::isProceedPageUrl(proceed));
     QCOMPARE(ThreatBlockManager::blockedUrlFromPageUrl(proceed), url);
 
+    // the "refresh now" variant of the interstitial round-trips the
+    // same way: one percent-encoded blocked URL, one Osza-owned flag,
+    // and neither flag answers for the other
+    const QUrl refresh = ThreatBlockManager::refreshListPageUrl(url);
+    QVERIFY(ThreatBlockManager::isRefreshListPageUrl(refresh));
+    QVERIFY(!ThreatBlockManager::isProceedPageUrl(refresh));
+    QCOMPARE(ThreatBlockManager::blockedUrlFromPageUrl(refresh), url);
+    QVERIFY(!ThreatBlockManager::isRefreshListPageUrl(proceed));
+    QVERIFY(!ThreatBlockManager::isRefreshListPageUrl(ThreatBlockManager::blockPageUrl(url)));
+
     // the URL of an interstitial holding an encoded '&'
     const QUrl amp(QSL("http://amp.example/x?a=1&b=2"));
     QCOMPARE(ThreatBlockManager::blockedUrlFromPageUrl(ThreatBlockManager::blockPageUrl(amp, true)), amp);
@@ -926,6 +937,116 @@ void SecurityToolsTest::threatBlockPageUrlTest()
     QVERIFY(!ThreatBlockManager::blockedUrlFromPageUrl(QUrl(QSL("osza:threatblocked"))).isValid());
     QVERIFY(!ThreatBlockManager::blockedUrlFromPageUrl(QUrl(QSL("http://bad.example/"))).isValid());
     QVERIFY(!ThreatBlockManager::isProceedPageUrl(QUrl(QSL("osza:threatblocked?url=http%3A%2F%2Fx.example%2F"))));
+}
+
+void SecurityToolsTest::threatBlockListUpdateStateTest()
+{
+    // The blocklist update lifecycle as the surfaces report it: the
+    // relative age of the list, the staleness judgment (the same one
+    // the manager's own timer refreshes through), the remembered
+    // failure of the last refresh, and the "refresh now" action the
+    // interstitial carries when the evidence is due or failed. All
+    // states are driven without the network: a fresh list through
+    // applyListData(), a failed refresh through an invalid source,
+    // a stale list through a hand-written list file with an old
+    // "# updated:" header.
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    // the age of a list update is spoken in relative terms, and the
+    // buckets are what the phrasing promises (the plural forms are
+    // the locale's business, so the assertions pin the bucket word,
+    // not the exact count spelling)
+    QCOMPARE(ThreatBlockManager::describeListAge(QDateTime::currentDateTimeUtc()), QSL("less than a minute ago"));
+    QCOMPARE(ThreatBlockManager::describeListAge(QDateTime()), QSL("unknown date"));
+
+    const QString minuteAge = ThreatBlockManager::describeListAge(QDateTime::currentDateTimeUtc().addSecs(-90));
+    QVERIFY(minuteAge.contains(QSL("minute")));
+    QVERIFY(!minuteAge.contains(QSL("less than a minute")));
+    QVERIFY(!minuteAge.contains(QSL("hour")));
+    QVERIFY(!minuteAge.contains(QSL("day")));
+
+    const QString hourAge = ThreatBlockManager::describeListAge(QDateTime::currentDateTimeUtc().addSecs(-3 * 60 * 60));
+    QVERIFY(hourAge.contains(QSL("hour")));
+    QVERIFY(!hourAge.contains(QSL("minute")));
+    QVERIFY(!hourAge.contains(QSL("day")));
+
+    const QString dayAge = ThreatBlockManager::describeListAge(QDateTime::currentDateTimeUtc().addDays(-3));
+    QVERIFY(dayAge.contains(QSL("day")));
+    QVERIFY(!dayAge.contains(QSL("hour")));
+
+    // a list that just landed is not due for a refresh; the failure
+    // of the last refresh is remembered until a retry succeeds, and
+    // the interstitial answers for both
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    QVERIFY(!manager->isListStale());
+    QVERIFY(manager->lastUpdateError().isEmpty());
+
+    const QUrl blocked(QSL("http://bad.example/payload?x=1"));
+    const QString freshPage = manager->interstitialPage(blocked);
+    QVERIFY(freshPage.contains(QSL("updated less than a minute ago")));
+    QVERIFY(!freshPage.contains(QSL("the last update failed")));
+    QVERIFY(!freshPage.contains(QSL("update=1")));
+
+    const QString sourceBefore = manager->sourceUrl();
+    manager->setSourceUrl(QSL("ftp://blocklists.example/list.txt"));
+    QSignalSpy failedSpy(manager, &ThreatBlockManager::updateFailed);
+    manager->updateNow();
+    QCOMPARE(failedSpy.count(), 1);
+    QVERIFY(!manager->isUpdating());
+    QVERIFY(!manager->lastUpdateError().isEmpty());
+
+    // the failed refresh leaves the list in place - the row names the
+    // failure next to the age of the evidence, and offers the retry
+    QVERIFY(manager->isListLoaded());
+    QVERIFY(!manager->isListStale());
+    const QString failedPage = manager->interstitialPage(blocked);
+    QVERIFY(failedPage.contains(QSL("the last update failed")));
+    QVERIFY(failedPage.contains(QSL("Refresh the blocklist now")));
+
+    const QString refreshHref = ThreatBlockManager::refreshListPageUrl(blocked).toString(QUrl::FullyEncoded);
+    QVERIFY(failedPage.contains(refreshHref.replace(QLatin1Char('&'), QSL("&amp;"))));
+    // non-circular: the blocked URL rides as one percent-encoded
+    // value, Osza's own separator the only raw '&' in the address
+    QVERIFY(failedPage.contains(QString::fromLatin1(QUrl::toPercentEncoding(blocked.toString())) + QSL("&amp;update=1")));
+
+    // a successful refresh clears the failure - the state ends with
+    // the success the surfaces report
+    manager->setSourceUrl(sourceBefore);
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    QVERIFY(manager->lastUpdateError().isEmpty());
+    const QString recoveredPage = manager->interstitialPage(blocked);
+    QVERIFY(!recoveredPage.contains(QSL("the last update failed")));
+    QVERIFY(!recoveredPage.contains(QSL("update=1")));
+
+    // a list older than the refresh interval is due, exactly the
+    // judgment checkForUpdate() makes - proven here through a
+    // hand-written list file whose "# updated:" header is old, the
+    // same file a real profile would carry after a long offline
+    // stretch
+    QFile listFile(DataPaths::currentProfilePath() + QSL("/threatblock-hosts.txt"));
+    QVERIFY(listFile.open(QIODevice::WriteOnly | QIODevice::Text));
+    listFile.write(QByteArray("# Osza Browser threat blocklist\n"
+                              "# source: https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts\n"
+                              "# updated: 2020-01-01T00:00:00\n"
+                              "stale.example\n"));
+    listFile.close();
+
+    ThreatBlockManager staleManager;
+    staleManager.loadSettings();
+    QCOMPARE(staleManager.hostCount(), 1);
+    QVERIFY(staleManager.isListLoaded());
+    QVERIFY(staleManager.isListStale());
+    QCOMPARE(staleManager.lastUpdate().date(), QDate(2020, 1, 1));
+    QVERIFY(ThreatBlockManager::describeListAge(staleManager.lastUpdate()).contains(QSL("day")));
+
+    const QUrl staleBlocked(QSL("http://stale.example/payload"));
+    const QString stalePage = staleManager.interstitialPage(staleBlocked);
+    QVERIFY(stalePage.contains(QSL("Refresh the blocklist now")));
+    QVERIFY(stalePage.contains(QString::fromLatin1(QUrl::toPercentEncoding(staleBlocked.toString())) + QSL("&amp;update=1")));
+
+    // leave the shared manager clean for the other tests
+    manager->applyListData(QByteArray());
+    manager->loadSettings();
 }
 
 void SecurityToolsTest::threatBlockInterstitialTest()
