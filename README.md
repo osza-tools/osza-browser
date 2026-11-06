@@ -53,7 +53,12 @@ and KDE contributors for their work.
   and a "Refresh the blocklist now" action - a link on the warning
   page, a button in the padlock menu - renews the list in place
   whenever it is due, so a stale warning never has to be taken on
-  faith; the security sidebar and the self-test page speak the same
+  faith; revoking a "proceed anyway" renews the evidence as
+  protection resumes, and while a refresh runs - from the timer,
+  the padlock menu, the warning page's link or that revoke - the
+  location bar's site icon breathes with a soft cyan pulse until
+  the fresh list lands or the failure is named; the security
+  sidebar and the self-test page speak the same
   states live). The
   whole suite can be backed up and moved: the dashboard's
   "Import / Export" button (also in Preferences → Privacy → Security
@@ -127,9 +132,11 @@ and KDE contributors for their work.
   carries a small amber badge whenever the current site has a
   per-site exception - an HTTPS-Only exclusion, a fingerprint or
   GPC opt-out exclusion, or a threat-block "proceed anyway" paused
-  for the session - and its tooltip names the relaxed protections;
-  clicking the icon opens the padlock menu, where each tool's row
-  states and changes the site's treatment. Everything
+  for the session - and its tooltip names the relaxed protections,
+  while a blocklist refresh in flight breathes a soft cyan pulse
+  behind the glyph, named in the tooltip, until the fresh evidence
+  lands; clicking the icon opens the padlock menu, where each
+  tool's row states and changes the site's treatment. Everything
   lives in Preferences → Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
 - **Everything in its place** — bookmarks, history, downloads and RSS

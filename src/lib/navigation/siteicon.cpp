@@ -34,13 +34,14 @@ SiteIcon::SiteIcon(LocationBar *parent)
     , m_window(nullptr)
     , m_locationBar(parent)
     , m_view(nullptr)
+    , m_listUpdating(false)
 {
     setObjectName("locationbar-siteicon");
     setToolButtonStyle(Qt::ToolButtonIconOnly);
     setCursor(Qt::ArrowCursor);
-    // The default tooltip - the same string setRelaxedProtections()
-    // restores when the badge goes away, so it has exactly one
-    // translation context.
+    // The default tooltip - the string applyToolTip() restores when
+    // neither the badge nor the pulse is in play, so it has exactly
+    // one translation context.
     setToolTip(tr("Show information about this page"));
     setFocusPolicy(Qt::NoFocus);
 
@@ -48,6 +49,14 @@ SiteIcon::SiteIcon(LocationBar *parent)
     m_updateTimer->setInterval(100);
     m_updateTimer->setSingleShot(true);
     connect(m_updateTimer, &QTimer::timeout, this, &SiteIcon::updateIcon);
+
+    // The breath: mid-cycle at the start (the indicator appears
+    // decisively, then ebbs and swells), one phase step every tick,
+    // recompositing through the one path every icon change takes.
+    m_pulseTimer = new QTimer(this);
+    m_pulseTimer->setInterval(80);
+    m_pulsePhase = 0.5;
+    connect(m_pulseTimer, &QTimer::timeout, this, &SiteIcon::advancePulse);
 }
 
 void SiteIcon::setBrowserWindow(BrowserWindow *window)
@@ -68,12 +77,7 @@ void SiteIcon::setRelaxedProtections(const QStringList &protections)
 
     m_relaxedProtections = protections;
 
-    if (m_relaxedProtections.isEmpty()) {
-        setToolTip(tr("Show information about this page"));
-    }
-    else {
-        setToolTip(relaxedProtectionsToolTip(m_relaxedProtections, true));
-    }
+    applyToolTip();
 
     // The base icon is unchanged: only the badge rides on it, so
     // there is nothing to debounce - the new state shows at once.
@@ -83,6 +87,69 @@ void SiteIcon::setRelaxedProtections(const QStringList &protections)
 QStringList SiteIcon::relaxedProtections() const
 {
     return m_relaxedProtections;
+}
+
+void SiteIcon::setListUpdating(bool updating)
+{
+    if (m_listUpdating == updating) {
+        return;
+    }
+
+    m_listUpdating = updating;
+
+    if (m_listUpdating) {
+        // Mid-breath at the onset: the glow arrives at its bright
+        // center and ebbs from there, a decisive appearance rather
+        // than a fade-in.
+        m_pulsePhase = 0.5;
+        m_pulseTimer->start();
+    }
+    else {
+        m_pulseTimer->stop();
+    }
+
+    applyToolTip();
+
+    // No debounce here either: the pulse is not the site's state
+    // but the browser's activity, and it begins and ends at the
+    // moment the manager says it does.
+    updateIcon();
+}
+
+bool SiteIcon::listUpdating() const
+{
+    return m_listUpdating;
+}
+
+void SiteIcon::advancePulse()
+{
+    m_pulsePhase += 0.08;
+
+    if (m_pulsePhase > 1.0) {
+        m_pulsePhase -= 1.0;
+    }
+
+    updateIcon();
+}
+
+void SiteIcon::applyToolTip()
+{
+    // The tooltip of the moment: the standing per-site state first
+    // (the relaxed protections, with the review hint), then the
+    // pulse's note while a refresh runs - the two can speak side by
+    // side, an exception standing while its evidence is renewed -
+    // and the plain default when neither is in play.
+    QStringList parts;
+
+    if (!m_relaxedProtections.isEmpty()) {
+        parts.append(relaxedProtectionsToolTip(m_relaxedProtections, true));
+    }
+
+    if (m_listUpdating) {
+        parts.append(listUpdatingToolTip());
+    }
+
+    setToolTip(parts.isEmpty() ? tr("Show information about this page") : parts.join(QLatin1String(" ")));
 }
 
 void SiteIcon::setIcon(const QIcon &icon)
@@ -112,7 +179,7 @@ void SiteIcon::popupClosed()
 
 QIcon SiteIcon::composeBadgeIcon(const QIcon &icon) const
 {
-    if (m_relaxedProtections.isEmpty()) {
+    if (m_relaxedProtections.isEmpty() && !m_listUpdating) {
         return icon;
     }
 
@@ -125,15 +192,27 @@ QIcon SiteIcon::composeBadgeIcon(const QIcon &icon) const
     // pixmap's device pixel ratio is kept, so a high-dpi source
     // (32 px at 2x) gets a proportionally sized dot through the
     // same code path - and wherever the style moves or scales the
-    // icon, the badge rides on it.
+    // icon, the badge rides on it. The pulse is painted first, as
+    // the glow behind the glyph; the corner badge after, on top -
+    // the two speak of different things and never cover each
+    // other.
     QPixmap out(base.size());
     out.setDevicePixelRatio(base.devicePixelRatio());
     out.fill(Qt::transparent);
 
     QPainter p(&out);
     p.setRenderHint(QPainter::Antialiasing, true);
+
+    if (m_listUpdating) {
+        paintUpdatePulse(&p, QRectF(0, 0, 16, 16), m_pulsePhase);
+    }
+
     p.drawPixmap(0, 0, base);
-    paintRelaxedBadge(&p, QRectF(0, 0, 16, 16));
+
+    if (!m_relaxedProtections.isEmpty()) {
+        paintRelaxedBadge(&p, QRectF(0, 0, 16, 16));
+    }
+
     p.end();
 
     return QIcon(out);
@@ -169,6 +248,43 @@ void SiteIcon::paintRelaxedBadge(QPainter *painter, const QRectF &iconArea)
     painter->drawEllipse(dotRect);
 }
 
+void SiteIcon::paintUpdatePulse(QPainter *painter, const QRectF &iconArea, qreal phase)
+{
+    // The suite's cyan, calmed for chrome: where amber speaks a
+    // standing exception and the warning page speaks red, a
+    // renewal in flight is the browser doing work for the user
+    // right now - the same quiet glow the security pages carry,
+    // scaled down to the location bar.
+    const QColor pulseColor(0x00, 0xc8, 0xa8);
+
+    // The breath: phase runs 0..1 and the brightness is the
+    // triangle wave of it - dim at the edges, bright at the
+    // center - so the halo swells and ebbs rather than blinks. All
+    // geometry derives from the icon area's width, so the 16 px
+    // composite and the popup's larger icon area breathe at their
+    // own scale through the same numbers.
+    const qreal breathe = 1.0 - qAbs(2.0 * phase - 1.0);
+
+    const qreal width = iconArea.width();
+    const qreal halo = width * (0.82 + 0.18 * breathe) / 2.0;
+    const QPointF center = iconArea.center();
+    const QRectF haloRect(center.x() - halo, center.y() - halo, halo * 2.0, halo * 2.0);
+
+    painter->setRenderHint(QPainter::Antialiasing, true);
+
+    // The halo behind the glyph, breathing with the phase; the rim
+    // at its edge a touch stronger, so the breath reads on light
+    // backgrounds too.
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor(pulseColor.red(), pulseColor.green(), pulseColor.blue(), 42 + 112 * breathe));
+    painter->drawEllipse(haloRect);
+
+    painter->setPen(QPen(QColor(pulseColor.red(), pulseColor.green(), pulseColor.blue(), 70 + 90 * breathe),
+                         qMax(1.0, width * 0.7 / 16.0)));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawEllipse(haloRect);
+}
+
 QString SiteIcon::relaxedProtectionsToolTip(const QStringList &protections, bool clickable)
 {
     const QString names = protections.join(QLatin1String(", "));
@@ -178,6 +294,13 @@ QString SiteIcon::relaxedProtectionsToolTip(const QStringList &protections, bool
     }
 
     return tr("Protections are relaxed for this site: %1.").arg(names);
+}
+
+QString SiteIcon::listUpdatingToolTip()
+{
+    // One string, one context: both surfaces' tooltips name the
+    // pulse through it, wherever the glow appears.
+    return tr("The malicious-site blocklist is being refreshed now.");
 }
 
 void SiteIcon::contextMenuEvent(QContextMenuEvent* e)

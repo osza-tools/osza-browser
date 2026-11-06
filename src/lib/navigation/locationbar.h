@@ -85,6 +85,12 @@ private Q_SLOTS:
 
     void updateSiteIcon();
     void updateProtectionsBadge();
+
+    // The blocklist update-in-progress indicator on the site icon:
+    // driven by the manager's lifecycle signals (updateStarted,
+    // listUpdated, updateFailed) rather than the page, because the
+    // refresh is browser-wide activity, not this site's state.
+    void updateBlocklistIndicator();
     void updatePlaceHolderText();
 
     void setPrivacyState(bool state);

@@ -48,6 +48,12 @@ public Q_SLOTS:
     void showSiteIcon();
     void setPrivacyState(bool state);
 
+private Q_SLOTS:
+    // The blocklist update-in-progress indicator on this bar's icon:
+    // driven by the threat-block manager's lifecycle signals, the
+    // same pulse the main windows' location bars carry.
+    void updateBlocklistIndicator();
+
 private:
     PopupWebView* m_view;
 

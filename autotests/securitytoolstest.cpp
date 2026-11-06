@@ -691,6 +691,73 @@ void SecurityToolsTest::locationBarProtectionsBadgeTest()
     delete window;
 }
 
+void SecurityToolsTest::locationBarListUpdatePulseTest()
+{
+    // The update-in-progress indicator end to end, in a real
+    // window's location bar: while a blocklist refresh runs, the
+    // site icon breathes - a cyan glow composited behind the glyph,
+    // named in the tooltip - and the icon returns to itself the
+    // moment the refresh ends. Driven directly on the icon through
+    // the same setter the bar's manager-driven slot calls (the
+    // manager's lifecycle cannot be held mid-flight here without a
+    // network); the wiring that calls it is pinned structurally by
+    // tools/security/verify_locationbar_badge.py.
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the location bar needs its view.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    auto *bar = window->findChild<LocationBar*>();
+    QVERIFY(bar);
+    auto *siteIcon = bar->findChild<SiteIcon*>(QSL("locationbar-siteicon"));
+    QVERIFY(siteIcon);
+
+    // A clean secured site, so both snapshots below carry the same
+    // base icon (the padlock), making the image comparisons sound.
+    const QString page = QSL("<html><body></body></html>");
+    window->weView()->setHtml(page, QUrl(QSL("https://pulse.example/")));
+    QTRY_COMPARE(window->weView()->url().toString(), QSL("https://pulse.example/"));
+    QTRY_VERIFY(bar->property("secured").toBool());
+    QTRY_COMPARE(siteIcon->relaxedProtections(), QStringList());
+
+    // at rest: no pulse, the default tooltip, the plain padlock
+    QVERIFY(!siteIcon->listUpdating());
+    const QImage iconAtRest = siteIcon->icon().pixmap(16).toImage();
+    QVERIFY(siteIcon->toolTip().contains(QSL("Show information about this page")));
+    QVERIFY(!siteIcon->toolTip().contains(QSL("blocklist")));
+
+    // the refresh begins: the glow arrives at once (mid-breath, the
+    // decisive onset), the icon is no longer the plain padlock, and
+    // the tooltip names what is happening
+    siteIcon->setListUpdating(true);
+    QVERIFY(siteIcon->listUpdating());
+    const QImage iconWithPulse = siteIcon->icon().pixmap(16).toImage();
+    QVERIFY(iconWithPulse != iconAtRest);
+    QVERIFY(siteIcon->toolTip().contains(SiteIcon::listUpdatingToolTip()));
+
+    // the breath moves: ticks later the composite has moved with it
+    // - still a glow, still over the same padlock
+    QTest::qWait(200);
+    QVERIFY(siteIcon->listUpdating());
+    QVERIFY(siteIcon->icon().pixmap(16).toImage() != iconAtRest);
+
+    // an unchanged value is a no-op, like the badge's setter
+    siteIcon->setListUpdating(true);
+    QVERIFY(siteIcon->listUpdating());
+
+    // the refresh ends: the glow leaves, the icon is itself again,
+    // the tooltip returns to the default
+    siteIcon->setListUpdating(false);
+    QVERIFY(!siteIcon->listUpdating());
+    QCOMPARE(siteIcon->icon().pixmap(16).toImage(), iconAtRest);
+    QVERIFY(siteIcon->toolTip().contains(QSL("Show information about this page")));
+    QVERIFY(!siteIcon->toolTip().contains(QSL("blocklist")));
+
+    delete window;
+}
+
 void SecurityToolsTest::threatBlockListParsingTest()
 {
     // URL-per-line feeds (comments and full URLs, like the classic
@@ -989,9 +1056,14 @@ void SecurityToolsTest::threatBlockListUpdateStateTest()
 
     const QString sourceBefore = manager->sourceUrl();
     manager->setSourceUrl(QSL("ftp://blocklists.example/list.txt"));
+    QSignalSpy startedSpy(manager, &ThreatBlockManager::updateStarted);
     QSignalSpy failedSpy(manager, &ThreatBlockManager::updateFailed);
     manager->updateNow();
     QCOMPARE(failedSpy.count(), 1);
+    // an attempt against an invalid source is still an attempt: the
+    // chrome hears it begin before it hears it fail - the location
+    // bar's pulse blinks once for it, then falls silent
+    QCOMPARE(startedSpy.count(), 1);
     QVERIFY(!manager->isUpdating());
     QVERIFY(!manager->lastUpdateError().isEmpty());
 

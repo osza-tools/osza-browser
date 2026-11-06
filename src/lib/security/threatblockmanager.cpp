@@ -607,6 +607,16 @@ void ThreatBlockManager::fetchList()
         m_lastError.clear();
     }
 
+    // The attempt has begun: announced outside the mutex (a slot
+    // may ask the state back through the self-locking queries), and
+    // before the source is even validated - an attempt against an
+    // invalid source is still an attempt, and the chrome's pulse
+    // blinks once for it before updateFailed ends it. Emitted from
+    // this one site only: every surface that wants to witness a
+    // renewal from its start - the location bar's pulse, a menu
+    // that stays open - hears it here.
+    Q_EMIT updateStarted();
+
     const QUrl url(sourceUrl());
 
     if (!url.isValid() || (url.scheme() != QSL("https") && url.scheme() != QSL("http") && url.scheme() != QSL("file"))) {

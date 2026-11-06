@@ -183,6 +183,17 @@ public:
 
 Q_SIGNALS:
     void enabledChanged(bool enabled);
+
+    // The start of the update lifecycle its two ends complete:
+    // emitted exactly when a refresh attempt actually begins (not
+    // when one is already running - fetchList() declines those),
+    // after the in-flight flag is set and outside the mutex, so a
+    // slot may safely ask the state back. The chrome that carries
+    // no manager of its own - the location bar's update-in-progress
+    // pulse - hears the whole lifecycle through this and the two
+    // end signals, without polling.
+    void updateStarted();
+
     void listUpdated(int hostCount);
     void updateFailed(const QString &error);
 

@@ -7,6 +7,51 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (21): the blocklist update indicator in the
+  location bar - the renewal is witnessed in the chrome. Every
+  surface that spoke the blocklist's update lifecycle spoke it after
+  the fact or behind a menu: the warning page said "updating now",
+  the padlock row said "being refreshed now", the sidebar ticked -
+  but the location bar, the one surface always in view, said nothing
+  while a refresh ran, and the browser stayed silent about security
+  work being done on the user's behalf. A refresh now pulses there:
+  while one runs, the site icon (and the popup windows' location
+  bars) breathes - a soft cyan halo behind the glyph, swelling and
+  ebbing through a triangle-wave phase rather than blinking, the
+  suite's calm voice where the amber badge speaks a standing
+  exception and the warning page speaks red - and the tooltip names
+  it ("The malicious-site blocklist is being refreshed now."). The
+  pulse is one drawing code (SiteIcon::paintUpdatePulse), composited
+  behind whatever icon the bar currently shows, so a standing
+  exception's amber dot and a renewal in flight speak side by side,
+  at the 16 px scale and the popup's larger one; the breath is
+  stepped by an 80 ms timer through the one recomposition path every
+  other icon change takes, and the tooltip is composed in one place
+  so the two setters can never disagree about what the icon says.
+  The wiring: a new ThreatBlockManager::updateStarted() completes
+  the update lifecycle's signals - emitted exactly where an attempt
+  actually begins (outside the mutex, so a slot may safely ask the
+  state back; before the source is even weighed, so an attempt
+  against an invalid source is still an announced attempt that
+  updateFailed immediately ends) - and both location bars connect it
+  with listUpdated and updateFailed to one slot that asks the same
+  mutex-guarded isUpdating() every other surface reports through, so
+  the pulse can never disagree with the rows beneath it. And the one
+  moment the chrome most needs it: revoking a "proceed anyway"
+  ("Block this site again" in the padlock menu) now renews the
+  evidence it re-weighs with - the refresh starts beside the reload
+  (never in test mode, the rule every update trigger follows), the
+  re-served warning names it in flight, and the badge breathes until
+  the list lands or the failure is named. Verified by the extended
+  offline tools/security/verify_locationbar_badge.py (one drawing
+  code for both marks and both surfaces, the breath's shape, the
+  lifecycle wiring in both bars, the one tooltip composition, the
+  no-op discipline) and by the new locationBarListUpdatePulseTest
+  autotest, which drives the pulse end to end in a real window's
+  location bar - the glow arriving with its tooltip, the breath
+  moving, the icon returning to itself when the refresh ends - while
+  the lifecycle test now pins updateStarted firing exactly once for
+  an attempt that fails at once.
 - Security tools (20): the blocklist update UX - the evidence keeps
   its freshness visible, and can be renewed in place. The
   interstitial's "why is this site flagged?" disclosure and the

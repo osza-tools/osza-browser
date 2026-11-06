@@ -19,7 +19,11 @@
 #      locked and documented; m_lastError is set before every
 #      updateFailed emission, cleared when a list lands and when a
 #      new attempt starts; m_updating became mutex-guarded shared
-#      state (the interstitial reads it on the IO thread).
+#      state (the interstitial reads it on the IO thread). The
+#      lifecycle now speaks its start too: updateStarted() is
+#      declared, emitted exactly where an attempt actually begins
+#      (outside the mutex, before the source is weighed), and the
+#      chrome hears the whole renewal through it.
 #
 #   3. The interstitial's list-state row: one snapshot (exactly one
 #      lock), the age through describeListAge() (relative, the
@@ -38,7 +42,11 @@
 #      row's states speak the same age and failure, the button
 #      starts the refresh and keeps the menu open (the per-site
 #      button still closes), and the manager's own signals re-
-#      render the row while the menu is open.
+#      render the row while the menu is open. Revoking a "proceed
+#      anyway" through the per-site button now renews the evidence
+#      the re-judgment is made against - updateNow() beside the
+#      reload, never in test mode, the rule every update trigger
+#      follows.
 #
 #   6. The other status surfaces keep the voice: the sidebar and
 #      the self-test page name a failed refresh and speak the
@@ -52,7 +60,11 @@
 #   8. The autotests carry the feature: threatBlockListUpdateState-
 #      Test pins the buckets, the staleness, the remembered
 #      failure and its recovery, the stale-file path and the page
-#      hrefs; the page-URL test pins the refresh round trip.
+#      hrefs, and now the start signal (an attempt against an
+#      invalid source is still an attempt); the page-URL test pins
+#      the refresh round trip; the new locationBarListUpdatePulse-
+#      Test drives the location bar's update-in-progress pulse
+#      end to end.
 #
 #   9. Qt keyword discipline in the touched headers, the qrc still
 #      ships the page, and the README and CHANGELOG tell the user.
@@ -212,6 +224,18 @@ check("isUpdating() now reads the flag under the mutex (the interstitial asks fr
 check("the in-flight flag is set and cleared under the lock",
       fetch is not None and "m_updating = true;" in fetch and "m_updating = false;" in fetch)
 
+check("updateStarted is declared in the header with its contract (exactly when an attempt actually begins)",
+      "void updateStarted();" in manager_h and "attempt actually begins" in manager_h)
+check("updateStarted is emitted from exactly the one site where an attempt begins",
+      manager_cpp.count("Q_EMIT updateStarted(") == 1)
+check("the start is announced outside the mutex and before the source is weighed",
+      fetch is not None and "Q_EMIT updateStarted();" in fetch
+      and fetch.index("Q_EMIT updateStarted();") > fetch.index("m_lastError.clear();")
+      and fetch.index("Q_EMIT updateStarted();") < fetch.index("url.isValid()"))
+check("an attempt already running starts nothing (the declined fetch emits nothing)",
+      fetch is not None and fetch.find("if (m_updating) {") > -1
+      and fetch.find("if (m_updating) {") < fetch.find("Q_EMIT updateStarted();"))
+
 # ------------------------------------------------------------------
 # 3. The interstitial's list-state row
 # ------------------------------------------------------------------
@@ -309,6 +333,10 @@ check("the update button starts the refresh and keeps the menu open (the row wit
       and "updateThreatBlockState();" in update_click and "close()" not in update_click)
 check("the per-site button still takes effect and closes",
       site_click is not None and "close();" in site_click)
+check("revoking a \"proceed anyway\" renews the evidence it re-weighs with (never in test mode)",
+      site_click is not None and "removeSessionAllow(url.host());" in site_click
+      and "updateNow();" in site_click and "isTestModeEnabled()" in site_click
+      and site_click.index("updateNow();") > site_click.index("removeSessionAllow(url.host());"))
 
 ctor = siteinfo_cpp[:siteinfo_cpp.find("SiteInfoWidget::~SiteInfoWidget")]
 check("the manager's own signals re-render the row while the menu is open",
@@ -422,6 +450,11 @@ check("the test restores the state it touched",
 check("the page-URL test pins the refresh round trip and the flags' disjointness",
       "refreshListPageUrl(url)" in url_test and "isRefreshListPageUrl(refresh)" in url_test
       and "isProceedPageUrl(refresh)" in url_test)
+check("the lifecycle test pins the start signal (an invalid source is still an attempt)",
+      "startedSpy" in state_test and "QCOMPARE(startedSpy.count(), 1)" in state_test)
+check("the pulse widget test is declared and defined",
+      "void locationBarListUpdatePulseTest();" in autotest_h
+      and "void SecurityToolsTest::locationBarListUpdatePulseTest()" in autotest_cpp)
 
 # ------------------------------------------------------------------
 # 9. Build discipline and docs

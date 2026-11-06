@@ -38,6 +38,7 @@
 #include "networkmanager.h"
 #include "securitymanager.h"
 #include "securitysettingsporter.h"
+#include "threatblockmanager.h"
 
 #include <QTimer>
 #include <QMimeData>
@@ -110,6 +111,21 @@ LocationBar::LocationBar(QWidget *parent)
     // can change without this bar seeing an urlChanged or a load
     // (an HTTPS-Only exception on an https page does not reload).
     connect(m_siteIcon, &SiteIcon::siteInfoClosed, this, &LocationBar::updateProtectionsBadge);
+
+    // The blocklist refresh is browser-wide activity, and this bar
+    // is where it becomes visible: the padlock badge breathes while
+    // a refresh runs - wherever it started (the manager's own
+    // timer, the padlock menu's renewal button, the warning page's
+    // "refresh now" link, or the revoke of a "proceed anyway") -
+    // and falls silent the moment the evidence lands or the failure
+    // is named. The manager's three lifecycle signals carry it end
+    // to end; the one query reads the same mutex-guarded in-flight
+    // flag every other surface reports through.
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    connect(threatBlockManager, &ThreatBlockManager::updateStarted, this, &LocationBar::updateBlocklistIndicator);
+    connect(threatBlockManager, &ThreatBlockManager::listUpdated, this, &LocationBar::updateBlocklistIndicator);
+    connect(threatBlockManager, &ThreatBlockManager::updateFailed, this, &LocationBar::updateBlocklistIndicator);
+    updateBlocklistIndicator();
 
     loadSettings();
 
@@ -515,6 +531,18 @@ void LocationBar::updateProtectionsBadge()
     }
 
     m_siteIcon->setRelaxedProtections(protections);
+}
+
+void LocationBar::updateBlocklistIndicator()
+{
+    // The one query: the manager's own in-flight flag, read through
+    // the same mutex-guarded isUpdating() the warning page, the
+    // padlock row and the sidebar report through - so the pulse and
+    // the states below it can never disagree about whether a
+    // refresh is running. The per-site state plays no part here:
+    // the pulse rides whatever icon the bar currently shows, the
+    // browser's activity over the site's identity.
+    m_siteIcon->setListUpdating(mApp->networkManager()->threatBlockManager()->isUpdating());
 }
 
 void LocationBar::setPrivacyState(bool state)

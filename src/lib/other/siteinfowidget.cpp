@@ -486,8 +486,17 @@ void SiteInfoWidget::threatBlockButtonClicked()
     else if (manager->isSessionAllowed(url.host())) {
         // End the "proceed anyway" exception now, not at the next
         // restart - the reload lands on the interstitial again if
-        // the host is still listed.
+        // the host is still listed. And resuming the protection
+        // re-weighs the site, so the evidence is renewed on the
+        // spot: the reload runs against the list in place while the
+        // refresh runs beside it (the re-served warning names it in
+        // flight, the location bar's badge breathing until it lands
+        // or the failure is named), never in test mode - the rule
+        // every update trigger follows.
         manager->removeSessionAllow(url.host());
+        if (!mApp->isTestModeEnabled()) {
+            manager->updateNow();
+        }
         m_window->weView()->reload();
     }
 

@@ -25,16 +25,30 @@
 #include "autofillicon.h"
 #include "webpage.h"
 #include "mainapplication.h"
+#include "networkmanager.h"
 #include "securitymanager.h"
 #include "securitysettingsporter.h"
+#include "threatblockmanager.h"
 
 #include <QPainter>
 #include <QRectF>
+#include <QTimer>
 
 class OSZA_EXPORT PopupSiteIcon : public QWidget
 {
 public:
-    explicit PopupSiteIcon(QWidget* parent = nullptr) : QWidget(parent) { }
+    explicit PopupSiteIcon(QWidget* parent = nullptr) : QWidget(parent)
+        , m_listUpdating(false)
+        , m_pulsePhase(0.5)
+    {
+        // The breath's driver, the same cadence the location bar's
+        // composite breathes at: one phase step per tick, repainting
+        // this bar's own icon area.
+        m_pulseTimer = new QTimer(this);
+        m_pulseTimer->setInterval(80);
+        connect(m_pulseTimer, &QTimer::timeout, this, &PopupSiteIcon::advancePulse);
+    }
+
     void setIcon(const QIcon &icon) {
         m_icon = QIcon(icon.pixmap(16));
         update();
@@ -51,19 +65,77 @@ public:
             return;
         }
         m_relaxedProtections = protections;
-        setToolTip(protections.isEmpty()
-                       ? QString()
-                       : SiteIcon::relaxedProtectionsToolTip(protections, false));
+        refreshToolTip();
+        update();
+    }
+
+    // The same update-in-progress pulse the location bar composites
+    // into its site icon, breathing behind this bar's own icon -
+    // one drawing code, two surfaces, no drift. Set from the
+    // manager's lifecycle signals like the location bar sets it;
+    // an unchanged value is a no-op.
+    void setListUpdating(bool updating) {
+        if (m_listUpdating == updating) {
+            return;
+        }
+        m_listUpdating = updating;
+
+        if (m_listUpdating) {
+            m_pulsePhase = 0.5;
+            m_pulseTimer->start();
+        }
+        else {
+            m_pulseTimer->stop();
+        }
+
+        refreshToolTip();
         update();
     }
 
 private:
     QIcon m_icon;
     QStringList m_relaxedProtections;
+    bool m_listUpdating;
+    QTimer *m_pulseTimer;
+    qreal m_pulsePhase;
+
+    void advancePulse() {
+        m_pulsePhase += 0.08;
+
+        if (m_pulsePhase > 1.0) {
+            m_pulsePhase -= 1.0;
+        }
+
+        update();
+    }
+
+    // The tooltip of the moment, the same composition the location
+    // bar's icon speaks: the standing exception first, then the
+    // pulse's note while a refresh runs; this bar has no padlock
+    // menu and no default tooltip to restore.
+    void refreshToolTip() {
+        QStringList parts;
+
+        if (!m_relaxedProtections.isEmpty()) {
+            parts.append(SiteIcon::relaxedProtectionsToolTip(m_relaxedProtections, false));
+        }
+
+        if (m_listUpdating) {
+            parts.append(SiteIcon::listUpdatingToolTip());
+        }
+
+        setToolTip(parts.isEmpty() ? QString() : parts.join(QLatin1String(" ")));
+    }
 
     void paintEvent(QPaintEvent*) override {
         QPainter p(this);
+
+        if (m_listUpdating) {
+            SiteIcon::paintUpdatePulse(&p, QRectF(rect()), m_pulsePhase);
+        }
+
         m_icon.paint(&p, rect());
+
         if (!m_relaxedProtections.isEmpty()) {
             SiteIcon::paintRelaxedBadge(&p, QRectF(rect()));
         }
@@ -95,6 +167,17 @@ PopupLocationBar::PopupLocationBar(QWidget* parent)
 
     // Hide icons by default
     m_autofillIcon->hide();
+
+    // The blocklist refresh is browser-wide here too: the icon
+    // breathes behind this bar while it runs and falls silent when
+    // the evidence lands, the same pulse the main windows' location
+    // bars carry - the manager's three lifecycle signals, the same
+    // one in-flight query.
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    connect(threatBlockManager, &ThreatBlockManager::updateStarted, this, &PopupLocationBar::updateBlocklistIndicator);
+    connect(threatBlockManager, &ThreatBlockManager::listUpdated, this, &PopupLocationBar::updateBlocklistIndicator);
+    connect(threatBlockManager, &ThreatBlockManager::updateFailed, this, &PopupLocationBar::updateBlocklistIndicator);
+    updateBlocklistIndicator();
 }
 
 void PopupLocationBar::setView(PopupWebView* view)
@@ -168,4 +251,13 @@ void PopupLocationBar::setPrivacyState(bool state)
     // refreshing here means the icon is right as soon as the state
     // is, not only the next time the favicon changes.
     showSiteIcon();
+}
+
+void PopupLocationBar::updateBlocklistIndicator()
+{
+    // The one query, the same one the location bar asks: the
+    // manager's mutex-guarded in-flight flag, so this bar's pulse
+    // and the main windows' can never disagree about whether a
+    // refresh is running.
+    m_siteIcon->setListUpdating(mApp->networkManager()->threatBlockManager()->isUpdating());
 }
