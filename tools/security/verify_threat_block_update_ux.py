@@ -54,6 +54,16 @@
 #      handler answers the update address with updateNow() (never
 #      in test mode) and a re-serve of the same interstitial.
 #
+#   4b. The interstitial re-serves itself when a refresh lands: the
+#      page showing the standing warning (WebPage, tabs and popups
+#      alike) wires the manager's two lifecycle ends - a list
+#      landing and a failure - to a guarded reload of its own
+#      osza:threatblocked address, so the evidence re-weighs itself
+#      instead of the chrome's pulse ending being the cue to
+#      reload. The start is deliberately unwired (nothing the page
+#      can say changes), only the plain interstitial address moves,
+#      and the in-flight tail tells the user the page renews itself.
+#
 #   5. The padlock row: the .ui declares the update button, the
 #      row's states speak the same age and failure, the button
 #      starts the refresh and keeps the menu open (the per-site
@@ -107,6 +117,8 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 MANAGER_H = os.path.join(ROOT, "src", "lib", "security", "threatblockmanager.h")
 MANAGER_CPP = os.path.join(ROOT, "src", "lib", "security", "threatblockmanager.cpp")
 SCHEME_CPP = os.path.join(ROOT, "src", "lib", "network", "schemehandlers", "oszaschemehandler.cpp")
+WEBPAGE_H = os.path.join(ROOT, "src", "lib", "webengine", "webpage.h")
+WEBPAGE_CPP = os.path.join(ROOT, "src", "lib", "webengine", "webpage.cpp")
 SITEINFO_UI = os.path.join(ROOT, "src", "lib", "other", "siteinfowidget.ui")
 SITEINFO_H = os.path.join(ROOT, "src", "lib", "other", "siteinfowidget.h")
 SITEINFO_CPP = os.path.join(ROOT, "src", "lib", "other", "siteinfowidget.cpp")
@@ -128,6 +140,8 @@ def read(path):
 manager_h = read(MANAGER_H)
 manager_cpp = read(MANAGER_CPP)
 scheme_cpp = read(SCHEME_CPP)
+webpage_h = read(WEBPAGE_H)
+webpage_cpp = read(WEBPAGE_CPP)
 siteinfo_ui = read(SITEINFO_UI)
 siteinfo_h = read(SITEINFO_H)
 siteinfo_cpp = read(SITEINFO_CPP)
@@ -181,6 +195,7 @@ state_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListUpdateSt
 delta_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListDeltaTest()")
 movement_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListMovementSurfacesTest()")
 url_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockPageUrlTest()")
+re_serve_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockInterstitialReServeTest()")
 
 # ------------------------------------------------------------------
 # 1. One staleness judgment
@@ -285,8 +300,8 @@ check("the '%1 hosts, updated %2' wording keeps its shape",
 check("the not-downloaded honesty stays",
       'tr("not downloaded yet")' in interstitial)
 
-check("the in-flight tail is translated",
-      'tr(" - updating now")' in interstitial)
+check("the in-flight tail is translated, and tells the user the page renews itself when the update completes",
+      'tr(" - updating now; this page renews itself when the update completes")' in interstitial)
 check("the failure tail names the error, HTML-escaped",
       'tr(" - the last update failed: %1")' in interstitial
       and "m_lastError.toHtmlEscaped()" in interstitial)
@@ -392,6 +407,30 @@ check("the proceed branch is intact and stays the only allowlist path",
       scheme_cpp.count("allowForSession(blocked.host())") == 1)
 check("blockedUrlFromPageUrl still truncates at Osza's own separator (the round trip both flags ride)",
       "value.indexOf(QLatin1Char('&'))" in manager_cpp)
+
+# ------------------------------------------------------------------
+# 4b. The interstitial re-serves itself when a refresh lands
+# ------------------------------------------------------------------
+print("4b. the interstitial re-serves itself when a refresh lands")
+
+webpage_ctor = webpage_cpp[:webpage_cpp.find("WebPage::~WebPage")]
+re_serve = body(webpage_cpp, "void WebPage::reServeThreatInterstitial()")
+
+check("WebPage declares the re-serve slot beside its other private slots",
+      "void reServeThreatInterstitial();" in webpage_h)
+check("the page wires both ends of the lifecycle (a list landing, and a failure)",
+      "&ThreatBlockManager::listUpdated, this, &WebPage::reServeThreatInterstitial" in webpage_ctor
+      and "&ThreatBlockManager::updateFailed, this, &WebPage::reServeThreatInterstitial" in webpage_ctor)
+check("the start is deliberately unwired (it changes nothing the page can say)",
+      "updateStarted" not in webpage_ctor)
+check("the re-serve asks one cheap question of the page's own address (scheme and path)",
+      re_serve is not None and 'current.scheme() == QL1S("osza")' in re_serve
+      and 'current.path() == QL1S("threatblocked")' in re_serve)
+check("the re-serve is one reload of the address the warning lives at (nothing else moves)",
+      re_serve is not None and re_serve.count("reload();") == 1
+      and "navigate" not in re_serve)
+check("the wiring includes the manager's header (the connection names the class)",
+      '#include "threatblockmanager.h"' in webpage_cpp)
 
 # ------------------------------------------------------------------
 # 5. The padlock row
@@ -612,6 +651,26 @@ check("the movement-surfaces test pins the evidence row speaking the very same s
 check("the movement-surfaces test pins the shared silence after a restart",
       "diskManager" in movement_test and "listMovement().isEmpty()" in movement_test)
 
+check("the re-serve test is declared and defined",
+      "void threatBlockInterstitialReServeTest();" in autotest_h
+      and "void SecurityToolsTest::threatBlockInterstitialReServeTest()" in autotest_cpp)
+check("the re-serve test drives the real WebEngine (the warning stands on a real page)",
+      re_serve_test is not None and "WebPage page;" in re_serve_test
+      and "loadFinishedSpy" in re_serve_test
+      and 'QSL("http://blocked-reserve.example/payload")' in re_serve_test)
+check("the re-serve test pins the movement arriving on the re-served page",
+      'QSL("+2 hosts since the last refresh")' in re_serve_test
+      and "bodyText()" in re_serve_test)
+check("the re-serve test pins the re-weigh (a list without the host answers honestly)",
+      'QSL("not on the current blocklist")' in re_serve_test)
+check("the re-serve test pins the guard (a page that is not the warning never moves)",
+      "quietSpy" in re_serve_test and "QCOMPARE(quietSpy.count(), 0)" in re_serve_test)
+check("the re-serve test pins the failure's re-serve with its retry",
+      'QSL("the last update failed")' in re_serve_test
+      and "updateNow();" in re_serve_test
+      and 'QSL("Refresh the blocklist now")' in re_serve_test
+      and 'QSL("updating now")' in re_serve_test)
+
 # ------------------------------------------------------------------
 # 9. Build discipline and docs
 # ------------------------------------------------------------------
@@ -640,6 +699,10 @@ check("the CHANGELOG has a Security tools (22) entry for the movement on the evi
       "Security tools (22)" in changelog and "since the last refresh" in changelog)
 check("the CHANGELOG has a Security tools (23) entry for the movement joining the coverage row and the sidebar",
       "Security tools (23)" in changelog and "coverage row" in changelog)
+check("the CHANGELOG has a Security tools (24) entry for the interstitial re-serving itself",
+      "Security tools (24)" in changelog and "re-serve" in changelog)
+check("the README tells the user the warning page renews itself when a refresh lands",
+      "renews itself" in readme_flat)
 
 print()
 if failures:

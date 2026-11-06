@@ -884,7 +884,11 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
         // is blocked), but a hand-crafted address still gets an
         // honest row.
         if (m_updating) {
-            listInfo += tr(" - updating now");
+            // The tail is a promise the wiring in WebPage keeps: the
+            // page showing it re-requests its own address when the
+            // attempt ends, so the evidence never waits on the user
+            // noticing the chrome's pulse has stopped.
+            listInfo += tr(" - updating now; this page renews itself when the update completes");
         } else if (!m_lastError.isEmpty()) {
             listInfo += tr(" - the last update failed: %1").arg(m_lastError.toHtmlEscaped());
             wantsRefresh = true;

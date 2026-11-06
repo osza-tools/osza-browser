@@ -96,6 +96,7 @@ private Q_SLOTS:
     void renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus terminationStatus, int exitCode);
     void onCertificateError(QWebEngineCertificateError error);
     void onNewWindowRequested(QWebEngineNewWindowRequest &request);
+    void reServeThreatInterstitial();
 
 private:
     bool acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame) override;

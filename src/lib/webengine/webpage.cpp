@@ -37,6 +37,7 @@
 #include "javascript/externaljsobject.h"
 #include "tabwidget.h"
 #include "networkmanager.h"
+#include "threatblockmanager.h"
 #include "webhittestresult.h"
 #include "ui_jsconfirm.h"
 #include "ui_jsalert.h"
@@ -125,6 +126,24 @@ WebPage::WebPage(QObject* parent)
         selection.select(selection.certificates().at(0));
     });
     connect(this, &QWebEnginePage::newWindowRequested, this, &WebPage::onNewWindowRequested);
+
+    // The threat-block interstitial re-serves itself when the
+    // evidence it stands on moves: a blocklist refresh landing (or
+    // failing) while this page shows the osza:threatblocked warning
+    // re-requests the very address the warning lives at, and the
+    // scheme handler answers with the evidence re-weighed against
+    // the list now in place - the fresh size, age and movement, the
+    // entry that now matches (or the honesty of "not on the current
+    // blocklist"), or the named failure with its retry. The chrome's
+    // pulse ending no longer has to be the cue to reload the page:
+    // the warning keeps its own evidence fresh. The start of a
+    // refresh is deliberately not wired - it changes nothing the
+    // page can say (the location bar's pulse witnesses it), so a
+    // warning being read is not disturbed for a tail it will speak
+    // when the refresh ends.
+    auto *threatBlockManager = mApp->networkManager()->threatBlockManager();
+    connect(threatBlockManager, &ThreatBlockManager::listUpdated, this, &WebPage::reServeThreatInterstitial);
+    connect(threatBlockManager, &ThreatBlockManager::updateFailed, this, &WebPage::reServeThreatInterstitial);
 }
 
 WebPage::~WebPage()
@@ -612,6 +631,25 @@ void WebPage::onNewWindowRequested(QWebEngineNewWindowRequest &request)
 
     default:
         break;
+    }
+}
+
+void WebPage::reServeThreatInterstitial()
+{
+    // Only the page a warning stands on re-serves it; every other
+    // page asks one cheap question of its address and stays where it
+    // is. The reload re-requests the same osza:threatblocked address
+    // - the blocked URL rides it untouched, and the scheme handler
+    // re-weighs the evidence the page is built from against the list
+    // now in place (the reload re-runs the page build, never the
+    // block decision: an osza: address passes the interceptor by,
+    // exactly like the original serve). The proceed and update
+    // variants redirect away the moment they are requested, so the
+    // address a standing warning carries is always the plain one.
+    const QUrl current = url();
+
+    if (current.scheme() == QL1S("osza") && current.path() == QL1S("threatblocked")) {
+        reload();
     }
 }
 

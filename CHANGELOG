@@ -7,6 +7,45 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (24): the interstitial re-serves itself when a
+  refresh lands - the evidence re-weighs itself. A blocklist
+  refresh completing while the warning page stood changed nothing
+  on the page: the list-state row kept saying "updating now"
+  against a list that had already landed, the movement the
+  refresh brought went unspoken, and a site the new list no
+  longer flagged kept standing behind a warning its own evidence
+  no longer supported - the only cue that a reload would now say
+  something new was the location bar's pulse stopping, an
+  invitation to notice the chrome and press reload by hand. The
+  page now renews itself: every page showing the standing warning
+  (tab or popup - every page in the browser is a WebPage) wires
+  the manager's two lifecycle ends, a list landing and a failure,
+  to a guarded reload of its own osza:threatblocked address, and
+  the scheme handler answers with the evidence re-weighed against
+  the list now in place - the fresh size, age and movement, the
+  entry that now matches (or the honesty of "not on the current
+  blocklist"), or the named failure with its retry. The reload
+  re-runs the page build, never the block decision: an osza:
+  address passes the interceptor by, exactly like the original
+  serve, so the re-serve can only make the page more honest, never
+  less careful. The start of a refresh is deliberately unwired -
+  it changes nothing the page can say (the location bar's pulse
+  witnesses it), so a warning being read is not disturbed for a
+  tail it will speak when the refresh ends - and the in-flight
+  tail now tells the user the promise the wiring keeps ("updating
+  now; this page renews itself when the update completes").
+  Verified three ways. The extended offline
+  tools/security/verify_threat_block_update_ux.py pins the wiring
+  (both ends, never the start), the one-cheap-question guard on
+  the page's own address, the single reload, and the in-flight
+  note's wording; the new threatBlockInterstitialReServeTest
+  drives the real WebEngine end to end - a refresh landing beside
+  a standing warning (the re-served page speaks the movement and
+  re-weighs the match), a list landing without the host (the
+  match row answers honestly), a page that is not the warning
+  staying exactly where it is, and a failed refresh re-serving
+  the failure with its retry. The other six security verifiers
+  still pass unchanged.
 - Security tools (23): the movement joins the coverage row and the
   sidebar - one composed movement, every surface that speaks the
   age. The warning page's evidence row alone spoke the blocklist's

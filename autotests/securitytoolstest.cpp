@@ -1326,6 +1326,113 @@ void SecurityToolsTest::threatBlockInterstitialTest()
     QVERIFY(emptyPage.contains(QSL("unknown (the blocklist is not loaded)")));
 }
 
+void SecurityToolsTest::threatBlockInterstitialReServeTest()
+{
+    // The interstitial re-serves itself when the evidence it stands
+    // on moves, through the real WebEngine: a refresh landing while
+    // the warning stands re-requests the same address, and the
+    // re-served page speaks the movement the refresh brought and
+    // re-weighs the site against the list now in place; a refresh
+    // that fails re-serves the failure with its retry. The chrome's
+    // pulse ending never has to be the cue to reload the page. The
+    // in-flight note is pinned too - the promise the wiring keeps.
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    const bool enabledBefore = manager->isEnabled();
+    const QString sourceBefore = manager->sourceUrl();
+    manager->setEnabled(true);
+
+    // a first list, so the refresh below carries a movement
+    manager->applyListData(QByteArray("http://blocked-reserve.example/x\n"));
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    // the page's own text, read the way the integration test reads
+    // it (a guarded loop, not a fixed sleep)
+    const auto bodyText = [&page]() {
+        QString text;
+        QEventLoop loop;
+        QTimer::singleShot(5000, &loop, &QEventLoop::quit);
+        page.runJavaScript(QSL("document.body.innerText"), [&text, &loop](const QVariant &result) {
+            text = result.toString();
+            loop.quit();
+        });
+        loop.exec();
+        return text;
+    };
+
+    // the warning stands, served against the one-host list
+    page.load(QUrl(QSL("http://blocked-reserve.example/payload")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QVERIFY(loadFinishedSpy.takeFirst().at(0).toBool());
+    QCOMPARE(page.url().scheme(), QSL("osza"));
+    QCOMPARE(page.url().path(), QSL("threatblocked"));
+    QCOMPARE(ThreatBlockManager::blockedUrlFromPageUrl(page.url()), QUrl(QSL("http://blocked-reserve.example/payload")));
+
+    QString body = bodyText();
+    QVERIFY(body.contains(QSL("the host itself is on the list")));
+    QVERIFY(!body.contains(QSL("since the last refresh")));
+
+    // the refresh lands: the page re-serves itself, and the re-served
+    // evidence speaks the movement beside the fresh age
+    loadFinishedSpy.clear();
+    manager->applyListData(QByteArray("http://blocked-reserve.example/x\n"
+                                      "http://two.example/y\n"
+                                      "http://three.example/z\n"));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QVERIFY(loadFinishedSpy.takeFirst().at(0).toBool());
+    body = bodyText();
+    QVERIFY(body.contains(QSL("+2 hosts since the last refresh")));
+    QVERIFY(body.contains(QSL("the host itself is on the list")));
+
+    // a refresh that lands a list without the host re-weighs the
+    // warning itself: the match row answers honestly
+    loadFinishedSpy.clear();
+    manager->applyListData(QByteArray("http://two.example/y\n"));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QVERIFY(loadFinishedSpy.takeFirst().at(0).toBool());
+    body = bodyText();
+    QVERIFY(body.contains(QSL("not on the current blocklist")));
+
+    // a page that is not the warning never moves: the same landing
+    // re-serves nothing it has no standing to re-serve
+    WebPage quietPage;
+    QSignalSpy quietSpy(&quietPage, &QWebEnginePage::loadFinished);
+    quietPage.setHtml(QSL("<html><body></body></html>"), QUrl(QSL("https://quiet.example/")));
+    QVERIFY(quietSpy.wait(20000));
+    QVERIFY(quietSpy.takeFirst().at(0).toBool());
+    quietSpy.clear();
+
+    manager->applyListData(QByteArray("http://two.example/y\n"
+                                      "http://three.example/z\n"));
+    QTest::qWait(500);
+    QCOMPARE(quietSpy.count(), 0);
+
+    // a refresh that fails re-serves the failure with its retry: the
+    // attempt against an invalid source ends at once, and the page
+    // that said "updating now" names what happened instead
+    loadFinishedSpy.clear();
+    manager->setSourceUrl(QSL("ftp://blocklists.example/list.txt"));
+    manager->updateNow();
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QVERIFY(loadFinishedSpy.takeFirst().at(0).toBool());
+    body = bodyText();
+    QVERIFY(body.contains(QSL("the last update failed")));
+    QVERIFY(body.contains(QSL("Refresh the blocklist now")));
+    QVERIFY(!body.contains(QSL("updating now")));
+
+    // restore
+    manager->setSourceUrl(sourceBefore);
+    loadFinishedSpy.clear();
+    manager->applyListData(QByteArray());
+    // the empty landing re-serves the page once more; let it finish
+    // before the page goes away
+    loadFinishedSpy.wait(20000);
+    manager->loadSettings();
+    manager->setEnabled(enabledBefore);
+}
+
 void SecurityToolsTest::threatBlockManagerStateTest()
 {
     auto *manager = mApp->networkManager()->threatBlockManager();

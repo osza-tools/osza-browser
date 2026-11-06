@@ -63,7 +63,10 @@ and KDE contributors for their work.
   protection resumes, and while a refresh runs - from the timer,
   the padlock menu, the warning page's link or that revoke - the
   location bar's site icon breathes with a soft cyan pulse until
-  the fresh list lands or the failure is named; the security
+  the fresh list lands or the failure is named, and the warning
+  page renews itself when a refresh lands or fails, re-weighing
+  the site against the list now in place instead of waiting on a
+  manual reload; the security
   sidebar and the self-test page speak the same
   states live). The
   whole suite can be backed up and moved: the dashboard's
