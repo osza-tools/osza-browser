@@ -209,6 +209,7 @@ void SecuritySideBar::createLayout()
     m_threatBlockToggle = new QCheckBox(tr("Malicious site protection"), this);
     m_threatBlockToggle->setToolTip(tr("Block navigations and resources of sites on a curated malware and adware blocklist (StevenBlack hosts by default; the source is configurable)."));
     m_threatBlockState = new QLabel(this);
+    m_threatBlockState->setObjectName(QSL("threatBlockState"));
     m_threatBlockState->setContentsMargins(20, 0, 0, 0);
     m_threatBlockState->setWordWrap(true);
     m_fingerprintToggle = new QCheckBox(tr("Fingerprint protection"), this);
@@ -465,8 +466,10 @@ void SecuritySideBar::updateStatus()
     // Malicious-site protection state, honest about the list and
     // about the one per-site state the tool has. The list's age is
     // spoken in relative terms (the same describeListAge() the
-    // interstitial and the padlock row use): this row refreshes
-    // every second, so "updated 3 hours ago" ticks live, and a
+    // interstitial and the padlock row use) with the movement the
+    // last refresh brought riding beside it (the same listMovement()
+    // both of them append): this row refreshes every second, so
+    // "updated 3 hours ago" ticks live, and a
     // failed refresh is named alongside the list it left behind.
     if (!threatBlock->isEnabled()) {
         m_threatBlockState->setText(tr("Malicious site protection is off."));
@@ -486,6 +489,14 @@ void SecuritySideBar::updateStatus()
             const QString count = QLocale().toString(threatBlock->hostCount());
             const QString updated = ThreatBlockManager::describeListAge(threatBlock->lastUpdate());
             QString text = tr("%1 hosts, updated %2", "blocklist size and last update").arg(count, updated);
+
+            // The movement the last refresh brought rides beside the
+            // age, before the failure tail - the same composed
+            // string the interstitial's evidence row and the
+            // padlock menu's coverage row append next to their own
+            // age phrasing, so the surfaces that speak the list's
+            // age speak one movement, not three.
+            text += threatBlock->listMovement();
 
             if (!threatBlock->lastUpdateError().isEmpty()) {
                 text += QSL(" - ") + tr("the last update failed: %1").arg(threatBlock->lastUpdateError().toHtmlEscaped());

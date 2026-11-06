@@ -39,6 +39,15 @@
 #      the last refresh)", and silence for a first list or after
 #      a restart, which have seen no movement to claim.
 #
+#   3c. One movement, every surface that speaks the list's age: the
+#      wording is composed in exactly one place
+#      (ThreatBlockManager::listMovementLocked, served to the
+#      padlock menu's coverage row and the sidebar's status row by
+#      the public self-locking listMovement()), so the interstitial's
+#      evidence row, the padlock row and the sidebar speak the same
+#      string with the same silences and can never name two
+#      different movements for one refresh.
+#
 #   4. The refresh URL contract: refreshListPageUrl() /
 #      isRefreshListPageUrl() mirror the proceed URL's shape, the
 #      two flags answer for neither but themselves, and the scheme
@@ -57,8 +66,10 @@
 #
 #   6. The other status surfaces keep the voice: the sidebar and
 #      the self-test page name a failed refresh and speak the
-#      relative age; Preferences keeps the clock time (the
-#      configuration surface).
+#      relative age; the sidebar and the padlock menu's coverage
+#      row append the movement through the public listMovement()
+#      (the one composed string the evidence row rides); Preferences
+#      keeps the clock time (the configuration surface).
 #
 #   7. The behavior mirrors: a Python mirror of describeListAge()'s
 #      buckets and the staleness boundary runs the cases, and the
@@ -69,9 +80,13 @@
 #      failure and its recovery, the stale-file path and the page
 #      hrefs, and now the start signal (an attempt against an
 #      invalid source is still an attempt); the page-URL test pins
-#      the refresh round trip; the new locationBarListUpdatePulse-
-#      Test drives the location bar's update-in-progress pulse
-#      end to end.
+#      the refresh round trip; the locationBarListUpdatePulseTest
+#      drives the location bar's update-in-progress pulse end to
+#      end; the extended threatBlockListDeltaTest pins the public
+#      query's wordings beside the page's, and the new
+#      threatBlockListMovementSurfacesTest drives the padlock
+#      menu's coverage row and the sidebar's status row against
+#      the one string the evidence row speaks.
 #
 #   9. Qt keyword discipline in the touched headers, the qrc still
 #      ships the page, and the README and CHANGELOG tell the user.
@@ -151,6 +166,8 @@ def body(text, signature):
 
 
 interstitial = body(manager_cpp, "QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const")
+movement_locked = body(manager_cpp, "QString ThreatBlockManager::listMovementLocked() const")
+movement_pub = body(manager_cpp, "QString ThreatBlockManager::listMovement() const")
 fetch = body(manager_cpp, "void ThreatBlockManager::fetchList()")
 check_for_update = body(manager_cpp, "void ThreatBlockManager::checkForUpdate()")
 apply_list = body(manager_cpp, "void ThreatBlockManager::applyList(const QSet<QString> &hosts, const QDateTime &when)")
@@ -159,8 +176,10 @@ load_list = body(manager_cpp, "bool ThreatBlockManager::loadList()")
 update_row = body(siteinfo_cpp, "void SiteInfoWidget::updateThreatBlockState()")
 update_click = body(siteinfo_cpp, "void SiteInfoWidget::threatBlockUpdateButtonClicked()")
 site_click = body(siteinfo_cpp, "void SiteInfoWidget::threatBlockButtonClicked()")
+sidebar_status = body(sidebar_cpp, "void SecuritySideBar::updateStatus()")
 state_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListUpdateStateTest()")
 delta_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListDeltaTest()")
+movement_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListMovementSurfacesTest()")
 url_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockPageUrlTest()")
 
 # ------------------------------------------------------------------
@@ -281,18 +300,18 @@ check("the link is offered exactly when the list is due, the download failed, or
       "wantsRefresh = true;" in interstitial
       and interstitial.count("wantsRefresh = true;") == 2)
 
-check("the movement the last refresh brought rides the row, read under the same one lock as the rest of the snapshot",
-      interstitial is not None and "m_deltaValid" in interstitial and "m_lastDelta" in interstitial
+check("the movement the last refresh brought rides the row, composed under the same one lock as the rest of the snapshot",
+      interstitial is not None and "listMovementLocked();" in interstitial
       and interstitial.count("QMutexLocker lock(&m_mutex);") == 1)
 check("a non-zero movement is spoken with its sign, next to the size and age it belongs to",
-      'tr(" (%1 hosts since the last refresh)"' in interstitial)
+      'tr(" (%1 hosts since the last refresh)"' in movement_locked)
 check("the sign is composed from the remembered delta, its magnitude locale-spelled",
-      'm_lastDelta > 0 ? QSL("+") : QSL("-")' in interstitial and "qAbs(m_lastDelta)" in interstitial)
+      'm_lastDelta > 0 ? QSL("+") : QSL("-")' in movement_locked and "qAbs(m_lastDelta)" in movement_locked)
 check("a refresh that moved nothing says so - that is evidence too",
-      'tr(" (unchanged since the last refresh)")' in interstitial)
+      'tr(" (unchanged since the last refresh)")' in movement_locked)
 check("the movement only rides a list that exists (the not-downloaded row stays bare)",
-      interstitial is not None
-      and interstitial.index('tr("not downloaded yet")') < interstitial.index("m_deltaValid"))
+      movement_locked is not None and "m_blockedHosts.isEmpty()" in movement_locked
+      and interstitial.index('tr("not downloaded yet")') < interstitial.index("listMovementLocked();"))
 
 # ------------------------------------------------------------------
 # 3b. The movement is remembered once, where the renewal lands
@@ -314,6 +333,37 @@ check("the startup load from disk never claims a movement (a restart has not see
       load_list is not None and "m_lastDelta" not in load_list)
 check("applyList itself stays the pure swap (the landing, not the remembering)",
       apply_list is not None and "m_lastDelta" not in apply_list)
+
+# ------------------------------------------------------------------
+# 3c. One movement, every surface that speaks the age
+# ------------------------------------------------------------------
+print("3c. one movement, every surface that speaks the age")
+
+check("the movement is composed in one place, declared beside the session walk it mirrors",
+      "QString listMovementLocked() const;" in manager_h)
+check("the public listMovement() is declared with its contract (the parenthetical, the surfaces, never two numbers)",
+      "QString listMovement() const;" in manager_h
+      and "parenthetical" in manager_h and "never be spoken in two places" in manager_h)
+check("the public query locks and routes through the private one (the deadlock-free split the interstitial requires)",
+      movement_pub is not None and "QMutexLocker lock(&m_mutex);" in movement_pub
+      and "return listMovementLocked();" in movement_pub)
+check("the one composition silences exactly where no movement can be claimed (no list, or none was seen)",
+      movement_locked is not None
+      and "m_blockedHosts.isEmpty() || !m_deltaValid" in movement_locked)
+check("the two wordings exist exactly once in the tree (composed once, appended everywhere)",
+      manager_cpp.count("hosts since the last refresh") == 1
+      and manager_cpp.count("(unchanged since the last refresh)") == 1)
+check("the padlock coverage row and the sidebar append the composed movement, never their own wording",
+      "since the last refresh" not in siteinfo_cpp and "since the last refresh" not in sidebar_cpp)
+check("the padlock coverage row appends the movement next to the age it speaks",
+      update_row is not None and "manager->listMovement()" in update_row
+      and 'tr("%1 (list updated %2)")' in update_row)
+check("the sidebar appends it next to the size and age, before the failure tail",
+      sidebar_status is not None and "threatBlock->listMovement()" in sidebar_status
+      and sidebar_status.index("listMovement()") < sidebar_status.index("the last update failed"))
+check("the interstitial composes through the private form under its one lock (the public query would deadlock there)",
+      interstitial is not None and "listMovementLocked();" in interstitial
+      and "listMovement()" not in interstitial)
 
 # ------------------------------------------------------------------
 # 4. The refresh URL contract
@@ -537,11 +587,30 @@ check("the delta test pins the growth, the loss and the no-change wordings",
       'QSL("+2 host")' in delta_test and 'QSL("-2 host")' in delta_test
       and 'QSL("(unchanged since the last refresh)")' in delta_test
       and 'QSL("hosts since the last refresh")' in delta_test)
+check("the delta test pins the public query's own wordings beside the page's",
+      'QSL("+2 hosts since the last refresh")' in delta_test
+      and 'QSL("-2 hosts since the last refresh")' in delta_test
+      and 'QCOMPARE(manager->listMovement(), QSL(" (unchanged since the last refresh)"))' in delta_test
+      and 'QCOMPARE(manager->listMovement(), QString())' in delta_test)
 check("the delta test pins the silences (a first list, and the same list reloaded from disk after a restart)",
       delta_test.count('QSL("since the last refresh")') == 2
-      and "diskManager" in delta_test and "diskManager.loadSettings();" in delta_test)
+      and "diskManager" in delta_test and "diskManager.loadSettings();" in delta_test
+      and "diskManager.listMovement().isEmpty()" in delta_test)
 check("the delta test drives the movement through the renewal's own path",
       delta_test.count("applyListData(") >= 5)
+check("the movement-surfaces test is declared and defined",
+      "void threatBlockListMovementSurfacesTest();" in autotest_h
+      and "void SecurityToolsTest::threatBlockListMovementSurfacesTest()" in autotest_cpp)
+check("the movement-surfaces test pins the padlock coverage row and the sidebar status row against the one string",
+      'QSL("threatBlockLabel")' in movement_test and 'QSL("threatBlockState")' in movement_test
+      and "manager->listMovement()" in movement_test
+      and 'QSL("(list updated ")' in movement_test
+      and 'QSL("hosts, updated ")' in movement_test)
+check("the movement-surfaces test pins the evidence row speaking the very same string",
+      "interstitialPage" in movement_test
+      and "warning.contains(movement)" in movement_test)
+check("the movement-surfaces test pins the shared silence after a restart",
+      "diskManager" in movement_test and "listMovement().isEmpty()" in movement_test)
 
 # ------------------------------------------------------------------
 # 9. Build discipline and docs
@@ -562,10 +631,15 @@ check("the README tells the user the evidence carries its freshness and a renewa
       "Refresh the blocklist now" in readme_flat and "updated" in readme_flat)
 check("the README tells the user the evidence speaks its movement",
       "since the last refresh" in readme_flat)
+check("the README names the surfaces that speak the movement (the coverage row and the sidebar join the evidence)",
+      "security sidebar's status row" in readme_flat
+      and "padlock menu's threat-block row" in readme_flat)
 check("the CHANGELOG has a Security tools (20) entry for the update UX",
       "Security tools (20)" in changelog and "refresh" in changelog.lower())
 check("the CHANGELOG has a Security tools (22) entry for the movement on the evidence rows",
       "Security tools (22)" in changelog and "since the last refresh" in changelog)
+check("the CHANGELOG has a Security tools (23) entry for the movement joining the coverage row and the sidebar",
+      "Security tools (23)" in changelog and "coverage row" in changelog)
 
 print()
 if failures:

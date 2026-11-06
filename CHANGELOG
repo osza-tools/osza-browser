@@ -7,6 +7,43 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (23): the movement joins the coverage row and the
+  sidebar - one composed movement, every surface that speaks the
+  age. The warning page's evidence row alone spoke the blocklist's
+  movement ("+1,204 hosts since the last refresh"); the padlock
+  menu's coverage row and the security sidebar's status row spoke
+  the age they speak ("list updated less than a minute ago", "3
+  hosts, updated less than a minute ago") with no word of what the
+  refresh had moved - so two surfaces answering the same question
+  ("how fresh is this evidence?") gave two different answers, one
+  naming the change and the others silent about it. Both rows now
+  append the same composed parenthetical the evidence row rides:
+  the wording is built in exactly one place
+  (ThreatBlockManager::listMovementLocked, served to both rows by
+  the public self-locking listMovement(), used by the evidence row
+  under the one lock its snapshot already holds - the same split
+  the session-allow query keeps), so the interstitial, the padlock
+  menu and the sidebar can never speak two different movements for
+  one refresh, and the silences travel with it: a first list ever
+  downloaded, the same list reloaded from disk after a restart,
+  and no list at all stay silent on every surface, never invented.
+  The movement rides wherever the age is spoken - the padlock
+  row's fresh state ("This site is not on the malicious-site
+  blocklist. (list updated 3 hours ago) (+1,204 hosts since the
+  last refresh)"), the sidebar's loaded state before its failure
+  tail - and the rows re-render through the manager's own signals
+  while a menu is open or the sidebar watches, so the movement a
+  refresh just brought is spoken the moment it lands. Verified by
+  the extended offline tools/security/verify_threat_block_update_
+  ux.py (the one composition and its silences, the two wordings
+  existing exactly once in the tree, both rows appending the query
+  next to their age, and the interstitial composing through the
+  private form under its lock), by the extended
+  threatBlockListDeltaTest (the public query's wordings and
+  silences pinned beside the page's) and by the new
+  threatBlockListMovementSurfacesTest, which drives a real
+  padlock menu and a real sidebar against the one string the
+  evidence row speaks.
 - Security tools (22): the blocklist's movement on the evidence
   rows - "+1,204 hosts since the last refresh". The warning page's
   "why is this site flagged?" disclosure named the list's size and

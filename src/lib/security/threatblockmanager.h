@@ -99,6 +99,19 @@ public:
     // deliberately instead of waiting for the timer. Thread safe.
     bool isListStale() const;
 
+    // The movement the last refresh brought, as the parenthetical
+    // every surface that speaks the list's age appends next to it -
+    // " (+1,204 hosts since the last refresh)" with the sign, or
+    // " (unchanged since the last refresh)" - or an empty string
+    // where no movement can honestly be claimed: the first list a
+    // profile ever downloads, the same list reloaded from disk
+    // after a restart, or no list at all. The interstitial's
+    // evidence row, the padlock menu's coverage row and the
+    // sidebar's status row all append this one composed string, so
+    // the movement can never be spoken in two places with two
+    // different numbers. Thread safe.
+    QString listMovement() const;
+
     // The age of a list update in relative terms - "less than a
     // minute ago", "3 hours ago", "2 days ago" - the phrasing the
     // surfaces that speak to a decision (the interstitial's
@@ -205,6 +218,12 @@ private:
     QString listFilePath() const;
     bool isSessionAllowedLocked(const QString &host) const;
 
+    // The composition listMovement() serves, for the caller that
+    // already holds the mutex the whole interstitial snapshot
+    // reads under (the public self-locking query would deadlock
+    // there) - the same split isSessionAllowedLocked keeps.
+    QString listMovementLocked() const;
+
 protected:
     void timerEvent(QTimerEvent *event) override;
 
@@ -229,10 +248,13 @@ protected:
     // non-empty list in this session - the first download and the
     // startup load from disk arrive with nothing to compare
     // against, and a restart has not seen the movement, so all
-    // three stay silent rather than inventing a number. The
-    // interstitial's list-state evidence row reads it under the
-    // same lock as the size and age it rides, so one row speaks
-    // one coherent snapshot of the blocklist.
+    // three stay silent rather than inventing a number.
+    // listMovementLocked() composes the one wording every surface
+    // that speaks the movement appends (the interstitial under the
+    // one lock its whole snapshot already holds, the padlock row
+    // and the sidebar through the public listMovement()), so the
+    // rows can never speak two different movements for one
+    // refresh.
     int m_lastDelta;
     bool m_deltaValid;
 

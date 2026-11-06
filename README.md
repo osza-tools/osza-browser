@@ -49,7 +49,11 @@ and KDE contributors for their work.
   the evidence keeps its freshness visible: the age is spoken in
   relative terms ("124,000 hosts, updated 3 hours ago"), with the
   movement the last refresh brought spoken next to the new size
-  ("+1,204 hosts since the last refresh"), a refresh
+  ("+1,204 hosts since the last refresh") on the warning page's
+  evidence rows, in the padlock menu's threat-block row and in the
+  security sidebar's status row - one composed movement, so every
+  surface that speaks the list's age speaks the same change with
+  the same silences - a refresh
   in flight and the last refresh's failure are named on the warning
   page's evidence rows and in the padlock menu's threat-block row,
   and a "Refresh the blocklist now" action - a link on the warning

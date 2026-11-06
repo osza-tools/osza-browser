@@ -1123,14 +1123,17 @@ void SecurityToolsTest::threatBlockListUpdateStateTest()
 
 void SecurityToolsTest::threatBlockListDeltaTest()
 {
-    // The movement of the evidence, as the interstitial's list-state
-    // row speaks it: the host-count change the last refresh brought,
-    // remembered only when a refresh actually replaced a list. All
-    // states are driven through applyListData() - the one path a
-    // renewal takes - with the wording, the sign, the zero movement
-    // and the restart's honest silence all pinned; the locale spells
-    // the count, so the assertions pin the sign and the phrasing,
-    // not the separator.
+    // The movement of the evidence, as every surface that speaks
+    // the list's age speaks it (the interstitial's list-state row,
+    // the padlock menu's coverage row and the sidebar's status row
+    // all append the one composed string listMovement() serves):
+    // the host-count change the last refresh brought, remembered
+    // only when a refresh actually replaced a list. All states are
+    // driven through applyListData() - the one path a renewal
+    // takes - with the wording, the sign, the zero movement and
+    // the restart's honest silence all pinned beside the public
+    // query's own answers; the locale spells the count, so the
+    // assertions pin the sign and the phrasing, not the separator.
     auto *manager = mApp->networkManager()->threatBlockManager();
 
     const QUrl blocked(QSL("http://delta.example/payload?x=1"));
@@ -1141,6 +1144,7 @@ void SecurityToolsTest::threatBlockListDeltaTest()
     const QString firstPage = manager->interstitialPage(blocked);
     QVERIFY(firstPage.contains(QSL("updated less than a minute ago")));
     QVERIFY(!firstPage.contains(QSL("since the last refresh")));
+    QCOMPARE(manager->listMovement(), QString());
 
     // a refresh that grows the list speaks the growth next to the
     // new size, with the sign
@@ -1150,6 +1154,8 @@ void SecurityToolsTest::threatBlockListDeltaTest()
     const QString grownPage = manager->interstitialPage(blocked);
     QVERIFY(grownPage.contains(QSL("+2 host")));
     QVERIFY(grownPage.contains(QSL("hosts since the last refresh")));
+    QVERIFY(manager->listMovement().contains(QSL("+2 hosts since the last refresh")));
+    QVERIFY(manager->listMovement().startsWith(QSL(" (")));
 
     // a refresh that shrinks it speaks the loss the same way, and
     // the growth it replaced is gone
@@ -1158,12 +1164,14 @@ void SecurityToolsTest::threatBlockListDeltaTest()
     QVERIFY(shrunkPage.contains(QSL("-2 host")));
     QVERIFY(shrunkPage.contains(QSL("hosts since the last refresh")));
     QVERIFY(!shrunkPage.contains(QSL("+2 host")));
+    QVERIFY(manager->listMovement().contains(QSL("-2 hosts since the last refresh")));
 
     // a refresh that changed nothing says so - that is evidence too
     manager->applyListData(QByteArray("http://bad.example/x\n"));
     const QString samePage = manager->interstitialPage(blocked);
     QVERIFY(samePage.contains(QSL("(unchanged since the last refresh)")));
     QVERIFY(!samePage.contains(QSL("hosts since the last refresh")));
+    QCOMPARE(manager->listMovement(), QSL(" (unchanged since the last refresh)"));
 
     // a restart has not seen the movement: the same list loaded from
     // disk speaks its size and age, not a delta it cannot know
@@ -1173,10 +1181,84 @@ void SecurityToolsTest::threatBlockListDeltaTest()
     const QString reloadedPage = diskManager.interstitialPage(blocked);
     QVERIFY(reloadedPage.contains(QSL("updated less than a minute ago")));
     QVERIFY(!reloadedPage.contains(QSL("since the last refresh")));
+    QVERIFY(diskManager.listMovement().isEmpty());
 
     // leave the shared manager clean for the other tests
     manager->applyListData(QByteArray());
     manager->loadSettings();
+}
+
+void SecurityToolsTest::threatBlockListMovementSurfacesTest()
+{
+    // One movement, every surface that speaks the list's age: the
+    // interstitial's evidence row composed it alone until now, and
+    // after a refresh landed the padlock menu's coverage row and
+    // the sidebar's status row said "list updated less than a
+    // minute ago" with no word of what the refresh moved. Both
+    // rows now append the same composed string the evidence row
+    // does - the same words, the same silences - so the surfaces
+    // can never speak two different movements for one refresh.
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    // a movement is in place for the rows to speak: a first list,
+    // then a refresh that grows it
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    manager->applyListData(QByteArray("http://bad.example/x\n"
+                                      "http://two.example/y\n"
+                                      "http://three.example/z\n"));
+    const QString movement = manager->listMovement();
+    QVERIFY(movement.contains(QSL("+2 hosts since the last refresh")));
+
+    // the padlock menu's coverage row: the age it already speaks,
+    // with the movement riding beside it
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the padlock asks for the page the window is
+    // showing, so the tab has to exist first.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    window->weView()->setHtml(QSL("<html><body></body></html>"), QUrl(QSL("https://movement.example/")));
+    QTRY_COMPARE(window->weView()->url().toString(), QSL("https://movement.example/"));
+
+    auto *padlock = new SiteInfoWidget(window);
+    padlock->show();
+    QVERIFY(QTest::qWaitForWindowExposed(padlock));
+
+    auto *coverageRow = padlock->findChild<QLabel*>(QSL("threatBlockLabel"));
+    QVERIFY(coverageRow);
+    QVERIFY(coverageRow->text().contains(QSL("(list updated ")));
+    QVERIFY(coverageRow->text().contains(movement));
+
+    delete padlock;
+
+    // the sidebar's status row: the size and age it already speaks,
+    // with the same movement riding beside them
+    SecuritySideBar sidebar(nullptr);
+    sidebar.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&sidebar));
+
+    auto *stateRow = sidebar.findChild<QLabel*>(QSL("threatBlockState"));
+    QVERIFY(stateRow);
+    QVERIFY(stateRow->text().contains(QSL("hosts, updated ")));
+    QVERIFY(stateRow->text().contains(movement));
+
+    // the interstitial's evidence row speaks the very same string
+    const QString warning = manager->interstitialPage(QUrl(QSL("http://movement.example/x")));
+    QVERIFY(warning.contains(movement));
+
+    // the silences are shared: a restart has seen no movement, so
+    // no surface invents one
+    ThreatBlockManager diskManager;
+    diskManager.loadSettings();
+    QVERIFY(diskManager.listMovement().isEmpty());
+
+    // leave the shared manager clean for the other tests
+    manager->applyListData(QByteArray());
+    manager->loadSettings();
+
+    delete window;
 }
 
 void SecurityToolsTest::threatBlockInterstitialTest()

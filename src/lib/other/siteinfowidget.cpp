@@ -449,10 +449,12 @@ void SiteInfoWidget::updateThreatBlockState()
 
     // The coverage statement, with the freshness of the list behind
     // it: the age in relative terms (the same describeListAge() the
-    // interstitial's evidence rows use), a refresh in flight, and -
-    // when the list is due or its last refresh failed - the action
-    // that renews it right here, the same staleness judgment the
-    // manager's own timer refreshes through.
+    // interstitial's evidence rows use), the movement the last
+    // refresh brought riding beside it (the same listMovement() the
+    // evidence rows and the sidebar's status row append), a refresh
+    // in flight, and - when the list is due or its last refresh
+    // failed - the action that renews it right here, the same
+    // staleness judgment the manager's own timer refreshes through.
     const QString coverage = manager->isHostBlocked(host)
         ? tr("This site is on the malicious-site <b>blocklist</b>.")
         : tr("This site is <b>not</b> on the malicious-site blocklist.");
@@ -464,7 +466,14 @@ void SiteInfoWidget::updateThreatBlockState()
         ui->threatBlockUpdateButton->setText(tr("Try the update again"));
         ui->threatBlockUpdateButton->show();
     } else {
-        ui->threatBlockLabel->setText(tr("%1 (list updated %2)").arg(coverage, ThreatBlockManager::describeListAge(manager->lastUpdate())));
+        // The movement rides next to the age, composed in the one
+        // place every surface that speaks it draws from - the same
+        // string the interstitial's evidence row and the sidebar's
+        // status row append next to their own age phrasing, with
+        // the same silences, so the coverage row and the evidence
+        // can never speak two different movements for one refresh.
+        ui->threatBlockLabel->setText(tr("%1 (list updated %2)").arg(coverage, ThreatBlockManager::describeListAge(manager->lastUpdate()))
+                                      + manager->listMovement());
 
         if (manager->isListStale()) {
             ui->threatBlockUpdateButton->setText(tr("Update the blocklist now"));

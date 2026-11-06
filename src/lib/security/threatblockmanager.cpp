@@ -250,6 +250,39 @@ bool ThreatBlockManager::isListStale() const
     return m_blockedHosts.isEmpty() || listIsStale(m_lastUpdate);
 }
 
+QString ThreatBlockManager::listMovement() const
+{
+    QMutexLocker lock(&m_mutex);
+    return listMovementLocked();
+}
+
+QString ThreatBlockManager::listMovementLocked() const
+{
+    // The one composition of the movement, spoken by every surface
+    // that appends it beside the list's size and age: the
+    // interstitial's evidence row (through this private form, under
+    // the one lock its whole snapshot already holds), the padlock
+    // menu's coverage row and the sidebar's status row (through the
+    // public self-locking query) - one string, so the movement can
+    // never be spoken in two places with two different numbers.
+    // The silences are part of the contract: no list in place means
+    // no movement to ride the not-downloaded row's own honesty, and
+    // a delta no refresh was seen to produce (the first download,
+    // the restart's disk load) is not invented.
+    if (m_blockedHosts.isEmpty() || !m_deltaValid) {
+        return QString();
+    }
+
+    if (m_lastDelta == 0) {
+        return tr(" (unchanged since the last refresh)");
+    }
+
+    const QString movement = (m_lastDelta > 0 ? QSL("+") : QSL("-"))
+        + QLocale().toString(qAbs(m_lastDelta));
+
+    return tr(" (%1 hosts since the last refresh)", "host-count change the last refresh brought").arg(movement);
+}
+
 QString ThreatBlockManager::describeListAge(const QDateTime &since)
 {
     if (!since.isValid()) {
@@ -828,24 +861,15 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
                 describeListAge(m_lastUpdate));
 
             // The movement the list in place arrived with, spoken
-            // next to its size and age: how much the last refresh
-            // changed the evidence this warning stands on. Only a
-            // refresh that replaced a list has a movement to speak
-            // (the first download and a restart's disk load arrive
-            // with nothing to compare against - silence, not an
-            // invented number); a refresh that changed nothing says
-            // so, which is itself evidence. Read under the one lock
-            // the whole snapshot already holds, like every state
-            // this row reports.
-            if (m_deltaValid) {
-                if (m_lastDelta == 0) {
-                    listInfo += tr(" (unchanged since the last refresh)");
-                } else {
-                    const QString movement = (m_lastDelta > 0 ? QSL("+") : QSL("-"))
-                        + QLocale().toString(qAbs(m_lastDelta));
-                    listInfo += tr(" (%1 hosts since the last refresh)", "host-count change the last refresh brought").arg(movement);
-                }
-            }
+            // next to its size and age: the same composed
+            // parenthetical the padlock menu's coverage row and the
+            // sidebar's status row append next to their own age
+            // phrasing - composed in the one place
+            // (listMovementLocked), read under the one lock the
+            // whole snapshot already holds, so every surface that
+            // speaks the movement speaks the same one, with the
+            // same silences.
+            listInfo += listMovementLocked();
         }
 
         // The update lifecycle rides on the same row, read under the
