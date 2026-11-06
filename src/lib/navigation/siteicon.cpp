@@ -393,7 +393,13 @@ bool SiteIcon::showPopup()
 
     setDown(true);
 
-    auto* info = new SiteInfoWidget(m_window);
+    // Parented to the window: the popup is a Qt::Popup that grabs
+    // input, but the window can still be destroyed while it stands
+    // (a page script closing the last tab), and an unparented popup
+    // would survive that with a dangling window pointer - while the
+    // threat-block manager's signals keep re-rendering its rows.
+    // Dying with the window ends the connections with it.
+    auto* info = new SiteInfoWidget(m_window, m_window);
     info->showAt(parentWidget());
 
     connect(info, &QObject::destroyed, this, &SiteIcon::popupClosed);

@@ -35,9 +35,13 @@ class QWebEngineProfile;
  * frame at document creation, in the main world, before any page
  * script runs. It makes canvas, WebGL and audio readouts slightly but
  * deterministically noisy: the perturbation depends only on a
- * per-profile master seed, the frame host and the pixel position, so
- * a site sees a stable fingerprint across reloads while different sites
- * (and different browser profiles) see different values. The high
+ * per-profile master seed, the frame host and the pixel's position on
+ * the source (absolute, so overlapping readouts of one pixel agree),
+ * so a site sees a stable fingerprint across reloads while different
+ * sites (and different browser profiles) see different values. A
+ * private instance draws its own session seed instead of the
+ * profile's, so off-the-record noise cannot be linked to the normal
+ * session's. The high
  * entropy WebGL vendor/renderer strings and the navigator.hardware-
  * Concurrency / deviceMemory hints are replaced with per-site-stable
  * generic values as well. Page scripts are never broken on purpose:

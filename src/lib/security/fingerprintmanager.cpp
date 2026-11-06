@@ -131,11 +131,18 @@ const char kScriptTemplate[] = R"JS((function () {
 
     // Applies the per-site noise to the RGB channels of a tightly packed
     // RGBA buffer (Uint8Array / Uint8ClampedArray). Alpha is untouched.
-    function farbleRgbData(data, width) {
+    // The noise is anchored to the pixel's absolute position on the
+    // source - the readout's own origin (sx, sy of getImageData, x, y of
+    // readPixels) rides along - so every view of one underlying pixel
+    // carries the same perturbation: reading the same canvas whole or
+    // through overlapping windows can never disagree, which is exactly
+    // what a fingerprinting page checks first. A (0, 0)-anchored readout
+    // sees the same values a region-local walk would have produced.
+    function farbleRgbData(data, width, originX, originY) {
         var pixels = (data.length / 4) | 0;
         for (var p = 0; p < pixels; p++) {
-            var x = p % width;
-            var y = (p / width) | 0;
+            var x = originX + (p % width);
+            var y = originY + ((p / width) | 0);
             var i = p * 4;
             data[i] = perturb(x, y, 0, data[i]);
             data[i + 1] = perturb(x, y, 1, data[i + 1]);
@@ -151,7 +158,12 @@ const char kScriptTemplate[] = R"JS((function () {
             var imageData = originalGetImageData.apply(this, arguments);
             try {
                 if (imageData && imageData.data && imageData.width > 0 && imageData.height > 0) {
-                    farbleRgbData(imageData.data, imageData.width);
+                    // The rectangle's own origin anchors the noise: the
+                    // same source pixel read through any window of it is
+                    // perturbed identically. (| 0 is the ToInt32 the
+                    // native bindings would apply to these coordinates
+                    // anyway; a missing argument anchors at 0.)
+                    farbleRgbData(imageData.data, imageData.width, arguments[0] | 0, arguments[1] | 0);
                 }
             } catch (e) {
             }
@@ -269,7 +281,11 @@ const char kScriptTemplate[] = R"JS((function () {
                     try {
                         if (format === GL_RGBA && type === GL_UNSIGNED_BYTE && pixels && width > 0 &&
                             (pixels instanceof Uint8Array || pixels instanceof Uint8ClampedArray)) {
-                            farbleRgbData(pixels, width);
+                            // Anchored like getImageData: the readout's
+                            // framebuffer origin rides along, so the same
+                            // pixel is perturbed identically however the
+                            // readout window is placed.
+                            farbleRgbData(pixels, width, x | 0, y | 0);
                         }
                     } catch (e) {
                     }
@@ -425,18 +441,38 @@ void FingerprintManager::loadSettings()
     settings.endGroup();
 
     settings.beginGroup(QSL("Security-Tools"));
-    uint seed = settings.value(QSL("FingerprintSeed"), 0).toUInt();
-    if (seed == 0) {
-        // First use: derive the per-profile master seed. It is what
-        // makes every profile's (and every private session's) noise
-        // unique, so trackers cannot merge fingerprints across users.
-        seed = QRandomGenerator::system()->generate();
-        if (seed == 0) {
-            seed = 1;
+    uint seed = 0;
+    if (mApp->isPrivate()) {
+        // Off the record: the profile's seed is neither read nor
+        // written - a private instance shares the profile's settings
+        // file, and noise drawn from that seed would be the normal
+        // session's noise, letting a tracker merge the two by the
+        // fingerprints they show the same site. Instead the session
+        // draws its own seed, once, and keeps it: the noise is as
+        // stable within the private session as it is everywhere,
+        // and unique against the profile and every other private
+        // session.
+        if (m_masterSeed == 0) {
+            m_masterSeed = QRandomGenerator::system()->generate();
+            if (m_masterSeed == 0) {
+                m_masterSeed = 1;
+            }
         }
-        settings.setValue(QSL("FingerprintSeed"), seed);
+        seed = m_masterSeed;
+    } else {
+        seed = settings.value(QSL("FingerprintSeed"), 0).toUInt();
+        if (seed == 0) {
+            // First use: derive the per-profile master seed. It is what
+            // makes every profile's noise unique, so trackers cannot
+            // merge fingerprints across users.
+            seed = QRandomGenerator::system()->generate();
+            if (seed == 0) {
+                seed = 1;
+            }
+            settings.setValue(QSL("FingerprintSeed"), seed);
+        }
+        m_masterSeed = seed;
     }
-    m_masterSeed = seed;
     settings.endGroup();
 
     updateScript();
@@ -593,7 +629,12 @@ QVector<int> FingerprintManager::siteNoisePattern(quint32 masterSeed, const QStr
     const quint32 siteKey = mirrorSiteKey(masterSeed, host);
 
     // Row-major walk of a tightly packed RGBA buffer, exactly like
-    // farbleRgbData() in the guard script: x = p % width, y = p / width.
+    // farbleRgbData() in the guard script for a (0, 0)-anchored readout:
+    // x = p % width, y = p / width. (The script anchors the noise to
+    // absolute pixel positions by passing the readout's own origin into
+    // farbleRgbData(); the tiles this mirror serves and the self-test
+    // page reads are all (0, 0)-anchored, so the walk stays the one
+    // comparison both sides pin.)
     for (int y = 0; y < size; ++y) {
         for (int x = 0; x < size; ++x) {
             pattern.append(mirrorPerturbDeviation(siteKey, x, y, 0));

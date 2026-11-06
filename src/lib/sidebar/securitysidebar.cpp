@@ -782,6 +782,24 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
     auto *doh = mApp->networkManager()->dnsOverHttpsManager();
 
     if (!enabled) {
+        // Switching secure DNS off must not cost the configuration it
+        // switches off: setConfiguration() persists the mode, and a
+        // plain "off" would leave Disabled as the saved mode - so the
+        // off->on round trip through this switch would come back as
+        // the default (fallback mode, default server) instead of the
+        // mode and servers the user had chosen. The secure mode being
+        // switched off is remembered beside its servers (which
+        // setConfiguration() keeps); the mode itself stays Disabled,
+        // the state the checkbox reports.
+        const DnsOverHttpsManager::Mode mode = doh->mode();
+
+        if (mode != DnsOverHttpsManager::Disabled) {
+            Settings settings;
+            settings.beginGroup(QSL("Web-Browser-Settings"));
+            settings.setValue(QSL("DnsOverHttpsSavedMode"), static_cast<int>(mode));
+            settings.endGroup();
+        }
+
         doh->setConfiguration(DnsOverHttpsManager::Disabled, doh->serverTemplates());
         refresh();
         return;
@@ -791,10 +809,23 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
     const int savedMode = settings.value(QSL("DnsOverHttpsMode"), 0).toInt();
+    const int rememberedMode = settings.value(QSL("DnsOverHttpsSavedMode"), 0).toInt();
     const QStringList savedServers = settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList();
     settings.endGroup();
 
-    const auto mode = static_cast<DnsOverHttpsManager::Mode>(savedMode);
+    // An off->on round trip restores the mode this switch turned off;
+    // a profile that never had a secure mode configured (or was
+    // disabled by Preferences, which leaves no remembered mode
+    // behind) keeps falling back to the saved mode and then the
+    // default.
+    int mode = savedMode;
+
+    if (mode == DnsOverHttpsManager::Disabled
+        && rememberedMode >= DnsOverHttpsManager::SecureWithFallback
+        && rememberedMode <= DnsOverHttpsManager::SecureOnly) {
+        mode = rememberedMode;
+    }
+
     QStringList servers;
 
     for (const QString &server : savedServers) {
@@ -807,7 +838,7 @@ void SecuritySideBar::toggleSecureDns(bool enabled)
         doh->setConfiguration(DnsOverHttpsManager::SecureWithFallback,
                               {DnsOverHttpsManager::defaultServerTemplate()});
     } else {
-        doh->setConfiguration(mode, servers);
+        doh->setConfiguration(static_cast<DnsOverHttpsManager::Mode>(mode), servers);
     }
 
     refresh();

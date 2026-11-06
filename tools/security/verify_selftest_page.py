@@ -76,7 +76,7 @@ static_check("pageUrl() drops an empty section, keeping the plain address",
 static_check("sectionIdFromUrl() reads the same item back",
       'queryItemValue(QSL("section")).trimmed()' in page_cpp)
 static_check("the scheme handler hands the item to the page",
-      re.search(r"SelfTestPage::buildPage\(SelfTestPage::sectionIdFromUrl\(m_job->requestUrl\(\)\)\)",
+      re.search(r"SelfTestPage::buildPage\(SelfTestPage::sectionIdFromUrl\(requestUrl\)\)",
                 handler_cpp) is not None)
 static_check("the page script spells the same URL shape",
       "'osza:selftest?section=' + encodeURIComponent(sectionId)" in script)

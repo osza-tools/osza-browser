@@ -35,6 +35,7 @@
 #include "../config.h"
 
 #include <QTimer>
+#include <QThread>
 #include <QSettings>
 #include <QUrlQuery>
 #include <QWebEngineProfile>
@@ -42,9 +43,25 @@
 #include <QtWebEngineCoreVersion>
 #include <QMetaType>
 
+#include <atomic>
+
+namespace {
+
+// True until the UI event loop is on its way out. aboutToQuit is
+// emitted while the loop still runs - the last marker before it
+// stops turning - so a page build already handed over before it is
+// still answered, while every build after it runs inline on the
+// calling thread: a blocking handover posted into a stopped loop
+// would wait forever, taking the engine's IO thread (and the
+// profile teardown that waits on it) with it. The rare races the
+// handover exists to close cannot outlive the exit.
+std::atomic_bool s_uiLoopRunning{true};
+
+} // namespace
+
 static QString authorString(const Qz::AuthorInfo &author)
 {
-    return QSL("&copy; %1-%2 %3 &lt;<a href=\"mailto:%2\">%4</a>&gt;<br>").arg(
+    return QSL("&copy; %1-%2 %3 &lt;<a href=\"mailto:%4\">%4</a>&gt;<br>").arg(
         QString::number(author.copyrightBegin),
         QString::number(author.copyrightEnd),
         author.name,
@@ -55,6 +72,12 @@ static QString authorString(const Qz::AuthorInfo &author)
 OszaSchemeHandler::OszaSchemeHandler(QObject *parent)
     : QWebEngineUrlSchemeHandler(parent)
 {
+    // The handler is created once, on the UI thread, before any
+    // request can arrive; the marker flips there while the loop is
+    // still alive. See s_uiLoopRunning above.
+    QObject::connect(mApp, &QCoreApplication::aboutToQuit, mApp, []() {
+        s_uiLoopRunning.store(false, std::memory_order_release);
+    });
 }
 
 void OszaSchemeHandler::requestStarted(QWebEngineUrlRequestJob *job)
@@ -132,7 +155,11 @@ OszaSchemeReply::OszaSchemeReply(QWebEngineUrlRequestJob *job, QObject *parent)
     , m_loaded(false)
     , m_job(job)
 {
+    // The request's own address is read here, on the thread the
+    // request arrived on: the job belongs to that thread, and the
+    // page build below runs on the UI thread.
     m_pageName = m_job->requestUrl().path();
+    m_requestUrl = m_job->requestUrl();
     loadPage();
 }
 
@@ -141,35 +168,29 @@ void OszaSchemeReply::loadPage()
     if (m_loaded)
         return;
 
+    // requestStarted() - and with it this constructor - runs on the
+    // engine's IO thread, while the pages are built from state that
+    // lives on the UI thread: the profile's Settings (one
+    // process-global QSettings object whose group stack the UI
+    // thread walks constantly) and the security managers, whose
+    // members are written there without locks (GpcManager's
+    // exclusion list, DnsOverHttpsManager's configuration, the
+    // AdBlock and fingerprint switches - only ThreatBlockManager was
+    // written for IO-thread reads). The build is therefore handed to
+    // the UI thread and waited for, so the page is ready before
+    // requestStarted() returns. Three calls build inline instead: a
+    // call that already runs on the UI thread, and the last builds
+    // of a quitting browser (see s_uiLoopRunning) - never waiting on
+    // a loop that no longer turns. The request's address crossed
+    // the boundary as a plain value captured above.
     QString contents;
 
-    if (m_pageName == QLatin1String("about")) {
-        contents = aboutPage();
-    } else if (m_pageName == QLatin1String("start")) {
-        contents = startPage();
-    } else if (m_pageName == QLatin1String("speeddial")) {
-        contents = speeddialPage();
-    } else if (m_pageName == QLatin1String("config")) {
-        contents = configPage();
-    } else if (m_pageName == QLatin1String("restore")) {
-        contents = restorePage();
-    } else if (m_pageName == QLatin1String("threatblocked")) {
-        contents = mApp->networkManager()->threatBlockManager()->interstitialPage(
-            ThreatBlockManager::blockedUrlFromPageUrl(m_job->requestUrl()));
-    } else if (m_pageName == QLatin1String("selftest")) {
-        // The "section" query item names the part of the page the
-        // request asks to focus; the page answers every value it can
-        // be handed (a known section focused, an unknown one noted
-        // over the whole page, none at all meaning the plain page).
-        contents = SelfTestPage::buildPage(SelfTestPage::sectionIdFromUrl(m_job->requestUrl()));
-    } else if (m_pageName == QLatin1String("settings-diff")) {
-        // The baseline the request asks for rides in the "preset"
-        // query item, the tool to focus in the "tool" item; the page
-        // answers every value either can be handed (overview, diff,
-        // dead end; focused section, answered note, warning line)
-        // and never applies anything.
-        contents = SettingsDiffPage::buildPage(SettingsDiffPage::presetIdFromUrl(m_job->requestUrl()),
-                                               SettingsDiffPage::toolIdFromUrl(m_job->requestUrl()));
+    if (QThread::currentThread() == mApp->thread() || !s_uiLoopRunning.load(std::memory_order_acquire)) {
+        contents = pageContents(m_pageName, m_requestUrl);
+    } else {
+        QMetaObject::invokeMethod(mApp, [this, &contents]() {
+            contents = pageContents(m_pageName, m_requestUrl);
+        }, Qt::BlockingQueuedConnection);
     }
 
     QMutexLocker lock(&m_mutex);
@@ -180,6 +201,42 @@ void OszaSchemeReply::loadPage()
     Q_EMIT readyRead();
 
     m_loaded = true;
+}
+
+QString OszaSchemeReply::pageContents(const QString &pageName, const QUrl &requestUrl)
+{
+    QString contents;
+
+    if (pageName == QLatin1String("about")) {
+        contents = aboutPage();
+    } else if (pageName == QLatin1String("start")) {
+        contents = startPage();
+    } else if (pageName == QLatin1String("speeddial")) {
+        contents = speeddialPage();
+    } else if (pageName == QLatin1String("config")) {
+        contents = configPage();
+    } else if (pageName == QLatin1String("restore")) {
+        contents = restorePage();
+    } else if (pageName == QLatin1String("threatblocked")) {
+        contents = mApp->networkManager()->threatBlockManager()->interstitialPage(
+            ThreatBlockManager::blockedUrlFromPageUrl(requestUrl));
+    } else if (pageName == QLatin1String("selftest")) {
+        // The "section" query item names the part of the page the
+        // request asks to focus; the page answers every value it can
+        // be handed (a known section focused, an unknown one noted
+        // over the whole page, none at all meaning the plain page).
+        contents = SelfTestPage::buildPage(SelfTestPage::sectionIdFromUrl(requestUrl));
+    } else if (pageName == QLatin1String("settings-diff")) {
+        // The baseline the request asks for rides in the "preset"
+        // query item, the tool to focus in the "tool" item; the page
+        // answers every value either can be handed (overview, diff,
+        // dead end; focused section, answered note, warning line)
+        // and never applies anything.
+        contents = SettingsDiffPage::buildPage(SettingsDiffPage::presetIdFromUrl(requestUrl),
+                                               SettingsDiffPage::toolIdFromUrl(requestUrl));
+    }
+
+    return contents;
 }
 
 qint64 OszaSchemeReply::bytesAvailable() const

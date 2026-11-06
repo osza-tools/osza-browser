@@ -189,9 +189,17 @@ void PopupLocationBar::setView(PopupWebView* view)
 
     // The badge follows the URL even when the favicon does not
     // change (a same-scheme navigation between two sites) and even
-    // before the security state settles - exactly the refreshes
-    // the main window's location bar gives its badge.
+    // before the security state settles. It follows the two more
+    // movements the main window's location bar gives its badge,
+    // which no favicon change announces: a reload of the same
+    // address (the padlock menu's and the import's changes land
+    // there when nothing else fires) and a settings reload
+    // (Preferences, an import or a preset - a tool switched off
+    // globally retires the site's exception with it, and the badge
+    // must not outlive the state it reports).
     connect(m_view, &QWebEngineView::urlChanged, this, &PopupLocationBar::showSiteIcon);
+    connect(m_view, &QWebEngineView::loadFinished, this, &PopupLocationBar::showSiteIcon);
+    connect(mApp, &MainApplication::settingsReloaded, this, &PopupLocationBar::showSiteIcon);
 }
 
 void PopupLocationBar::startLoading()

@@ -49,7 +49,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
 
     WebView* view = m_window->weView();
 
-    ui->titleLabel->setText(tr("<b>Site %1<b/>").arg(view->url().host()));
+    ui->titleLabel->setText(tr("<b>Site %1</b>").arg(view->url().host()));
 
     bool secure = false;
 
@@ -390,7 +390,20 @@ void SiteInfoWidget::gpcButtonClicked()
 
 void SiteInfoWidget::updateThreatBlockState()
 {
-    const QString scheme = m_window->weView()->url().scheme();
+    // The manager's signals arrive on every list landing and failure,
+    // not only while the user is looking at this menu, and they can
+    // arrive when the menu has nothing to answer for: a window whose
+    // last tab was closed (a page script, a crash-recovered session)
+    // has no current view - BrowserWindow::weView() answers nullptr
+    // for it. The row then keeps the state it last spoke instead of
+    // dereferencing a view that is no longer there.
+    WebView *view = m_window ? m_window->weView() : nullptr;
+
+    if (!view) {
+        return;
+    }
+
+    const QString scheme = view->url().scheme();
 
     if (scheme != QL1S("http") && scheme != QL1S("https")) {
         ui->threatBlockLabel->hide();
@@ -400,7 +413,7 @@ void SiteInfoWidget::updateThreatBlockState()
         return;
     }
 
-    const QString host = m_window->weView()->url().host();
+    const QString host = view->url().host();
     auto *manager = mApp->networkManager()->threatBlockManager();
 
     // Both buttons start hidden; every state below shows exactly the

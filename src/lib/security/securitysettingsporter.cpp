@@ -37,6 +37,8 @@
 #include <QSet>
 #include <QUrl>
 
+#include <cmath>
+
 namespace {
 
 // Translate through the shared "SecuritySettingsPorter" context; the
@@ -246,9 +248,27 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
             const QJsonValue modeValue = tool.value(QSL("mode"));
             const QJsonValue serversValue = tool.value(QSL("servers"));
 
-            bool fieldOk = modeValue.isDouble()
-                && modeValue.toInt() >= DnsOverHttpsManager::Disabled
-                && modeValue.toInt() <= DnsOverHttpsManager::SecureOnly;
+            // The number itself is judged, not its toInt() reading:
+            // QJsonValue::toInt() answers its default (0) for every
+            // non-integral or out-of-range number, so a hand-edited
+            // "mode": 1.5 would slide through the range check below
+            // as Disabled - the mode the file states and the mode the
+            // browser applies would be two different values. The
+            // same judgment the Python verifier makes: integral
+            // (1.0 stays valid as 1) and inside the enum.
+            int mode = 0;
+            bool fieldOk = false;
+
+            if (modeValue.isDouble()) {
+                const double number = modeValue.toDouble();
+
+                if (std::floor(number) == number
+                    && number >= static_cast<double>(DnsOverHttpsManager::Disabled)
+                    && number <= static_cast<double>(DnsOverHttpsManager::SecureOnly)) {
+                    mode = static_cast<int>(number);
+                    fieldOk = true;
+                }
+            }
 
             QStringList servers;
             if (fieldOk && serversValue.isArray()) {
@@ -267,7 +287,7 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
             if (!fieldOk) {
                 plan.reason = porterTr("a field is missing or has the wrong type");
             } else {
-                plan.mode = static_cast<DnsOverHttpsManager::Mode>(modeValue.toInt());
+                plan.mode = static_cast<DnsOverHttpsManager::Mode>(mode);
                 plan.servers = sanitizeTemplateList(servers);
 
                 if (!DnsOverHttpsManager::isSupported()) {
@@ -380,7 +400,27 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
 
             if (enabledOk && exclusionsOk) {
                 plan.apply = true;
-                plan.exclusions = sanitizeHostList(exclusions);
+                // The preview must speak the list the import will
+                // land: GpcManager::setExclusions() stores the
+                // entries lowercased and case-insensitively
+                // deduplicated, so the plan carries them that way
+                // too - what the preview shows as "the value after
+                // the import" is exactly the list a later export or
+                // the exceptions dialog will see. Every other tool
+                // stores its list verbatim and normalizes nothing
+                // here.
+                QStringList normalized;
+                const QStringList sanitized = sanitizeHostList(exclusions);
+
+                for (const QString &entry : sanitized) {
+                    const QString lowered = entry.toLower();
+
+                    if (!normalized.contains(lowered)) {
+                        normalized.append(lowered);
+                    }
+                }
+
+                plan.exclusions = normalized;
             } else {
                 plan.reason = porterTr("a field is missing or has the wrong type");
             }
@@ -773,7 +813,23 @@ bool SecuritySettingsPorter::validateDocumentHeader(const QJsonObject &document,
         return false;
     }
 
-    if (version.toInt() > formatVersion()) {
+    // The number itself is judged, not its toInt() reading: toInt()
+    // answers its default (0) for every non-integral or out-of-range
+    // number, so a hand-edited "version": 2.5 or 1e10 would read as
+    // 0 - an old version - and slip past the guard below. A
+    // non-integral version is not a version this browser can read;
+    // an integral one is compared as written (the same judgment the
+    // Python verifier makes, where 1.0 stays valid as 1).
+    const double versionNumber = version.toDouble();
+
+    if (std::floor(versionNumber) != versionNumber) {
+        if (error) {
+            *error = porterTr("The document does not state a format version.");
+        }
+        return false;
+    }
+
+    if (versionNumber > formatVersion()) {
         if (error) {
             *error = porterTr("The document was written by a newer version of Osza.");
         }

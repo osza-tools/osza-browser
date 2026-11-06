@@ -51,6 +51,12 @@ private Q_SLOTS:
     void loadPage();
 
 private:
+    // The contents of the page the request's address names, built
+    // from the request URL captured at construction time (on the
+    // thread the request arrived on) - never from the job, which is
+    // not safe to touch from the UI thread the build runs on.
+    QString pageContents(const QString &pageName, const QUrl &requestUrl);
+
     QString aboutPage();
     QString startPage();
     QString speeddialPage();
@@ -60,6 +66,7 @@ private:
     bool m_loaded;
     QBuffer m_buffer;
     QString m_pageName;
+    QUrl m_requestUrl;
     QWebEngineUrlRequestJob *m_job;
     mutable QMutex m_mutex;
 };

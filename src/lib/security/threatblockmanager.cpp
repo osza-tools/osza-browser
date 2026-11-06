@@ -718,11 +718,24 @@ void ThreatBlockManager::fetchList()
             if (data.isEmpty()) {
                 error = tr("The blocklist source returned no data.");
             } else {
-                const int count = applyListData(data);
+                // A download that carries no valid hosts is not a
+                // list: adopting it would replace the protection in
+                // place with nothing - every listed host through, the
+                // warning pages and the padlock rows left speaking
+                // about evidence that no longer exists. It is refused
+                // whole, before anything is applied, so the list in
+                // place keeps standing (and keeps its freshness)
+                // until a real list lands. The guard is on the
+                // downloader's path only: applyListData() stays the
+                // documented manual-import route, which may install
+                // an empty list deliberately.
+                QSet<QString> hosts;
+                ThreatBlockManager::parseListData(data, &hosts);
 
-                if (count == 0) {
+                if (hosts.isEmpty()) {
                     error = tr("The blocklist source did not contain any valid hosts.");
                 } else {
+                    const int count = applyListData(data);
                     qWarning() << "ThreatBlock: blocklist updated with" << count << "hosts";
                 }
             }

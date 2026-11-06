@@ -1049,6 +1049,118 @@ Fixed:
   before failing, because snapcraft's LXD build VM intermittently
   fails its initial apt update ("Failed to refresh package list").
 
+Fixed (security tools, a bug-hunting round):
+- A blocklist download that carried no valid hosts wiped the
+  protection in place: the downloader applied whatever it parsed
+  before noticing the count, so a transient server error page (an
+  HTML 200, a truncated feed, a proxy's captive answer) replaced a
+  hundred-thousand-host list with an empty one and persisted it -
+  every listed host loaded silently from that moment, and the next
+  startup found nothing to load at all. The download is now judged
+  before it is adopted: data that parses to zero hosts is refused
+  whole, the failure is named like every other failed refresh (the
+  interstitial's evidence row and the padlock row speak it, with
+  the retry), and the list in place keeps standing until a real
+  list lands. The guard lives on the downloader's path only -
+  applyListData() keeps its documented manual-import contract,
+  which may install an empty list deliberately (the autotests pin
+  that path).
+- The fingerprint guard's canvas noise was anchored to the readout
+  rectangle, not the pixel: getImageData(0, 0, 8, 2) and
+  getImageData(1, 0, 7, 2) perturbed the same underlying pixel
+  differently, so a fingerprinting page could detect the guard with
+  two overlapping reads (a real canvas is always self-consistent)
+  and single Osza users out - and a canvas digest depended on how
+  the canvas was read, not just on the canvas. The readout's own
+  origin (sx, sy of getImageData, x, y of readPixels) now anchors
+  the walk, so every view of one pixel carries the same
+  perturbation; a (0, 0)-anchored readout sees exactly the values
+  it always did, which is why the self-test equivalence, the C++
+  mirror and tools/security/verify_fingerprint_guard.py all keep
+  passing unchanged.
+- The osza: pages were built on the WebEngine IO thread.
+  requestStarted() - and with it the reply constructor that builds
+  the page - runs on the engine's IO thread, but the self-test and
+  settings-diff builders read the profile's Settings (one
+  process-global QSettings whose group stack the UI thread walks
+  constantly) and the security managers, whose members the UI
+  thread writes without locks; only ThreatBlockManager was written
+  for IO-thread reads, a contract fingerprintmanager.h states
+  outright ("nothing here is called from the WebEngine IO
+  thread") and the pages broke. The build is now handed to the UI
+  thread and waited for (a call already on the UI thread builds
+  inline, and the last builds of a quitting browser build inline
+  too - an aboutToQuit marker keeps the engine's IO thread from
+  ever waiting on a UI event loop that no longer turns), with the
+  request's address carried across as a plain
+  value, so an osza:selftest or osza:settings-diff load can no
+  longer race a Preferences toggle or an import apply. The about,
+  config and start pages ride the same path and stop racing the
+  settings object for free.
+- The padlock menu could crash the browser after its window was
+  gone: the popup is created parentless (it only ever received
+  WA_DeleteOnClose), but it now connects the blocklist manager's
+  lifecycle signals, and a refresh landing after the owning window
+  was destroyed (a page script closing the last tab under the
+  open menu) re-rendered its threat-block row through a dangling
+  window pointer - and weView() answers nullptr for an emptied
+  tab widget even while the window stands. The popup is now
+  parented to its window, so it dies with it and the connections
+  end with both, and the signal-driven row guards the no-view
+  state instead of dereferencing it.
+- The security sidebar's Secure DNS switch destroyed the saved
+  configuration on an off->on round trip: switching it off
+  persists DnsOverHttpsMode = 0 (setConfiguration writes the mode
+  unconditionally), so switching it back on read "off" as the
+  saved mode and landed on the default - fallback mode, default
+  server (Cloudflare) - overwriting a SecureOnly + custom-server
+  choice in Preferences. The secure mode being switched off is
+  now remembered beside its servers (which were already kept) and
+  restored by the round trip; a profile that never had a secure
+  mode configured still gets the sensible default.
+- The settings porter judged numbers through QJsonValue::toInt(),
+  which answers its default (0) for every non-integral or
+  out-of-int-range number: a hand-edited "mode": 1.5 slid through
+  the secure-DNS range check as Disabled - the mode the file
+  states and the mode the browser applies being two different
+  values - and a "version": 2.5 or 1e10 read as 0, an old
+  version, defeating the "written by a newer version of Osza"
+  refusal. The numbers themselves are now judged - integral and
+  in range - the same judgment the Python verifier has made all
+  along (1.0 stays valid as 1 everywhere).
+- A private browsing instance drew its fingerprint noise from the
+  profile's seed: a private instance shares the profile's settings
+  file, so the off-the-record session showed every site exactly
+  the noise the normal session showed it, and a tracker could
+  merge the two - the opposite of what the seed's own comment
+  promised. A private session now draws its own seed once and
+  keeps it for the session (the noise is as stable within it as
+  everywhere), reading and writing nothing in the profile.
+- The popup windows' location bar went stale where the main
+  windows' bar does not: it refreshed its protections-relaxed
+  badge only on urlChanged, iconChanged and privacyChanged, so a
+  same-address reload (the moment the padlock menu's and the
+  import's changes land) and a settings reload (Preferences, an
+  import, a preset - a tool switched off globally retires the
+  site's exception with it) left the popup's badge speaking a
+  state that was no longer true. The popup now wires loadFinished
+  and settingsReloaded to the same refresh, mirroring the main
+  bar.
+- The GPC section of an import preview announced an exclusion list
+  the import would not exactly land: GpcManager::setExclusions()
+  stores the entries lowercased and case-insensitively
+  deduplicated, but the preview showed the file's list verbatim -
+  against the porter's own promise that the preview is "the very
+  same validation the import applies". The plan now carries the
+  list the way the manager will store it, so the preview, the
+  apply, a later export and the exceptions dialog all speak one
+  list.
+- The About page's author lines linked mailto: to the copyright
+  end year instead of the address (the place marker %2 was spelled
+  where %4 belongs - a self-closing-typo pattern inherited from
+  the project's origins, like the "Site %1<b/>" title in the
+  padlock menu, both fixed here).
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.
