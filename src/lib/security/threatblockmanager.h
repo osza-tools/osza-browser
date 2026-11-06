@@ -85,6 +85,15 @@ public:
     // "example" entry, but never by "xbad.example").
     bool isHostBlocked(const QString &host) const;
 
+    // The blocklist entry that matched the host: the host itself when
+    // it is listed, else the closest listed parent domain - the exact
+    // walk isHostBlocked answers through, so the entry the
+    // interstitial shows can never disagree with the decision it
+    // explains. Empty when nothing matched (and for every host while
+    // no list is loaded). A pure list query: neither the enabled
+    // switch nor a session allow changes the answer. Thread safe.
+    QString matchingListEntry(const QString &host) const;
+
     // The complete decision used by the interceptor, under one lock:
     // protection enabled, host listed, no session exception.
     bool shouldBlock(const QString &host) const;

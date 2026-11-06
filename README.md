@@ -42,15 +42,18 @@ and KDE contributors for their work.
   hostname resolution, with known providers or a custom server) and
   malicious-site protection (navigations to blocklisted hosts stop on
   a full-screen warning page with a session-scoped "proceed anyway";
-  subresources of listed hosts are blocked). The whole suite can be
-  backed up and moved: the dashboard's "Import / Export" button (also
-  in Preferences → Privacy → Security tools) saves the configuration
-  of every protection - switches, exception lists, secure DNS
-  servers, blocklist source - to one portable JSON file, and applies
-  such a file to another machine or profile; exports carry a
-  checksum of their contents, so a file that was changed or
-  corrupted after the export is refused on import (with an explicit
-  "import anyway" for deliberate hand edits, and
+  subresources of listed hosts are blocked; the warning page's "Why
+  is this site flagged?" disclosure names the matching blocklist
+  entry - the host itself, or the listed parent domain that covers
+  it - together with the list's source, size and last update). The
+  whole suite can be backed up and moved: the dashboard's
+  "Import / Export" button (also in Preferences → Privacy → Security
+  tools) saves the configuration of every protection - switches,
+  exception lists, secure DNS servers, blocklist source - to one
+  portable JSON file, and applies such a file to another machine or
+  profile; exports carry a checksum of their contents, so a file that
+  was changed or corrupted after the export is refused on import
+  (with an explicit "import anyway" for deliberate hand edits, and
   `tools/security/verify_settings_porter.py --update-checksum` to
   re-seal an edited file). Imports are informed, not blind: before
   anything is applied, a preview dialog shows what the file would

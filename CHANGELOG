@@ -7,6 +7,73 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (19): the threat-block interstitial's "why is this
+  site flagged?" details. The warning page said a blocklist was the
+  reason, but not which entry of which list said so - someone
+  weighing "proceed anyway", a forum helping them, or an admin
+  auditing a fleet had to take the browser's word for it. The page
+  now carries a "Why is this site flagged?" disclosure under the
+  "Back to safety" button, and it opens on the evidence: the
+  matching blocklist entry, named together with how it matched (the
+  host itself is on the list, or the visited host is a subdomain of
+  the listed entry that covers it), the blocklist source the
+  decision was made against, and the list's size and last update
+  (the same "%1 hosts, updated %2" wording the sidebar, Preferences
+  and the self-test page already use, so one list state is spoken
+  of in one voice everywhere). The disclosure is a native
+  <details> on purpose: the toggle needs no script - keyboard and
+  assistive tech get the semantics from the element itself - the
+  built-in marker is silenced both ways for every WebEngine Osza
+  runs on, and a chevron in the page's danger red rotates open
+  while the answer fades in (the shared reduced-motion rule can
+  kill both, as it does every animation on the internal pages).
+  Collapsed by default: the warning reads first, the evidence is
+  one deliberate click away.
+  The matching entry comes from a new public query,
+  ThreatBlockManager::matchingListEntry() - and the walk behind it
+  is the point of the change: the parent-domain walk that every
+  blocking decision uses existed as three inline copies
+  (isHostBlocked, shouldBlock, the session-allow check); they are
+  now one file-local matchingEntry() helper that answers "which
+  entry of this set covers this host", so the entry the page shows
+  can never disagree with the decision it explains. The query is a
+  pure list query (neither the enabled switch nor a session allow
+  changes it - it reports what the list says, not what the
+  protection would do), thread safe like every read path, and the
+  page reads it under the same lock as the list state, so the
+  three rows describe one coherent snapshot of the blocklist,
+  never the decision of one refresh mixed with the entries of
+  another.
+  The rows are honest about the states a warning page can be
+  reached in, not just the common one: an interstitial rendered
+  with no list loaded says "unknown (the blocklist is not loaded)"
+  instead of guessing, one reached for a host the current list no
+  longer carries (a stale address reloaded after a refresh, a
+  hand-crafted osza: URL) says "not on the current blocklist"
+  instead of inventing an entry, and an unconfigured manager still
+  names the default source - the row is never empty. Every value
+  the page interpolates is HTML-escaped, the source included, and
+  the source row carries selectable monospace text (like the
+  blocked URL) rather than a link - a security interstitial should
+  not carry an easy path away to a third-party site, but the
+  address can be copied and visited deliberately.
+  New autotests: the query itself (exact, normalized, trailing-dot,
+  the closest listed ancestor, an exact listing beating the
+  ancestor, the suffix spoofs, the empty host, the empty list, the
+  purity under the off switch and a session allow, and the entry
+  existing exactly when the host is blocked) and the interstitial
+  extended (the disclosure and its question, both match tails, the
+  no-current-match and not-loaded honesty, the source row escaping
+  a hostile source URL, with the source saved and restored). The
+  docs screenshot shows the page with the disclosure open.
+  Verified without a Qt build by the new
+  tools/security/verify_threat_interstitial.py (75 checks), which
+  also pins the contracts: one walk behind every question, the
+  placeholder contract on both sides of the page, the native
+  disclosure's markup and no-script toggle, the one-snapshot read,
+  the escaping discipline, a behavioral simulation of the walk, and
+  the deadlock guard (the page reads through the file-local helper
+  under its lock, never through the self-locking public query).
 - Security tools (18): the protections-relaxed badge in the location
   bar. The per-site state the padlock menu answers for was invisible
   until the menu was opened - a site with an HTTPS-Only exclusion, a

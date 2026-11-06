@@ -97,6 +97,62 @@ body { direction: %DIRECTION%; }
     -webkit-user-select: auto;
     user-select: auto;
 }
+
+/* The "why is this site flagged?" disclosure. A native <details> on
+   purpose: the toggle needs no script (keyboard and assistive tech
+   get the semantics from the element itself), and the answer - the
+   matching entry, the list source, the list state - starts hidden so
+   the warning reads first and the evidence is one deliberate click
+   away. */
+.vx-threat__why {
+    margin-block-start: 22px;
+    text-align: start;
+}
+
+.vx-threat__why-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--osza-text-dim);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--osza-speed) var(--osza-ease);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Older WebEngines still paint the built-in triangle; newer ones
+   honor list-style. Both are silenced, the chevron below replaces
+   them everywhere. */
+.vx-threat__why-toggle::-webkit-details-marker { display: none; }
+
+.vx-threat__why-toggle:hover, .vx-threat__why-toggle:focus-visible {
+    color: var(--osza-text);
+}
+
+.vx-threat__chev {
+    inline-size: 14px;
+    block-size: 14px;
+    flex: none;
+    color: var(--osza-danger);
+    transition: transform var(--osza-speed) var(--osza-ease);
+}
+
+.vx-threat__why[open] .vx-threat__chev {
+    transform: rotate(180deg);
+}
+
+.vx-threat__why-body {
+    animation: vx-threat-reveal var(--osza-speed) var(--osza-ease);
+}
+
+@keyframes vx-threat-reveal {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+}
 </style>
 </head>
 <body>
@@ -113,13 +169,24 @@ body { direction: %DIRECTION%; }
       <a class="vx-btn vx-btn--danger" href="osza:start" onclick="return goBack()">%BACK-LABEL%</a>
     </div>
 
-    <h2 class="vx-h vx-threat__details">%DETAILS-HEADING%</h2>
-    <dl class="vx-threat__details">
-      <dt>%BLOCKED-URL%</dt>
-      <dd class="vx-threat__url">%URL%</dd>
-      <dt>%LIST-STATE%</dt>
-      <dd>%LIST-INFO%</dd>
-    </dl>
+    <details class="vx-threat__why">
+      <summary class="vx-threat__why-toggle">
+        <svg class="vx-threat__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"></path></svg>
+        <span>%WHY-LINK%</span>
+      </summary>
+      <div class="vx-threat__why-body">
+        <dl class="vx-threat__details">
+          <dt>%BLOCKED-URL%</dt>
+          <dd class="vx-threat__url">%URL%</dd>
+          <dt>%MATCH-ENTRY%</dt>
+          <dd class="vx-threat__url">%MATCH-INFO%</dd>
+          <dt>%SOURCE-LABEL%</dt>
+          <dd class="vx-threat__url">%SOURCE-INFO%</dd>
+          <dt>%LIST-STATE%</dt>
+          <dd>%LIST-INFO%</dd>
+        </dl>
+      </div>
+    </details>
 
     <p class="vx-note" style="margin-block-start: 16px;">%EXPLAIN-2%</p>
 

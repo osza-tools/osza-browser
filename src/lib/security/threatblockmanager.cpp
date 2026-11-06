@@ -52,6 +52,36 @@ const char kListHeader[] = "# Osza Browser threat blocklist";
 const char kListSourcePrefix[] = "# source: ";
 const char kListUpdatedPrefix[] = "# updated: ";
 
+// One matching walk for every question of the shape "which entry of
+// this set covers this host": the host itself first, then each parent
+// domain in turn, closest first. The dot boundary in the walk is what
+// keeps "evilbad.example" from matching "bad.example". Returns the
+// entry that matched, or an empty string when nothing does - the
+// caller decides what that means (blocked, session-allowed, flagged).
+// The caller holds the mutex guarding the set (or owns it).
+QString matchingEntry(const QString &host, const QSet<QString> &set)
+{
+    if (host.isEmpty() || set.isEmpty()) {
+        return QString();
+    }
+
+    if (set.contains(host)) {
+        return host;
+    }
+
+    QString name = host;
+    for (;;) {
+        const int dot = name.indexOf(QLatin1Char('.'));
+        if (dot < 0 || dot + 1 >= name.size()) {
+            return QString();
+        }
+        name = name.mid(dot + 1);
+        if (set.contains(name)) {
+            return name;
+        }
+    }
+}
+
 } // namespace
 
 ThreatBlockManager::ThreatBlockManager(QObject *parent)
@@ -189,39 +219,27 @@ bool ThreatBlockManager::isUpdating() const
 
 bool ThreatBlockManager::isHostBlocked(const QString &host) const
 {
-    QString name = normalizeHost(host);
-
-    if (name.isEmpty()) {
-        return false;
-    }
+    const QString name = normalizeHost(host);
 
     QMutexLocker lock(&m_mutex);
 
-    if (m_blockedHosts.isEmpty()) {
-        return false;
-    }
-
-    if (m_blockedHosts.contains(name)) {
-        return true;
-    }
-
     // Subdomains of a listed host belong to the same operator; the
-    // dot boundary keeps "evilbad.example" from matching "bad.example".
-    for (;;) {
-        const int dot = name.indexOf(QLatin1Char('.'));
-        if (dot < 0 || dot + 1 >= name.size()) {
-            return false;
-        }
-        name = name.mid(dot + 1);
-        if (m_blockedHosts.contains(name)) {
-            return true;
-        }
-    }
+    // dot boundary lives in the one shared walk.
+    return !matchingEntry(name, m_blockedHosts).isEmpty();
+}
+
+QString ThreatBlockManager::matchingListEntry(const QString &host) const
+{
+    const QString name = normalizeHost(host);
+
+    QMutexLocker lock(&m_mutex);
+
+    return matchingEntry(name, m_blockedHosts);
 }
 
 bool ThreatBlockManager::shouldBlock(const QString &host) const
 {
-    QString name = normalizeHost(host);
+    const QString name = normalizeHost(host);
 
     if (name.isEmpty()) {
         return false;
@@ -239,22 +257,9 @@ bool ThreatBlockManager::shouldBlock(const QString &host) const
         return false;
     }
 
-    if (m_blockedHosts.contains(name)) {
-        return true;
-    }
-
     // Subdomains of a listed host belong to the same operator; the
-    // dot boundary keeps "evilbad.example" from matching "bad.example".
-    for (;;) {
-        const int dot = name.indexOf(QLatin1Char('.'));
-        if (dot < 0 || dot + 1 >= name.size()) {
-            return false;
-        }
-        name = name.mid(dot + 1);
-        if (m_blockedHosts.contains(name)) {
-            return true;
-        }
-    }
+    // dot boundary lives in the one shared walk.
+    return !matchingEntry(name, m_blockedHosts).isEmpty();
 }
 
 bool ThreatBlockManager::isSessionAllowed(const QString &host) const
@@ -271,23 +276,9 @@ bool ThreatBlockManager::isSessionAllowed(const QString &host) const
 
 bool ThreatBlockManager::isSessionAllowedLocked(const QString &host) const
 {
-    QString name = host;
-
-    if (m_sessionAllowed.contains(name)) {
-        return true;
-    }
-
-    // The exception covers subdomains of the allowed host as well.
-    for (;;) {
-        const int dot = name.indexOf(QLatin1Char('.'));
-        if (dot < 0 || dot + 1 >= name.size()) {
-            return false;
-        }
-        name = name.mid(dot + 1);
-        if (m_sessionAllowed.contains(name)) {
-            return true;
-        }
-    }
+    // The exception covers subdomains of the allowed host as well,
+    // through the same walk the blocklist matches with.
+    return !matchingEntry(host, m_sessionAllowed).isEmpty();
 }
 
 void ThreatBlockManager::allowForSession(const QString &host)
@@ -661,8 +652,10 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
         templatePage.replace(QLatin1String("%LEAD%"), tr("Osza stopped this page from loading."));
         templatePage.replace(QLatin1String("%EXPLAIN-1%"), tr("The site <b>%HOST%</b> is on a blocklist of known dangerous hosts. Attack sites try to install programs that steal private information, use your device to attack others, or damage your system."));
         templatePage.replace(QLatin1String("%EXPLAIN-2%"), tr("This protection is part of the Osza security tools. It can be turned off in Preferences &gt; Privacy &gt; Security tools."));
-        templatePage.replace(QLatin1String("%DETAILS-HEADING%"), tr("Details"));
+        templatePage.replace(QLatin1String("%WHY-LINK%"), tr("Why is this site flagged?"));
         templatePage.replace(QLatin1String("%BLOCKED-URL%"), tr("Blocked URL"));
+        templatePage.replace(QLatin1String("%MATCH-ENTRY%"), tr("Matching entry"));
+        templatePage.replace(QLatin1String("%SOURCE-LABEL%"), tr("Blocklist source"));
         templatePage.replace(QLatin1String("%LIST-STATE%"), tr("Blocklist"));
         templatePage.replace(QLatin1String("%BACK-LABEL%"), tr("Back to safety"));
         templatePage.replace(QLatin1String("%PROCEED-LABEL%"), tr("Proceed anyway (not recommended)"));
@@ -675,7 +668,16 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
     page.replace(QLatin1String("%HOST%"), host);
     page.replace(QLatin1String("%URL%"), blockedUrl.toDisplayString().toHtmlEscaped());
 
+    // The "why is this site flagged?" answer: which entry of which
+    // list flagged the site, read under the same lock as the list
+    // state so the three rows describe one coherent snapshot of the
+    // blocklist - never the decision of one refresh mixed with the
+    // entries of another.
+    const QString name = normalizeHost(blockedUrl.host());
+
     QString listInfo;
+    QString matchInfo;
+    QString sourceInfo;
     {
         QMutexLocker lock(&m_mutex);
 
@@ -687,8 +689,31 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
                 count,
                 m_lastUpdate.isValid() ? QLocale().toString(m_lastUpdate.toLocalTime(), QLocale::ShortFormat) : tr("unknown date"));
         }
+
+        // The entry that matched, and how it matched. The page can be
+        // reached without a current match (a stale address reloaded
+        // after a refresh, a hand-crafted osza: URL), and it must say
+        // so rather than invent an entry.
+        const QString entry = matchingEntry(name, m_blockedHosts);
+
+        if (m_blockedHosts.isEmpty()) {
+            matchInfo = tr("unknown (the blocklist is not loaded)");
+        } else if (entry.isEmpty()) {
+            matchInfo = tr("not on the current blocklist");
+        } else if (entry == name) {
+            matchInfo = tr("%1 (the host itself is on the list)", "matching blocklist entry, exact match").arg(entry.toHtmlEscaped());
+        } else {
+            matchInfo = tr("%1 (the visited host is a subdomain of this entry)", "matching blocklist entry, matched through a parent domain").arg(entry.toHtmlEscaped());
+        }
+
+        // The list the decision was made against, and where it came
+        // from. Never empty: an unconfigured manager still protects
+        // through the default source.
+        sourceInfo = (m_sourceUrl.isEmpty() ? defaultSourceUrl() : m_sourceUrl).toHtmlEscaped();
     }
     page.replace(QLatin1String("%LIST-INFO%"), listInfo);
+    page.replace(QLatin1String("%MATCH-INFO%"), matchInfo);
+    page.replace(QLatin1String("%SOURCE-INFO%"), sourceInfo);
 
     page.replace(QLatin1String("%PROCEED-URL%"),
                  QString::fromLatin1(QUrl::toPercentEncoding(blockedUrl.toString())));

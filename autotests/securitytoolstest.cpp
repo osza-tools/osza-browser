@@ -793,6 +793,57 @@ void SecurityToolsTest::threatBlockHostMatchingTest()
     QVERIFY(!manager->shouldBlock(QSL("bad.example")));
 }
 
+void SecurityToolsTest::threatBlockMatchingEntryTest()
+{
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    // the entry that matched: the host itself when listed
+    manager->applyListData(QByteArray("0.0.0.0 bad.example\nsub.ok.example\n"));
+    QCOMPARE(manager->matchingListEntry(QSL("bad.example")), QSL("bad.example"));
+    QCOMPARE(manager->matchingListEntry(QSL("sub.ok.example")), QSL("sub.ok.example"));
+
+    // normalization applies before the lookup, like every other query
+    QCOMPARE(manager->matchingListEntry(QSL("BAD.Example")), QSL("bad.example"));
+    QCOMPARE(manager->matchingListEntry(QSL("bad.example.")), QSL("bad.example"));
+
+    // the closest listed ancestor answers for a subdomain
+    QCOMPARE(manager->matchingListEntry(QSL("www.bad.example")), QSL("bad.example"));
+    QCOMPARE(manager->matchingListEntry(QSL("deep.www.bad.example")), QSL("bad.example"));
+
+    // an exact listing beats the ancestor: the entry shown is the one
+    // that matched first on the walk up
+    manager->applyListData(QByteArray("0.0.0.0 bad.example\n0.0.0.0 www.bad.example\n"));
+    QCOMPARE(manager->matchingListEntry(QSL("www.bad.example")), QSL("www.bad.example"));
+    QCOMPARE(manager->matchingListEntry(QSL("x.www.bad.example")), QSL("www.bad.example"));
+
+    // no match: suffix spoofs, unrelated hosts, the empty host
+    QVERIFY(manager->matchingListEntry(QSL("evilbad.example")).isEmpty());
+    QVERIFY(manager->matchingListEntry(QSL("bad.example.evil.org")).isEmpty());
+    QVERIFY(manager->matchingListEntry(QSL("good.example")).isEmpty());
+    QVERIFY(manager->matchingListEntry(QString()).isEmpty());
+
+    // a pure list query: neither the enabled switch nor a session
+    // allow changes the answer
+    const bool enabledBefore = manager->isEnabled();
+    manager->setEnabled(false);
+    QCOMPARE(manager->matchingListEntry(QSL("www.bad.example")), QSL("www.bad.example"));
+    manager->setEnabled(enabledBefore);
+    manager->allowForSession(QSL("bad.example"));
+    QCOMPARE(manager->matchingListEntry(QSL("www.bad.example")), QSL("www.bad.example"));
+    manager->removeSessionAllow(QSL("bad.example"));
+
+    // the entry exists exactly when the host is blocked - the answer
+    // the interstitial shows cannot disagree with the decision
+    manager->applyListData(QByteArray("0.0.0.0 bad.example\n"));
+    QCOMPARE(manager->matchingListEntry(QSL("bad.example")).isEmpty(), !manager->isHostBlocked(QSL("bad.example")));
+    QCOMPARE(manager->matchingListEntry(QSL("deep.bad.example")).isEmpty(), !manager->isHostBlocked(QSL("deep.bad.example")));
+    QCOMPARE(manager->matchingListEntry(QSL("evilbad.example")).isEmpty(), !manager->isHostBlocked(QSL("evilbad.example")));
+
+    // an empty list has no entry for anything
+    manager->applyListData(QByteArray());
+    QVERIFY(manager->matchingListEntry(QSL("bad.example")).isEmpty());
+}
+
 void SecurityToolsTest::threatBlockSessionAllowTest()
 {
     auto *manager = mApp->networkManager()->threatBlockManager();
@@ -903,10 +954,43 @@ void SecurityToolsTest::threatBlockInterstitialTest()
     QVERIFY(page.contains(proceedHref));
     QVERIFY(page.contains(QSL("osza:start")));
 
+    // the "why is this site flagged?" disclosure carries the evidence:
+    // a native <details> (the toggle needs no script), the matching
+    // entry, the source of the list and the list state
+    QVERIFY(page.contains(QSL("<details")));
+    QVERIFY(page.contains(QSL("Why is this site flagged?")));
+    QVERIFY(page.contains(QSL("Matching entry")));
+    QVERIFY(page.contains(QSL("bad.example (the host itself is on the list)")));
+
+    // a subdomain answers with the listed parent that covers it
+    const QUrl subdomain(QSL("http://www.bad.example/payload"));
+    const QString subdomainPage = manager->interstitialPage(subdomain);
+    QVERIFY(subdomainPage.contains(QSL("bad.example (the visited host is a subdomain of this entry)")));
+
+    // the page can be reached without a current match (a stale
+    // address, a hand-crafted URL) and says so instead of inventing
+    // an entry
+    const QUrl unlisted(QSL("http://good.example/x"));
+    const QString unlistedPage = manager->interstitialPage(unlisted);
+    QVERIFY(unlistedPage.contains(QSL("not on the current blocklist")));
+
+    // the source of the decision is named and escaped like every
+    // value the page interpolates
+    QVERIFY(page.contains(QSL("Blocklist source")));
+    QVERIFY(page.contains(manager->sourceUrl().toHtmlEscaped()));
+
+    const QString sourceBefore = manager->sourceUrl();
+    manager->setSourceUrl(QSL("http://source.example/list?<script>"));
+    const QString hostileSourcePage = manager->interstitialPage(blocked);
+    QVERIFY(hostileSourcePage.contains(QSL("source.example/list?&lt;script&gt;")));
+    QVERIFY(!hostileSourcePage.contains(QSL("list?<script>")));
+    manager->setSourceUrl(sourceBefore);
+
     // the blocklist state is honest before the first download
     manager->applyListData(QByteArray());
     const QString emptyPage = manager->interstitialPage(blocked);
     QVERIFY(emptyPage.contains(QSL("not downloaded yet")));
+    QVERIFY(emptyPage.contains(QSL("unknown (the blocklist is not loaded)")));
 }
 
 void SecurityToolsTest::threatBlockManagerStateTest()
