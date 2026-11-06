@@ -44,6 +44,7 @@ private Q_SLOTS:
     void threatBlockSessionAllowTest();
     void threatBlockPageUrlTest();
     void threatBlockListUpdateStateTest();
+    void threatBlockListDeltaTest();
     void threatBlockInterstitialTest();
     void threatBlockManagerStateTest();
     void threatBlockIntegrationTest();

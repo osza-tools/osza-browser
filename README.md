@@ -47,7 +47,9 @@ and KDE contributors for their work.
   entry - the host itself, or the listed parent domain that covers
   it - together with the list's source, size and last update, and
   the evidence keeps its freshness visible: the age is spoken in
-  relative terms ("124,000 hosts, updated 3 hours ago"), a refresh
+  relative terms ("124,000 hosts, updated 3 hours ago"), with the
+  movement the last refresh brought spoken next to the new size
+  ("+1,204 hosts since the last refresh"), a refresh
   in flight and the last refresh's failure are named on the warning
   page's evidence rows and in the padlock menu's threat-block row,
   and a "Refresh the blocklist now" action - a link on the warning

@@ -7,6 +7,41 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- Security tools (22): the blocklist's movement on the evidence
+  rows - "+1,204 hosts since the last refresh". The warning page's
+  "why is this site flagged?" disclosure named the list's size and
+  its age, but not how it had moved: after "Refresh the blocklist
+  now" (or the revoke of a "proceed anyway", which now renews as
+  protection resumes) the row said "125,204 hosts, updated less
+  than a minute ago" with no word of the 1,204 hosts the refresh
+  had just added - so the size of the change in the evidence, the
+  very thing a renewal was asked for, went unspoken. The list-state
+  row now speaks the movement the last refresh brought, next to the
+  size and age it belongs to: a growth with its sign ("+1,204 hosts
+  since the last refresh"), a loss the same way ("-30 hosts since
+  the last refresh"), a refresh that moved nothing as "(unchanged
+  since the last refresh)" - which is itself evidence - and silence
+  where no movement can honestly be claimed: the first list a
+  profile ever downloads (nothing came before it), and the same
+  list reloaded from disk after a restart (the movement was not
+  seen, so it is not invented). The memory is one place and one
+  judgment: applyListData() - the one path a renewal takes, never
+  the startup disk load - remembers the count of the list it
+  replaces against the count of the list landing, mutex-guarded
+  like the rest of the update lifecycle and read by the evidence
+  row under the one lock the whole snapshot already holds, so a
+  row's size, age and movement can never describe two different
+  refreshes. The movement is deliberately session memory, not
+  persisted state: the blocklist file carries the list, and after a
+  restart the row speaks what it can know. Verified by the extended
+  offline tools/security/verify_threat_block_update_ux.py (the
+  remembering site and its timing, the disk load's and applyList's
+  silence, the wording contracts, and a Python mirror of the
+  movement judgment with its silences) and by the new
+  threatBlockListDeltaTest autotest, which drives every state
+  through applyListData() - the first list, a growth, a loss, an
+  unchanged refresh, and the restart's disk load - and pins the
+  row's answer for each.
 - Security tools (21): the blocklist update indicator in the
   location bar - the renewal is witnessed in the chrome. Every
   surface that spoke the blocklist's update lifecycle spoke it after

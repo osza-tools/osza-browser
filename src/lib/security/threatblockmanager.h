@@ -223,6 +223,19 @@ protected:
     bool m_updating;
     QString m_lastError;
 
+    // The movement the last landed refresh brought: the host count
+    // of the list that landed minus the host count of the list it
+    // replaced. Valid only after a refresh actually replaced a
+    // non-empty list in this session - the first download and the
+    // startup load from disk arrive with nothing to compare
+    // against, and a restart has not seen the movement, so all
+    // three stay silent rather than inventing a number. The
+    // interstitial's list-state evidence row reads it under the
+    // same lock as the size and age it rides, so one row speaks
+    // one coherent snapshot of the blocklist.
+    int m_lastDelta;
+    bool m_deltaValid;
+
     // UI-thread only state
     QNetworkAccessManager *m_nam;
     QNetworkReply *m_reply;

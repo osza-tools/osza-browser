@@ -1121,6 +1121,64 @@ void SecurityToolsTest::threatBlockListUpdateStateTest()
     manager->loadSettings();
 }
 
+void SecurityToolsTest::threatBlockListDeltaTest()
+{
+    // The movement of the evidence, as the interstitial's list-state
+    // row speaks it: the host-count change the last refresh brought,
+    // remembered only when a refresh actually replaced a list. All
+    // states are driven through applyListData() - the one path a
+    // renewal takes - with the wording, the sign, the zero movement
+    // and the restart's honest silence all pinned; the locale spells
+    // the count, so the assertions pin the sign and the phrasing,
+    // not the separator.
+    auto *manager = mApp->networkManager()->threatBlockManager();
+
+    const QUrl blocked(QSL("http://delta.example/payload?x=1"));
+
+    // the first list a profile ever sees arrives with no movement to
+    // claim - nothing came before it
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    const QString firstPage = manager->interstitialPage(blocked);
+    QVERIFY(firstPage.contains(QSL("updated less than a minute ago")));
+    QVERIFY(!firstPage.contains(QSL("since the last refresh")));
+
+    // a refresh that grows the list speaks the growth next to the
+    // new size, with the sign
+    manager->applyListData(QByteArray("http://bad.example/x\n"
+                                      "http://two.example/y\n"
+                                      "http://three.example/z\n"));
+    const QString grownPage = manager->interstitialPage(blocked);
+    QVERIFY(grownPage.contains(QSL("+2 host")));
+    QVERIFY(grownPage.contains(QSL("hosts since the last refresh")));
+
+    // a refresh that shrinks it speaks the loss the same way, and
+    // the growth it replaced is gone
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    const QString shrunkPage = manager->interstitialPage(blocked);
+    QVERIFY(shrunkPage.contains(QSL("-2 host")));
+    QVERIFY(shrunkPage.contains(QSL("hosts since the last refresh")));
+    QVERIFY(!shrunkPage.contains(QSL("+2 host")));
+
+    // a refresh that changed nothing says so - that is evidence too
+    manager->applyListData(QByteArray("http://bad.example/x\n"));
+    const QString samePage = manager->interstitialPage(blocked);
+    QVERIFY(samePage.contains(QSL("(unchanged since the last refresh)")));
+    QVERIFY(!samePage.contains(QSL("hosts since the last refresh")));
+
+    // a restart has not seen the movement: the same list loaded from
+    // disk speaks its size and age, not a delta it cannot know
+    ThreatBlockManager diskManager;
+    diskManager.loadSettings();
+    QVERIFY(diskManager.isListLoaded());
+    const QString reloadedPage = diskManager.interstitialPage(blocked);
+    QVERIFY(reloadedPage.contains(QSL("updated less than a minute ago")));
+    QVERIFY(!reloadedPage.contains(QSL("since the last refresh")));
+
+    // leave the shared manager clean for the other tests
+    manager->applyListData(QByteArray());
+    manager->loadSettings();
+}
+
 void SecurityToolsTest::threatBlockInterstitialTest()
 {
     auto *manager = mApp->networkManager()->threatBlockManager();

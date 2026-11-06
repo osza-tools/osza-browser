@@ -102,6 +102,8 @@ ThreatBlockManager::ThreatBlockManager(QObject *parent)
     , m_enabled(true)
     , m_updating(false)
     , m_lastError()
+    , m_lastDelta(0)
+    , m_deltaValid(false)
     , m_nam(nullptr)
     , m_reply(nullptr)
     , m_refreshTimerId(0)
@@ -506,6 +508,25 @@ int ThreatBlockManager::applyListData(const QByteArray &data)
     parseListData(data, &hosts);
 
     const QDateTime now = QDateTime::currentDateTimeUtc();
+
+    // The movement the new list brings, remembered beside the swap
+    // it describes: the count of the list in place against the
+    // count of the list landing. This is the one path a renewal
+    // takes (the downloader's reply handler; the manual import and
+    // the tests ride it too) - never the startup load from disk -
+    // so a movement is only ever remembered for a list that
+    // actually replaced one, and the first list a profile ever sees
+    // arrives with no movement to claim. Remembered before the
+    // swap lands, so the delta is already in place when the
+    // listUpdated handlers run.
+    const int previousCount = hostCount();
+
+    {
+        QMutexLocker lock(&m_mutex);
+        m_lastDelta = hosts.size() - previousCount;
+        m_deltaValid = previousCount > 0;
+    }
+
     applyList(hosts, now);
     saveList(hosts, now);
 
@@ -805,6 +826,26 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
             listInfo = tr("%1 hosts, updated %2", "number of hosts in the blocklist, last update time").arg(
                 count,
                 describeListAge(m_lastUpdate));
+
+            // The movement the list in place arrived with, spoken
+            // next to its size and age: how much the last refresh
+            // changed the evidence this warning stands on. Only a
+            // refresh that replaced a list has a movement to speak
+            // (the first download and a restart's disk load arrive
+            // with nothing to compare against - silence, not an
+            // invented number); a refresh that changed nothing says
+            // so, which is itself evidence. Read under the one lock
+            // the whole snapshot already holds, like every state
+            // this row reports.
+            if (m_deltaValid) {
+                if (m_lastDelta == 0) {
+                    listInfo += tr(" (unchanged since the last refresh)");
+                } else {
+                    const QString movement = (m_lastDelta > 0 ? QSL("+") : QSL("-"))
+                        + QLocale().toString(qAbs(m_lastDelta));
+                    listInfo += tr(" (%1 hosts since the last refresh)", "host-count change the last refresh brought").arg(movement);
+                }
+            }
         }
 
         // The update lifecycle rides on the same row, read under the

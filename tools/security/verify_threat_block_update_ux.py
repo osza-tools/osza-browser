@@ -31,6 +31,13 @@
 #      (updating now / the last update failed, escaped / the not-
 #      downloaded-yet honesty kept), and the "refresh now" link
 #      built from the one URL shape and HTML-escaped for the href.
+#      The row also speaks the movement the last refresh brought
+#      next to the size and age it belongs to: remembered once, in
+#      applyListData() (the one path a renewal takes, never the
+#      startup disk load) from the count of the list it replaced -
+#      "(+1,204 hosts since the last refresh)", "(unchanged since
+#      the last refresh)", and silence for a first list or after
+#      a restart, which have seen no movement to claim.
 #
 #   4. The refresh URL contract: refreshListPageUrl() /
 #      isRefreshListPageUrl() mirror the proceed URL's shape, the
@@ -147,10 +154,13 @@ interstitial = body(manager_cpp, "QString ThreatBlockManager::interstitialPage(c
 fetch = body(manager_cpp, "void ThreatBlockManager::fetchList()")
 check_for_update = body(manager_cpp, "void ThreatBlockManager::checkForUpdate()")
 apply_list = body(manager_cpp, "void ThreatBlockManager::applyList(const QSet<QString> &hosts, const QDateTime &when)")
+apply_list_data = body(manager_cpp, "int ThreatBlockManager::applyListData(const QByteArray &data)")
+load_list = body(manager_cpp, "bool ThreatBlockManager::loadList()")
 update_row = body(siteinfo_cpp, "void SiteInfoWidget::updateThreatBlockState()")
 update_click = body(siteinfo_cpp, "void SiteInfoWidget::threatBlockUpdateButtonClicked()")
 site_click = body(siteinfo_cpp, "void SiteInfoWidget::threatBlockButtonClicked()")
 state_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListUpdateStateTest()")
+delta_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockListDeltaTest()")
 url_test = body(autotest_cpp, "void SecurityToolsTest::threatBlockPageUrlTest()")
 
 # ------------------------------------------------------------------
@@ -270,6 +280,40 @@ check("the link label is translated once and escaped",
 check("the link is offered exactly when the list is due, the download failed, or nothing is in place - never while one runs",
       "wantsRefresh = true;" in interstitial
       and interstitial.count("wantsRefresh = true;") == 2)
+
+check("the movement the last refresh brought rides the row, read under the same one lock as the rest of the snapshot",
+      interstitial is not None and "m_deltaValid" in interstitial and "m_lastDelta" in interstitial
+      and interstitial.count("QMutexLocker lock(&m_mutex);") == 1)
+check("a non-zero movement is spoken with its sign, next to the size and age it belongs to",
+      'tr(" (%1 hosts since the last refresh)"' in interstitial)
+check("the sign is composed from the remembered delta, its magnitude locale-spelled",
+      'm_lastDelta > 0 ? QSL("+") : QSL("-")' in interstitial and "qAbs(m_lastDelta)" in interstitial)
+check("a refresh that moved nothing says so - that is evidence too",
+      'tr(" (unchanged since the last refresh)")' in interstitial)
+check("the movement only rides a list that exists (the not-downloaded row stays bare)",
+      interstitial is not None
+      and interstitial.index('tr("not downloaded yet")') < interstitial.index("m_deltaValid"))
+
+# ------------------------------------------------------------------
+# 3b. The movement is remembered once, where the renewal lands
+# ------------------------------------------------------------------
+print("3b. the movement is remembered once")
+
+check("the delta members are declared beside the lifecycle state, with their contract",
+      "int m_lastDelta;" in manager_h and "bool m_deltaValid;" in manager_h
+      and "movement the last landed refresh brought" in manager_h)
+check("the constructor initializes them",
+      ", m_lastDelta(0)" in manager_cpp and ", m_deltaValid(false)" in manager_cpp)
+check("the movement is remembered in applyListData - the one path a renewal takes",
+      apply_list_data is not None and "hosts.size() - previousCount" in apply_list_data
+      and "m_deltaValid = previousCount > 0;" in apply_list_data)
+check("it is remembered before the swap lands (in place when the listUpdated handlers run)",
+      apply_list_data is not None
+      and apply_list_data.index("m_lastDelta = hosts.size() - previousCount;") < apply_list_data.index("applyList(hosts, now);"))
+check("the startup load from disk never claims a movement (a restart has not seen one)",
+      load_list is not None and "m_lastDelta" not in load_list)
+check("applyList itself stays the pure swap (the landing, not the remembering)",
+      apply_list is not None and "m_lastDelta" not in apply_list)
 
 # ------------------------------------------------------------------
 # 4. The refresh URL contract
@@ -422,6 +466,36 @@ for label, has_hosts, age_ms, expected in (
         ("days old is due", True, 3 * REFRESH_MS, True)):
     check("%s -> %r" % (label, expected), is_list_stale(has_hosts, age_ms) == expected)
 
+
+def describe_delta(previous, new):
+    """The mirror of the row's movement: None when there was no list
+    to move from (the first download, a restart's disk load),
+    'unchanged' when the refresh moved nothing, else the signed
+    count - the exact judgment m_deltaValid and m_lastDelta carry."""
+    if previous == 0:
+        return None
+    delta = new - previous
+    if delta == 0:
+        return "unchanged"
+    return ("+" if delta > 0 else "-") + str(abs(delta))
+
+
+for label, previous, new, expected in (
+        ("the first list ever claims no movement", 0, 124000, None),
+        ("a growing list speaks its growth", 122796, 124000, "+1204"),
+        ("a shrinking list speaks its loss", 124000, 123970, "-30"),
+        ("a refresh that moved nothing says so", 124000, 124000, "unchanged"),
+        ("a list emptied entirely speaks the whole loss", 124000, 0, "-124000")):
+    check("%s -> %r" % (label, expected), describe_delta(previous, new) == expected)
+
+check("the C++ silences the movement exactly when the previous list was empty",
+      "m_deltaValid = previousCount > 0;" in manager_cpp)
+check("the C++ sign is the mirror's (a composed '+' or '-', the magnitude absolute)",
+      'm_lastDelta > 0 ? QSL("+") : QSL("-")' in manager_cpp and "qAbs(m_lastDelta)" in manager_cpp)
+check("the zero movement has its own wording, not a signed zero",
+      'tr(" (unchanged since the last refresh)")' in manager_cpp
+      and "+0" not in manager_cpp)
+
 # ------------------------------------------------------------------
 # 8. The autotests carry the feature
 # ------------------------------------------------------------------
@@ -456,6 +530,19 @@ check("the pulse widget test is declared and defined",
       "void locationBarListUpdatePulseTest();" in autotest_h
       and "void SecurityToolsTest::locationBarListUpdatePulseTest()" in autotest_cpp)
 
+check("the delta test is declared and defined",
+      "void threatBlockListDeltaTest();" in autotest_h
+      and "void SecurityToolsTest::threatBlockListDeltaTest()" in autotest_cpp)
+check("the delta test pins the growth, the loss and the no-change wordings",
+      'QSL("+2 host")' in delta_test and 'QSL("-2 host")' in delta_test
+      and 'QSL("(unchanged since the last refresh)")' in delta_test
+      and 'QSL("hosts since the last refresh")' in delta_test)
+check("the delta test pins the silences (a first list, and the same list reloaded from disk after a restart)",
+      delta_test.count('QSL("since the last refresh")') == 2
+      and "diskManager" in delta_test and "diskManager.loadSettings();" in delta_test)
+check("the delta test drives the movement through the renewal's own path",
+      delta_test.count("applyListData(") >= 5)
+
 # ------------------------------------------------------------------
 # 9. Build discipline and docs
 # ------------------------------------------------------------------
@@ -473,8 +560,12 @@ check("html.qrc still ships threatblocked.html",
 readme_flat = " ".join(readme.split())
 check("the README tells the user the evidence carries its freshness and a renewal",
       "Refresh the blocklist now" in readme_flat and "updated" in readme_flat)
+check("the README tells the user the evidence speaks its movement",
+      "since the last refresh" in readme_flat)
 check("the CHANGELOG has a Security tools (20) entry for the update UX",
       "Security tools (20)" in changelog and "refresh" in changelog.lower())
+check("the CHANGELOG has a Security tools (22) entry for the movement on the evidence rows",
+      "Security tools (22)" in changelog and "since the last refresh" in changelog)
 
 print()
 if failures:
