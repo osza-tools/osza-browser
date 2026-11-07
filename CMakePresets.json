@@ -1,0 +1,97 @@
+{
+  "version": 2,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BUILD_TESTING": "OFF",
+        "BUILD_TRANSLATIONS": "OFF",
+        "BUILD_PYTHON_SUPPORT": "OFF",
+        "OSZA_USE_CCACHE": "ON",
+        "OSZA_ENABLE_PCH": "ON"
+      },
+      "environment": {
+        "CCACHE_SLOPPINESS": "pch_defines,time_macros"
+      }
+    },
+    {
+      "name": "dev",
+      "inherits": "dev-base",
+      "displayName": "Osza dev (fast iteration)",
+      "description": "RelWithDebInfo with everything not needed to run the browser off: Ninja, ccache, precompiled headers, no Python bindings, no tests, no translations.",
+      "binaryDir": "${sourceDir}/build-dev",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "dev-debug",
+      "inherits": "dev",
+      "displayName": "Osza dev (Debug)",
+      "description": "The dev preset in Debug: also builds TestPlugin and SiteSettingsView.",
+      "binaryDir": "${sourceDir}/build-dev-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "full",
+      "inherits": "dev-base",
+      "displayName": "Osza dev (everything enabled)",
+      "description": "RelWithDebInfo with the whole tree built (autotests, benchmarks, Python bindings, translations), still Ninja + ccache + precompiled headers.",
+      "binaryDir": "${sourceDir}/build-full",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "BUILD_TESTING": "ON",
+        "BUILD_TRANSLATIONS": "ON",
+        "BUILD_PYTHON_SUPPORT": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Osza release (CI parity)",
+      "description": "What the CI builds: Release with test targets compiled, no dev shortcuts.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev",
+      "environment": {
+        "CCACHE_SLOPPINESS": "pch_defines,time_macros"
+      }
+    },
+    {
+      "name": "dev-debug",
+      "configurePreset": "dev-debug",
+      "environment": {
+        "CCACHE_SLOPPINESS": "pch_defines,time_macros"
+      }
+    },
+    {
+      "name": "full",
+      "configurePreset": "full",
+      "environment": {
+        "CCACHE_SLOPPINESS": "pch_defines,time_macros"
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    }
+  ]
+}

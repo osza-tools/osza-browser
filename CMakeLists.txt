@@ -10,6 +10,26 @@ set(OSZA_VERSION "${OSZA_VERSION_MAJOR}.${OSZA_VERSION_MINOR}.${OSZA_VERSION_MIC
 # Project name and version
 project(Osza VERSION ${OSZA_VERSION})
 
+# Cache compilations with ccache when it is available.
+#
+# This is the single biggest win for the "build many times a day" loop:
+# anything that invalidates objects (switching branches, touching a header
+# included half across the tree, a wiped build directory, toggling the
+# precompiled-header option below) recompiles from cache instead of from
+# scratch. It is a no-op when ccache is not installed, and anything the user
+# already set (sccache, distcc, ...) is left alone.
+option(OSZA_USE_CCACHE "Route compilations through ccache when it is available" ON)
+if (OSZA_USE_CCACHE
+    AND NOT DEFINED CMAKE_C_COMPILER_LAUNCHER
+    AND NOT DEFINED CMAKE_CXX_COMPILER_LAUNCHER)
+    find_program(OSZA_CCACHE_PROGRAM ccache)
+    if (OSZA_CCACHE_PROGRAM)
+        set(CMAKE_C_COMPILER_LAUNCHER "${OSZA_CCACHE_PROGRAM}")
+        set(CMAKE_CXX_COMPILER_LAUNCHER "${OSZA_CCACHE_PROGRAM}")
+        message(STATUS "Using ccache: ${OSZA_CCACHE_PROGRAM}")
+    endif()
+endif()
+
 set(KF_MAJOR_VERSION "6")
 set(QT_MIN_VERSION "6.4.0")
 # Used by component lookups that need a versioned Qt6 package, e.g. the

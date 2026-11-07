@@ -190,6 +190,77 @@ make -j$(nproc)
 make install
 ```
 
+This is the one-off release recipe. If you build many times a day, use the
+[fast development builds](#fast-development-builds) below instead.
+
+### Fast development builds
+
+The recipe above quietly punishes the edit–build–run loop: re-running
+`cmake ..` after every commit rewrote a header that a third of the tree
+includes (the git revision used to be baked into `config.h`), and every
+compile paid full price for re-parsing the Qt headers. For day-to-day
+development, build from a persistent build directory with the dev presets:
+
+```sh
+# one time: the fast toolchain
+sudo apt install ninja-build ccache   # or: brew install ninja ccache
+
+# one time per machine/branch: configure the dev build tree
+cmake --preset dev
+
+# after every change - only what your change affected is rebuilt
+cmake --build --preset dev
+```
+
+Why this is fast, and what each piece does:
+
+- **One persistent build directory** (`build-dev/`). Only objects affected
+  by a change recompile — never delete the build directory between builds,
+  and never re-clone or re-configure from scratch.
+- **Ninja** schedules the incremental work with far less overhead than
+  Make, and no-ops when nothing changed.
+- **ccache** caches compilations, so full rebuilds — branch switches,
+  touching a header used half across the tree, a wiped build directory —
+  are served from cache. Enabled automatically whenever ccache is
+  installed (`-DOSZA_USE_CCACHE=OFF` to opt out).
+- **Precompiled headers** (`-DOSZA_ENABLE_PCH=ON` in the preset): the Qt
+  umbrella headers shared by the ~300 objects of the lib are compiled once
+  per configuration instead of once per object. Combined with ccache this
+  needs `CCACHE_SLOPPINESS=pch_defines,time_macros`, which the build
+  preset sets for you.
+- **The git revision no longer rebuilds the tree.** It lives in its own
+  header (`src/osza_git_revision.h`), refreshed at build time and only
+  rewritten when the revision actually changed — after a commit exactly
+  the two objects that display the revision rebuild, nothing else.
+- **Everything not needed to run the browser is off in the preset**:
+  Python plugin bindings (`BUILD_PYTHON_SUPPORT` — the shiboken generator
+  and its ~90 generated wrappers are minutes on their own), the autotest
+  and benchmark targets (`BUILD_TESTING`) and translations
+  (`BUILD_TRANSLATIONS`).
+
+Available presets:
+
+| Preset | Build type | Extra targets | Use for |
+|---|---|---|---|
+| `dev` | RelWithDebInfo | none | the daily edit–build–run loop |
+| `dev-debug` | Debug | TestPlugin, SiteSettingsView | debugging with full symbols |
+| `full` | RelWithDebInfo | tests, benchmarks, Python bindings, translations | verifying the whole tree before pushing |
+| `release` | Release | tests | release parity with CI |
+
+```sh
+cmake --preset dev-debug && cmake --build --preset dev-debug
+```
+
+Notes:
+
+- Presets need CMake >= 3.20. On Windows, run the preset commands from a
+  Qt/MSVC command prompt with Ninja on `PATH`.
+- To run the browser you still need your usual install step
+  (`cmake --install build-dev`), because the plugin search path is baked
+  in at configure time.
+- `ccache -s` shows hit/miss statistics; a warm cache makes even the
+  first build in a fresh clone mostly a cache replay.
+
 ### Install to a custom prefix
 
 When installing Osza Browser to a custom prefix, you may need to adjust the

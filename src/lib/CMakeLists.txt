@@ -8,6 +8,19 @@ set(SRCS
     3rdparty/qtsingleapplication/qtlocalpeer.cpp
 )
 
+# Precompile the Qt umbrella headers shared by the whole lib.
+#
+# The lib is ~300 translation units that all parse the same Qt headers
+# first; precompiling those once per configuration instead of once per
+# object is a substantial per-file compile win (for a small change it is
+# the difference between "compile one object" and "compile one object
+# after re-parsing half of Qt"). Opt-in: the PCH is a few hundred MB on
+# disk and the first build after toggling the option recompiles
+# everything. The dev CMake preset turns it on. When combining it with
+# ccache, CCACHE_SLOPPINESS=pch_defines,time_macros is required (the
+# build presets set it).
+option(OSZA_ENABLE_PCH "Precompile the Qt headers shared by the whole lib (faster compiles)" OFF)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(SRCS ${SRCS} ${CMAKE_SOURCE_DIR}/tests/modeltest/modeltest.cpp)
     include_directories(${CMAKE_SOURCE_DIR}/tests/modeltest)
@@ -638,6 +651,16 @@ add_library(OszaPrivate SHARED ${SRCS} ${LOGGING_SRCS})
 # that include it are compiled.
 if (TARGET osza_git_revision)
     add_dependencies(OszaPrivate osza_git_revision)
+endif()
+
+if (OSZA_ENABLE_PCH)
+    target_precompile_headers(OszaPrivate PRIVATE
+        <QtCore>
+        <QtNetwork>
+        <QtSql>
+        <QtWidgets>
+        <QtWebEngineWidgets>
+    )
 endif()
 
 get_property(QT_WEBENGINE_INCLUDE_DIRS TARGET Qt6::WebEngineCore PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
