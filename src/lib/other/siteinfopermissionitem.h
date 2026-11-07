@@ -45,7 +45,7 @@ public:
     QString sqlColumn();
 
     void setAttribute(const QWebEngineSettings::WebAttribute& attribute);
-    void setFeature(const QWebEnginePage::Feature &feature);
+    void setFeature(const QWebEnginePermission::PermissionType &feature);
     void setOption(const SiteSettingsManager::PageOptions &option);
 
     void setHasOptionAsk(bool hasAsk);

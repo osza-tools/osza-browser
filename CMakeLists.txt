@@ -31,7 +31,9 @@ if (OSZA_USE_CCACHE
 endif()
 
 set(KF_MAJOR_VERSION "6")
-set(QT_MIN_VERSION "6.4.0")
+# The floor the permission API sets: QWebEnginePermission and the
+# permissionRequested signal only exist from Qt 6.8 on.
+set(QT_MIN_VERSION "6.8.0")
 # Used by component lookups that need a versioned Qt6 package, e.g. the
 # Qt6NetworkPrivate find_package when building against Qt >= 6.9.
 set(REQUIRED_QT_VERSION "${QT_MIN_VERSION}")

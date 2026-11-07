@@ -27,54 +27,53 @@
 #include <QtWebEngineWidgetsVersion>
 
 
-HTML5PermissionsNotification::HTML5PermissionsNotification(const QUrl &origin, QWebEnginePage* page, const QWebEnginePage::Feature &feature)
+HTML5PermissionsNotification::HTML5PermissionsNotification(QWebEnginePermission permission, QWebEnginePage* page)
     : AnimatedWidget(AnimatedWidget::Down, 300, nullptr)
     , ui(new Ui::HTML5PermissionsNotification)
-    , m_origin(origin)
+    , m_permission(permission)
     , m_page(page)
-    , m_feature(feature)
 {
     setAutoFillBackground(true);
     ui->setupUi(widget());
 
     ui->close->setIcon(IconProvider::standardIcon(QStyle::SP_DialogCloseButton));
 
-    const QString site = m_origin.host().isEmpty() ? tr("this site") : QSL("<b>%1</b>").arg(m_origin.host());
+    const QString site = m_permission.origin().host().isEmpty() ? tr("this site") : QSL("<b>%1</b>").arg(m_permission.origin().host());
 
-    switch (feature) {
-    case QWebEnginePage::Notifications:
+    switch (m_permission.permissionType()) {
+    case QWebEnginePermission::PermissionType::Notifications:
         ui->textLabel->setText(tr("Allow %1 to show desktop notifications?").arg(site));
         break;
 
-    case QWebEnginePage::Geolocation:
+    case QWebEnginePermission::PermissionType::Geolocation:
         ui->textLabel->setText(tr("Allow %1 to locate your position?").arg(site));
         break;
 
-    case QWebEnginePage::MediaAudioCapture:
+    case QWebEnginePermission::PermissionType::MediaAudioCapture:
         ui->textLabel->setText(tr("Allow %1 to use your microphone?").arg(site));
         break;
 
-    case QWebEnginePage::MediaVideoCapture:
+    case QWebEnginePermission::PermissionType::MediaVideoCapture:
         ui->textLabel->setText(tr("Allow %1 to use your camera?").arg(site));
         break;
 
-    case QWebEnginePage::MediaAudioVideoCapture:
+    case QWebEnginePermission::PermissionType::MediaAudioVideoCapture:
         ui->textLabel->setText(tr("Allow %1 to use your microphone and camera?").arg(site));
         break;
 
-    case QWebEnginePage::MouseLock:
+    case QWebEnginePermission::PermissionType::MouseLock:
         ui->textLabel->setText(tr("Allow %1 to hide your pointer?").arg(site));
         break;
 
-    case QWebEnginePage::DesktopVideoCapture:
+    case QWebEnginePermission::PermissionType::DesktopVideoCapture:
         ui->textLabel->setText(tr("Allow %1 to capture your screen?").arg(site));
         break;
 
-    case QWebEnginePage::DesktopAudioVideoCapture:
+    case QWebEnginePermission::PermissionType::DesktopAudioVideoCapture:
         ui->textLabel->setText(tr("Allow %1 to capture your screen and audio?").arg(site));
         break;
     default:
-        qWarning() << "Unknown feature" << feature;
+        qWarning() << "Unknown permission type" << m_permission.permissionType();
         break;
     }
 
@@ -83,11 +82,12 @@ HTML5PermissionsNotification::HTML5PermissionsNotification(const QUrl &origin, Q
     connect(ui->close, &QAbstractButton::clicked, this, &HTML5PermissionsNotification::denyPermissions);
 
     connect(m_page.data(), &QWebEnginePage::loadStarted, this, &QObject::deleteLater);
-    connect(m_page.data(), &QWebEnginePage::featurePermissionRequestCanceled, this, [this](const QUrl &origin, QWebEnginePage::Feature feature) {
-        if (origin == m_origin && feature == m_feature) {
-            deleteLater();
-        }
-    });
+    // A withdrawn request no longer announces itself: the Qt 5
+    // featurePermissionRequestCanceled signal is deprecated without
+    // a successor and fires no more, so the notification stands
+    // until it is answered or the page moves on (loadStarted
+    // above) - answering a request the page already withdrew is
+    // harmless, the handle simply resolves nothing.
 
     startAnimation();
 }
@@ -100,16 +100,16 @@ void HTML5PermissionsNotification::grantPermissions()
 
     QTimer::singleShot(0, this, [this]() {
         // We need to have cursor inside view to correctly grab mouse
-        if (m_feature == QWebEnginePage::MouseLock) {
+        if (m_permission.permissionType() == QWebEnginePermission::PermissionType::MouseLock) {
             QWidget *view = QWebEngineView::forPage(m_page);
             QCursor::setPos(view->mapToGlobal(view->rect().center()));
         }
 
-        m_page->setFeaturePermission(m_origin, m_feature, QWebEnginePage::PermissionGrantedByUser);
+        m_permission.grant();
     });
 
     if (ui->remember->isChecked()) {
-        mApp->html5PermissionsManager()->rememberPermissions(m_origin, m_feature, QWebEnginePage::PermissionGrantedByUser);
+        mApp->html5PermissionsManager()->rememberPermissions(m_permission.origin(), m_permission.permissionType(), QWebEnginePermission::State::Granted);
     }
 
     hide();
@@ -121,10 +121,10 @@ void HTML5PermissionsNotification::denyPermissions()
         return;
     }
 
-    m_page->setFeaturePermission(m_origin, m_feature, QWebEnginePage::PermissionDeniedByUser);
+    m_permission.deny();
 
     if (ui->remember->isChecked()) {
-        mApp->html5PermissionsManager()->rememberPermissions(m_origin, m_feature, QWebEnginePage::PermissionDeniedByUser);
+        mApp->html5PermissionsManager()->rememberPermissions(m_permission.origin(), m_permission.permissionType(), QWebEnginePermission::State::Denied);
     }
 
     hide();

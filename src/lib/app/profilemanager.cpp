@@ -471,15 +471,15 @@ void ProfileManager::updateDatabase()
             qFatal() << "Error while creating unique index for table 'site_settings': " << query.lastError().text();
         }
 
-        const QHash<QWebEnginePage::Feature, QString> html5SettingPairs = {
-            {QWebEnginePage::Notifications, QSL("Notifications")},
-            {QWebEnginePage::Geolocation, QSL("Geolocation")},
-            {QWebEnginePage::MediaAudioCapture, QSL("MediaAudioCapture")},
-            {QWebEnginePage::MediaVideoCapture, QSL("MediaVideoCapture")},
-            {QWebEnginePage::MediaAudioVideoCapture, QSL("MediaAudioVideoCapture")},
-            {QWebEnginePage::MouseLock, QSL("MouseLock")},
-            {QWebEnginePage::DesktopVideoCapture, QSL("DesktopVideoCapture")},
-            {QWebEnginePage::DesktopAudioVideoCapture,QSL("DesktopAudioVideoCapture")}
+        const QHash<QWebEnginePermission::PermissionType, QString> html5SettingPairs = {
+            {QWebEnginePermission::PermissionType::Notifications, QSL("Notifications")},
+            {QWebEnginePermission::PermissionType::Geolocation, QSL("Geolocation")},
+            {QWebEnginePermission::PermissionType::MediaAudioCapture, QSL("MediaAudioCapture")},
+            {QWebEnginePermission::PermissionType::MediaVideoCapture, QSL("MediaVideoCapture")},
+            {QWebEnginePermission::PermissionType::MediaAudioVideoCapture, QSL("MediaAudioVideoCapture")},
+            {QWebEnginePermission::PermissionType::MouseLock, QSL("MouseLock")},
+            {QWebEnginePermission::PermissionType::DesktopVideoCapture, QSL("DesktopVideoCapture")},
+            {QWebEnginePermission::PermissionType::DesktopAudioVideoCapture,QSL("DesktopAudioVideoCapture")}
         };
         QHash<QString, SiteSettingsManager::SiteSettings> siteSettings;
 
@@ -555,14 +555,14 @@ void ProfileManager::updateDatabase()
         for (const auto &siteSetting : std::as_const(siteSettings)) {
             query.bindValue(0, siteSetting.server);
             query.bindValue(1, siteSetting.AllowCookies);
-            query.bindValue(2, siteSetting.features[QWebEnginePage::Notifications]);
-            query.bindValue(3, siteSetting.features[QWebEnginePage::Geolocation]);
-            query.bindValue(4, siteSetting.features[QWebEnginePage::MediaAudioCapture]);
-            query.bindValue(5, siteSetting.features[QWebEnginePage::MediaVideoCapture]);
-            query.bindValue(6, siteSetting.features[QWebEnginePage::MediaAudioVideoCapture]);
-            query.bindValue(7, siteSetting.features[QWebEnginePage::MouseLock]);
-            query.bindValue(8, siteSetting.features[QWebEnginePage::DesktopVideoCapture]);
-            query.bindValue(9, siteSetting.features[QWebEnginePage::DesktopAudioVideoCapture]);
+            query.bindValue(2, siteSetting.features[QWebEnginePermission::PermissionType::Notifications]);
+            query.bindValue(3, siteSetting.features[QWebEnginePermission::PermissionType::Geolocation]);
+            query.bindValue(4, siteSetting.features[QWebEnginePermission::PermissionType::MediaAudioCapture]);
+            query.bindValue(5, siteSetting.features[QWebEnginePermission::PermissionType::MediaVideoCapture]);
+            query.bindValue(6, siteSetting.features[QWebEnginePermission::PermissionType::MediaAudioVideoCapture]);
+            query.bindValue(7, siteSetting.features[QWebEnginePermission::PermissionType::MouseLock]);
+            query.bindValue(8, siteSetting.features[QWebEnginePermission::PermissionType::DesktopVideoCapture]);
+            query.bindValue(9, siteSetting.features[QWebEnginePermission::PermissionType::DesktopAudioVideoCapture]);
 
             query.exec();
         }

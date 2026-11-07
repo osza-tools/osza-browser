@@ -465,8 +465,8 @@ function sectionUrl(sectionId) {
 }
 
 /* The async Clipboard API first - the browser answers the clipboard
-   feature for its own osza: pages, exactly as
-   WebPage::featurePermissionRequested decides. When the API is
+   permission for its own osza: pages, exactly as
+   WebPage::permissionRequested decides. When the API is
    missing or refuses, the legacy execCommand path - which internal
    pages may use too (JavascriptCanAccessClipboard is set for them)
    - is the fallback, so the anchor works on every Qt WebEngine

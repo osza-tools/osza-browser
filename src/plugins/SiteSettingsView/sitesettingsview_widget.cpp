@@ -177,7 +177,7 @@ void SiteSettingsView_Widget::updateData(int index)
         item->setForeground(2, permissionColor(attrDefault));
     }
 
-    QHash<QWebEnginePage::Feature, QTreeWidgetItem*>::iterator it_ftr;
+    QHash<QWebEnginePermission::PermissionType, QTreeWidgetItem*>::iterator it_ftr;
     for (it_ftr = m_featureItems.begin(); it_ftr != m_featureItems.end(); ++it_ftr) {
         auto ftr = it_ftr.key();
         auto ftrDefault = mApp->siteSettingsManager()->getDefaultPermission(ftr);

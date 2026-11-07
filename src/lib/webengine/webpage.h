@@ -19,6 +19,7 @@
 #define WEBPAGE_H
 
 #include <QWebEnginePage>
+#include <QWebEnginePermission>
 #include <QWebEngineScript>
 #include <QWebEngineFullScreenRequest>
 #include <QPrinter>
@@ -92,7 +93,7 @@ private Q_SLOTS:
     void watchedFileChanged(const QString &file);
     void windowCloseRequested();
     void fullScreenRequested(QWebEngineFullScreenRequest fullScreenRequest);
-    void featurePermissionRequested(const QUrl &origin, const QWebEnginePage::Feature &feature);
+    void permissionRequested(QWebEnginePermission permission);
     void renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus terminationStatus, int exitCode);
     void onCertificateError(QWebEngineCertificateError error);
     void onNewWindowRequested(QWebEngineNewWindowRequest &request);

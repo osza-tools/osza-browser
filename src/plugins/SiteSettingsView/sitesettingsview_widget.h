@@ -57,7 +57,7 @@ private:
     QList<SiteSettingsManager::PageOptions> m_availableOptions;
 
     QHash<QWebEngineSettings::WebAttribute, QTreeWidgetItem*> m_attributeItems;
-    QHash<QWebEnginePage::Feature, QTreeWidgetItem*> m_featureItems;
+    QHash<QWebEnginePermission::PermissionType, QTreeWidgetItem*> m_featureItems;
     QHash<SiteSettingsManager::PageOptions, QTreeWidgetItem*> m_optionsItems;
 
     QBrush permissionColor(SiteSettingsManager::Permission permission);

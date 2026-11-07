@@ -1199,6 +1199,39 @@ Fixed (the build):
   "no matching function" error exactly, the post-fix file and
   the scheme handler both compile clean).
 
+Changed:
+- The HTML5 permissions ride the Qt 6 permission API. The Qt 5
+  feature API - setFeaturePermission(), the
+  featurePermissionRequested signal, the Feature and
+  PermissionPolicy enums - is deprecated since Qt 6.8 and its
+  cancel signal no longer functions at all, so every use of it
+  warned on every build. The tree is ported to
+  QWebEnginePermission end to end: a request now arrives as a
+  permission handle that answers itself (grant() / deny())
+  exactly where it stands - in WebPage's osza: clipboard answer,
+  in the fullscreen mouse-lock grant, in the manager's
+  remembered allows and denies - and the ask bubble holds the
+  handle, so its buttons answer the very request that raised it.
+  The manager, the site-settings storage, the site info and
+  preferences dialogs and the SiteSettingsView plugin key their
+  HTML5 feature rows on QWebEnginePermission::PermissionType
+  instead of the old enum, while featureToSqlColumn() keeps
+  producing the same column names and the settings keys stay
+  the same, so no database row, no remembered answer and no
+  default moves - the only break is for source that spelled the
+  old enum out. The clipboard answer keeps its behavior (one
+  combined ClipboardReadWrite type, granted for the browser's
+  own pages), and the withdrawn-request case is documented
+  where it used to be handled: the canceled-request signal Qt
+  retired has no successor, so a bubble a page walked away from
+  stands until answered or until the page loads on.
+  QT_MIN_VERSION moves to 6.8.0, the release the class first
+  exists in - the README's Windows builds (Qt 6.8 LTS) and the
+  flatpak runtime (6.11) already sit above it. Verified against
+  the Qt 6.8 and 6.9 headers (the signatures and enum values,
+  the const grant() / deny(), the by-value signal argument) and
+  by a tree-wide sweep leaving no use of the old API behind.
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.

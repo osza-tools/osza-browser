@@ -44,15 +44,15 @@ const QList<QWebEngineSettings::WebAttribute> supportedAttribute = {
     ,QWebEngineSettings::ForceDarkMode
 #endif
 };
-const QList<QWebEnginePage::Feature> supportedFeatures = {
-    QWebEnginePage::Notifications
-    ,QWebEnginePage::Geolocation
-    ,QWebEnginePage::MediaAudioCapture
-    ,QWebEnginePage::MediaVideoCapture
-    ,QWebEnginePage::MediaAudioVideoCapture
-    ,QWebEnginePage::MouseLock
-    ,QWebEnginePage::DesktopVideoCapture
-    ,QWebEnginePage::DesktopAudioVideoCapture
+const QList<QWebEnginePermission::PermissionType> supportedFeatures = {
+    QWebEnginePermission::PermissionType::Notifications
+    ,QWebEnginePermission::PermissionType::Geolocation
+    ,QWebEnginePermission::PermissionType::MediaAudioCapture
+    ,QWebEnginePermission::PermissionType::MediaVideoCapture
+    ,QWebEnginePermission::PermissionType::MediaAudioVideoCapture
+    ,QWebEnginePermission::PermissionType::MouseLock
+    ,QWebEnginePermission::PermissionType::DesktopVideoCapture
+    ,QWebEnginePermission::PermissionType::DesktopAudioVideoCapture
 };
 
 
@@ -158,7 +158,7 @@ void SiteSettingsManager::setOption(const PageOptions option, const QUrl& url, c
     setOption(optionToSqlColumn(option), url, value);
 }
 
-void SiteSettingsManager::setOption(const QWebEnginePage::Feature& feature, const QUrl& url, const SiteSettingsManager::Permission value)
+void SiteSettingsManager::setOption(const QWebEnginePermission::PermissionType& feature, const QUrl& url, const SiteSettingsManager::Permission value)
 {
     setOption(featureToSqlColumn(feature), url, value);
 }
@@ -196,7 +196,7 @@ SiteSettingsManager::Permission SiteSettingsManager::getPermission(const SiteSet
     return getPermission(optionToSqlColumn(option), host);
 }
 
-SiteSettingsManager::Permission SiteSettingsManager::getPermission(const QWebEnginePage::Feature feature, const QString& host)
+SiteSettingsManager::Permission SiteSettingsManager::getPermission(const QWebEnginePermission::PermissionType feature, const QString& host)
 {
     return getPermission(featureToSqlColumn(feature), host);
 }
@@ -216,7 +216,7 @@ SiteSettingsManager::Permission SiteSettingsManager::getPermission(const SiteSet
     return getPermission(optionToSqlColumn(option), adjustUrl(url));
 }
 
-SiteSettingsManager::Permission SiteSettingsManager::getPermission(const QWebEnginePage::Feature feature, const QUrl& url)
+SiteSettingsManager::Permission SiteSettingsManager::getPermission(const QWebEnginePermission::PermissionType feature, const QUrl& url)
 {
     return getPermission(featureToSqlColumn(feature), adjustUrl(url));
 }
@@ -278,7 +278,7 @@ SiteSettingsManager::Permission SiteSettingsManager::getDefaultPermission(const 
     }
 }
 
-SiteSettingsManager::Permission SiteSettingsManager::getDefaultPermission(const QWebEnginePage::Feature feature) const
+SiteSettingsManager::Permission SiteSettingsManager::getDefaultPermission(const QWebEnginePermission::PermissionType feature) const
 {
     if (!supportedFeatures.contains(feature)) {
         qWarning() << "Unknown feature:" << feature;
@@ -330,24 +330,24 @@ QString SiteSettingsManager::getOptionName(const SiteSettingsManager::PageOption
     }
 }
 
-QString SiteSettingsManager::getOptionName(const QWebEnginePage::Feature feature) const
+QString SiteSettingsManager::getOptionName(const QWebEnginePermission::PermissionType feature) const
 {
     switch (feature) {
-        case QWebEnginePage::Notifications:
+        case QWebEnginePermission::PermissionType::Notifications:
             return tr("Notifications");
-        case QWebEnginePage::Geolocation:
+        case QWebEnginePermission::PermissionType::Geolocation:
             return tr("Geolocation");
-        case QWebEnginePage::MediaAudioCapture:
+        case QWebEnginePermission::PermissionType::MediaAudioCapture:
             return tr("Microphone");
-        case QWebEnginePage::MediaVideoCapture:
+        case QWebEnginePermission::PermissionType::MediaVideoCapture:
             return tr("Camera");
-        case QWebEnginePage::MediaAudioVideoCapture:
+        case QWebEnginePermission::PermissionType::MediaAudioVideoCapture:
             return tr("Microphone and Camera");
-        case QWebEnginePage::MouseLock:
+        case QWebEnginePermission::PermissionType::MouseLock:
             return tr("Hide mouse pointer");
-        case QWebEnginePage::DesktopVideoCapture:
+        case QWebEnginePermission::PermissionType::DesktopVideoCapture:
             return tr("Screen capture");
-        case QWebEnginePage::DesktopAudioVideoCapture:
+        case QWebEnginePermission::PermissionType::DesktopAudioVideoCapture:
             return tr("Screen capture with audio");
         default:
             qWarning() << "Unknown feature:" << feature;
@@ -425,24 +425,24 @@ QString SiteSettingsManager::optionToSqlColumn(const SiteSettingsManager::PageOp
     }
 }
 
-QString SiteSettingsManager::featureToSqlColumn(const QWebEnginePage::Feature feature) const
+QString SiteSettingsManager::featureToSqlColumn(const QWebEnginePermission::PermissionType feature) const
 {
     switch (feature) {
-        case QWebEnginePage::Notifications:
+        case QWebEnginePermission::PermissionType::Notifications:
             return QSL("f_notifications");
-        case QWebEnginePage::Geolocation:
+        case QWebEnginePermission::PermissionType::Geolocation:
             return QSL("f_geolocation");
-        case QWebEnginePage::MediaAudioCapture:
+        case QWebEnginePermission::PermissionType::MediaAudioCapture:
             return QSL("f_media_audio_capture");
-        case QWebEnginePage::MediaVideoCapture:
+        case QWebEnginePermission::PermissionType::MediaVideoCapture:
             return QSL("f_media_video_capture");
-        case QWebEnginePage::MediaAudioVideoCapture:
+        case QWebEnginePermission::PermissionType::MediaAudioVideoCapture:
             return QSL("f_media_audio_video_capture");
-        case QWebEnginePage::MouseLock:
+        case QWebEnginePermission::PermissionType::MouseLock:
             return QSL("f_mouse_lock");
-        case QWebEnginePage::DesktopVideoCapture:
+        case QWebEnginePermission::PermissionType::DesktopVideoCapture:
             return QSL("f_desktop_video_capture");
-        case QWebEnginePage::DesktopAudioVideoCapture:
+        case QWebEnginePermission::PermissionType::DesktopAudioVideoCapture:
             return QSL("f_desktop_audio_video_capture");
         default:
             qWarning() << "Unknown feature:" << feature;
@@ -495,7 +495,7 @@ QList<QWebEngineSettings::WebAttribute> SiteSettingsManager::getSupportedAttribu
     return supportedAttribute;
 }
 
-QList<QWebEnginePage::Feature> SiteSettingsManager::getSupportedFeatures() const
+QList<QWebEnginePermission::PermissionType> SiteSettingsManager::getSupportedFeatures() const
 {
     return supportedFeatures;
 }

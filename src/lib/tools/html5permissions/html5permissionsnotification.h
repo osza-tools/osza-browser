@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QPointer>
+#include <QWebEnginePermission>
 
 #include "animatedwidget.h"
 #include "webpage.h"
@@ -35,7 +36,7 @@ class HTML5PermissionsNotification : public AnimatedWidget
     Q_OBJECT
 
 public:
-    explicit HTML5PermissionsNotification(const QUrl &origin, QWebEnginePage* page, const QWebEnginePage::Feature &feature);
+    explicit HTML5PermissionsNotification(QWebEnginePermission permission, QWebEnginePage* page);
     ~HTML5PermissionsNotification();
 
 private Q_SLOTS:
@@ -45,9 +46,8 @@ private Q_SLOTS:
 private:
     Ui::HTML5PermissionsNotification* ui;
 
-    QUrl m_origin;
+    QWebEnginePermission m_permission;
     QPointer<QWebEnginePage> m_page;
-    QWebEnginePage::Feature m_feature;
 };
 
 #endif // HTML5PERMISSIONSNOTIFICATION_H

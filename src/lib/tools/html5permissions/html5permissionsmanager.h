@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QWebEnginePermission>
 
 #include "qzcommon.h"
 #include "webpage.h"
@@ -32,9 +33,9 @@ class OSZA_EXPORT HTML5PermissionsManager : public QObject
 public:
     explicit HTML5PermissionsManager(QObject* parent);
 
-    void requestPermissions(WebPage* page, const QUrl &origin, const QWebEnginePage::Feature &feature);
-    void rememberPermissions(const QUrl &origin, const QWebEnginePage::Feature &feature,
-                             const QWebEnginePage::PermissionPolicy &policy);
+    void requestPermissions(WebPage* page, QWebEnginePermission permission);
+    void rememberPermissions(const QUrl &origin, const QWebEnginePermission::PermissionType &permissionType,
+                             const QWebEnginePermission::State &state);
 };
 
 #endif // HTML5PERMISSIONSMANAGER_H

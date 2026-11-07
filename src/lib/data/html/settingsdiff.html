@@ -541,7 +541,7 @@ function toolsWithChanges(changes) {
 
 /* The async Clipboard API first - the browser answers a sanitized
    write for its own osza: pages, and denies a read, exactly as
-   WebPage::featurePermissionRequested decides. When the API is
+   WebPage::permissionRequested decides. When the API is
    missing or refuses, the legacy execCommand path - which internal
    pages may use too (JavascriptCanAccessClipboard is set for them)
    - is the fallback, so the anchor works on every Qt WebEngine

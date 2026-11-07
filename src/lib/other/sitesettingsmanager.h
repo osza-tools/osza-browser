@@ -20,7 +20,7 @@
 #define SITESETTINGS_MANAGER_H
 
 #include "qzcommon.h"
-#include <QWebEnginePage>
+#include <QWebEnginePermission>
 #include <QWebEngineSettings>
 
 class QUrl;
@@ -51,7 +51,7 @@ public:
         Permission AllowCookies = Default;
         int ZoomLevel = -1;
         QMap<QWebEngineSettings::WebAttribute, Permission> attributes; /* Enable disable soem feature eg. Javascript, Images etc */
-        QMap<QWebEnginePage::Feature, Permission> features; /* HTML permissions */
+        QMap<QWebEnginePermission::PermissionType, Permission> features; /* HTML permissions */
         QString server;
         bool operator==(const SiteSettings &other) const {
             for (auto it = attributes.begin(); it != attributes.end(); ++it) {
@@ -84,12 +84,12 @@ public:
 
     Permission getPermission(const QString &column, const QString &host);
     Permission getPermission(const PageOptions option, const QString &host);
-    Permission getPermission(const QWebEnginePage::Feature feature, const QString &host);
+    Permission getPermission(const QWebEnginePermission::PermissionType feature, const QString &host);
     Permission getPermission(const QWebEngineSettings::WebAttribute attribute, const QString &host);
 
     Permission getPermission(const QString &column, const QUrl &url);
     Permission getPermission(const PageOptions option, const QUrl &url);
-    Permission getPermission(const QWebEnginePage::Feature feature, const QUrl &url);
+    Permission getPermission(const QWebEnginePermission::PermissionType feature, const QUrl &url);
     Permission getPermission(const QWebEngineSettings::WebAttribute attribute, const QUrl &url);
 
     QMap<QString, SiteSettingsManager::Permission> getPermissionsLike(const QString &column, const QString &host);
@@ -97,25 +97,25 @@ public:
 
     void setOption(const QString &column, const QUrl &url, const int value);
     void setOption(const PageOptions option, const QUrl &url, const int value);
-    void setOption(const QWebEnginePage::Feature &feature, const QUrl &url, const Permission value);
+    void setOption(const QWebEnginePermission::PermissionType &feature, const QUrl &url, const Permission value);
     void setOption(const QWebEngineSettings::WebAttribute &attribute, const QUrl &url, const Permission value);
 
     Permission getDefaultPermission(const PageOptions option);
-    Permission getDefaultPermission(const QWebEnginePage::Feature feature) const;
+    Permission getDefaultPermission(const QWebEnginePermission::PermissionType feature) const;
     Permission getDefaultPermission(const QWebEngineSettings::WebAttribute attribute) const;
 
     QString getOptionName(const SiteSettingsManager::PageOptions option) const;
-    QString getOptionName(const QWebEnginePage::Feature feature) const;
+    QString getOptionName(const QWebEnginePermission::PermissionType feature) const;
     QString getOptionName(const QWebEngineSettings::WebAttribute attribute) const;
 
     QString getPermissionName(const Permission permission) const;
 
     QString webAttributeToSqlColumn(const QWebEngineSettings::WebAttribute attribute) const;
-    QString featureToSqlColumn(const QWebEnginePage::Feature feature) const;
+    QString featureToSqlColumn(const QWebEnginePermission::PermissionType feature) const;
     QString optionToSqlColumn(const PageOptions option) const;
 
     QList<QWebEngineSettings::WebAttribute> getSupportedAttribute() const;
-    QList<QWebEnginePage::Feature> getSupportedFeatures() const;
+    QList<QWebEnginePermission::PermissionType> getSupportedFeatures() const;
 
     SiteSettings getSiteSettings(QUrl &url);
     void setSiteSettings(SiteSettings &siteSettings);
@@ -128,7 +128,7 @@ private:
     void prepareSqls();
 
 
-    QMap<QWebEnginePage::Feature, Permission> defaultFeatures;
+    QMap<QWebEnginePermission::PermissionType, Permission> defaultFeatures;
     SiteSettingsManager::Permission m_defaultCookies;
 
     QString attributesSql;

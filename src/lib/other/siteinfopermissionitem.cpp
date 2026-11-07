@@ -114,7 +114,7 @@ void SiteInfoPermissionItem::setAttribute(const QWebEngineSettings::WebAttribute
     setHasOptionAsk(false);
 }
 
-void SiteInfoPermissionItem::setFeature(const QWebEnginePage::Feature& feature)
+void SiteInfoPermissionItem::setFeature(const QWebEnginePermission::PermissionType& feature)
 {
     m_sqlColumn = mApp->siteSettingsManager()->featureToSqlColumn(feature);
     m_ui->label->setText(mApp->siteSettingsManager()->getOptionName(feature));

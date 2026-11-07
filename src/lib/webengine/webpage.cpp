@@ -93,7 +93,7 @@ WebPage::WebPage(QObject* parent)
     connect(this, &QWebEnginePage::loadProgress, this, &WebPage::progress);
     connect(this, &QWebEnginePage::loadFinished, this, &WebPage::finished);
     connect(this, &QWebEnginePage::urlChanged, this, &WebPage::urlChanged);
-    connect(this, &QWebEnginePage::featurePermissionRequested, this, &WebPage::featurePermissionRequested);
+    connect(this, &QWebEnginePage::permissionRequested, this, &WebPage::permissionRequested);
     connect(this, &QWebEnginePage::windowCloseRequested, this, &WebPage::windowCloseRequested);
     connect(this, &QWebEnginePage::fullScreenRequested, this, &WebPage::fullScreenRequested);
     connect(this, &QWebEnginePage::renderProcessTerminated, this, &WebPage::renderProcessTerminated);
@@ -417,43 +417,43 @@ void WebPage::fullScreenRequested(QWebEngineFullScreenRequest fullScreenRequest)
         fullScreenRequest.reject();
 }
 
-void WebPage::featurePermissionRequested(const QUrl &origin, const QWebEnginePage::Feature &feature)
+void WebPage::permissionRequested(QWebEnginePermission permission)
 {
     // The browser's own pages - the osza: scheme - are shipped with
     // the browser, not fetched from the web, and already write to
     // the clipboard through the legacy document.execCommand() path
     // (JavascriptCanAccessClipboard is set for internal schemes in
-    // acceptNavigationRequest()). The async Clipboard API asks for a
-    // feature permission instead, and the HTML5 permission manager
-    // has no site-settings row for it: its request would warn about
-    // an unknown feature and never be answered, leaving the page's
-    // promise pending forever. So the clipboard feature is answered
-    // here, for these trusted pages only.
-    if (origin.scheme() == QL1S("osza")) {
-        switch (feature) {
-        case QWebEnginePage::ClipboardReadWrite:
-            // The clipboard permission is one combined feature in
+    // acceptNavigationRequest()). The async Clipboard API asks
+    // through a permission request instead, and the HTML5 permission
+    // manager has no site-settings row for it: its request would
+    // warn about an unknown permission type and never be answered,
+    // leaving the page's promise pending forever. So the clipboard
+    // permission is answered here, for these trusted pages only.
+    if (permission.origin().scheme() == QL1S("osza")) {
+        switch (permission.permissionType()) {
+        case QWebEnginePermission::PermissionType::ClipboardReadWrite:
+            // The clipboard permission is one combined type in
             // every Qt Osza builds on: Chromium asks for its
             // sanitized write (navigator.clipboard.writeText - the
             // settings diff page's "copy link" anchors) as this very
-            // feature, so a write and a read cannot be told apart
+            // type, so a write and a read cannot be told apart
             // here. The osza: pages are the browser's own, with
             // every dynamic string rendered through textContent, so
             // the write is granted - the same trust the legacy path
             // already extends to them - and no page the browser
             // ships reads the clipboard; JavascriptCanPaste stays
             // off for them either way.
-            setFeaturePermission(origin, feature, PermissionGrantedByUser);
+            permission.grant();
             return;
         default:
             break;
         }
     }
 
-    if (feature == MouseLock && view()->isFullScreen())
-        setFeaturePermission(origin, feature, PermissionGrantedByUser);
+    if (permission.permissionType() == QWebEnginePermission::PermissionType::MouseLock && view()->isFullScreen())
+        permission.grant();
     else
-        mApp->html5PermissionsManager()->requestPermissions(this, origin, feature);
+        mApp->html5PermissionsManager()->requestPermissions(this, permission);
 }
 
 void WebPage::renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus terminationStatus, int exitCode)

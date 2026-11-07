@@ -11,7 +11,7 @@
 #include "sitesettingsmanager.h"
 #include "sitesettingsbrowsedialog.h"
 
-SiteSettingsHtml5Item::SiteSettingsHtml5Item(const QWebEnginePage::Feature a_feature, QWidget* parent)
+SiteSettingsHtml5Item::SiteSettingsHtml5Item(const QWebEnginePermission::PermissionType a_feature, QWidget* parent)
     : QWidget(parent)
     , m_feature(a_feature)
     , m_ui(new Ui::SiteSettingsHtml5Item)
@@ -48,7 +48,7 @@ void SiteSettingsHtml5Item::showBrowseDialog()
     dialog->open();
 }
 
-QWebEnginePage::Feature SiteSettingsHtml5Item::feature() const
+QWebEnginePermission::PermissionType SiteSettingsHtml5Item::feature() const
 {
     return m_feature;
 }

@@ -11,7 +11,7 @@
 
 #include <QWidget>
 #include <QScopedPointer>
-#include <QWebEnginePage>
+#include <QWebEnginePermission>
 
 namespace Ui
 {
@@ -21,20 +21,20 @@ class SiteSettingsHtml5Item;
 class SiteSettingsHtml5Item : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QWebEnginePage::Feature feature READ feature)
+    Q_PROPERTY(QWebEnginePermission::PermissionType feature READ feature)
 
 public:
-    SiteSettingsHtml5Item(const QWebEnginePage::Feature a_feature, QWidget* parent = nullptr);
+    SiteSettingsHtml5Item(const QWebEnginePermission::PermissionType a_feature, QWidget* parent = nullptr);
     ~SiteSettingsHtml5Item();
 
-    QWebEnginePage::Feature feature() const;
+    QWebEnginePermission::PermissionType feature() const;
     SiteSettingsManager::Permission permission() const;
 
 public Q_SLOTS:
     void showBrowseDialog();
 
 private:
-    QWebEnginePage::Feature m_feature;
+    QWebEnginePermission::PermissionType m_feature;
 
     void setPermission();
 
