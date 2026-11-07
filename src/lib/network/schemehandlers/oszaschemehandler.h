@@ -21,6 +21,7 @@
 #include <QMutex>
 #include <QBuffer>
 #include <QIODevice>
+#include <QUrl>
 #include <QWebEngineUrlSchemeHandler>
 
 #include "qzcommon.h"

@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
 #include "siteicon.h"
+#include "browserwindow.h"
 #include "siteinfowidget.h"
 #include "locationbar.h"
 #include "tabbedwebview.h"

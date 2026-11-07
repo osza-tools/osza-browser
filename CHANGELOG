@@ -1161,6 +1161,44 @@ Fixed (security tools, a bug-hunting round):
   the project's origins, like the "Site %1<b/>" title in the
   padlock menu, both fixed here).
 
+Fixed (the build):
+- The build stopped at SiteIcon::showPopup(), on the same
+  window-parenting that fixed the padlock menu's dangling window
+  pointer: parenting the popup to its window passes the
+  BrowserWindow into SiteInfoWidget's second parameter, a
+  QWidget*, but siteicon.cpp never sees the window's definition.
+  The class is only ever forward-declared down the file's include
+  chain (siteicon.h declares it, and nothing the .cpp pulls in
+  defines it), and an incomplete type cannot ride an inheritance
+  it has not been shown - the BrowserWindow* -> QWidget* upcast
+  every Qt window inherits through QMainWindow was invisible, so
+  the call matched no constructor and the compilation of Osza
+  stopped at 58% with "no matching function". The fix is the one
+  include every sibling in navigation/ already carries
+  ("browserwindow.h", the same include locationbar.cpp,
+  navigationbar.cpp and websearchbar.cpp open theirs with); the
+  definition stands behind the pointer, the conversion is found,
+  and the popup is parented to the window exactly as the lifetime
+  fix intended.
+- One file behind it, the same bug-hunting round's threading fix
+  had left a second break in its wake, masked by the first:
+  OszaSchemeReply grew a QUrl member - the request's address,
+  captured on the IO thread the request arrives on so the
+  UI-thread page build never touches the job - but
+  oszaschemehandler.h never included <QUrl>. The header's own
+  includes only forward-declare the type (Qt's metatype
+  declarations name QUrl without defining it), and a forward
+  declaration cannot stand behind a member held by value, so
+  every translation unit including the header would have fallen
+  on the same "incomplete type" error the moment the siteicon one
+  was past. The include is added beside the header's other Qt
+  includes; the member holds the value it was given. Verified by
+  a full -fsyntax-only compile of all 263 translation units of
+  the library and main against the Qt 6.8 headers (every unit
+  passes, the pre-fix siteicon.cpp reproduces the reported
+  "no matching function" error exactly, the post-fix file and
+  the scheme handler both compile clean).
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.
