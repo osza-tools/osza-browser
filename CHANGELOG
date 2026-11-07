@@ -1263,6 +1263,18 @@ Fixed:
   form relative resolution is built to answer, and the same
   resource the page's working <img> references land on.
 
+Removed:
+- The NoError value of the QML url request job's error enum. It
+  mirrored QWebEngineUrlRequestJob::NoError, which Qt deprecated
+  as "an attribute with no effect": fail(NoError) answers
+  nothing, so an extension calling it left its request hanging -
+  the one value in the enum that never worked, and the last
+  deprecation warning the build still printed
+  (qmlwebengineurlrequestjob.h, on every compile of the QML api).
+  The value is gone from the QML enum; the five real errors
+  stand, and a request is answered with reply() or failed with an
+  error that says something - NoError was never either.
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.

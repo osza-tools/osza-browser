@@ -40,9 +40,12 @@ class QmlWebEngineUrlRequestJob : public QObject
 public:
     /**
      * @brief The Error enum, exposes QWebEngineUrlRequestJob::Error to QML
+     *
+     * NoError is deliberately absent: Qt deprecated it as a value with
+     * no effect, so fail() has no "no error" to report - answer a
+     * request with reply() instead.
      */
     enum Error {
-        NoError = QWebEngineUrlRequestJob::NoError,               //!< No error
         UrlNotFound = QWebEngineUrlRequestJob::UrlNotFound,       //!< Url not found error
         UrlInvaild = QWebEngineUrlRequestJob::UrlInvalid,         //!< Url invalid error
         RequestAborted = QWebEngineUrlRequestJob::RequestAborted, //!< Request aborted
