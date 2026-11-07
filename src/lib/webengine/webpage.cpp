@@ -649,7 +649,7 @@ void WebPage::reServeThreatInterstitial()
     const QUrl current = url();
 
     if (current.scheme() == QL1S("osza") && current.path() == QL1S("threatblocked")) {
-        reload();
+        triggerAction(QWebEnginePage::Reload);
     }
 }
 
