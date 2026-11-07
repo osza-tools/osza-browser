@@ -216,14 +216,20 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 }
 
 /* --- 8. Card action chips (edit / reload / close) ------------------------ */
+
+/* Chip icons are named as this stylesheet's own qrc siblings: a css
+   url() resolves against the stylesheet's own address, and a qrc:
+   scheme does not survive that resolution (the engine looked for
+   html/html/<icon>, which has never existed). The page's <img> sources
+   keep the qrc:html/ form - that form only works for them. */
 .entry span.edit, .entry span.close, .entry span.reload { position: absolute; z-index: 3; inline-size: 30px; block-size: 30px; border-radius: 9px; background-color: rgba(10, 12, 18, 0.65); border: 1px solid rgba(255, 255, 255, 0.14); background-position: center; background-repeat: no-repeat; background-size: 14px 14px; opacity: 0; cursor: pointer; transition: opacity var(--osza-speed) var(--osza-ease), border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), transform var(--osza-speed) var(--osza-ease); }
-.entry span.edit { inset-inline-start: 8px; inset-block-end: 8px; background-image: url("qrc:html/edit.svg"); }
-.entry span.close { inset-inline-end: 8px; inset-block-end: 8px; background-image: url("qrc:html/close.svg"); }
-.entry span.reload { inset-inline-end: 8px; inset-block-start: 8px; background-image: url("qrc:html/reload.svg"); }
+.entry span.edit { inset-inline-start: 8px; inset-block-end: 8px; background-image: url("edit.svg"); }
+.entry span.close { inset-inline-end: 8px; inset-block-end: 8px; background-image: url("close.svg"); }
+.entry span.reload { inset-inline-end: 8px; inset-block-start: 8px; background-image: url("reload.svg"); }
 .entry:hover span.edit, .entry:hover span.close, .entry:hover span.reload { opacity: 1; }
-.entry span.edit:hover { background-image: url("qrc:html/edit_active.svg"); border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); transform: scale(1.06); }
-.entry span.close:hover { background-image: url("qrc:html/close_active.svg"); border-color: rgba(255, 99, 132, 0.7); box-shadow: 0 0 18px rgba(255, 99, 132, 0.35); transform: scale(1.06); }
-.entry span.reload:hover { background-image: url("qrc:html/reload_active.svg"); border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); transform: scale(1.06); }
+.entry span.edit:hover { background-image: url("edit_active.svg"); border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); transform: scale(1.06); }
+.entry span.close:hover { background-image: url("close_active.svg"); border-color: rgba(255, 99, 132, 0.7); box-shadow: 0 0 18px rgba(255, 99, 132, 0.35); transform: scale(1.06); }
+.entry span.reload:hover { background-image: url("reload_active.svg"); border-color: var(--osza-card-border-hover); box-shadow: var(--osza-glow); transform: scale(1.06); }
 
 /* jQuery-UI sortable drag state */
 .entry.ui-sortable-helper { opacity: 0.92; transform: rotate(1.6deg) scale(1.02); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55), var(--osza-glow); }

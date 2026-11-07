@@ -1244,6 +1244,24 @@ Fixed:
   the choice the settings' own default (0) makes, so an unknown
   value falls back to the documented behavior instead of an
   unspecified one.
+- The speed dial's action chips carry their icons again. The
+  redesigned dial's six chip icons (edit, close, reload, and each
+  one's hover state) were reached from speeddial.css as
+  url("qrc:html/edit.svg") - a form the page's own <img> tags can
+  use, but a stylesheet cannot: a css url() is resolved against
+  the stylesheet's own address, and in that resolution the
+  unknown qrc scheme does not survive - the reference collapsed
+  to a relative html/edit.svg against speeddial.css's own place,
+  and the engine went looking for html/html/edit.svg, a resource
+  that has never existed. Every chip rendered with an empty
+  background, and the console named it ("QResource
+  'html/html/edit.svg' not found or is empty" - the three base
+  icons at startup, the hover ones the moment a chip was
+  hovered). The six references now name their icons as the
+  stylesheet's own siblings - url("edit.svg"), resolved beside
+  speeddial.css in the qrc, where the icons actually ship - the
+  form relative resolution is built to answer, and the same
+  resource the page's working <img> references land on.
 
 1.2  (2026-11-01)
 -----------------
