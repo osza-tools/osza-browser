@@ -1262,6 +1262,21 @@ Fixed:
   speeddial.css in the qrc, where the icons actually ship - the
   form relative resolution is built to answer, and the same
   resource the page's working <img> references land on.
+- The security sidebar follows the tab switch again. Its
+  constructor wired the refresh to TabWidget::currentTabChanged,
+  which reads like a signal but is a plain public method - the
+  handler the tab bar calls when a switch lands - so the
+  member-pointer connect compiled clean and then resolved nothing
+  at runtime (the startup log's "QObject::connect(TabWidget,
+  SecuritySideBar): signal not found"): the sidebar's per-host
+  rows kept speaking the tab it was opened on until the
+  one-second timer happened to repaint them. The refresh now
+  rides the signal a switch actually emits, the stack's own
+  currentChanged (spelled through TabWidget, the same reference
+  the MRU model's wiring uses), and a tree-wide sweep for this
+  failure shape - a connect() whose signal side names a plain
+  member of the class it is spelled on - finds no other
+  instance: this was the only one.
 
 Removed:
 - The NoError value of the QML url request job's error enum. It

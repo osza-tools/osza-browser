@@ -86,7 +86,13 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(threatManager, &ThreatBlockManager::updateFailed, this, &SecuritySideBar::refresh);
 
     if (m_window) {
-        connect(m_window->tabWidget(), &TabWidget::currentTabChanged, this, &SecuritySideBar::refresh);
+        // The tab switch rides the stack's own currentChanged signal.
+        // TabWidget::currentTabChanged reads like one but is a plain
+        // public method - the handler the tab bar calls when a switch
+        // lands - so a member-pointer connect to it compiles clean
+        // and then resolves nothing at runtime ("signal not found"):
+        // the sidebar was left to its timer alone.
+        connect(m_window->tabWidget(), &TabWidget::currentChanged, this, &SecuritySideBar::refresh);
     }
 
     connect(m_adBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleAdBlock);
