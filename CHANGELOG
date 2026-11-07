@@ -1232,6 +1232,19 @@ Changed:
   the const grant() / deny(), the by-value signal argument) and
   by a tree-wide sweep leaving no use of the old API behind.
 
+Fixed:
+- The tab bar's select-on-close choice can no longer be read
+  uninitialized. TabBar::loadSettings() filled a
+  QTabBar::SelectionBehavior only for the three setting values it
+  knows (0, 1, 2) and then handed the variable to
+  setSelectionBehaviorOnRemove() whatever it held - a value outside
+  the three, a hand-edited settings.ini say, was the compiler's
+  maybe-uninitialized warning at tabbar.cpp coming true as an
+  unspecified tab choice. The variable now starts as SelectLeftTab,
+  the choice the settings' own default (0) makes, so an unknown
+  value falls back to the documented behavior instead of an
+  unspecified one.
+
 1.2  (2026-11-01)
 -----------------
 The modern chrome refresh release.

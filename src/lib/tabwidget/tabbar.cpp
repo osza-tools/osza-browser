@@ -132,7 +132,10 @@ void TabBar::loadSettings()
     m_showCloseOnInactive = settings.value(QSL("showCloseOnInactiveTabs"), 0).toInt(nullptr);
     settings.endGroup();
 
-    QTabBar::SelectionBehavior selectionBehavior;
+    // A value outside the three known ones falls back to the choice
+    // the settings' own default (0) makes, instead of reading an
+    // uninitialized selection behavior.
+    QTabBar::SelectionBehavior selectionBehavior = QTabBar::SelectLeftTab;
     switch (selectTabOnClose) {
     case 0:
         selectionBehavior = QTabBar::SelectLeftTab;
