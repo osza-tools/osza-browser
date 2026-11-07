@@ -2,7 +2,9 @@
 
 #define OSZA_VERSION "${PROJECT_VERSION}"
 #cmakedefine OSZA_PLUGIN_PATH "${OSZA_PLUGIN_PATH}"
-#cmakedefine OSZA_GIT_REVISION "${OSZA_GIT_REVISION}"
+/* The git revision lives in osza_git_revision.h (generated at build time,
+   see the top-level CMakeLists.txt) so that a new commit does not dirty
+   every object that includes this header. */
 
 /* Enable portable build */
 #cmakedefine PORTABLE_BUILD

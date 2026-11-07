@@ -162,20 +162,52 @@ if (Intl_FOUND)
 endif()
 
 # Git revision
+#
+# The revision used to be baked into config.h at configure time, so every
+# re-run of cmake after a commit rewrote a header that ~25 objects on the
+# lib side and every plugin include - and a "cmake .. && make" habit (the
+# recipe the README used to show) therefore rebuilt a third of the tree
+# after every single commit. The revision now lives in its own generated
+# header, src/osza_git_revision.h, which only the two objects that display
+# it include.
+#
+# The header is refreshed at build time (not configure time), so it is
+# always current, and rewritten only when the revision actually changed:
+# an unchanged revision never dirties the tree, a changed one rebuilds
+# exactly those two objects.
+set(OSZA_GIT_EXECUTABLE "")
 if (EXISTS "${CMAKE_SOURCE_DIR}/.git")
-  find_package(Git QUIET)
-  if(GIT_FOUND)
-    execute_process(
-      COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-      OUTPUT_VARIABLE GIT_REVISION
-    )
-    string(REGEX REPLACE "\n" "" GIT_REVISION "${GIT_REVISION}")
-    set(OSZA_GIT_REVISION "${GIT_REVISION}")
-  else()
-    message(STATUS "Git revision could not be determined")
-  endif()
+    find_package(Git QUIET)
+    if (GIT_FOUND AND GIT_EXECUTABLE AND NOT GIT_EXECUTABLE MATCHES "NOTFOUND$")
+        set(OSZA_GIT_EXECUTABLE "${GIT_EXECUTABLE}")
+    endif()
 endif()
+
+set(OSZA_GIT_REVISION_HEADER "${CMAKE_BINARY_DIR}/src/osza_git_revision.h")
+
+# Generate once at configure time as well, so the header exists right away
+# for IDEs and for the first build.
+# (No inner quotes on the -D values: execute_process passes each token as
+# a single argv element, so paths with spaces stay one argument, while
+# quotes inside an argument would be passed through literally.)
+execute_process(COMMAND "${CMAKE_COMMAND}"
+    -DGIT_EXECUTABLE=${OSZA_GIT_EXECUTABLE}
+    -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+    -DOUTPUT_FILE=${OSZA_GIT_REVISION_HEADER}
+    -P "${CMAKE_SOURCE_DIR}/cmake/OszaGitRevision.cmake")
+
+# Refresh on every build; the script itself decides whether anything needs
+# to be written. OszaPrivate depends on this target (see src/lib/CMakeLists.txt).
+add_custom_target(osza_git_revision
+    BYPRODUCTS "${OSZA_GIT_REVISION_HEADER}"
+    COMMAND "${CMAKE_COMMAND}"
+        -DGIT_EXECUTABLE=${OSZA_GIT_EXECUTABLE}
+        -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+        -DOUTPUT_FILE=${OSZA_GIT_REVISION_HEADER}
+        -P "${CMAKE_SOURCE_DIR}/cmake/OszaGitRevision.cmake"
+    COMMENT "Refreshing src/osza_git_revision.h"
+    VERBATIM
+)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/config.h)
 

@@ -633,6 +633,13 @@ qt_add_resources(SRCS
 
 add_library(OszaPrivate SHARED ${SRCS} ${LOGGING_SRCS})
 
+# src/osza_git_revision.h is refreshed at build time by the osza_git_revision
+# target (top-level CMakeLists.txt); it must exist before the two objects
+# that include it are compiled.
+if (TARGET osza_git_revision)
+    add_dependencies(OszaPrivate osza_git_revision)
+endif()
+
 get_property(QT_WEBENGINE_INCLUDE_DIRS TARGET Qt6::WebEngineCore PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
 
 target_include_directories(OszaPrivate SYSTEM PUBLIC ${QT_WEBENGINE_INCLUDE_DIRS})

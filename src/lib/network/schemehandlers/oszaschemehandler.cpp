@@ -33,6 +33,7 @@
 #include "sessionmanager.h"
 #include "restoremanager.h"
 #include "../config.h"
+#include "../osza_git_revision.h"
 
 #include <QTimer>
 #include <QThread>

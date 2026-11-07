@@ -23,6 +23,7 @@
 #include "webpage.h"
 #include "useragentmanager.h"
 #include "../config.h"
+#include "../osza_git_revision.h"
 
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
