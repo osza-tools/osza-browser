@@ -38,6 +38,26 @@ CookieJar::CookieJar(QObject* parent)
     loadSettings();
     m_client->loadAllCookies();
 
+    // The filter registered below is called by the engine on its IO
+    // thread (the Qt documentation's own warning: it "is running on
+    // the IO thread"), and its first act asks the app's
+    // site-settings manager for the site's cookie permission - the
+    // manager being a lazy singleton, whichever caller reaches it
+    // first constructs it. The GUI thread's first web-page
+    // navigation does (WebPage::acceptNavigationRequest), but a
+    // cookie the engine judges before that - no navigation is
+    // needed to set one - ran the constructor on the IO thread: a
+    // QObject child of MainApplication, which lives on the GUI
+    // thread, built where it cannot be parented (the startup log's
+    // "Cannot create children for a parent that is in a different
+    // thread"), and a manager carrying the IO thread's affinity
+    // for the whole session. The manager is created here instead,
+    // on the GUI thread, before the filter that can first reach it
+    // is even registered - no callback can run before its
+    // registration. The filter's own queries were never the
+    // problem: SqlDatabase hands every thread its own connection.
+    mApp->siteSettingsManager();
+
     m_client->setCookieFilter(std::bind(&CookieJar::cookieFilter, this, std::placeholders::_1));
 
     connect(m_client, &QWebEngineCookieStore::cookieAdded, this, &CookieJar::slotCookieAdded);

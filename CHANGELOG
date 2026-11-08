@@ -1277,6 +1277,32 @@ Fixed:
   failure shape - a connect() whose signal side names a plain
   member of the class it is spelled on - finds no other
   instance: this was the only one.
+- The site-settings manager is born on the GUI thread. The cookie
+  filter - the callback the engine calls on its IO thread to judge
+  every incoming cookie, per the Qt documentation's own thread
+  warning - asks the manager for the site's cookie permission as
+  its first act, and the manager was a lazy singleton: whichever
+  caller reached it first constructed it. The GUI thread's first
+  web-page navigation normally does (the page applies the site's
+  saved web attributes), but a cookie the engine judged before
+  that needed no navigation, and when one beat it the constructor
+  ran on the IO thread - a QObject child of MainApplication built
+  where it cannot be parented, the startup log's "QObject: Cannot
+  create children for a parent that is in a different thread
+  (Parent is MainApplication...)", and a manager carrying the IO
+  thread's affinity for the whole session, every later use of it
+  cross-thread by construction. The manager is now created in the
+  cookie jar's constructor, on the GUI thread, immediately before
+  the filter is registered: no callback can run before its
+  registration, so no callback can ever be the first to reach the
+  manager. The filter's own queries were never the problem -
+  SqlDatabase hands every thread its own connection, the same
+  per-thread design the other IO-thread readers rely on - and the
+  remaining lazy singletons were swept for the same exposure: the
+  user-agent manager is reached from the interceptor's settings
+  load alone (GUI thread, at startup, under the interceptor's
+  mutex), never from a request, so the cookie filter was the only
+  open door.
 
 Removed:
 - The NoError value of the QML url request job's error enum. It
