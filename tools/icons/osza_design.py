@@ -390,6 +390,11 @@ ICONS_24: Dict[str, List[dict]] = {
                      P("M9 11V8a3.2 3.2 0 0 1 6.4 0", c="danger")],
     "security-medium": [R(6.5, 11, 11, 9.5, c="warning", rx=1.6),
                         P("M9 11V7.8a3.2 3.2 0 0 1 6.4 0V11", c="warning")],
+    # closed shackle plus a check inside the body: fully protected.
+    # The same shape the Tools menu's Security Dashboard entry asks for.
+    "security-high": [R(6.5, 11, 11, 9.5, c="success", rx=1.6),
+                      P("M9 11V7.8a3.2 3.2 0 0 1 6.4 0V11", c="success"),
+                      P("M9.3 15.9l1.9 1.9 3.6-3.9", c="success")],
 
     # --- other ---
     "configure": gear_d(12, 12, 8.2, 6.3, 8, 3.1),

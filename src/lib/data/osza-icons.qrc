@@ -63,6 +63,7 @@
         <file>osza-icons/osza/scalable/process-stop.svg</file>
         <file>osza-icons/osza/scalable/rating-unrated.svg</file>
         <file>osza-icons/osza/scalable/rating.svg</file>
+        <file>osza-icons/osza/scalable/security-high.svg</file>
         <file>osza-icons/osza/scalable/security-low.svg</file>
         <file>osza-icons/osza/scalable/security-medium.svg</file>
         <file>osza-icons/osza/scalable/tab-detach.svg</file>
@@ -159,6 +160,7 @@
         <file>osza-icons/osza/22x22/process-stop.svg</file>
         <file>osza-icons/osza/22x22/rating-unrated.svg</file>
         <file>osza-icons/osza/22x22/rating.svg</file>
+        <file>osza-icons/osza/22x22/security-high.svg</file>
         <file>osza-icons/osza/22x22/security-low.svg</file>
         <file>osza-icons/osza/22x22/security-medium.svg</file>
         <file>osza-icons/osza/22x22/tab-detach.svg</file>
@@ -240,6 +242,7 @@
         <file>osza-icons/osza/32x32/process-stop.svg</file>
         <file>osza-icons/osza/32x32/rating-unrated.svg</file>
         <file>osza-icons/osza/32x32/rating.svg</file>
+        <file>osza-icons/osza/32x32/security-high.svg</file>
         <file>osza-icons/osza/32x32/security-low.svg</file>
         <file>osza-icons/osza/32x32/security-medium.svg</file>
         <file>osza-icons/osza/32x32/tab-detach.svg</file>
@@ -322,6 +325,7 @@
         <file>osza-icons/osza-dark/scalable/process-stop.svg</file>
         <file>osza-icons/osza-dark/scalable/rating-unrated.svg</file>
         <file>osza-icons/osza-dark/scalable/rating.svg</file>
+        <file>osza-icons/osza-dark/scalable/security-high.svg</file>
         <file>osza-icons/osza-dark/scalable/security-low.svg</file>
         <file>osza-icons/osza-dark/scalable/security-medium.svg</file>
         <file>osza-icons/osza-dark/scalable/tab-detach.svg</file>
@@ -418,6 +422,7 @@
         <file>osza-icons/osza-dark/22x22/process-stop.svg</file>
         <file>osza-icons/osza-dark/22x22/rating-unrated.svg</file>
         <file>osza-icons/osza-dark/22x22/rating.svg</file>
+        <file>osza-icons/osza-dark/22x22/security-high.svg</file>
         <file>osza-icons/osza-dark/22x22/security-low.svg</file>
         <file>osza-icons/osza-dark/22x22/security-medium.svg</file>
         <file>osza-icons/osza-dark/22x22/tab-detach.svg</file>
@@ -499,6 +504,7 @@
         <file>osza-icons/osza-dark/32x32/process-stop.svg</file>
         <file>osza-icons/osza-dark/32x32/rating-unrated.svg</file>
         <file>osza-icons/osza-dark/32x32/rating.svg</file>
+        <file>osza-icons/osza-dark/32x32/security-high.svg</file>
         <file>osza-icons/osza-dark/32x32/security-low.svg</file>
         <file>osza-icons/osza-dark/32x32/security-medium.svg</file>
         <file>osza-icons/osza-dark/32x32/tab-detach.svg</file>

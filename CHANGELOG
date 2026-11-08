@@ -797,6 +797,16 @@ Added:
   the page's SHA-256 before it ever shipped.
 
 Fixed:
+- The security-high icon, requested by the Tools menu's Security
+  Dashboard entry since the menu gained its icon, never existed:
+  the icon audit had been reporting "security-high requested but
+  not provided" on every run, and the menu item fell back to a
+  blank glyph. The padlock family is now complete - security-low
+  (red, open shackle), security-medium (amber, closed shackle),
+  security-high (mint, closed shackle with a check inside the
+  body, "fully protected") - drawn in the design system, emitted
+  to both bundled icon sets with the build pipeline, and the
+  audit reads 82 of 82.
 - Three latent bugs in the security autotests, none of which had
   ever executed anywhere: the fast build check only compiles them,
   and the local builds had been broken for the same stretch, so the
