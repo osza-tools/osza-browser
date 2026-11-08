@@ -25,3 +25,9 @@
 {
     qproperty-icon: url(images/tab-right-arrow.svg);
 }
+
+/* Mirrored tree-branch chevron: folders open to the left. */
+QTreeView::branch:has-children:closed
+{
+    image: url(images/branch-closed-rtl.svg);
+}

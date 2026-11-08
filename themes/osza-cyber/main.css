@@ -8,7 +8,7 @@
  * internal pages (speed dial, start page, restore, about):
  *
  *   --osza-bg-base   #0a0a0f   canvas behind the tab strip
- *   --osza-bg-panel  #12141d   toolbar band, selected tab card
+ *   --osza-bg-panel  #12141d   toolbar band, selected tab card, dialogs
  *   --osza-accent    #00ffd1   neon cyan: focus rings, indicators
  *   --osza-text      #e9edf5   primary text
  *   --osza-text-dim  #9aa3b5   secondary text
@@ -18,10 +18,40 @@
  * search fields are dark pills with a cyan focus ring, menus are
  * dark panels with cyan-tinted hover states.
  *
+ * COMPLETE-SURFACE COVERAGE
+ * -------------------------
+ * The theme is applied as an application-wide stylesheet (and only
+ * that - the application palette still follows the system), so
+ * every Qt widget class the browser instantiates must carry the
+ * design or it falls back to the system look: a light Preferences
+ * dialog inside a dark browser. This file therefore styles the
+ * whole inventory: dialog surfaces and every top-level window,
+ * buttons (plain, default/primary, flat, command links), text
+ * fields, combos and their popups, checkboxes, radios, spin boxes,
+ * sliders, progress bars, item views and headers, tree branches,
+ * dialog tab widgets, group boxes, separators, scroll bars,
+ * tooltips and the JS alert frames (whose stock rules used to ask
+ * the light system palette for their colors).
+ *
+ * Two Qt stylesheet mechanics make that safe:
+ *   - ID selectors (the chrome's #tabbar, #locationbar, ...) always
+ *     outrank the class rules added here, so the chrome keeps the
+ *     exact geometry it was hand-tuned with;
+ *   - rules that style a background also recolor the palette the
+ *     widget hands to custom painters and item delegates, so the
+ *     location-bar completion, the downloads rows and the site-info
+ *     rows follow the dark surfaces without any code change.
+ *
+ * Ordering matters in two places and is deliberate: the
+ * QFrame[frameShape="6"] card rule comes BEFORE the item-view rules
+ * that carry the same attribute (views are QFrames too), and the
+ * WebView background rule stays LAST so no dark surface can bleed
+ * into the page.
+ *
  * A matching icon set lives in images/ and is referenced directly
  * (qproperty-icon), so the dark chrome never ends up with
  * system-light icon artwork. See private.css for the private-mode
- * violet variant.
+ * violet variant and rtl.css for the mirrored glyphs.
  */
 
 *[html-link-look="true"]
@@ -394,12 +424,29 @@ TabBarTabMetrics
     border: 1px solid #00ffd1;
 }
 
+/* The provider picker is a 32 px icon button that lives inside the
+   search pill: no frame of its own, just a slim mint chevron. */
 #websearchbar-searchprovider-combobox
 {
     border-image: url(images/transp.png);
     qproperty-fixedwidth: 32;
     min-height: 30px;
-    padding-left: 6px;
+    padding-left: 4px;
+    background: transparent;
+    border: none;
+}
+
+#websearchbar-searchprovider-combobox::drop-down
+{
+    width: 15px;
+    border: none;
+}
+
+#websearchbar-searchprovider-combobox::down-arrow
+{
+    image: url(images/combobox-arrow.svg);
+    width: 11px;
+    height: 11px;
 }
 
 /*BookmarksToolbar*/
@@ -460,6 +507,11 @@ QMenu::item:disabled
     color: #6b7386;
 }
 
+QMenu::item:checked
+{
+    background: rgba(0, 255, 209, 20);
+}
+
 QMenu::separator
 {
     height: 1px;
@@ -481,12 +533,12 @@ SearchToolBar #lineEdit[notfound="true"]
 /*AboutDialog*/
 AboutDialog #label
 {
-    background: palette(window);
+    background: #12141d;
 }
 
 AboutDialog #textLabel
 {
-    background: palette(window);
+    background: #12141d;
 }
 
 /*DesktopNotification*/
@@ -513,24 +565,943 @@ DesktopNotification #text
     color: #9aa3b5;
 }
 
+/* --- Complete application surfaces ---------------------------------------
+ *
+ * Everything below carries the Osza Cyber design into the dialogs
+ * (Preferences - home of the whole security suite - Download
+ * Manager, Library, Site Info, the exception managers), the popups
+ * (location-bar completion, padlock menu) and every small widget
+ * the chrome hands no rule of its own: buttons, fields, checks,
+ * views, tabs, group boxes, separators, scroll bars, tooltips.
+ *
+ * Surface ladder (mirrors the internal pages):
+ *   #12141d  panel    - dialog windows, views, menus
+ *   #0d0f16  field    - inputs, buttons, cards, checks
+ *   #262b3a  hairline - resting borders, separators
+ *   #2a2f42  edge     - borders of things that float (menus, popups)
+ *   #00ffd1  accent   - focus rings, checked states, the default
+ *                       (primary) button, progress, selection
+ */
+
+/* Global text and selection. No background here: chrome widgets
+   that show the window through stay transparent, and every surface
+   that paints declares its own color below. */
+QWidget
+{
+    color: #e9edf5;
+    selection-background-color: rgba(0, 255, 209, 60);
+    selection-color: #e9edf5;
+}
+
+/* Dialogs and every top-level window that is not a QDialog
+   (Download Manager, Library, license viewer, popup windows and
+   the location-bar popup family). */
+QDialog,
+QMessageBox,
+DownloadManager,
+BrowsingLibrary,
+LicenseViewer,
+PopupWindow,
+LocationBarPopup,
+LocationCompleterView
+{
+    background: #12141d;
+}
+
+/* The completion popup is its own window carrying a view: the view
+   below paints the panel face, so the popup frame stays quiet. */
+LocationCompleterView
+{
+    border: none;
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+
+QPushButton
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 7px;
+    padding: 5px 16px;
+    color: #e9edf5;
+    min-height: 20px;
+}
+
+QPushButton:hover
+{
+    background: #10131c;
+    border-color: rgba(255, 255, 255, 50);
+}
+
+QPushButton:pressed
+{
+    background: #161a26;
+    border-color: rgba(255, 255, 255, 80);
+}
+
+QPushButton:focus
+{
+    border-color: #00ffd1;
+}
+
+QPushButton:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+    color: #6b7386;
+}
+
+/* The dialog's default button (OK, Apply) carries the primary
+   treatment of the internal pages' .vx-btn--primary. */
+QPushButton:default
+{
+    background: rgba(0, 255, 209, 41);
+    border: 1px solid rgba(0, 255, 209, 140);
+    color: #00ffd1;
+}
+
+QPushButton:default:hover
+{
+    background: rgba(0, 255, 209, 66);
+    border-color: #00ffd1;
+}
+
+QPushButton:default:pressed
+{
+    background: rgba(0, 255, 209, 89);
+    border-color: #00ffd1;
+}
+
+QPushButton:flat
+{
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+QPushButton:flat:hover
+{
+    background: rgba(255, 255, 255, 25);
+    border-color: transparent;
+}
+
+QCommandLinkButton
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 7px;
+    padding: 6px 12px;
+    color: #e9edf5;
+}
+
+QCommandLinkButton:hover
+{
+    border-color: rgba(255, 255, 255, 50);
+    background: #10131c;
+}
+
+QCommandLinkButton:pressed
+{
+    background: #161a26;
+}
+
+/* ToolButtons outside the tuned chrome (security sidebar footer,
+   dialog toolbars). The chrome's own flat buttons keep winning:
+   their selectors carry an attribute the generic rules lack. */
+QToolButton
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 3px 6px;
+    color: #e9edf5;
+}
+
+QToolButton:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+QToolButton:pressed,
+QToolButton:checked
+{
+    background: rgba(255, 255, 255, 50);
+}
+
+QToolButton:disabled
+{
+    color: #6b7386;
+}
+
+QToolButton::menu-indicator
+{
+    image: url(images/menu-arrow.svg);
+    subcontrol-origin: padding;
+    subcontrol-position: bottom right;
+}
+
+/* --- Text fields ----------------------------------------------------------- */
+
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QTextBrowser
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+    padding: 3px 8px;
+    color: #e9edf5;
+    selection-background-color: #00ffd1;
+    selection-color: #06120f;
+}
+
+QTextEdit,
+QPlainTextEdit,
+QTextBrowser
+{
+    padding: 6px 8px;
+}
+
+QLineEdit:hover,
+QTextEdit:hover,
+QPlainTextEdit:hover,
+QTextBrowser:hover
+{
+    border-color: rgba(255, 255, 255, 50);
+}
+
+QLineEdit:focus,
+QTextEdit:focus,
+QPlainTextEdit:focus,
+QTextBrowser:focus
+{
+    border-color: #00ffd1;
+}
+
+QLineEdit:disabled,
+QTextEdit:disabled,
+QPlainTextEdit:disabled,
+QTextBrowser:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+    color: #6b7386;
+}
+
+QLineEdit:read-only
+{
+    color: #9aa3b5;
+}
+
+/* --- Combo boxes ------------------------------------------------------------ */
+
+QComboBox
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+    padding: 2px 10px;
+    min-height: 22px;
+    color: #e9edf5;
+    selection-background-color: #00ffd1;
+    selection-color: #06120f;
+}
+
+QComboBox:hover
+{
+    border-color: rgba(255, 255, 255, 50);
+}
+
+QComboBox:focus,
+QComboBox:on
+{
+    border-color: #00ffd1;
+}
+
+QComboBox:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+    color: #6b7386;
+}
+
+QComboBox::drop-down
+{
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 22px;
+    border: none;
+}
+
+QComboBox::down-arrow
+{
+    image: url(images/combobox-arrow.svg);
+    width: 14px;
+    height: 14px;
+}
+
+QComboBox::down-arrow:hover,
+QComboBox::down-arrow:on
+{
+    image: url(images/combobox-arrow-a.svg);
+}
+
+QComboBox QAbstractItemView
+{
+    background: #12141d;
+    border: 1px solid #2a2f42;
+    border-radius: 8px;
+    color: #e9edf5;
+    selection-background-color: rgba(0, 255, 209, 30);
+    selection-color: #e9edf5;
+    outline: none;
+    padding: 4px;
+}
+
+/* The field inside an editable combo must not draw a second frame. */
+QComboBox QLineEdit
+{
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+/* --- Checkboxes and radios --------------------------------------------------- */
+
+QCheckBox,
+QRadioButton
+{
+    spacing: 8px;
+    color: #e9edf5;
+}
+
+QCheckBox:disabled,
+QRadioButton:disabled
+{
+    color: #6b7386;
+}
+
+QCheckBox::indicator,
+QRadioButton::indicator
+{
+    width: 16px;
+    height: 16px;
+    border: 1px solid #2a2f42;
+    border-radius: 4px;
+    background: #0d0f16;
+}
+
+QRadioButton::indicator
+{
+    border-radius: 8px;
+}
+
+QCheckBox::indicator:hover,
+QRadioButton::indicator:hover
+{
+    border-color: rgba(255, 255, 255, 80);
+}
+
+QCheckBox::indicator:checked,
+QRadioButton::indicator:checked
+{
+    background: #00ffd1;
+    border-color: #00ffd1;
+    image: url(images/check.svg);
+}
+
+QRadioButton::indicator:checked
+{
+    image: none;
+}
+
+QCheckBox::indicator:indeterminate
+{
+    background: rgba(0, 255, 209, 115);
+    border-color: #00ffd1;
+    image: none;
+}
+
+QCheckBox::indicator:unchecked:disabled,
+QRadioButton::indicator:unchecked:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+}
+
+QCheckBox::indicator:checked:disabled,
+QRadioButton::indicator:checked:disabled
+{
+    background: #2a4a45;
+    border-color: #2a4a45;
+}
+
+/* Item views draw their check squares through the view's style;
+   mirror the standalone indicators so tree checkboxes follow. */
+QListView::indicator,
+QTreeView::indicator,
+QTableView::indicator
+{
+    width: 16px;
+    height: 16px;
+    border: 1px solid #2a2f42;
+    border-radius: 4px;
+    background: #0d0f16;
+}
+
+QListView::indicator:checked,
+QTreeView::indicator:checked,
+QTableView::indicator:checked
+{
+    background: #00ffd1;
+    border-color: #00ffd1;
+    image: url(images/check.svg);
+}
+
+QListView::indicator:indeterminate,
+QTreeView::indicator:indeterminate,
+QTableView::indicator:indeterminate
+{
+    background: rgba(0, 255, 209, 115);
+    border-color: #00ffd1;
+    image: none;
+}
+
+/* --- Spin boxes --------------------------------------------------------------- */
+
+QSpinBox,
+QDoubleSpinBox
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+    padding: 2px 26px 2px 10px;
+    min-height: 22px;
+    color: #e9edf5;
+    selection-background-color: #00ffd1;
+    selection-color: #06120f;
+}
+
+QSpinBox:hover,
+QDoubleSpinBox:hover
+{
+    border-color: rgba(255, 255, 255, 50);
+}
+
+QSpinBox:focus,
+QDoubleSpinBox:focus
+{
+    border-color: #00ffd1;
+}
+
+QSpinBox:disabled,
+QDoubleSpinBox:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+    color: #6b7386;
+}
+
+QSpinBox::up-button
+{
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #262b3a;
+    border-bottom: 1px solid #262b3a;
+    border-top-right-radius: 7px;
+    background: #10131c;
+}
+
+QSpinBox::down-button
+{
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid #262b3a;
+    border-bottom-right-radius: 7px;
+    background: #10131c;
+}
+
+QSpinBox::up-button:hover,
+QSpinBox::down-button:hover
+{
+    background: #161a26;
+}
+
+QSpinBox::up-button:pressed
+{
+    background: rgba(0, 255, 209, 41);
+}
+
+QSpinBox::down-button:pressed
+{
+    background: rgba(0, 255, 209, 41);
+}
+
+QSpinBox::up-button:disabled,
+QSpinBox::down-button:disabled
+{
+    background: #0b0d14;
+    border-color: #1c2130;
+}
+
+QSpinBox::up-arrow
+{
+    image: url(images/spin-up.svg);
+    width: 10px;
+    height: 10px;
+}
+
+QSpinBox::down-arrow
+{
+    image: url(images/spin-down.svg);
+    width: 10px;
+    height: 10px;
+}
+
+/* --- Sliders and progress -------------------------------------------------------- */
+
+QSlider::groove:horizontal
+{
+    height: 4px;
+    border-radius: 2px;
+    background: #262b3a;
+}
+
+QSlider::sub-page:horizontal
+{
+    background: rgba(0, 255, 209, 90);
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal
+{
+    width: 14px;
+    height: 14px;
+    margin: -6px 0;
+    border-radius: 7px;
+    background: #00ffd1;
+}
+
+QSlider::handle:horizontal:hover
+{
+    background: #4dffd9;
+}
+
+QSlider::groove:vertical
+{
+    width: 4px;
+    border-radius: 2px;
+    background: #262b3a;
+}
+
+QSlider::add-page:vertical
+{
+    background: rgba(0, 255, 209, 90);
+    border-radius: 2px;
+}
+
+QSlider::handle:vertical
+{
+    width: 14px;
+    height: 14px;
+    margin: 0 -6px;
+    border-radius: 7px;
+    background: #00ffd1;
+}
+
+QSlider::handle:vertical:hover
+{
+    background: #4dffd9;
+}
+
+QSlider::groove:horizontal:disabled,
+QSlider::groove:vertical:disabled,
+QSlider::sub-page:horizontal:disabled,
+QSlider::add-page:vertical:disabled
+{
+    background: #1c2130;
+}
+
+QSlider::handle:horizontal:disabled,
+QSlider::handle:vertical:disabled
+{
+    background: #6b7386;
+}
+
+QProgressBar
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+    color: #e9edf5;
+    text-align: center;
+    min-height: 12px;
+}
+
+QProgressBar::chunk
+{
+    background: #00ffd1;
+    border-radius: 7px;
+    margin: 1px;
+}
+
+/* --- Cards and separators -----------------------------------------------------
+ *
+ * QFrames with the StyledPanel shape become quiet cards (the
+ * security sidebar's counter tiles, the download rows' progress
+ * frames, the padlock menu's sections). Item views and spin boxes
+ * are QFrames carrying the same shape, so their rules repeat the
+ * attribute and are kept AFTER this one to win the tie.
+ */
+
+QFrame[frameShape="6"]
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 10px;
+}
+
+QListView[frameShape="6"],
+QListWidget[frameShape="6"],
+QTreeView[frameShape="6"],
+QTreeWidget[frameShape="6"],
+QTableView[frameShape="6"],
+QTableWidget[frameShape="6"],
+QColumnView[frameShape="6"],
+QTextEdit[frameShape="6"],
+QPlainTextEdit[frameShape="6"],
+QTextBrowser[frameShape="6"],
+QSpinBox[frameShape="6"],
+QDoubleSpinBox[frameShape="6"],
+QGraphicsView[frameShape="6"],
+QScrollArea[frameShape="6"]
+{
+    background: #12141d;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+}
+
+/* Scroll areas frame their page, not the dialog: let the content
+   float and keep only the corner quiet. */
+QScrollArea[frameShape="6"]
+{
+    background: transparent;
+    border: none;
+}
+
+/* The icon chooser's canvas follows the field color. */
+QGraphicsView
+{
+    qproperty-backgroundBrush: #0d0f16;
+}
+
+QGraphicsView[frameShape="6"]
+{
+    background: #0d0f16;
+}
+
+/* HLine / VLine separators */
+QFrame[frameShape="4"]
+{
+    border: none;
+    background: #232939;
+    max-height: 1px;
+}
+
+QFrame[frameShape="5"]
+{
+    border: none;
+    background: #232939;
+    max-width: 1px;
+}
+
+/* --- Item views ------------------------------------------------------------------ */
+
+QListView,
+QListWidget,
+QTreeView,
+QTreeWidget,
+QTableView,
+QTableWidget,
+QColumnView
+{
+    background: #12141d;
+    alternate-background-color: #161927;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+    color: #e9edf5;
+    selection-background-color: rgba(0, 255, 209, 30);
+    selection-color: #e9edf5;
+    outline: none;
+}
+
+QListView:disabled,
+QListWidget:disabled,
+QTreeView:disabled,
+QTreeWidget:disabled,
+QTableView:disabled,
+QTableWidget:disabled,
+QColumnView:disabled
+{
+    color: #6b7386;
+}
+
+QListView::item,
+QListWidget::item
+{
+    border-radius: 5px;
+    padding: 3px 4px;
+}
+
+QTreeView::item,
+QTreeWidget::item
+{
+    border-radius: 5px;
+    padding: 3px 2px;
+}
+
+QListView::item:hover,
+QListWidget::item:hover,
+QTreeView::item:hover,
+QTreeWidget::item:hover
+{
+    background: rgba(255, 255, 255, 25);
+}
+
+QListView::item:selected,
+QListWidget::item:selected,
+QTreeView::item:selected,
+QTreeWidget::item:selected
+{
+    background: rgba(0, 255, 209, 30);
+}
+
+QTableView
+{
+    gridline-color: #262b3a;
+}
+
+QHeaderView::section
+{
+    background: #0d0f16;
+    border: none;
+    border-bottom: 1px solid #262b3a;
+    border-right: 1px solid #1c2130;
+    padding: 4px 8px;
+    color: #9aa3b5;
+    font-weight: 600;
+}
+
+QHeaderView::section:hover
+{
+    color: #e9edf5;
+}
+
+QHeaderView::section:pressed
+{
+    background: #161a26;
+}
+
+/* Tree branches: mint-less quiet chevrons, no connector lines. */
+QTreeView::branch
+{
+    background: transparent;
+}
+
+QTreeView::branch:has-children:closed
+{
+    image: url(images/branch-closed.svg);
+}
+
+QTreeView::branch:has-children:open
+{
+    image: url(images/branch-open.svg);
+}
+
+/* --- Dialog tab widgets ------------------------------------------------------------- */
+
+QTabWidget::pane
+{
+    background: #12141d;
+    border: 1px solid #262b3a;
+    border-radius: 8px;
+}
+
+/* Scoped to tab widgets: the main tab strip's tabs are drawn
+   through QTabBar style rules too, and its hand-tuned #tabbar
+   selectors must stay the only voice there. A descendant selector
+   keeps these rules on the dialog side. */
+QTabWidget QTabBar::tab
+{
+    background: transparent;
+    border: 1px solid transparent;
+    border-top: 2px solid transparent;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    padding: 5px 14px 6px;
+    color: #9aa3b5;
+}
+
+QTabWidget QTabBar::tab:hover
+{
+    background: rgba(255, 255, 255, 25);
+    color: #e9edf5;
+}
+
+QTabWidget QTabBar::tab:selected
+{
+    background: #12141d;
+    border: 1px solid #2a2f42;
+    border-top: 2px solid #00ffd1;
+    border-bottom: none;
+    margin-bottom: -1px;
+    color: #e9edf5;
+}
+
+QTabWidget QTabBar::tab:disabled
+{
+    color: #6b7386;
+}
+
+/* --- Group boxes -------------------------------------------------------------------- */
+
+QGroupBox
+{
+    background: #0d0f16;
+    border: 1px solid #262b3a;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 10px 6px 6px 6px;
+    color: #e9edf5;
+}
+
+QGroupBox::title
+{
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 6px;
+    color: #9aa3b5;
+    background: transparent;
+    font-weight: 600;
+}
+
+QGroupBox:disabled
+{
+    color: #6b7386;
+}
+
+/* --- Scroll bars ---------------------------------------------------------------------- */
+
+QScrollBar:vertical
+{
+    background: transparent;
+    width: 11px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical
+{
+    background: #262b3a;
+    border-radius: 4px;
+    min-height: 28px;
+}
+
+QScrollBar::handle:vertical:hover
+{
+    background: #333b52;
+}
+
+QScrollBar::handle:vertical:pressed
+{
+    background: rgba(0, 255, 209, 115);
+}
+
+QScrollBar:horizontal
+{
+    background: transparent;
+    height: 11px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal
+{
+    background: #262b3a;
+    border-radius: 4px;
+    min-width: 28px;
+}
+
+QScrollBar::handle:horizontal:hover
+{
+    background: #333b52;
+}
+
+QScrollBar::handle:horizontal:pressed
+{
+    background: rgba(0, 255, 209, 115);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal
+{
+    height: 0;
+    width: 0;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal
+{
+    background: transparent;
+}
+
+/* --- Tooltips and splitters -------------------------------------------------------------- */
+
+QToolTip
+{
+    background: #0d0f16;
+    border: 1px solid #2a2f42;
+    border-radius: 6px;
+    color: #e9edf5;
+    padding: 5px 8px;
+}
+
+QSplitter::handle
+{
+    background-color: #1c2130;
+}
+
+QSplitter::handle:hover
+{
+    background-color: rgba(0, 255, 209, 60);
+}
+
 /*JavaScript Dialogs*/
 #jsFrame
 {
     background: url(images/semi-transp.png);
 }
 
+/* The stock rules ask the (light) system palette for these frames;
+   the dark panels are restated here so the alert, confirm and
+   prompt boxes join the design. */
 QFrame[js-frame="true"]
 {
-    border: 1px solid palette(mid);
+    border: 1px solid #2a2f42;
     border-bottom: 0px;
-    background-color: palette(window);
+    background-color: #12141d;
 }
 
 QFrame[js-frame2="true"]
 {
-    border: 1px solid palette(mid);
+    border: 1px solid #2a2f42;
     border-top: 0px;
-    background-color: palette(midlight);
+    background-color: #0d0f16;
 }
 
 /*WebView*/

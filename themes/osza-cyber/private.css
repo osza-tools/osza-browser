@@ -91,3 +91,263 @@ DesktopNotification #frame
 {
     border: 1px solid #32294a;
 }
+
+/* --- Complete surfaces, violet variant -----------------------------------
+ *
+ * The full-coverage rules from main.css restated in the private
+ * accent: focus rings, checked states, the primary button,
+ * progress, selection - everything the cyan drives. Surface and
+ * hairline colors shift to the violet-dark equivalents used by
+ * the chrome rules above.
+ */
+
+QWidget
+{
+    selection-background-color: rgba(167, 139, 250, 60);
+    selection-color: #e9edf5;
+}
+
+QPushButton:focus
+{
+    border-color: #a78bfa;
+}
+
+QPushButton:default
+{
+    background: rgba(167, 139, 250, 41);
+    border: 1px solid rgba(167, 139, 250, 140);
+    color: #a78bfa;
+}
+
+QPushButton:default:hover
+{
+    background: rgba(167, 139, 250, 66);
+    border-color: #a78bfa;
+}
+
+QPushButton:default:pressed
+{
+    background: rgba(167, 139, 250, 89);
+    border-color: #a78bfa;
+}
+
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QTextBrowser
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+    selection-background-color: #a78bfa;
+    selection-color: #140b23;
+}
+
+QLineEdit:focus,
+QTextEdit:focus,
+QPlainTextEdit:focus,
+QTextBrowser:focus
+{
+    border-color: #a78bfa;
+}
+
+QComboBox
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+    selection-background-color: #a78bfa;
+    selection-color: #140b23;
+}
+
+QComboBox:focus,
+QComboBox:on
+{
+    border-color: #a78bfa;
+}
+
+QComboBox::down-arrow:hover,
+QComboBox::down-arrow:on
+{
+    image: url(images/combobox-arrow-a.svg);
+}
+
+QComboBox QAbstractItemView
+{
+    background: #141021;
+    border: 1px solid #32294a;
+    selection-background-color: rgba(167, 139, 250, 30);
+}
+
+QCheckBox::indicator,
+QRadioButton::indicator
+{
+    border: 1px solid #32294a;
+    background: #0f0c18;
+}
+
+QCheckBox::indicator:checked,
+QRadioButton::indicator:checked,
+QListView::indicator:checked,
+QTreeView::indicator:checked,
+QTableView::indicator:checked
+{
+    background: #a78bfa;
+    border-color: #a78bfa;
+}
+
+QCheckBox::indicator:indeterminate,
+QListView::indicator:indeterminate,
+QTreeView::indicator:indeterminate,
+QTableView::indicator:indeterminate
+{
+    background: rgba(167, 139, 250, 115);
+    border-color: #a78bfa;
+}
+
+QSpinBox,
+QDoubleSpinBox
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+    selection-background-color: #a78bfa;
+    selection-color: #140b23;
+}
+
+QSpinBox:focus,
+QDoubleSpinBox:focus
+{
+    border-color: #a78bfa;
+}
+
+QSpinBox::up-button,
+QSpinBox::down-button
+{
+    background: #131022;
+    border-color: #322a4a;
+}
+
+QSpinBox::up-button:pressed,
+QSpinBox::down-button:pressed
+{
+    background: rgba(167, 139, 250, 41);
+}
+
+QSlider::sub-page:horizontal,
+QSlider::add-page:vertical
+{
+    background: rgba(167, 139, 250, 90);
+}
+
+QSlider::handle:horizontal,
+QSlider::handle:vertical
+{
+    background: #a78bfa;
+}
+
+QProgressBar::chunk
+{
+    background: #a78bfa;
+}
+
+QFrame[frameShape="6"]
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+}
+
+QFrame[frameShape="4"],
+QFrame[frameShape="5"]
+{
+    background: #292242;
+}
+
+QListView,
+QListWidget,
+QTreeView,
+QTreeWidget,
+QTableView,
+QTableWidget,
+QColumnView
+{
+    background: #141021;
+    alternate-background-color: #191331;
+    border: 1px solid #322a4a;
+    selection-background-color: rgba(167, 139, 250, 30);
+}
+
+QListView[frameShape="6"],
+QListWidget[frameShape="6"],
+QTreeView[frameShape="6"],
+QTreeWidget[frameShape="6"],
+QTableView[frameShape="6"],
+QTableWidget[frameShape="6"],
+QColumnView[frameShape="6"],
+QTextEdit[frameShape="6"],
+QPlainTextEdit[frameShape="6"],
+QTextBrowser[frameShape="6"],
+QSpinBox[frameShape="6"],
+QDoubleSpinBox[frameShape="6"],
+QGraphicsView[frameShape="6"]
+{
+    background: #141021;
+    border: 1px solid #322a4a;
+}
+
+QHeaderView::section
+{
+    background: #0f0c18;
+    border-bottom: 1px solid #322a4a;
+    border-right: 1px solid #241d3a;
+}
+
+QTabWidget::pane
+{
+    background: #141021;
+    border: 1px solid #322a4a;
+}
+
+QTabWidget QTabBar::tab:selected
+{
+    background: #141021;
+    border: 1px solid #32294a;
+    border-top: 2px solid #a78bfa;
+}
+
+QGroupBox
+{
+    background: #0f0c18;
+    border: 1px solid #322a4a;
+}
+
+QScrollBar::handle:vertical:pressed,
+QScrollBar::handle:horizontal:pressed
+{
+    background: rgba(167, 139, 250, 115);
+}
+
+QSplitter::handle:hover
+{
+    background-color: rgba(167, 139, 250, 60);
+}
+
+QToolTip
+{
+    background: #0f0c18;
+    border: 1px solid #32294a;
+}
+
+QMenu::item:checked
+{
+    background: rgba(167, 139, 250, 20);
+}
+
+QFrame[js-frame="true"]
+{
+    border: 1px solid #32294a;
+    background-color: #141021;
+}
+
+QFrame[js-frame2="true"]
+{
+    border: 1px solid #32294a;
+    background-color: #0f0c18;
+}

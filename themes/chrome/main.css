@@ -22,7 +22,11 @@
     border: none;
 }
 
-#mainwindow-menubar:item
+/* ":item" (single colon) is not a pseudo-state Qt style sheets
+   know - the rule was silently dropped and the menubar items kept
+   the default padding. The subcontrol spelling matches the
+   ::item:pressed rule below. */
+#mainwindow-menubar::item
 {
     color: black;
     spacing: 5px;
@@ -344,4 +348,10 @@ QFrame[js-frame2="true"]
     border: 1px solid  black;
     border-top: 0px;
     background-color: #f3f3f3;
+}
+
+/*WebView*/
+WebView
+{
+    background: white;
 }

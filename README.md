@@ -152,7 +152,15 @@ and KDE contributors for their work.
   feeds, all reachable from collapsible sidebars.
 - **Speed Dial** — your favorite sites one click away on the start page.
 - **Sessions** — save and restore complete browsing sessions.
-- **Themes** — flexible theming with bundled themes for every platform.
+- **Themes** — flexible theming with bundled themes for every platform,
+  plus **Osza Cyber**, the showcase dark theme: the same design
+  language as the internal pages (dark surfaces, neon-cyan accents,
+  pill fields) carried across the *whole* application — chrome,
+  Preferences, dialogs, the security sidebar, popups and tooltips —
+  with a matching violet variant for private windows.
+  `tools/themes/verify_theme.py` keeps every bundled theme
+  syntactically clean and the self-contained ones complete, without
+  a Qt build.
 - **Extendable** — native C++/Qt plugins plus Python (PySide6) plugins.
 
 ## Downloads

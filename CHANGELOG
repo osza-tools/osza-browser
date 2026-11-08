@@ -7,6 +7,72 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- The complete Osza Cyber theme: the flagship dark design now
+  covers the whole application, not just the chrome. A theme here
+  is an application-wide stylesheet and nothing else - the
+  application palette still follows the system - so every widget
+  class the stylesheet does not mention renders in the system
+  look. The Cyber theme styled the main window (tabs, toolbar,
+  location and search pills, menus, statusbar) and stopped there:
+  every dialog - Preferences, home of the entire security suite,
+  Download Manager, Library, Site Info, the exception managers -
+  opened as a light island inside the dark browser, its 123
+  buttons, 99 checkboxes, 58 line edits, 24 combos, radios, spin
+  boxes, group boxes, tab widgets, tree and list views, scroll
+  bars and tooltips all drawn by the system. The theme now carries
+  the design's surface ladder (#12141d panels, #0d0f16 fields and
+  cards, #262b3a hairlines, #00ffd1 accent) across the whole
+  inventory: dialogs and every top-level window that is not a
+  QDialog (Download Manager, Library, the license viewer, popup
+  windows, the location-bar completion and the padlock menu's
+  popup family), buttons with a mint primary for the dialog's
+  default action, dark fields with the cyan focus ring and mint
+  selection, combos with styled popups, mint check and radio
+  indicators (mirrored for the checkable rows inside item views),
+  spin boxes with quiet chevron buttons, sliders, progress bars,
+  item views with mint-tinted selection and styled headers and
+  branch chevrons, dialog tab widgets whose selected tab echoes
+  the chrome's cyan top edge, group boxes as quiet cards,
+  separators, slim scroll bars, dark tooltips, and the JS alert
+  frames, whose stock rules asked the light system palette for
+  their colors and now join the design. Two stylesheet mechanics
+  were leaned on deliberately: the chrome's hand-tuned ID
+  selectors always outrank the new class rules, so the chrome
+  keeps its exact geometry (the dialog tab rules are scoped inside
+  QTabWidget so they can never reach the main tab strip, whose
+  tabs are drawn through QTabBar style rules as well); and a
+  stylesheet that styles a background recolors the palette the
+  widget hands to custom painters, so the location-bar completion
+  rows, the downloads rows and the site-info rows follow the dark
+  surfaces without any code change. The private-mode variant
+  restates every accent-driven rule in violet, and the RTL sheet
+  mirrors the new tree-branch chevron. Nine small indicator
+  artworks join the theme's image set (the check glyph, combo and
+  spin chevrons, tree branch arrows, the tool button menu arrow),
+  drawn in the icon language of the bundled set.
+- Theme verification: tools/themes/verify_theme.py, the theme
+  completeness verifier, in the family of the offline security
+  verifiers. Themes come in two families: palette-following ones
+  (linux, windows, mac, chrome) whose unstyled widgets inherit the
+  system look by design, and self-contained designs (osza-cyber)
+  that hardcode their surfaces and must therefore cover every
+  widget class the browser instantiates. Without building Qt the
+  tool checks, for every bundled theme: QSS sanity - balanced
+  blocks, known properties, pseudo-states and subcontrols (an
+  unknown pseudo-state silently drops its whole rule), url()
+  artwork present on disk, no constructs Qt style sheets do not
+  implement; for self-contained themes: widget coverage - every
+  Qt widget class instantiated in the tree's .ui files (custom
+  classes resolved through the source to their Qt base) that
+  paints a visible surface must be mentioned by the theme's
+  selectors, and every custom class the theme names must exist;
+  and the ordering invariants the coverage relies on - the item
+  view rules that carry [frameShape="6"] must follow the
+  QFrame card rule they override by cascade order, and the
+  WebView page background must exist. Its first run found two
+  real bugs in the chrome theme that had been shipping silently
+  (see Fixed), and it keeps the coverage honest as widgets are
+  added to the tree.
 - Security tools (24): the interstitial re-serves itself when a
   refresh lands - the evidence re-weighs itself. A blocklist
   refresh completing while the warning page stood changed nothing
@@ -817,6 +883,17 @@ Fixed:
   counts the web action, with a companion check that it is the
   same action watchedFileChanged() already triggers. Both
   verifiers read green end to end (112 and 152 checks).
+- Two rules the chrome theme had been silently shipping broken,
+  both found by the new theme verifier's first run. The menubar
+  item rule was spelled "#mainwindow-menubar:item" - a single
+  colon, making ":item" a pseudo-state no Qt stylesheet knows
+  instead of the ::item subcontrol the very next rule in the file
+  uses correctly - so Qt dropped the rule and the menubar items
+  kept the default padding and color the theme meant to give
+  them. And the theme never set the WebView background its three
+  platform siblings set, leaving page surfaces to the system
+  palette - a dark system palette would have bled into loading
+  pages. Both now match the linux/windows/mac themes.
 - The security-high icon, requested by the Tools menu's Security
   Dashboard entry since the menu gained its icon, never existed:
   the icon audit had been reporting "security-high requested but
