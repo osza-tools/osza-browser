@@ -427,8 +427,16 @@ check("the re-serve asks one cheap question of the page's own address (scheme an
       re_serve is not None and 'current.scheme() == QL1S("osza")' in re_serve
       and 'current.path() == QL1S("threatblocked")' in re_serve)
 check("the re-serve is one reload of the address the warning lives at (nothing else moves)",
-      re_serve is not None and re_serve.count("reload();") == 1
+      re_serve is not None
+      and re_serve.count("triggerAction(QWebEnginePage::Reload);") == 1
       and "navigate" not in re_serve)
+# The reload rides the Reload web action - QWebEnginePage has no
+# reload() member (the interstitial's first spelling of the re-serve
+# called one and broke the build), so the re-serve triggers the same
+# action watchedFileChanged() already does; nothing else in the body
+# moves the page.
+check("the reload is the web action watchedFileChanged() already triggers",
+      "triggerAction(QWebEnginePage::Reload);" in body(webpage_cpp, "void WebPage::watchedFileChanged(const QString &file)"))
 check("the wiring includes the manager's header (the connection names the class)",
       '#include "threatblockmanager.h"' in webpage_cpp)
 

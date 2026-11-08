@@ -289,34 +289,38 @@ check("the copy falls back to the legacy execCommand path",
 check("a modified click is left to the browser",
       "event.ctrlKey" in script)
 
-# The C++ side of the clipboard: the async API asks for a feature
+# The C++ side of the clipboard: the async API asks for a
 # permission, and for the browser's own pages the policy is pinned
-# here. Qt's clipboard permission is one combined feature in every
-# version - Chromium asks for its sanitized write as
-# QWebEnginePage::ClipboardReadWrite too, so no Qt release ever
-# delivered a separate one - and for the trusted internal pages it
-# is granted, the same trust the legacy execCommand path already
+# here. Permissions arrive as QWebEnginePermission handles answered
+# where they stand (the Qt5 feature API retired with the Qt 6
+# permission objects), and Qt's clipboard permission is one
+# combined type in every version - Chromium asks for its sanitized
+# write as ClipboardReadWrite too, so no Qt release ever delivered
+# a separate one - and for the trusted internal pages it is
+# granted, the same trust the legacy execCommand path already
 # extends to them. Everything else still goes through the HTML5
 # permission manager.
 osza_clipboard_block = re.search(
-    r'if \(origin\.scheme\(\) == QL1S\("osza"\)\) \{(.*?)\n    \}',
+    r'if \(permission\.origin\(\)\.scheme\(\) == QL1S\("osza"\)\) \{(.*?)\n    \}',
     webpage_cpp, re.DOTALL)
-check("the clipboard feature is answered for osza: pages",
+check("the clipboard permission is answered for osza: pages",
       osza_clipboard_block is not None)
 if osza_clipboard_block:
     block = osza_clipboard_block.group(1)
-    check("the combined clipboard feature is granted for osza: pages",
-          re.search(r"case QWebEnginePage::ClipboardReadWrite:.*?PermissionGrantedByUser",
+    check("the combined clipboard type is granted for osza: pages",
+          re.search(r"case QWebEnginePermission::PermissionType::ClipboardReadWrite:.*?permission\.grant\(\)",
                     block, re.DOTALL) is not None)
-    check("no clipboard feature that Qt never shipped is referenced",
+    check("no clipboard type that Qt never shipped is referenced",
           "ClipboardSanitizedWrite" not in block)
     check("the grant is not behind a Qt version guard",
           "QT_VERSION_CHECK" not in block)
-    check("no clipboard read is denied behind the grant",
-          re.search(r"case QWebEnginePage::ClipboardReadWrite:.*?PermissionDeniedByUser",
+    check("no clipboard permission is rejected behind the grant",
+          re.search(r"case QWebEnginePermission::PermissionType::ClipboardReadWrite:.*?permission\.reject\(\)",
                     block, re.DOTALL) is None)
-check("every other feature still asks the permission manager",
-      "html5PermissionsManager()->requestPermissions" in webpage_cpp)
+    check("the grant answers where it stands (no deferral through the manager)",
+          "requestPermissions" not in block)
+check("every other permission still asks the permission manager",
+      "mApp->html5PermissionsManager()->requestPermissions(this, permission)" in webpage_cpp)
 
 # ------------------------------------------------------------------
 # 6. The page script, in a Node VM with a mocked DOM, for every

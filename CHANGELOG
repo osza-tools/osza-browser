@@ -797,6 +797,26 @@ Added:
   the page's SHA-256 before it ever shipped.
 
 Fixed:
+- Two security verifiers had gone stale against the tree, each
+  failing one check on a clean checkout: the compile-fix commits
+  had moved the code and left the pins behind. The settings-diff
+  verifier still pinned the interstitial era's Qt5 feature API
+  for the osza: clipboard grant - it looked for
+  QWebEnginePage::ClipboardReadWrite answered with
+  PermissionGrantedByUser, while permissions now arrive as
+  QWebEnginePermission handles answered where they stand
+  (permission.grant()), so the block never matched and its five
+  sub-checks silently never ran; the pins now follow the
+  permission-object shape, and a new sub-check holds that the
+  grant answers where it stands instead of deferring through the
+  manager. The threat-block verifier still pinned the re-serve as
+  one reload() call - a member QWebEnginePage never had, the very
+  thing the compile fix replaced with
+  triggerAction(QWebEnginePage::Reload) - so the re-serve check
+  failed against the code it was written to guard; the pin now
+  counts the web action, with a companion check that it is the
+  same action watchedFileChanged() already triggers. Both
+  verifiers read green end to end (112 and 152 checks).
 - The security-high icon, requested by the Tools menu's Security
   Dashboard entry since the menu gained its icon, never existed:
   the icon audit had been reporting "security-high requested but
