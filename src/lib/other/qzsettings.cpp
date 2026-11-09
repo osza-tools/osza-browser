@@ -29,7 +29,7 @@ void QzSettings::loadSettings()
     settings.beginGroup(QSL("AddressBar"));
     selectAllOnDoubleClick = settings.value(QSL("SelectAllTextOnDoubleClick"), true).toBool();
     selectAllOnClick = settings.value(QSL("SelectAllTextOnClick"), false).toBool();
-    showLoadingProgress = settings.value(QSL("ShowLoadingProgress"), false).toBool();
+    showLoadingProgress = settings.value(QSL("ShowLoadingProgress"), true).toBool();
     showLocationSuggestions = settings.value(QSL("showSuggestions"), 0).toInt();
     showSwitchTab = settings.value(QSL("showSwitchTab"), true).toBool();
     alwaysShowGoIcon = settings.value(QSL("alwaysShowGoIcon"), false).toBool();

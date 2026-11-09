@@ -24,6 +24,7 @@
 #include "loadrequest.h"
 
 class QStringListModel;
+class QVariantAnimation;
 
 class BrowserWindow;
 class LocationCompleter;
@@ -105,13 +106,30 @@ private Q_SLOTS:
     void loadFinished();
     void hideProgress();
 
+    // The eased load-progress treatment: the engine reports progress
+    // in bursts (10, 26, 43, ...), so the bar never jumps - a variant
+    // animation glides the displayed value toward each new target
+    // (progressGlideAdvanced), dwells at 100 for a moment, then eases
+    // its opacity out (progressFadeAdvanced/progressFadeFinished)
+    // instead of vanishing.
+    void progressGlideAdvanced(const QVariant &value);
+    void progressFadeAdvanced(const QVariant &value);
+    void progressFadeFinished();
+
     void loadSettings();
 
 private:
     enum ProgressStyle {
         ProgressFilled,
         ProgressBottom,
-        ProgressTop
+        ProgressTop,
+        // The showcase treatment: an accent line riding the bottom
+        // edge of the pill, with a soft glow above it, a brighter
+        // leading tip and a whisper fill over the loaded region -
+        // the accent follows the palette's Highlight, so the cyber
+        // theme's mint and the private variant's violet arrive with
+        // no code of their own.
+        ProgressAccentLine
     };
 
     void contextMenuEvent(QContextMenuEvent* event) override;
@@ -123,6 +141,13 @@ private:
     void paintEvent(QPaintEvent* event) override;
 
     void refreshTextFormat();
+
+    // Retargets the glide animation toward a new engine-reported
+    // target, starting from wherever the displayed value stands.
+    void retargetProgressGlide(int target);
+    // The accent the progress treatment paints with: the custom
+    // color when one is set, the palette's Highlight otherwise.
+    QColor progressAccentColor() const;
 
     LocationCompleter* m_completer;
     QStringListModel* m_domainCompleterModel;
@@ -145,6 +170,17 @@ private:
     ProgressStyle m_progressStyle;
     QColor m_progressColor;
     QTimer *m_progressTimer;
+
+    // The eased treatment's live state. m_displayProgress is the
+    // value actually painted (driven only by the glide animation);
+    // m_loadProgress above stays the last target the engine named.
+    // m_progressOpacity is 1 while loading and eases to 0 once the
+    // dwell ends. In-class initializers keep every constructor path
+    // (including the LineEdit base) starting from zero.
+    int m_displayProgress = 0;
+    qreal m_progressOpacity = 1.0;
+    QVariantAnimation *m_progressGlide = nullptr;
+    QVariantAnimation *m_progressFade = nullptr;
 };
 
 #endif // LOCATIONBAR_H

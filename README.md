@@ -148,6 +148,18 @@ and KDE contributors for their work.
   tool's row states and changes the site's treatment. Everything
   lives in Preferences → Privacy → Security tools.
 - **Ad blocking** — integrated AdBlock support with filter subscriptions.
+- **A living address bar** — page loads never jump: the engine reports
+  progress in bursts, and the bar eases toward every report, dwells at
+  completion and retires in a fade. The default treatment is the
+  *accent line* — a rounded line riding the bottom edge of the address
+  pill, a soft glow rising off it, a brighter tip leading the motion —
+  painted in the active theme's accent (mint in Osza Cyber, violet in
+  private windows, the system accent elsewhere) with no theme-specific
+  code, and mirrored for right-to-left layouts. The classic Fill,
+  Bottom and Top styles remain one selection away in Preferences, each
+  now eased and fading too, with the optional custom color still
+  honored. `tools/ui/verify_load_progress.py` keeps the treatment
+  honest without a Qt build.
 - **Everything in its place** — bookmarks, history, downloads and RSS
   feeds, all reachable from collapsible sidebars.
 - **Speed Dial** — your favorite sites one click away on the start page.

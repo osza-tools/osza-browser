@@ -291,10 +291,12 @@ Preferences::Preferences(BrowserWindow* window)
     ui->selectAllOnFocus->setChecked(settings.value(QSL("SelectAllTextOnDoubleClick"), true).toBool());
     ui->selectAllOnClick->setChecked(settings.value(QSL("SelectAllTextOnClick"), false).toBool());
     ui->completionPopupExpandToWindow->setChecked(settings.value(QSL("CompletionPopupExpandToWindow"), false).toBool());
-    bool showPBinAB = settings.value(QSL("ShowLoadingProgress"), false).toBool();
+    bool showPBinAB = settings.value(QSL("ShowLoadingProgress"), true).toBool();
     ui->showLoadingInAddressBar->setChecked(showPBinAB);
     ui->addressProgressSettings->setEnabled(showPBinAB);
-    ui->progressStyleSelector->setCurrentIndex(settings.value(QSL("ProgressStyle"), 0).toInt());
+    // The accent line rides at index 3, so the classic Fill/Bottom/
+    // Top indices stored by earlier profiles keep their meaning.
+    ui->progressStyleSelector->setCurrentIndex(settings.value(QSL("ProgressStyle"), 3).toInt());
     bool pbInABuseCC = settings.value(QSL("UseCustomProgressColor"), false).toBool();
     ui->checkBoxCustomProgressColor->setChecked(pbInABuseCC);
     ui->progressBarColorSelector->setEnabled(pbInABuseCC);

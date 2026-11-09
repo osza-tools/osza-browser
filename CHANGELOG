@@ -7,6 +7,43 @@ The visual refresh: one icon language everywhere. Security tools: the
 start of the bundled security suite.
 
 Added:
+- The living address bar: page loads are eased, never jumped. The
+  engine reports load progress in bursts (10, 26, 43, 76, ...), and
+  the bar painted whatever number last arrived - a staircase - and
+  then vanished the moment a 700 ms timer fired. The progress
+  treatment now tells one continuous story: a variant animation
+  eases the displayed value toward every report (OutCubic, 320 ms,
+  each retarget starting from where the display stands, so a burst
+  mid-glide redirects the same motion instead of cutting to a new
+  one), the bar sweeps to 100 as the load finishes, dwells there
+  briefly, and eases its opacity out (300 ms) rather than dropping
+  - and a fresh navigation resets everything from zero, wherever
+  the previous story stood. The new default style is the accent
+  line: a rounded line riding the bottom edge of the address pill,
+  its caps kept clear of the pill's curvature, a soft glow rising
+  off it, a brighter tip leading the motion with a small bloom,
+  and a whisper fill over the loaded region clipped to the pill's
+  shape. The accent needs no theme-specific code: it follows the
+  palette's Highlight role, which the Cyber theme's #locationbar
+  rule already paints mint (#00ffd1), the private variant violet
+  (#a78bfa), and the system palette its own accent - and the
+  custom color set in Preferences still wins over all of it. The
+  classic Fill, Bottom and Top styles stay, now eased and fading
+  like the line; the thin edge lines ride the same accent (they
+  never cover text), while Fill keeps its calm text-mid tone
+  because it paints over the text. Right-to-left layouts now read
+  every style anchored to the edge the text grows from - the old
+  code filled from the left edge regardless. Out of the box the
+  feature is on: ShowLoadingProgress defaults to true and
+  ProgressStyle to the accent line (the classic indices are
+  stable, so a stored choice keeps its meaning), and the
+  Preferences selector gains "Accent line" as its fourth entry.
+  Verified offline by the new tools/ui/verify_load_progress.py -
+  the one-writer discipline on the eased value, the easing
+  contract of both animations, the lifecycle invariants (only the
+  fade's finish retires the bar), the stable style order, the
+  treatment's drawing invariants, the accent resolver, the RTL
+  mirrors, and the three default readers agreeing - 45 checks.
 - The complete Osza Cyber theme: the flagship dark design now
   covers the whole application, not just the chrome. A theme here
   is an application-wide stylesheet and nothing else - the

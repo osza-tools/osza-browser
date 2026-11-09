@@ -46,6 +46,9 @@
 #include <QStringListModel>
 #include <QContextMenuEvent>
 #include <QStyleOptionFrame>
+#include <QVariantAnimation>
+#include <QPainterPath>
+#include <QGradient>
 
 LocationBar::LocationBar(QWidget *parent)
     : LineEdit(parent)
@@ -95,6 +98,28 @@ LocationBar::LocationBar(QWidget *parent)
     m_progressTimer->setInterval(700);
     m_progressTimer->setSingleShot(true);
     connect(m_progressTimer, &QTimer::timeout, this, &LocationBar::hideProgress);
+
+    // The eased load-progress treatment. The engine reports progress
+    // in bursts, so the painted value never follows those reports
+    // directly: the glide eases toward each new target from wherever
+    // the display stands (OutCubic, ~320 ms - fast enough to keep up
+    // with a chatty page, slow enough to read as motion), and once a
+    // load finishes and the dwell timer fires, the fade eases the
+    // whole treatment out instead of dropping it.
+    m_progressGlide = new QVariantAnimation(this);
+    m_progressGlide->setStartValue(0);
+    m_progressGlide->setEndValue(0);
+    m_progressGlide->setDuration(320);
+    m_progressGlide->setEasingCurve(QEasingCurve::OutCubic);
+    connect(m_progressGlide, &QVariantAnimation::valueChanged, this, &LocationBar::progressGlideAdvanced);
+
+    m_progressFade = new QVariantAnimation(this);
+    m_progressFade->setStartValue(1.0);
+    m_progressFade->setEndValue(0.0);
+    m_progressFade->setDuration(300);
+    m_progressFade->setEasingCurve(QEasingCurve::OutCubic);
+    connect(m_progressFade, &QVariantAnimation::valueChanged, this, &LocationBar::progressFadeAdvanced);
+    connect(m_progressFade, &QVariantAnimation::finished, this, &LocationBar::progressFadeFinished);
 
     editAction(PasteAndGo)->setText(tr("Paste And &Go"));
     editAction(PasteAndGo)->setIcon(QIcon::fromTheme(QSL("edit-paste")));
@@ -740,20 +765,33 @@ void LocationBar::loadStarted()
 {
     m_progressVisible = true;
     m_progressTimer->stop();
+    m_progressGlide->stop();
+    m_progressFade->stop();
+    // A fresh navigation restarts the story from zero: whatever the
+    // previous page was doing (gliding, dwelling, fading) is over.
+    m_loadProgress = 0;
+    m_displayProgress = 0;
+    m_progressOpacity = 1.0;
     m_autofillIcon->hide();
+    update();
 }
 
 void LocationBar::loadProgress(int progress)
 {
     if (qzSettings->showLoadingProgress) {
         m_loadProgress = progress;
-        update();
+        retargetProgressGlide(progress);
     }
 }
 
 void LocationBar::loadFinished()
 {
     if (qzSettings->showLoadingProgress) {
+        // Even a page that never reported intermediate progress gets
+        // its completed glide, so every load ends the same way: the
+        // bar sweeps to 100, dwells there briefly, then fades.
+        m_loadProgress = 100;
+        retargetProgressGlide(100);
         m_progressTimer->start();
     }
 
@@ -773,7 +811,10 @@ void LocationBar::loadSettings()
 {
     Settings settings;
     settings.beginGroup(QSL("AddressBar"));
-    m_progressStyle = static_cast<ProgressStyle>(settings.value(QSL("ProgressStyle"), 0).toInt());
+    // The eased accent line is the out-of-the-box experience; the
+    // classic Fill/Bottom/Top choices stay available and, once
+    // written by Preferences, keep their stored index.
+    m_progressStyle = static_cast<ProgressStyle>(settings.value(QSL("ProgressStyle"), ProgressAccentLine).toInt());
     bool customColor = settings.value(QSL("UseCustomProgressColor"), false).toBool();
     m_progressColor = customColor ? settings.value(QSL("CustomProgressColor"), palette().color(QPalette::Highlight)).value<QColor>() : QColor();
     settings.endGroup();
@@ -786,17 +827,71 @@ void LocationBar::loadSettings()
 
 void LocationBar::hideProgress()
 {
+    // The dwell is over: ease the treatment out rather than dropping
+    // it. Restarting from full opacity is safe here - the fade is
+    // only ever started by this slot or reset by loadStarted().
     if (qzSettings->showLoadingProgress) {
-        m_progressVisible = false;
-        update();
+        m_progressFade->stop();
+        m_progressFade->start();
     }
+}
+
+void LocationBar::progressGlideAdvanced(const QVariant &value)
+{
+    m_displayProgress = value.toInt();
+    update();
+}
+
+void LocationBar::progressFadeAdvanced(const QVariant &value)
+{
+    m_progressOpacity = value.toReal();
+    update();
+}
+
+void LocationBar::progressFadeFinished()
+{
+    m_progressVisible = false;
+    update();
+}
+
+void LocationBar::retargetProgressGlide(int target)
+{
+    // Only the animation writes m_displayProgress, so the retarget
+    // always starts from the value currently on screen - a burst of
+    // reports mid-glide redirects the same motion instead of cutting
+    // to a new one.
+    if (target == m_displayProgress) {
+        m_progressGlide->stop();
+        return;
+    }
+
+    m_progressGlide->stop();
+    m_progressGlide->setStartValue(m_displayProgress);
+    m_progressGlide->setEndValue(target);
+    m_progressGlide->start();
+}
+
+QColor LocationBar::progressAccentColor() const
+{
+    // The custom color wins when set; otherwise the palette's
+    // Highlight carries the theme's accent - mint under the cyber
+    // theme (its #locationbar rule sets selection-background-color:
+    // #00ffd1, which is exactly the Highlight role for this widget),
+    // violet under the private variant, and the system accent on
+    // every other palette.
+    if (m_progressColor.isValid() && m_progressColor.alpha() > 0) {
+        return m_progressColor;
+    }
+    return palette().color(QPalette::Highlight);
 }
 
 void LocationBar::paintEvent(QPaintEvent* event)
 {
     LineEdit::paintEvent(event);
 
-    // Show loading progress
+    // Show loading progress - the eased treatment. Everything painted
+    // here follows m_displayProgress (the glide's value, never the
+    // engine's raw burst) and fades out through m_progressOpacity.
     if (qzSettings->showLoadingProgress && m_progressVisible) {
         QStyleOptionFrame option;
         initStyleOption(&option);
@@ -808,43 +903,124 @@ void LocationBar::paintEvent(QPaintEvent* event)
             margins.left(), margins.top(), -margins.right(), -margins.bottom()
         );
 
-        QColor bg = m_progressColor;
-        if (!bg.isValid() || bg.alpha() == 0) {
-            bg = Colors::mid(palette().color(QPalette::Base), palette().color(QPalette::Text), m_progressStyle > 0 ? 4 : 8, 1);
-        }
+        const int progress = qBound(0, m_displayProgress, 100);
+        const bool rtl = layoutDirection() == Qt::RightToLeft;
 
         QPainter p(this);
-        p.setBrush(QBrush(bg));
-
-        // We are painting over text, make sure the text stays visible
-        p.setOpacity(0.5);
-
-        QPen outlinePen(bg.darker(110), 0.8);
-        p.setPen(outlinePen);
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setOpacity(m_progressOpacity);
 
         switch (m_progressStyle) {
         case ProgressFilled: {
+            // Paints over the text, so the calm mid-tone and the
+            // softened opacity stay - the look the classic styles
+            // always had, now carried by the eased value.
+            QColor bg = m_progressColor;
+            if (!bg.isValid() || bg.alpha() == 0) {
+                bg = Colors::mid(palette().color(QPalette::Base), palette().color(QPalette::Text), 8, 1);
+            }
+
             QRect bar = contentsRect.adjusted(0, 1, 0, -1);
-            bar.setWidth(bar.width() * m_loadProgress / 100);
+            bar.setWidth(bar.width() * progress / 100);
+            if (rtl) {
+                bar.moveRight(contentsRect.right());
+            }
             const int roundness = bar.height() / 4.0;
+
+            p.setOpacity(0.5 * m_progressOpacity);
+            p.setBrush(QBrush(bg));
+            p.setPen(QPen(bg.darker(110), 0.8));
             p.drawRoundedRect(bar, roundness, roundness);
             break;
         }
-        case ProgressBottom: {
-            outlinePen.setWidthF(0.3);
-            outlinePen.setColor(outlinePen.color().darker(130));
-            p.setPen(outlinePen);
-            QRect bar(contentsRect.x(), contentsRect.bottom() - 3,
-                      contentsRect.width() * m_loadProgress / 100.0, 3);
+        case ProgressBottom:
+        case ProgressTop: {
+            // The thin edge lines now ride the theme's accent - they
+            // never cover text, so the full accent reads cleanly.
+            const QColor accent = progressAccentColor();
+            const bool bottom = m_progressStyle == ProgressBottom;
+            const QRect track = bottom
+                ? QRect(contentsRect.x(), contentsRect.bottom() - 3, contentsRect.width(), 3)
+                : QRect(contentsRect.x(), contentsRect.top() + 1, contentsRect.width(), 3);
+
+            QRect bar = track;
+            bar.setWidth(track.width() * progress / 100);
+            if (rtl) {
+                bar.moveRight(track.right());
+            }
+
+            p.setPen(Qt::NoPen);
+            p.setBrush(QBrush(accent));
             p.drawRoundedRect(bar, 1, 1);
             break;
         }
-        case ProgressTop: {
-            outlinePen.setWidthF(0.3);
-            outlinePen.setColor(outlinePen.color().darker(130));
-            p.setPen(outlinePen);
-            QRect bar(contentsRect.x(), contentsRect.top() + 1, contentsRect.width() * m_loadProgress / 100.0, 3);
-            p.drawRoundedRect(bar, 1, 1);
+        case ProgressAccentLine: {
+            // The showcase treatment: an accent line riding the
+            // bottom edge of the pill, a soft glow rising from it,
+            // a brighter tip leading the motion with a small bloom,
+            // and a whisper fill over the loaded region - all riding
+            // the palette's Highlight, so each theme's accent simply
+            // arrives (mint for the cyber theme, violet for the
+            // private variant, the system accent elsewhere).
+            const QColor accent = progressAccentColor();
+
+            // The inner field, inside the widget's 1 px border; the
+            // line is drawn on the widget geometry (not the text
+            // rect) so it spans the whole pill.
+            const QRect field = rect().adjusted(1, 1, -1, -1);
+            // Keep the line's rounded caps clear of the pill's
+            // curvature (16 px radius, 30+ px field height).
+            const int inset = 10;
+            const int trackWidth = field.width() - 2 * inset;
+            const int loadedWidth = qRound(trackWidth * progress / 100.0);
+            if (loadedWidth <= 0) {
+                break;
+            }
+
+            const int lineY = field.bottom() - 3;
+            QRect line(field.left() + inset, lineY, loadedWidth, 3);
+            if (rtl) {
+                line = QRect(field.right() - inset - loadedWidth + 1, lineY, loadedWidth, 3);
+            }
+
+            // Whisper fill: barely-there tint over the loaded region,
+            // clipped to the pill's inner shape.
+            const QRect loadedRegion = rtl
+                ? QRect(field.right() - loadedWidth, field.top(), loadedWidth, field.height())
+                : QRect(field.left(), field.top(), loadedWidth, field.height());
+            QPainterPath pillShape;
+            pillShape.addRoundedRect(field.adjusted(2, 2, -2, -3), 13, 13);
+            p.save();
+            p.setClipPath(pillShape);
+            p.fillRect(loadedRegion, QColor(accent.red(), accent.green(), accent.blue(), 16));
+
+            // Glow: the accent bleeding upward off the line.
+            QLinearGradient glow(0, lineY - 14, 0, lineY);
+            glow.setColorAt(0.0, QColor(accent.red(), accent.green(), accent.blue(), 0));
+            glow.setColorAt(1.0, QColor(accent.red(), accent.green(), accent.blue(), 56));
+            p.fillRect(QRect(line.left(), lineY - 14, line.width(), 14), glow);
+            p.restore();
+
+            // The line itself.
+            p.setPen(Qt::NoPen);
+            p.setBrush(accent);
+            p.drawRoundedRect(line, 1.5, 1.5);
+
+            // The leading tip: brighter segment plus a small bloom,
+            // so the motion reads as something arriving.
+            const int tipWidth = qMin(24, line.width());
+            const QRect tip = rtl
+                ? QRect(line.left(), lineY, tipWidth, 3)
+                : QRect(line.right() - tipWidth + 1, lineY, tipWidth, 3);
+            p.setBrush(accent.lighter(160));
+            p.drawRoundedRect(tip, 1.5, 1.5);
+
+            const qreal tipX = rtl ? tip.left() : tip.right();
+            QRadialGradient bloom(tipX, lineY + 1.5, 16);
+            bloom.setColorAt(0.0, QColor(accent.red(), accent.green(), accent.blue(), 90));
+            bloom.setColorAt(1.0, QColor(accent.red(), accent.green(), accent.blue(), 0));
+            p.setBrush(bloom);
+            p.drawEllipse(QPointF(tipX, lineY + 1.5), 16, 16);
             break;
         }
         default:

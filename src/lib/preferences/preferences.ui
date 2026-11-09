@@ -1107,6 +1107,11 @@
                       <string>Top</string>
                      </property>
                     </item>
+                    <item>
+                     <property name="text">
+                      <string>Accent line</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                   <item>
