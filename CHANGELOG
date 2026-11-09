@@ -900,6 +900,27 @@ Added:
   the page's SHA-256 before it ever shipped.
 
 Fixed:
+- The security-suite autotest did not compile - the CI build gate
+  had been red on it since the suite's last autotest work. Six
+  QCOMPARE calls passed a brace-initialized QStringList with
+  several elements straight as the macro's second argument
+  (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection")}),
+  and a C preprocessor macro splits its arguments on commas at
+  the parenthesis level only - braces protect nothing - so
+  QCOMPARE saw three, four and five arguments where it takes two
+  and the whole file failed to build. The lists now ride inside
+  an extra pair of parentheses, the standard Qt spelling for
+  braced initializers in test macros; a tree-wide structural
+  scan (every QCOMPARE/QVERIFY/QSKIP/QTRY_* invocation, tracking
+  parenthesis depth across strings and comments) confirms these
+  six were the only macro-splitting sites - every other braced
+  list in the tree either sits inside a function call's own
+  parentheses or holds a single element. One more error in the
+  same file: the interstitial re-serve check called the mutating
+  QString::replace() on a const QString (the escaped refresh
+  link), which C++ refuses; the escape now runs on a copy. The
+  two prior CI runs' complete error list was exactly these seven
+  lines, so the gate compiles the tree again.
 - Two security verifiers had gone stale against the tree, each
   failing one check on a clean checkout: the compile-fix commits
   had moved the code and left the pins behind. The settings-diff

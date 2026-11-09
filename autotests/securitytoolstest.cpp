@@ -188,19 +188,19 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
 
     fingerprint->addExclusion(host);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("http://%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection")});
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection")}));
 
     gpc->addExclusion(host);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")});
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")}));
 
     threat->allowForSession(host);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
 
     // the exceptions cover subdomains; a sibling host stays clean
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://deep.%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://sibling.example/x"))), QStringList());
 
     // a tool switched off globally retires the site's exception
@@ -213,7 +213,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         fingerprint->loadSettings();
     }
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("globalPrivacyControl"), QSL("threatBlock")});
+             (QStringList{QSL("httpsOnly"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
     {
         Settings on;
         on.beginGroup(QSL("Web-Browser-Settings"));
@@ -226,7 +226,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     // itself is off
     threat->setEnabled(false);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")});
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")}));
     threat->setEnabled(true);
 
     // schemes the tools do not cover carry no per-site state
@@ -1076,7 +1076,7 @@ void SecurityToolsTest::threatBlockListUpdateStateTest()
     QVERIFY(failedPage.contains(QSL("Refresh the blocklist now")));
 
     const QString refreshHref = ThreatBlockManager::refreshListPageUrl(blocked).toString(QUrl::FullyEncoded);
-    QVERIFY(failedPage.contains(refreshHref.replace(QLatin1Char('&'), QSL("&amp;"))));
+    QVERIFY(failedPage.contains(QString(refreshHref).replace(QLatin1Char('&'), QSL("&amp;"))));
     // non-circular: the blocked URL rides as one percent-encoded
     // value, Osza's own separator the only raw '&' in the address
     QVERIFY(failedPage.contains(QString::fromLatin1(QUrl::toPercentEncoding(blocked.toString())) + QSL("&amp;update=1")));
