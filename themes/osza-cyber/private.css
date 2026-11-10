@@ -4,6 +4,13 @@
  * shifts from neon cyan to the violet secondary used by the internal
  * pages (--osza-accent-alt-rgb), so private windows are recognizable
  * at a glance while keeping the same dark geometry.
+ *
+ * The chrome's depth language is as accent-driven as it is
+ * surface-driven, so this variant restates the gradient surfaces in
+ * violet-dark equivalents and every accent-tinted interaction state
+ * (hover glass, pressed glass, the tab bloom, the pill's focus ring,
+ * the primary button's glass, progress, scrollbar hover, the
+ * tooltip's tinted edge) in violet, at the same alphas.
  */
 
 *[html-link-look="true"]
@@ -21,7 +28,8 @@
 #bookmarksbar,
 #sidebar
 {
-    background: #141021;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #171327, stop:1 #100d1b);
 }
 
 #mainwindow-statusbar
@@ -40,10 +48,13 @@
     color: #140b23;
 }
 
-/* Selected tab: violet top edge */
+/* Selected tab: violet top edge with the bloom under it */
 #tabbar::tab:selected
 {
-    background: #141021;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 30),
+                                stop:0.28 #141021,
+                                stop:1 #120e1f);
     border: 1px solid #32294a;
     border-top: 2px solid #a78bfa;
     border-bottom: none;
@@ -53,7 +64,8 @@
 #locationbar,
 #websearchbar
 {
-    background: #0f0c18;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #100d1c, stop:1 #0c0a16);
     border: 1px solid #322a4a;
     selection-background-color: #a78bfa;
     selection-color: #140b23;
@@ -63,23 +75,75 @@
 #websearchbar:focus
 {
     border: 1px solid #a78bfa;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 26),
+                                stop:0.22 #100d1c,
+                                stop:0.78 #0f0c1a,
+                                stop:1 rgba(167, 139, 250, 18));
 }
 
 /*Menus*/
 QMenu
 {
-    background: #141021;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #171326, stop:1 #110e1c);
     border: 1px solid #32294a;
 }
 
 QMenu::item:selected
 {
-    background: rgba(167, 139, 250, 30);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 36),
+                                stop:1 rgba(167, 139, 250, 20));
 }
 
 QMenu::separator
 {
-    background: #322a4a;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 transparent,
+                                stop:0.15 #322a4a,
+                                stop:0.85 #322a4a,
+                                stop:1 transparent);
+}
+
+/* Chrome interaction states: the mint glass of main.css restated
+   in violet, at the same alphas. */
+#mainwindow-menubar::item:selected
+{
+    background: rgba(167, 139, 250, 26);
+}
+
+ToolButton[toolbar-look="true"]:hover
+{
+    background: rgba(167, 139, 250, 26);
+    border-color: rgba(167, 139, 250, 60);
+}
+
+ToolButton[toolbar-look="true"]:pressed
+{
+    background: rgba(167, 139, 250, 51);
+    border-color: rgba(167, 139, 250, 90);
+}
+
+#tabbar::tab:!selected:hover
+{
+    background: rgba(167, 139, 250, 26);
+    border-color: rgba(167, 139, 250, 45);
+}
+
+#tabbar-button-left:hover,
+#tabbar-button-right:hover,
+#tabwidget-button-opentabs:hover,
+#tabwidget-button-closedtabs:hover,
+#tabwidget-button-addtab:hover
+{
+    background: rgba(167, 139, 250, 26);
+}
+
+#bookmarksbar QToolButton:hover
+{
+    background: rgba(167, 139, 250, 26);
+    border-color: rgba(167, 139, 250, 60);
 }
 
 DesktopNotification
@@ -90,6 +154,8 @@ DesktopNotification
 DesktopNotification #frame
 {
     border: 1px solid #32294a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #131021, stop:1 #0e0c18);
 }
 
 /* --- Complete surfaces, violet variant -----------------------------------
@@ -101,10 +167,34 @@ DesktopNotification #frame
  * the chrome rules above.
  */
 
+QDialog,
+QMessageBox,
+DownloadManager,
+BrowsingLibrary,
+LicenseViewer,
+PopupWindow,
+LocationBarPopup,
+LocationCompleterView
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #151224, stop:1 #100d1b);
+}
+
 QWidget
 {
     selection-background-color: rgba(167, 139, 250, 60);
     selection-color: #e9edf5;
+}
+
+QToolButton:hover
+{
+    background: rgba(167, 139, 250, 26);
+}
+
+QToolButton:pressed,
+QToolButton:checked
+{
+    background: rgba(167, 139, 250, 51);
 }
 
 QPushButton:focus
@@ -114,20 +204,26 @@ QPushButton:focus
 
 QPushButton:default
 {
-    background: rgba(167, 139, 250, 41);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 56),
+                                stop:1 rgba(167, 139, 250, 30));
     border: 1px solid rgba(167, 139, 250, 140);
     color: #a78bfa;
 }
 
 QPushButton:default:hover
 {
-    background: rgba(167, 139, 250, 66);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 81),
+                                stop:1 rgba(167, 139, 250, 46));
     border-color: #a78bfa;
 }
 
 QPushButton:default:pressed
 {
-    background: rgba(167, 139, 250, 89);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 107),
+                                stop:1 rgba(167, 139, 250, 66));
     border-color: #a78bfa;
 }
 
@@ -172,7 +268,8 @@ QComboBox::down-arrow:on
 
 QComboBox QAbstractItemView
 {
-    background: #141021;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #171326, stop:1 #110e1c);
     border: 1px solid #32294a;
     selection-background-color: rgba(167, 139, 250, 30);
 }
@@ -245,7 +342,8 @@ QSlider::handle:vertical
 
 QProgressBar::chunk
 {
-    background: #a78bfa;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #a78bfa, stop:1 #7a58d8);
 }
 
 QFrame[frameShape="6"]
@@ -272,6 +370,14 @@ QColumnView
     alternate-background-color: #191331;
     border: 1px solid #322a4a;
     selection-background-color: rgba(167, 139, 250, 30);
+}
+
+QListView::item:hover,
+QListWidget::item:hover,
+QTreeView::item:hover,
+QTreeWidget::item:hover
+{
+    background: rgba(167, 139, 250, 20);
 }
 
 QListView[frameShape="6"],
@@ -305,9 +411,17 @@ QTabWidget::pane
     border: 1px solid #322a4a;
 }
 
+QTabWidget QTabBar::tab:hover
+{
+    background: rgba(167, 139, 250, 26);
+}
+
 QTabWidget QTabBar::tab:selected
 {
-    background: #141021;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 rgba(167, 139, 250, 30),
+                                stop:0.28 #141021,
+                                stop:1 #120e1f);
     border: 1px solid #32294a;
     border-top: 2px solid #a78bfa;
 }
@@ -316,6 +430,12 @@ QGroupBox
 {
     background: #0f0c18;
     border: 1px solid #322a4a;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover
+{
+    background: rgba(167, 139, 250, 50);
 }
 
 QScrollBar::handle:vertical:pressed,
@@ -331,8 +451,9 @@ QSplitter::handle:hover
 
 QToolTip
 {
-    background: #0f0c18;
-    border: 1px solid #32294a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #131021, stop:1 #0e0c18);
+    border: 1px solid rgba(167, 139, 250, 60);
 }
 
 QMenu::item:checked

@@ -3,10 +3,52 @@ Osza Browser - Changelog
 
 Unreleased
 ---------
-The visual refresh: one icon language everywhere. Security tools: the
-start of the bundled security suite.
+The visual refresh: one icon language everywhere; the chrome gains
+depth and glow. Security tools: the start of the bundled security
+suite.
 
 Added:
+- The chrome gains depth: the Cyber theme's flat surfaces now read
+  the same dimension language as the internal pages, whose design
+  system the theme had carried in color but not in depth. Every
+  chrome panel surface - the toolbar band, the bookmarks bar, the
+  sidebar, the status bar, menus, combo popups, the desktop
+  notification's card and the dialog windows - carries a
+  light-from-above gradient anchored on the flat ladder color it
+  replaces, each stop only a few luminance points either side, so
+  the surface relationships the ladder encodes (panel over field
+  over hairline) still hold and nothing reads as a new color. The
+  interactive states stop being flat white overlays: toolbar
+  buttons, tabs, menu-bar items, dialog tabs, view rows and the
+  strip's corner buttons hover in accent-tinted glass (a 10% fill
+  with a 24% hairline) and press at 20% with a 35% hairline, so the
+  chrome answers the mouse with mint everywhere it answers focus
+  with mint. The selected tab carries a soft accent bloom under
+  its top edge - the glow rising off the line the address bar's
+  load progress already paints - so the accent edge and the load
+  line now read as one light moving through the same pill geometry;
+  the dialog tab widgets' selected tabs echo the same bloom. The
+  address and search pills gain a resting depth gradient, a neutral
+  hover hairline, and a focus treatment that pairs the accent
+  border with an edge-tinted ring gradient, the pill's own top and
+  bottom edges lit - the QSS rendering of the focus glow the
+  internal pages' search pill wears. The dialog's default action
+  becomes accent glass - a vertical gradient of the tint the
+  internal pages' primary buttons wear, brightening through hover
+  and press - pressed plain buttons invert their gradient to read
+  inset, progress chunks gain a darker lower stop for dimension,
+  scrollbar handles hover in the accent before pressing in it,
+  tooltips gain a tinted edge, and menu separators fade to
+  transparent at both ends. Every accent-driven rule carries a
+  violet restatement in private.css at the same alphas, and the
+  surface gradients shift to the violet-dark equivalents, so a
+  private window reads violet everywhere the chrome reads mint -
+  the hover glass, the bloom, the pill's ring, the primary glass,
+  progress, the scrollbar and the tooltip included.
+  tools/themes/verify_theme.py still reads the whole theme clean
+  after the pass (QSS sanity including the gradient values, widget
+  coverage resolved through the source, cascade-order invariants)
+  with no new findings.
 - The living address bar: page loads are eased, never jumped. The
   engine reports load progress in bursts (10, 26, 43, 76, ...), and
   the bar painted whatever number last arrived - a staircase - and

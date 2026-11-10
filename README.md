@@ -169,7 +169,12 @@ and KDE contributors for their work.
   language as the internal pages (dark surfaces, neon-cyan accents,
   pill fields) carried across the *whole* application — chrome,
   Preferences, dialogs, the security sidebar, popups and tooltips —
-  with a matching violet variant for private windows.
+  with a matching violet variant for private windows. The chrome
+  reads the pages' dimension language too: light-from-above surface
+  gradients, accent-tinted hover and pressed glass on every
+  interactive surface, a soft accent bloom under the selected tab's
+  top edge, and an edge-tinted focus ring on the address pill — mint
+  in the flagship theme, violet in private windows.
   `tools/themes/verify_theme.py` keeps every bundled theme
   syntactically clean and the self-contained ones complete, without
   a Qt build.
