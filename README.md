@@ -162,7 +162,18 @@ and KDE contributors for their work.
   honest without a Qt build.
 - **Everything in its place** — bookmarks, history, downloads and RSS
   feeds, all reachable from collapsible sidebars.
-- **Speed Dial** — your favorite sites one click away on the start page.
+- **Speed Dial** — your favorite sites one click away on the start
+  page — and the page greets you with one choreographed entrance: the
+  background world surfaces first, the header drops in over the grid's
+  first beat, tiles rise in a capped stagger that never keeps a long
+  dial's tail waiting, each thumbnail settles over its skeleton when
+  the engine delivers it, the add button pops in with an overshoot,
+  the empty state's ghost card fades in, and the dialogs rise when
+  they open — all of it one quick gesture that ends exactly at rest
+  (every hover and drag state keeps owning the tiles afterwards), and
+  disabled whole under reduced motion.
+  `tools/ui/verify_speeddial_motion.py` keeps the choreography honest
+  without a Qt build.
 - **Sessions** — save and restore complete browsing sessions.
 - **Themes** — flexible theming with bundled themes for every platform,
   plus **Osza Cyber**, the showcase dark theme: the same design

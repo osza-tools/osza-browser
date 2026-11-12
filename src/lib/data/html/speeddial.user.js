@@ -263,6 +263,14 @@ function setImageToUrl(url, img_source) {
         if ($(imgElement).size() == 0)
             return;
         $(imgElement).attr('src', img_source/* + '?' + new Date()*/);
+        /* A thumbnail landed over the skeleton: replay the settle
+           motion so the preview eases in (see osza-thumb-settle).
+           Removing and re-adding the class around a forced reflow
+           restarts the animation for every later delivery too. */
+        var entry = box.get(0);
+        entry.classList.remove('thumb-arrived');
+        void entry.offsetWidth;
+        entry.classList.add('thumb-arrived');
     });
 }
 
@@ -435,10 +443,22 @@ function init() {
             $('#fadeOverlay').click();
     });
 
+    /* The opening stagger — read from the stylesheet's Motion tokens
+       (the same contract alignPage keeps with the grid gap: the page
+       and the CSS never disagree). The ramp flattens at the cap, so a
+       long dial never keeps its last tiles waiting; a tile without a
+       delay — one added from the FAB after the page has settled —
+       rises immediately. */
+    var rootStyle = getComputedStyle(document.documentElement);
+    var enterBase = parseInt(rootStyle.getPropertyValue('--osza-enter-base'), 10) || 96;
+    var enterStagger = parseInt(rootStyle.getPropertyValue('--osza-enter-stagger'), 10) || 36;
+    var enterCap = parseInt(rootStyle.getPropertyValue('--osza-enter-cap'), 10) || 16;
+
     var pages = JSON.parse(b64DecodeUnicode(scriptData.initialScript));
     for (var i = 0; i < pages.length; ++i) {
         var page = pages[i];
-        addBox(page.url, page.title, page.img);
+        var box = addBox(page.url, page.title, page.img);
+        box.style.setProperty('--sd-delay', (enterBase + Math.min(i, enterCap) * enterStagger) + 'ms');
     }
 
     external.speedDial.pagesChanged.connect(function() {

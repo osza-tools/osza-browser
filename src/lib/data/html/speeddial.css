@@ -78,6 +78,19 @@
     --osza-ease: cubic-bezier(0.2, 0.8, 0.3, 1);
     --osza-speed: 200ms;
 
+    /* Entrance choreography — the page's opening beats. The grid's
+       first tile rises --osza-enter-base after the world starts, each
+       next tile one --osza-enter-stagger later, the ramp flattens at
+       --osza-enter-cap tiles so long dials never keep their tail
+       waiting, and each rise lasts --osza-enter-duration.
+       speeddial.user.js reads these with matching fallbacks, the
+       same contract alignPage keeps with the grid gap. */
+    --osza-ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --osza-enter-base: 96ms;
+    --osza-enter-stagger: 36ms;
+    --osza-enter-duration: 420ms;
+    --osza-enter-cap: 16;
+
     /* Elevation */
     --osza-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
     --osza-shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.55);
@@ -145,12 +158,29 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 /* Readability veil over user wallpapers */
 .background-layer--wallpaper::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, var(--osza-wallpaper-veil), var(--osza-wallpaper-veil)); }
 
+/* Entrance: the world surfaces ahead of the furniture — the mesh and
+   its grid fade in over the floor, the wallpaper settling a beat
+   later. The base floor itself never animates: it is the color the
+   page opens on, so there is no flash for the fade to cover. */
+.background-layer--mesh { animation: osza-layer-in 900ms var(--osza-ease) backwards; }
+.background-layer--wallpaper { animation: osza-layer-in 720ms var(--osza-ease) 80ms backwards; }
+
+@keyframes osza-layer-in { from { opacity: 0; } }
+
 /* --- 4. Header — brand, search, settings -------------------------------- */
 .sd-header { position: relative; z-index: 10; padding: clamp(18px, 3vh, 32px) clamp(20px, 3vw, 48px) 0; }
 .sd-header__inner { max-width: var(--osza-max-width); margin-inline: auto; display: flex; align-items: center; gap: clamp(14px, 2vw, 24px); }
 .sd-brand { display: flex; align-items: baseline; gap: 8px; font-family: var(--osza-font-mono); font-weight: 700; font-size: 17px; letter-spacing: 0.14em; white-space: nowrap; color: var(--osza-text); }
 .sd-brand::after { content: ""; inline-size: 7px; block-size: 7px; border-radius: 50%; background: var(--osza-accent); box-shadow: 0 0 12px var(--osza-accent-soft); align-self: center; }
 .sd-brand__sub { font-weight: 500; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--osza-text-faint); }
+
+/* Entrance: the header's furniture drops in over the grid's first
+   beat — brand, search pill, settings, each 80ms after the last. */
+.sd-header__inner > * { animation: osza-drop-in 480ms var(--osza-ease) backwards; }
+.sd-header__inner > *:nth-child(2) { animation-delay: 80ms; }
+.sd-header__inner > *:nth-child(3) { animation-delay: 160ms; }
+
+@keyframes osza-drop-in { from { opacity: 0; transform: translateY(-10px); } }
 
 /* Search pill — a native GET form, same pattern as osza:start */
 .omni { flex: 1; display: flex; align-items: center; gap: 12px; max-width: 560px; min-width: 0; margin-inline: auto; block-size: 46px; padding-inline: 18px; border: 1px solid var(--osza-card-border); border-radius: 999px; background: var(--osza-card-bg); -webkit-backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease); }
@@ -166,9 +196,13 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 .icon-btn:active { transform: translateY(0); }
 
 /* Floating action button */
-.fab { position: fixed; inset-inline-end: clamp(18px, 2.5vw, 32px); inset-block-end: clamp(18px, 2.5vw, 32px); z-index: 20; display: inline-flex; align-items: center; justify-content: center; inline-size: 56px; block-size: 56px; padding: 0; border: 1px solid var(--osza-card-border-hover); border-radius: 18px; background: var(--osza-card-bg); -webkit-backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); color: var(--osza-accent); cursor: pointer; box-shadow: var(--osza-shadow-card); transition: transform var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), background-color var(--osza-speed) var(--osza-ease); }
+.fab { position: fixed; inset-inline-end: clamp(18px, 2.5vw, 32px); inset-block-end: clamp(18px, 2.5vw, 32px); z-index: 20; display: inline-flex; align-items: center; justify-content: center; inline-size: 56px; block-size: 56px; padding: 0; border: 1px solid var(--osza-card-border-hover); border-radius: 18px; background: var(--osza-card-bg); -webkit-backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); color: var(--osza-accent); cursor: pointer; box-shadow: var(--osza-shadow-card); transition: transform var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), background-color var(--osza-speed) var(--osza-ease); animation: osza-pop-in 420ms var(--osza-ease-out-back) 560ms backwards; }
 .fab:hover, .fab:focus-visible { background: var(--osza-accent-dim); box-shadow: var(--osza-shadow-card), var(--osza-glow); transform: translateY(-3px); }
 .fab:active { transform: translateY(-1px) scale(0.97); }
+
+/* Entrance: the FAB pops in with an overshoot once the grid is under
+   way; its hover lift and press stay transition-owned afterwards. */
+@keyframes osza-pop-in { from { opacity: 0; transform: scale(0.55) translateY(18px); } }
 
 /* --- 6. Dial grid -------------------------------------------------------- */
 .dial-container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: var(--osza-max-width); margin-inline: auto; padding: clamp(24px, 4vh, 48px) clamp(20px, 3vw, 48px) 110px; }
@@ -179,15 +213,28 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 
 /* Empty state — dashed ghost card (label injected via inline block) */
 .speeddial-grid:empty { min-block-size: 230px; }
-.speeddial-grid:empty::after { content: ""; display: flex; align-items: center; justify-content: center; min-block-size: 230px; border: 2px dashed rgba(var(--osza-accent-rgb), 0.35); border-radius: var(--osza-radius); background: rgba(var(--osza-accent-rgb), 0.03); color: var(--osza-text-dim); font-family: var(--osza-font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), color var(--osza-speed) var(--osza-ease); }
+.speeddial-grid:empty::after { content: ""; display: flex; align-items: center; justify-content: center; min-block-size: 230px; border: 2px dashed rgba(var(--osza-accent-rgb), 0.35); border-radius: var(--osza-radius); background: rgba(var(--osza-accent-rgb), 0.03); color: var(--osza-text-dim); font-family: var(--osza-font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; transition: border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), color var(--osza-speed) var(--osza-ease); animation: osza-ghost-in 640ms var(--osza-ease) 480ms backwards; }
 .speeddial-grid:empty:hover::after { border-color: rgba(var(--osza-accent-rgb), 0.7); color: var(--osza-accent); box-shadow: var(--osza-glow); }
 
+/* Entrance: with no tiles to rise, the ghost card fades in where the
+   grid would have settled. */
+@keyframes osza-ghost-in { from { opacity: 0; transform: scale(0.97); } }
+
 /* --- 7. Dial cards ------------------------------------------------------- */
-.entry { position: relative; aspect-ratio: 16 / 10; min-width: 0; border: 1px solid var(--osza-card-border); border-radius: var(--osza-radius); background-color: var(--osza-card-bg); -webkit-backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); background-clip: padding-box; overflow: hidden; box-shadow: var(--osza-shadow-card); animation: osza-dial-in 240ms var(--osza-ease) both; transition: transform var(--osza-speed) var(--osza-ease), border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), background-color var(--osza-speed) var(--osza-ease); }
+/* Entrance: tiles rise in the opening stagger — the delay rides the
+   --sd-delay custom property speeddial.user.js writes from the Motion
+   tokens; a tile without one (added from the FAB after the page has
+   settled) rises immediately. Fill-mode is backwards, never both:
+   during the stagger the from-state holds, and once a tile has risen
+   nothing of the animation survives. A filled animation would pin
+   its last keyframe over the resting style forever, and animations
+   outrank normal declarations in the cascade — the hover lift, the
+   drag tilt and every later transform state would never show again.
+   The keyframes carry no to-frame: the rise ends exactly at rest. */
+.entry { position: relative; aspect-ratio: 16 / 10; min-width: 0; border: 1px solid var(--osza-card-border); border-radius: var(--osza-radius); background-color: var(--osza-card-bg); -webkit-backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-blur)) saturate(var(--osza-saturate)); background-clip: padding-box; overflow: hidden; box-shadow: var(--osza-shadow-card); animation: osza-dial-in var(--osza-enter-duration) var(--osza-ease) var(--sd-delay, 0ms) backwards; transition: transform var(--osza-speed) var(--osza-ease), border-color var(--osza-speed) var(--osza-ease), box-shadow var(--osza-speed) var(--osza-ease), background-color var(--osza-speed) var(--osza-ease); }
 
 @keyframes osza-dial-in {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to { opacity: 1; transform: none; }
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
 }
 
 /* Loading spinner breathing (used by the inline dynamic block) */
@@ -201,6 +248,15 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 /* Thumbnail */
 .dial-preview { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: inherit; transition: transform var(--osza-speed) var(--osza-ease); }
 .entry:hover .dial-preview { transform: scale(1.05); }
+
+/* Entrance: a thumbnail landing over the skeleton settles in place.
+   The class is replayed from setImageToUrl on every delivery, so a
+   reloaded dial eases in again the same way. */
+.entry.thumb-arrived .dial-preview { animation: osza-thumb-settle 360ms var(--osza-ease); }
+
+@keyframes osza-thumb-settle {
+    from { opacity: 0; transform: scale(1.05); }
+}
 
 /* Placeholder dial with no image yet */
 #quickdial img[src=""] { visibility: hidden; }
@@ -244,6 +300,16 @@ noscript { display: block; margin: 32px auto; max-width: 480px; padding: 16px 20
 .sd-panel { margin-inline: auto; width: min(460px, 100%); padding: 26px 26px 20px; border: 1px solid var(--osza-card-border); border-radius: 20px; background: var(--osza-bg-panel); -webkit-backdrop-filter: blur(var(--osza-panel-blur)) saturate(var(--osza-saturate)); backdrop-filter: blur(var(--osza-panel-blur)) saturate(var(--osza-saturate)); box-shadow: var(--osza-shadow-panel); }
 .sd-panel__title { margin-block-end: 18px; padding-block-end: 14px; border-block-end: 1px solid var(--osza-card-border); font-family: var(--osza-font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--osza-text-dim); }
 .sd-panel__title::before { content: "// "; color: var(--osza-accent); }
+
+/* Entrance: the dialogs rise when they render — the settings panel in
+   the served page and the edit dialog jQuery builds at run time both
+   carry .sd-panel inside .overlay, so both take the same beat the
+   moment jQuery's fadeIn shows them. */
+.overlay .sd-panel { animation: osza-panel-in 300ms var(--osza-ease) backwards; }
+
+@keyframes osza-panel-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+}
 
 /* --- 10. Settings panel content ------------------------------------------ */
 .sd-setting-row { padding-block: 12px; border-block-end: 1px solid rgba(255, 255, 255, 0.06); }
@@ -326,11 +392,18 @@ input[type="button"]:active { transform: translateY(1px); }
 :focus-visible { outline: 2px solid var(--osza-accent); outline-offset: 3px; border-radius: 4px; }
 .entry a.boxUrl:focus-visible { outline-offset: -3px; border-radius: var(--osza-radius); }
 
+/* Reduced motion: durations collapse — and the delays collapse with
+   them. Zeroing only the durations would leave the entrance stagger
+   holding tiles at their from-state (invisible) for up to a second
+   with nothing playing; with the delays gone the whole choreography
+   resolves in one instant step. */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+        animation-delay: 0s !important;
         transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
     }
 }
 

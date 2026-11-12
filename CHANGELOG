@@ -8,6 +8,42 @@ depth and glow. Security tools: the start of the bundled security
 suite.
 
 Added:
+- The Speed Dial opens as one choreographed entrance. The page used
+  to arrive assembled - every tile animating at once for 240 ms, and
+  only the tiles: the header, the add button, the background and the
+  dialogs never moved - and the one animation it had quietly broke
+  the states it shared the tiles with: fill-mode both pinned
+  `transform: none` over the resting style forever (animations
+  outrank normal declarations in the cascade), so the hover lift and
+  the drag helper's tilt never actually showed once the entrance was
+  over. The motion pass now tells one story: the world surfaces first
+  (the mesh and its grid fading in over the base floor, the wallpaper
+  settling a beat later - the floor itself never animates, being the
+  color the page opens on, so there is no flash for the fades to
+  cover), the header's furniture drops in over the grid's first beat
+  (brand, search pill, settings, 80 ms apart), the tiles rise in a
+  stagger that starts 96 ms in and beats 36 ms per tile with the ramp
+  flattened at 16 so long dials never wait, each thumbnail settling
+  over its skeleton with its own ease when the engine delivers it
+  (and replaying for every later delivery), the add button popping
+  in with an overshoot curve once the grid is under way, the empty
+  state's ghost card fading in where tiles would have risen, and both
+  dialogs - settings and edit - rising when jQuery renders them.
+  Every entrance ends exactly at the element's resting style and
+  leaves nothing behind (fill-mode backwards, no to-frame), so the
+  hover lift, the sortable drag and every transform transition own
+  the tiles again the moment a rise ends. All beats are tokens in
+  the stylesheet's Motion block, read by the page's script with
+  matching fallbacks (the same contract the grid gap keeps), and
+  reduced motion now zeroes animation and transition delays too -
+  the kill switch used to shorten only the durations, leaving the
+  stagger holding tiles invisible for up to a second with nothing
+  playing. The whole budget stays under 1.1 s.
+  tools/ui/verify_speeddial_motion.py reads the pass clean without
+  a Qt build (the fill-mode contract, the stagger wiring and caps,
+  the budget, compositor-only animated properties, reduced-motion
+  delays, the settle replay, the serving contract, the docs), and
+  every other verifier still passes unchanged.
 - The chrome gains depth: the Cyber theme's flat surfaces now read
   the same dimension language as the internal pages, whose design
   system the theme had carried in color but not in depth. Every
