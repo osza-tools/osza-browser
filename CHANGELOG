@@ -188,6 +188,50 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (25): cross-site referrer protection, the eighth
+  bundled tool - the Referer header tells the receiving site where
+  the request came from, and under a page's own "unsafe-url"
+  referrer policy that is the full URL of the page you were reading,
+  path and query included; the engine's default policy already
+  keeps cross-site referrers down to the site's address, but a page
+  can opt into sending more, and the reader of a link click has no
+  way to notice. The guard makes the limit a floor no page can
+  lower: requests to another site carry at most the site you were
+  reading's address (scheme, host, port - never its URLs), or no
+  referrer at all (the strict strength, one selection away), in both
+  strengths requests staying inside one site keep their referrer,
+  and an https page never tells an http destination anything. The
+  rewrite runs in the request interceptor on the real Referer header
+  of the real request - read through the request-info API
+  QtWebEngine exposes since 6.5, which the build gates the tool on
+  (older engines keep the row hidden and the section skipped with
+  the reason, like secure DNS on pre-6.6 engines) - so the tool
+  never introduces a referrer where the engine sent none and never
+  fabricates one, whatever the sites declare. The judgment is
+  derived from the two URLs alone: same host, or two hosts of one
+  domain family (a.com and sub.a.com, the dot boundary keeping
+  unrelated hosts apart), on the same scheme counts as one site
+  telling itself where you were; everything else is another site.
+  Sites can be excluded one by one (the padlock menu's row, with
+  the location bar's amber badge naming the relaxation, and a
+  bulk-management dialog in Preferences), anchored on the site
+  whose URLs would leak: while you are on an excluded site, its
+  outgoing requests keep whatever referrer the site's own policy
+  sends. The strength is chosen in Preferences (the recommended
+  "site's address" is the out-of-box default, so the floor is active
+  from the first run), the security dashboard carries the quick
+  switch with a live state row, the self-test page reports the
+  active strength, a fifth live counter ("Referrers trimmed",
+  totals and per-site) counts the rewrites, and the porter exports,
+  imports, previews and presets the tool's mode and exceptions
+  alongside the other seven - the three baselines state it
+  explicitly (Essentials and Recommended at the site-address
+  strength, Maximum protection sending no referrer at all), the
+  settings-diff page speaks "of the 8 security tools", and the
+  per-tool deep links carry the new row everywhere the dashboard's
+  rows already do. Requires QtWebEngine 6.5+ for the rewrite
+  itself; the state, the exceptions and the porting travel with the
+  profile regardless.
 - Security tools (24): the interstitial re-serves itself when a
   refresh lands - the evidence re-weighs itself. A blocklist
   refresh completing while the warning page stood changed nothing

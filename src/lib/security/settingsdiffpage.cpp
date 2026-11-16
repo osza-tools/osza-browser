@@ -28,10 +28,10 @@
 namespace {
 
 // The tools a settings document can configure - the count the page
-// quotes ("configures 7 of the 7 security tools"). Kept beside its
+// quotes ("configures 7 of the 8 security tools"). Kept beside its
 // only consumer; the porter's buildPlans() is the authority for the
 // sections themselves.
-const int kTotalTools = 7;
+const int kTotalTools = 8;
 
 // The id of the project's recommendation for everyday browsing -
 // the preset the Preferences picker defaults to, and the referent
@@ -398,8 +398,8 @@ QString SettingsDiffPage::i18nJson()
     strings.insert(QSL("preset_open"), tr("Preview the diff"));
 
     // Diff banner
-    strings.insert(QSL("banner_changes"), tr("The baseline \"%1\" would change %2 settings across %3 of the 7 security tools."));
-    strings.insert(QSL("banner_changes_single"), tr("The baseline \"%1\" would change 1 setting in %2 of the 7 security tools."));
+    strings.insert(QSL("banner_changes"), tr("The baseline \"%1\" would change %2 settings across %3 of the 8 security tools."));
+    strings.insert(QSL("banner_changes_single"), tr("The baseline \"%1\" would change 1 setting in %2 of the 8 security tools."));
     strings.insert(QSL("banner_none"), tr("The baseline \"%1\" changes nothing that is set right now - this profile already matches it."));
     strings.insert(QSL("banner_skipped_one"), tr("1 section would be skipped, listed below with the reason."));
     strings.insert(QSL("banner_skipped_many"), tr("%1 sections would be skipped, listed below with the reasons."));

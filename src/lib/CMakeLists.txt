@@ -228,6 +228,7 @@ set(SRCS ${SRCS}
     preferences/certificatemanager.cpp
     preferences/fingerprintexceptionsdialog.cpp
     preferences/gpcexceptionsdialog.cpp
+    preferences/referrerexceptionsdialog.cpp
     preferences/httpsonlyexceptionsdialog.cpp
     preferences/jsoptions.cpp
     preferences/pluginlistdelegate.cpp
@@ -241,6 +242,7 @@ set(SRCS ${SRCS}
     preferences/useragentdialog.cpp
     security/fingerprintmanager.cpp
     security/gpcmanager.cpp
+    security/referrerguardmanager.cpp
     security/securityimportpreviewdialog.cpp
     security/securitymanager.cpp
     security/securitypresets.cpp
@@ -484,6 +486,7 @@ set(SRCS ${SRCS}
     preferences/certificatemanager.h
     preferences/fingerprintexceptionsdialog.h
     preferences/gpcexceptionsdialog.h
+    preferences/referrerexceptionsdialog.h
     preferences/httpsonlyexceptionsdialog.h
     preferences/jsoptions.h
     preferences/pluginlistdelegate.h
@@ -497,6 +500,7 @@ set(SRCS ${SRCS}
     preferences/useragentdialog.h
     security/fingerprintmanager.h
     security/gpcmanager.h
+    security/referrerguardmanager.h
     security/securityimportpreviewdialog.h
     security/securitymanager.h
     security/securitypresets.h

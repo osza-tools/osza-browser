@@ -38,7 +38,16 @@ and KDE contributors for their work.
   Preferences), the Global Privacy Control
   signal (Sec-GPC: 1 is sent with every request and reported to page
   scripts - the legally-binding opt-out from the sale or sharing of
-  personal data; on by default), DNS-over-HTTPS (encrypts all
+  personal data; on by default), cross-site referrer protection
+  (requests to another site carry at most the site you were
+  reading's address - never its full URL with path and query -
+  whatever "unsafe-url" referrer policy the page declared, and the
+  strength is a choice: the site's address, or no referrer at all;
+  on by default at the recommended strength, with a per-site
+  opt-out in the padlock menu and a bulk-management dialog in
+  Preferences; the rewrite reads the request's own Referer header,
+  so it never introduces a referrer where the engine sent none),
+  DNS-over-HTTPS (encrypts all
   hostname resolution, with known providers or a custom server) and
   malicious-site protection (navigations to blocklisted hosts stop on
   a full-screen warning page with a session-scoped "proceed anyway";
@@ -93,7 +102,7 @@ and KDE contributors for their work.
   [FILE-or-preset]`. For a quick start, the same places offer
   recommended-baseline presets - Essentials, Recommended baseline
   and Maximum protection - that apply a ready-made configuration of
-  all seven tools through the same validation as an import, and the
+  all eight tools through the same validation as an import, and the
   picker also saves any preset as a regular checksum-verified
   settings file, so a baseline can be shared without applying it
   first. Baselines can be judged before they are applied: the

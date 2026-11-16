@@ -53,29 +53,36 @@ public:
     void reportTrackerStripped(const QString &host);
     void reportHttpsUpgrade(const QString &host);
     void reportThreatBlocked(const QString &host);
+    void reportReferrerTrimmed(const QString &host);
 
     quint64 adsBlocked() const;
     quint64 trackersStripped() const;
     quint64 httpsUpgrades() const;
     quint64 threatsBlocked() const;
+    quint64 referrersTrimmed() const;
 
     // Session counters for a single site (first-party host).
     quint64 adsBlockedForHost(const QString &host) const;
     quint64 trackersStrippedForHost(const QString &host) const;
     quint64 httpsUpgradesForHost(const QString &host) const;
     quint64 threatsBlockedForHost(const QString &host) const;
+    quint64 referrersTrimmedForHost(const QString &host) const;
 
-    // The one per-site query the chrome asks: which of the four
-    // tools with per-site state is currently relaxed for this exact
-    // site - an HTTPS-Only exclusion (the site is never upgraded), a
-    // fingerprint or GPC exclusion (the site's readouts are not
-    // randomized / the opt-out is not sent), or a threat-block
-    // session allow ("proceed anyway"). A tool's entry only counts
-    // while the tool itself is enabled: a global switch is not
-    // per-site state, the padlock menu and Preferences own it.
-    // Returns the porter's stable tool keys in the padlock menu's
-    // row order; empty for schemes the tools do not cover.
-    // UI thread only (Settings-backed managers, no locking).
+    /*
+     * The one per-site query the chrome asks: which of the tools
+     * with per-site state is currently relaxed for this exact site
+     * - an HTTPS-Only exclusion (the site is never upgraded), a
+     * fingerprint or GPC exclusion (the site's readouts are not
+     * randomized / the opt-out is not sent), a referrer-guard
+     * exclusion (the site's URLs leave for other sites as the site
+     * intends), or a threat-block session allow ("proceed
+     * anyway"). A tool's entry only counts while the tool itself is
+     * enabled: a global switch is not per-site state, the padlock
+     * menu and Preferences own it. Returns the porter's stable tool
+     * keys in the padlock menu's row order; empty for schemes the
+     * tools do not cover. UI thread only (Settings-backed managers,
+     * no locking).
+     */
     static QStringList relaxedProtections(const QUrl &url);
 
     void loadCounters();
@@ -94,6 +101,7 @@ private:
         quint64 trackers = 0;
         quint64 upgrades = 0;
         quint64 threats = 0;
+        quint64 referrers = 0;
     };
 
     static QString normalizeHost(const QString &host);
@@ -103,6 +111,7 @@ private:
     std::atomic<quint64> m_trackersStripped;
     std::atomic<quint64> m_httpsUpgrades;
     std::atomic<quint64> m_threatsBlocked;
+    std::atomic<quint64> m_referrersTrimmed;
 
     // Per-host session counters, only exposed in the dashboard.
     mutable QMutex m_hostMutex;

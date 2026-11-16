@@ -18,9 +18,12 @@
 #include "networkurlinterceptor.h"
 #include "urlinterceptor.h"
 #include "securitymanager.h"
+#include "referrerguardmanager.h"
 #include "settings.h"
 #include "mainapplication.h"
 #include "useragentmanager.h"
+
+#include <QtWebEngineCoreVersion>
 
 #include <QMutexLocker>
 #include <QUrlQuery>
@@ -95,6 +98,20 @@ void NetworkUrlInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
             }
         }
     }
+
+    /*
+     * Cross-site referrer protection: the header half of the tool
+     * (the mode and the exceptions live in ReferrerGuardManager,
+     * this is the IO-thread copy). It runs only when the build's
+     * QtWebEngine can expose the request's headers (6.5+); an older
+     * engine keeps the tool off everywhere, which loadSettings()
+     * and the manager's isSupported() already agree on.
+     */
+#if QTWEBENGINECORE_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    if (m_referrerGuardMode != 0) { // ReferrerGuardManager::Off
+        applyReferrerGuardLocked(info);
+    }
+#endif
 
     const QString host = info.firstPartyUrl().host();
 
@@ -174,6 +191,20 @@ void NetworkUrlInterceptor::loadSettings()
     m_sendGPC = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
     m_gpcExclusions = settings.value(QSL("GpcExclusions"), QStringList()).toStringList();
     m_stripTrackingQuery = settings.value(QSL("StripTrackingQuery"), true).toBool();
+
+    // The IO-thread copy of the referrer guard's state. The mode is
+    // stored with the ReferrerGuardManager's enum values and read
+    // through a copy of its numeric range check, so a corrupted
+    // setting can only ever land on a known mode (never an
+    // out-of-range value the rewrite would have to guess about),
+    // and the guard is never active on an engine that cannot run
+    // it (the version check in interceptRequest() mirrors the one
+    // ReferrerGuardManager::isSupported() answers).
+    m_referrerGuardMode = settings.value(QSL("ReferrerGuardMode"), 1).toInt();
+    if (m_referrerGuardMode < 0 || m_referrerGuardMode > 2) {
+        m_referrerGuardMode = 1;
+    }
+    m_referrerGuardExclusions = settings.value(QSL("ReferrerGuardExclusions"), QStringList()).toStringList();
     settings.endGroup();
 
     m_usePerDomainUserAgent = mApp->userAgentManager()->usePerDomainUserAgents();
@@ -213,4 +244,166 @@ bool NetworkUrlInterceptor::hostMatchesExclusionEntry(const QString &host, const
     // Exact host or any subdomain of the entry.
     return host.compare(trimmed, Qt::CaseInsensitive) == 0
         || host.endsWith(QSL(".") + trimmed, Qt::CaseInsensitive);
+}
+
+bool NetworkUrlInterceptor::referrerGuardHostExcludedLocked(const QString &host) const
+{
+    const QString normalized = host.trimmed();
+
+    if (normalized.isEmpty()) {
+        return false;
+    }
+
+    for (const QString &entry : m_referrerGuardExclusions) {
+        if (hostMatchesExclusionEntry(normalized, entry)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+#if QTWEBENGINECORE_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+void NetworkUrlInterceptor::applyReferrerGuardLocked(QWebEngineUrlRequestInfo &info) const
+{
+    /*
+     * The cross-site referrer rewrite. Everything the guard does is
+     * derived from the request's own Referer header - the one value
+     * that says where the request really comes from:
+     *
+     *  - a request with no Referer keeps having none: the guard
+     *    never introduces a referrer, whatever the site declared;
+     *  - a referrer the exception list covers (the site whose URLs
+     *    would leak) keeps whatever the site's own policy sends;
+     *  - a request staying inside one site (same origin, or a
+     *    domain family on the same scheme) keeps its referrer too -
+     *    the site is only telling itself where you were;
+     *  - everything else is a request to another site, and it
+     *    carries at most the referrer's address (OriginOnly) or
+     *    nothing (NoReferrer) - never the URL of the page you were
+     *    reading, whatever "unsafe-url" the page declared.
+     *
+     * Setting the header to an empty value is how the value is
+     * removed: QtWebEngine forwards the override into the engine's
+     * own referrer field, and an empty referrer means no header
+     * leaves the browser.
+     */
+
+    const QUrl target = info.requestUrl();
+    const QString targetScheme = target.scheme();
+
+    if (targetScheme != QSL("http") && targetScheme != QSL("https")) {
+        return;
+    }
+
+    // The request's real Referer, read through the same header map
+    // the setter writes to. QtWebEngine plants the engine's referrer
+    // into it whenever the request carries one, so absence is the
+    // engine's own "no referrer" - and the guard stops there.
+    const QByteArray refererValue = info.httpHeaders().value(QByteArrayLiteral("Referer"));
+
+    if (refererValue.isEmpty()) {
+        return;
+    }
+
+    const QUrl referrer = QUrl(QString::fromUtf8(refererValue));
+
+    if (!referrer.isValid()) {
+        return;
+    }
+
+    const QString referrerScheme = referrer.scheme();
+
+    if (referrerScheme != QSL("http") && referrerScheme != QSL("https")) {
+        return;
+    }
+
+    if (referrer.host().isEmpty()) {
+        return;
+    }
+
+    if (referrerGuardHostExcludedLocked(referrer.host())) {
+        return;
+    }
+
+    if (isSameSite(referrer, target)) {
+        return;
+    }
+
+    // A downgrade (https page, http destination) always clears,
+    // in both modes: the engine's own policies send nothing on a
+    // downgrade, so the guard never sends more than they would -
+    // not even the site's address.
+    const bool downgrade = referrerScheme == QSL("https") && targetScheme == QSL("http");
+
+    if (downgrade || m_referrerGuardMode == 2) { // ReferrerGuardManager::NoReferrer
+        info.setHttpHeader(QByteArrayLiteral("Referer"), QByteArrayLiteral(""));
+    } else {
+        info.setHttpHeader(QByteArrayLiteral("Referer"), referrerOrigin(referrer).toUtf8());
+    }
+
+    // Counted against the site whose URLs just stopped leaking.
+    SecurityManager::instance()->reportReferrerTrimmed(referrer.host());
+}
+#endif
+
+bool NetworkUrlInterceptor::isSameSite(const QUrl &referrer, const QUrl &target)
+{
+    // A referrer never survives a scheme downgrade: https pages
+    // sending an http request lose the referrer entirely, whatever
+    // the hosts are - the engine's own default policies agree, and
+    // the guard never keeps more than they would.
+    const QString referrerScheme = referrer.scheme();
+    const QString targetScheme = target.scheme();
+
+    if (referrerScheme == QSL("https") && targetScheme == QSL("http")) {
+        return false;
+    }
+
+    if (referrerScheme != targetScheme) {
+        return false;
+    }
+
+    const QString referrerHost = referrer.host();
+    const QString targetHost = target.host();
+
+    if (referrerHost.isEmpty() || targetHost.isEmpty()) {
+        return false;
+    }
+
+    // Same host, or two hosts of one domain family (a.com and
+    // sub.a.com, either side either way): the site telling itself
+    // where you were. The dot boundary keeps unrelated hosts apart
+    // (a.com and nota.com are different sites).
+    if (referrerHost.compare(targetHost, Qt::CaseInsensitive) == 0) {
+        return true;
+    }
+
+    if (referrerHost.endsWith(QSL(".") + targetHost, Qt::CaseInsensitive)
+        || targetHost.endsWith(QSL(".") + referrerHost, Qt::CaseInsensitive)) {
+        return true;
+    }
+
+    // Ports never enter the judgment: the host comparisons above
+    // already decided "one site" for every port shuffle of the same
+    // host family, so what is left here is only ever another site.
+    return false;
+}
+
+QString NetworkUrlInterceptor::referrerOrigin(const QUrl &referrer)
+{
+    // The site's address: scheme, host, explicit port, empty path.
+    QUrl origin;
+    origin.setScheme(referrer.scheme());
+    origin.setHost(referrer.host());
+
+    const int port = referrer.port(-1);
+
+    if (port != -1) {
+        origin.setPort(port);
+    }
+
+    origin.setPath(QSL("/"));
+
+    return origin.toString();
 }

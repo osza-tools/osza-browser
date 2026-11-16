@@ -28,7 +28,7 @@
  * Recommended-baseline presets for the bundled security tools.
  *
  * Security tool #11: a hardened setup should not require clicking
- * through seven toggles. This class provides the configurations the
+ * through eight toggles. This class provides the configurations the
  * project recommends as ready-made documents in the same
  * "osza-security-settings" format SecuritySettingsPorter imports, so
  * a preset is applied through exactly the same validation and the
@@ -37,22 +37,25 @@
  *
  * The built-in presets, from lightest to strictest:
  *
- *  - "essentials"             The four request-path protections on
+ *  - "essentials"             The five request-path protections on
  *                             (AdBlock, HTTPS-Only mode, tracking-
  *                             parameter stripping, malicious-site
- *                             protection); secure DNS, fingerprint
+ *                             protection, cross-site referrer
+ *                             trimming); secure DNS, fingerprint
  *                             randomization and the GPC signal off.
  *                             For networks and sites where the deeper
  *                             tools cause trouble.
  *
- *  - "recommended-baseline"  All seven protections on with the
+ *  - "recommended-baseline"  All eight protections on with the
  *                             project defaults: secure DNS with
  *                             fallback to the system resolver, the
- *                             default blocklist source, no site
+ *                             default blocklist source, referrers
+ *                             trimmed to the site's address, no site
  *                             exceptions. The everyday configuration.
  *
- *  - "maximum-protection"    All seven on, and name resolution
- *                             through secure DNS only - no fallback.
+ *  - "maximum-protection"    All eight on, and name resolution
+ *                             through secure DNS only - no fallback,
+ *                             and no referrer at all to other sites.
  *                             The strictest setting; if a network
  *                             blocks DoH, pages will not load.
  *

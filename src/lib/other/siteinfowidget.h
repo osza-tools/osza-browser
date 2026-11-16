@@ -48,6 +48,8 @@ private:
     void fingerprintButtonClicked();
     void updateGpcState();
     void gpcButtonClicked();
+    void updateReferrerGuardState();
+    void referrerGuardButtonClicked();
     void updateThreatBlockState();
     void threatBlockButtonClicked();
     void threatBlockUpdateButtonClicked();

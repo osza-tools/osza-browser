@@ -85,6 +85,10 @@ EXCLUSION_TOOLS = ("httpsOnly", "fingerprintProtection")
 THREAT_SOURCE_SCHEMES = ("http", "https", "file")
 DNS_MODE_MIN = 0
 DNS_MODE_MAX = 2
+# ReferrerGuardManager::Mode values, the same range the C++
+# validation accepts.
+REFERRER_MODE_MIN = 0
+REFERRER_MODE_MAX = 2
 
 
 def constants_from_source():
@@ -203,11 +207,21 @@ def preset_document_from_source(preset_id):
                 raise ValueError("cannot parse the default blocklist source "
                                  "from threatblockmanager.cpp")
             tools[key] = {"enabled": enabled == "true", "sourceUrl": default_source}
+        elif helper == "referrerGuardTool":
+            try:
+                mode = int(args.strip())
+            except ValueError:
+                raise ValueError("unknown referrer guard mode %r in "
+                                 "securitypresets.cpp" % args)
+            if mode not in (0, 1, 2):
+                raise ValueError("unknown referrer guard mode %r in "
+                                 "securitypresets.cpp" % args)
+            tools[key] = {"mode": mode, "exclusions": []}
         else:
             raise ValueError("unknown preset helper %r in securitypresets.cpp" % helper)
 
-    if len(tools) != 7:
-        raise ValueError("preset %r does not state all seven tools in "
+    if len(tools) != 8:
+        raise ValueError("preset %r does not state all eight tools in "
                          "securitypresets.cpp" % preset_id)
 
     return {"format": FORMAT, "version": VERSION, "preset": preset_id, "tools": tools}
@@ -332,7 +346,7 @@ def validate_document(document, report):
         report.error("tools is not an object")
         return
 
-    known = set(BOOL_TOOLS) | set(EXCLUSION_TOOLS) | {"secureDns", "threatBlock"}
+    known = set(BOOL_TOOLS) | set(EXCLUSION_TOOLS) | {"secureDns", "threatBlock", "referrerGuard"}
 
     for name, section in tools.items():
         if name not in known:
@@ -387,6 +401,25 @@ def validate_document(document, report):
                                                                       if isinstance(s, str) and s.strip()]:
                     report.error("a secure DNS mode needs at least one server")
 
+        if name == "referrerGuard":
+            # Mirrors QJsonValue::toInt(): 1.0 reads back as 1.
+            mode = canonicalize(section.get("mode"))
+            if not isinstance(mode, int) or isinstance(mode, bool) \
+                    or not (REFERRER_MODE_MIN <= mode <= REFERRER_MODE_MAX):
+                report.error("tools.referrerGuard.mode is missing or outside %d..%d"
+                             % (REFERRER_MODE_MIN, REFERRER_MODE_MAX))
+            if "exclusions" in section:
+                exclusions = section["exclusions"]
+                if not isinstance(exclusions, list):
+                    report.error("tools.referrerGuard.exclusions is not an array")
+                else:
+                    for entry in exclusions:
+                        if not isinstance(entry, str):
+                            report.error("tools.referrerGuard.exclusions contains a non-string")
+                            break
+                        if not entry.strip():
+                            report.warn("tools.referrerGuard.exclusions contains an empty entry")
+
         if name == "threatBlock":
             enabled = section.get("enabled")
             if not isinstance(enabled, bool):
@@ -423,7 +456,8 @@ def validate_file(path):
 # The fixed tool order of the apply step and the preview, from
 # lightest (request path) to deepest (profile and resolver).
 TOOL_ORDER = ("adblock", "httpsOnly", "trackingParameters", "secureDns",
-              "threatBlock", "fingerprintProtection", "globalPrivacyControl")
+              "threatBlock", "fingerprintProtection", "globalPrivacyControl",
+              "referrerGuard")
 
 
 def _on_off(value):
@@ -436,6 +470,15 @@ def _mode_label(mode):
         return "on, secure DNS only"
     if mode == 1:
         return "on, with fallback to the system resolver"
+    return "off"
+
+
+def _referrer_mode_label(mode):
+    # Mirrors the labels of SecuritySettingsPorter::previewDocument.
+    if mode == 2:
+        return "on, no referrer to other sites"
+    if mode == 1:
+        return "on, at most the site's address to other sites"
     return "off"
 
 
@@ -455,6 +498,8 @@ def _field_label(tool, field, section):
         return _list_label(section.get("exclusions", []))
     if field == "mode":
         mode = canonicalize(section.get("mode"))
+        if tool == "referrerGuard":
+            return _referrer_mode_label(mode if isinstance(mode, int) else 0)
         return _mode_label(mode if isinstance(mode, int) else 0)
     if field == "servers":
         servers = section.get("servers", [])
@@ -474,6 +519,8 @@ def _tool_fields(tool):
         return ("mode", "servers")
     if tool == "threatBlock":
         return ("enabled", "sourceUrl")
+    if tool == "referrerGuard":
+        return ("mode", "exclusions")
     return ()
 
 
@@ -575,7 +622,7 @@ def format_diff(differences, only_a, only_b, name_a, name_b):
     lines = ["diff: %s against %s" % (name_a, name_b)]
 
     if not differences and not only_a and not only_b:
-        lines.append("  no differences in the seven security tools")
+        lines.append("  no differences in the eight security tools")
         return "\n".join(lines)
 
     for tool, fields in differences:
@@ -666,6 +713,7 @@ def self_test():
                         "sourceUrl": "https://porter.example/hosts"},
         "fingerprintProtection": {"enabled": True, "exclusions": []},
         "globalPrivacyControl": {"enabled": True},
+        "referrerGuard": {"mode": 1, "exclusions": ["reader.example"]},
     }
     good = {"format": FORMAT, "version": VERSION, "exportedAt": "2026-01-31T12:00:00Z",
             "checksum": document_checksum({"tools": good_tools}),
@@ -736,6 +784,52 @@ def self_test():
     check(r.ok, "empty exclusion entries are only a warning")
     check(any("empty entry" in w for w in r.warnings),
           "empty exclusion entries must warn")
+
+    # The referrer guard's section judges its mode the way secureDns
+    # judges its own, and its exceptions like any other tool's list.
+    r = validate({"format": FORMAT, "version": VERSION,
+                  "tools": {"referrerGuard": {"mode": 1}}})
+    check(r.ok, "a referrer guard section without exclusions must pass")
+
+    r = validate({"format": FORMAT, "version": VERSION,
+                  "tools": {"referrerGuard": {"mode": 3, "exclusions": []}}})
+    check(not r.ok, "an out-of-range referrer guard mode must fail")
+    check(any("referrerGuard.mode" in e for e in r.errors),
+          "an out-of-range referrer guard mode must say so")
+
+    r = validate({"format": FORMAT, "version": VERSION,
+                  "tools": {"referrerGuard": {"mode": 1.5}}})
+    check(not r.ok, "a fractional referrer guard mode must fail")
+
+    r = validate({"format": FORMAT, "version": VERSION,
+                  "tools": {"referrerGuard": {"mode": 1, "exclusions": "nope"}}})
+    check(not r.ok, "a non-array referrer guard exclusions field must fail")
+
+    r = validate({"format": FORMAT, "version": VERSION,
+                  "tools": {"referrerGuard": {"mode": 1, "exclusions": ["  "]}}})
+    check(r.ok, "an empty referrer guard exclusion entry is only a warning")
+    check(any("referrerGuard" in w and "empty entry" in w for w in r.warnings),
+          "an empty referrer guard exclusion entry must warn")
+
+    # The diff speaks the referrer guard's own mode labels, and its
+    # exception changes carry the same one-line summaries as every
+    # other tool's list.
+    differences, only_a, only_b = diff_documents(
+        {"tools": {"referrerGuard": {"mode": 0, "exclusions": []}}},
+        {"tools": {"referrerGuard": {"mode": 2, "exclusions": ["reader.example"]}}})
+    diff_map = {tool: {field: (value_a, value_b) for field, value_a, value_b, _ in fields}
+                for tool, fields in differences}
+    check(diff_map.get("referrerGuard") ==
+          {"mode": ("off", "on, no referrer to other sites"),
+           "exclusions": ("none", "reader.example")},
+          "the offline diff must speak the referrer guard's mode labels")
+    check(only_a == [] and only_b == [],
+          "two documents configuring the tool differ by fields, not by sides")
+    summary_map = {tool: {field: summary for field, _, _, summary in fields}
+                   for tool, fields in differences}
+    check(summary_map.get("referrerGuard", {}).get("exclusions") ==
+          ["Adds an exception for: reader.example"],
+          "a referrer guard exception change carries the one-line summary")
 
     # --- checksum rules, mirroring settingsPorterChecksumTest ---
 
@@ -811,7 +905,7 @@ def self_test():
     # --- per-tool diff, mirroring settingsPorterPreviewTest ---
 
     # The presets rebuild from the C++ source: three documents, each
-    # stating all seven tools with the pinned content.
+    # stating all eight tools with the pinned content.
     try:
         rebuilt = {pid: preset_document_from_source(pid)
                    for pid in EXPECTED_PRESET_IDS}
@@ -819,8 +913,8 @@ def self_test():
             check(document["format"] == FORMAT and document["version"] == VERSION,
                   "the rebuilt preset %s must carry the format header" % pid)
             tools = document["tools"]
-            check(len(tools) == 7,
-                  "the rebuilt preset %s must state all seven tools" % pid)
+            check(len(tools) == 8,
+                  "the rebuilt preset %s must state all eight tools" % pid)
         check(rebuilt["essentials"]["tools"]["secureDns"]["mode"] == 0,
               "essentials must disable secure DNS")
         check(rebuilt["essentials"]["tools"]["fingerprintProtection"]["enabled"] is False,
@@ -831,6 +925,12 @@ def self_test():
               "the recommended baseline must name one DNS server")
         check(rebuilt["maximum-protection"]["tools"]["secureDns"]["mode"] == 2,
               "maximum protection must use secure DNS only")
+        check(rebuilt["essentials"]["tools"]["referrerGuard"]["mode"] == 1,
+              "essentials must trim cross-site referrers to the site's address")
+        check(rebuilt["recommended-baseline"]["tools"]["referrerGuard"]["mode"] == 1,
+              "the recommended baseline must trim cross-site referrers to the site's address")
+        check(rebuilt["maximum-protection"]["tools"]["referrerGuard"]["mode"] == 2,
+              "maximum protection must send no referrer to other sites")
     except ValueError as e:
         check(False, "the preset parser must be able to read securitypresets.cpp: %s" % e)
         rebuilt = {}

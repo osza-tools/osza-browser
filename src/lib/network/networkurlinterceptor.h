@@ -40,6 +40,20 @@ public:
 
     void loadSettings();
 
+    // The cross-site judgment of the referrer guard: whether a
+    // request from "referrer" to "target" stays inside one site -
+    // same scheme with the same host, or with two hosts of one
+    // domain family (a.com and sub.a.com, either side either way;
+    // ports are not compared - a port shuffle is one site's own
+    // arrangement). A scheme mismatch is never same-site, a
+    // downgrade (https page, http destination) least of all.
+    static bool isSameSite(const QUrl &referrer, const QUrl &target);
+
+    // The referrer origin the OriginOnly mode sends: scheme, host
+    // and port, with an empty path and nothing else - the site's
+    // address, never its URLs.
+    static QString referrerOrigin(const QUrl &referrer);
+
 private:
     QUrl stripTrackingParameters(const QUrl &url) const;
 
@@ -53,11 +67,26 @@ private:
     // mutex already held (the IO thread path).
     bool gpcHostExcludedLocked(const QString &host) const;
 
+    // The referrer guard's exclusion check for interceptRequest(),
+    // called with the mutex already held. Same entry matching as
+    // the GPC half, but anchored on the referrer's host - the site
+    // whose URLs would leak.
+    bool referrerGuardHostExcludedLocked(const QString &host) const;
+
+    // The cross-site referrer rewrite, called with the mutex
+    // already held. Reads the request's real Referer header and
+    // only ever touches requests that already carry one, so the
+    // guard can never introduce a referrer where the engine sent
+    // none.
+    void applyReferrerGuardLocked(QWebEngineUrlRequestInfo &info) const;
+
     QMutex m_mutex;
     QList<UrlInterceptor*> m_interceptors;
     bool m_sendDNT = false;
     bool m_sendGPC = true;
     QStringList m_gpcExclusions;
+    int m_referrerGuardMode = 1; // ReferrerGuardManager::OriginOnly
+    QStringList m_referrerGuardExclusions;
     bool m_usePerDomainUserAgent = false;
     bool m_stripTrackingQuery = true;
     QHash<QString, QString> m_userAgentsList;

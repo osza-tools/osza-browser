@@ -23,6 +23,7 @@
 #include "httpsonlyinterceptor.h"
 #include "mainapplication.h"
 #include "networkmanager.h"
+#include "referrerguardmanager.h"
 #include "settings.h"
 #include "threatblockmanager.h"
 
@@ -137,12 +138,13 @@ struct ToolPlan
 
     bool enabled = false;          // the "enabled" field (every tool but secureDns)
     QStringList exclusions;        // httpsOnly / fingerprintProtection /
-                                   // globalPrivacyControl; the effective
-                                   // list after the import - a missing field
+                                   // globalPrivacyControl / referrerGuard; the
+                                   // effective list after the import - a missing field
                                    // resets it, like the apply step
     bool statedExclusions = false; // the document stated the field itself
     DnsOverHttpsManager::Mode mode = DnsOverHttpsManager::Disabled; // secureDns
     QStringList servers;           // secureDns; sanitized
+    int referrerMode = 0;          // referrerGuard; ReferrerGuardManager::Mode
     QString sourceUrl;             // threatBlock; the effective source after the
                                    // import - a missing field keeps the current one
     bool statedSourceUrl = false;  // the document stated the field itself
@@ -431,6 +433,71 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
         plans.append(plan);
     }
 
+    // Cross-site referrer protection
+    {
+        ToolPlan plan;
+        plan.key = QSL("referrerGuard");
+
+        const QJsonValue value = tools.value(plan.key);
+        plan.present = !value.isUndefined();
+
+        if (value.isObject()) {
+            const QJsonObject tool = value.toObject();
+
+            // The mode is judged like secureDns judges its own: the
+            // number itself, not its toInt() reading, so a hand-edited
+            // "mode": 1.5 or 9 cannot slide through as a valid value
+            // (QJsonValue::toInt() answers its default for every
+            // non-integral or out-of-range number).
+            const QJsonValue modeValue = tool.value(QSL("mode"));
+            int referrerMode = -1;
+
+            if (modeValue.isDouble()) {
+                const double number = modeValue.toDouble();
+
+                if (std::floor(number) == number
+                    && number >= static_cast<double>(ReferrerGuardManager::Off)
+                    && number <= static_cast<double>(ReferrerGuardManager::NoReferrer)) {
+                    referrerMode = static_cast<int>(number);
+                }
+            }
+
+            bool exclusionsOk = true;
+            QStringList exclusions;
+            if (tool.contains(QSL("exclusions"))) {
+                plan.statedExclusions = true;
+                exclusions = stringListFieldValue(tool, &exclusionsOk);
+            }
+
+            if (referrerMode < 0 || !exclusionsOk) {
+                plan.reason = porterTr("a field is missing or has the wrong type");
+            } else {
+                plan.apply = true;
+                plan.referrerMode = referrerMode;
+                // The same normalization the manager's
+                // setExclusions() applies: lowercase and
+                // case-insensitively deduplicated, so the preview
+                // shows exactly the list the import will land.
+                QStringList normalized;
+                const QStringList sanitized = sanitizeHostList(exclusions);
+
+                for (const QString &entry : sanitized) {
+                    const QString lowered = entry.toLower();
+
+                    if (!normalized.contains(lowered)) {
+                        normalized.append(lowered);
+                    }
+                }
+
+                plan.exclusions = normalized;
+            }
+        } else if (plan.present) {
+            plan.reason = porterTr("the section is not an object");
+        }
+
+        plans.append(plan);
+    }
+
     return plans;
 }
 
@@ -513,6 +580,19 @@ QString modeLabel(DnsOverHttpsManager::Mode mode)
     case DnsOverHttpsManager::SecureWithFallback:
         return porterTr("on, with fallback to the system resolver");
     case DnsOverHttpsManager::Disabled:
+    default:
+        return porterTr("off");
+    }
+}
+
+QString referrerModeLabel(int mode)
+{
+    switch (mode) {
+    case ReferrerGuardManager::OriginOnly:
+        return porterTr("on, at most the site's address to other sites");
+    case ReferrerGuardManager::NoReferrer:
+        return porterTr("on, no referrer to other sites");
+    case ReferrerGuardManager::Off:
     default:
         return porterTr("off");
     }
@@ -650,6 +730,14 @@ QJsonObject SecuritySettingsPorter::buildDocument()
         tool.insert(QSL("exclusions"),
                     QJsonArray::fromStringList(GpcManager::instance()->exclusions()));
         tools.insert(QSL("globalPrivacyControl"), tool);
+    }
+
+    {
+        QJsonObject tool;
+        tool.insert(QSL("mode"), static_cast<int>(ReferrerGuardManager::instance()->mode()));
+        tool.insert(QSL("exclusions"),
+                    QJsonArray::fromStringList(ReferrerGuardManager::instance()->exclusions()));
+        tools.insert(QSL("referrerGuard"), tool);
     }
 
     QJsonObject document;
@@ -935,6 +1023,25 @@ SecuritySettingsPorter::ImportResult SecuritySettingsPorter::applyDocument(const
             GpcManager::instance()->setEnabled(plan.enabled);
             GpcManager::instance()->setExclusions(plan.exclusions);
             mApp->networkManager()->loadSettings();
+        } else if (plan.key == QSL("referrerGuard")) {
+            // setMode persists the preference, the effective
+            // exclusion list is written in the same breath, and
+            // reloading the network stack makes the IO-thread half
+            // follow immediately. Whether this build can run the
+            // rewrite at all is only known here, at apply time - the
+            // state is still persisted (a settings file travels
+            // between machines, and another machine's build may
+            // support it), the same judgment secureDns makes when
+            // the engine rejects its configuration, and this build
+            // names the limitation in the summary.
+            ReferrerGuardManager::instance()->setMode(static_cast<ReferrerGuardManager::Mode>(plan.referrerMode));
+            ReferrerGuardManager::instance()->setExclusions(plan.exclusions);
+            mApp->networkManager()->loadSettings();
+
+            if (!ReferrerGuardManager::isSupported()) {
+                result.skippedTools.append(QSL("%1: %2").arg(plan.key, porterTr("this build cannot use the referrer guard")));
+                continue;
+            }
         }
 
         ++result.appliedTools;
@@ -1042,6 +1149,21 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
             addChange(plan.key, QSL("servers"),
                       listLabel(currentTool.value(QSL("servers")).toArray()),
                       listLabel(plan.servers));
+        } else if (plan.key == QSL("referrerGuard")) {
+            addChange(plan.key, QSL("mode"),
+                      referrerModeLabel(currentTool.value(QSL("mode")).toInt()),
+                      referrerModeLabel(plan.referrerMode));
+
+            // The sites whose treatment changes, named like every
+            // other exclusions change is.
+            QStringList clearedExclusions, addedExclusions;
+            listDifference(stringListFromJson(currentTool.value(QSL("exclusions")).toArray()),
+                           plan.exclusions,
+                           &clearedExclusions, &addedExclusions);
+            addChange(plan.key, QSL("exclusions"),
+                      listLabel(currentTool.value(QSL("exclusions")).toArray()),
+                      listLabel(plan.exclusions),
+                      clearedExclusions, addedExclusions);
         } else if (plan.key == QSL("threatBlock")) {
             addChange(plan.key, QSL("enabled"),
                       onOffLabel(currentTool.value(QSL("enabled")).toBool()),
@@ -1099,6 +1221,9 @@ QString SecuritySettingsPorter::toolDisplayName(const QString &tool)
     }
     if (tool == QSL("globalPrivacyControl")) {
         return porterTr("Global Privacy Control (Sec-GPC)");
+    }
+    if (tool == QSL("referrerGuard")) {
+        return porterTr("Cross-site referrer protection");
     }
     return tool;
 }

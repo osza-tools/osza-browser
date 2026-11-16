@@ -29,6 +29,7 @@
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "threatblockmanager.h"
+#include "referrerguardmanager.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
 #include "settingsdiffpage.h"
@@ -119,6 +120,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     updateHttpsOnlyState();
     updateFingerprintState();
     updateGpcState();
+    updateReferrerGuardState();
     updateThreatBlockState();
 
     // The per-site entries' "diff" links: the same deep links the
@@ -127,6 +129,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     setupToolDiffLink(ui->httpsOnlyDiffLink, QSL("httpsOnly"));
     setupToolDiffLink(ui->fingerprintProtectionDiffLink, QSL("fingerprintProtection"));
     setupToolDiffLink(ui->globalPrivacyControlDiffLink, QSL("globalPrivacyControl"));
+    setupToolDiffLink(ui->referrerGuardDiffLink, QSL("referrerGuard"));
     setupToolDiffLink(ui->threatBlockDiffLink, QSL("threatBlock"));
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
@@ -134,6 +137,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     connect(ui->httpsOnlyButton, &QPushButton::clicked, this, &SiteInfoWidget::httpsOnlyButtonClicked);
     connect(ui->fingerprintButton, &QPushButton::clicked, this, &SiteInfoWidget::fingerprintButtonClicked);
     connect(ui->gpcButton, &QPushButton::clicked, this, &SiteInfoWidget::gpcButtonClicked);
+    connect(ui->referrerButton, &QPushButton::clicked, this, &SiteInfoWidget::referrerGuardButtonClicked);
     connect(ui->threatBlockButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockButtonClicked);
     connect(ui->threatBlockUpdateButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockUpdateButtonClicked);
 
@@ -379,6 +383,76 @@ void SiteInfoWidget::gpcButtonClicked()
     // script half is rebuilt by the manager itself, the header half
     // follows the network stack's reload - and the page is reloaded
     // so the DOM property and the requests it makes agree at once.
+    mApp->networkManager()->loadSettings();
+
+    if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {
+        m_window->weView()->reload();
+    }
+
+    close();
+}
+
+void SiteInfoWidget::updateReferrerGuardState()
+{
+    // The per-site row follows the tool's own capability gate: a
+    // build whose QtWebEngine cannot run the guard has no per-site
+    // state to speak of, so the row is not offered at all - the same
+    // honesty the DoH rows in Preferences live by.
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->referrerLabel->hide();
+        ui->referrerButton->hide();
+        ui->referrerGuardDiffLink->hide();
+        return;
+    }
+
+    if (!ReferrerGuardManager::isSupported()) {
+        ui->referrerLabel->hide();
+        ui->referrerButton->hide();
+        ui->referrerGuardDiffLink->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *manager = ReferrerGuardManager::instance();
+
+    if (!manager->isEnabled()) {
+        ui->referrerLabel->setText(tr("Cross-site referrer protection is <b>off</b>."));
+        ui->referrerButton->setText(tr("Enable referrer protection"));
+    }
+    else if (manager->isExcluded(host)) {
+        ui->referrerLabel->setText(tr("URLs of this site <b>leave</b> for other sites as the site intends."));
+        ui->referrerButton->setText(tr("Protect this site's URLs"));
+    } else {
+        if (manager->mode() == ReferrerGuardManager::NoReferrer) {
+            ui->referrerLabel->setText(tr("Requests to other sites carry <b>no referrer</b> from this site."));
+        } else {
+            ui->referrerLabel->setText(tr("Requests to other sites carry <b>at most this site's address</b>, never its URLs."));
+        }
+        ui->referrerButton->setText(tr("Do not protect this site's URLs"));
+    }
+}
+
+void SiteInfoWidget::referrerGuardButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = ReferrerGuardManager::instance();
+
+    if (!manager->isEnabled()) {
+        // The per-site shortcut needs the protection itself, turn it
+        // on at the recommended strength.
+        manager->setMode(ReferrerGuardManager::OriginOnly);
+    }
+    else if (manager->isExcluded(url.host())) {
+        manager->removeExclusion(url.host());
+    } else {
+        manager->addExclusion(url.host());
+    }
+
+    // The header half follows the network stack's reload - the same
+    // two-step the padlock menu's GPC control takes - and the page is
+    // reloaded so its own outgoing requests follow at once.
     mApp->networkManager()->loadSettings();
 
     if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {

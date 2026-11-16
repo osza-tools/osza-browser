@@ -32,12 +32,14 @@
 #include "jsoptions.h"
 #include "fingerprintexceptionsdialog.h"
 #include "gpcexceptionsdialog.h"
+#include "referrerexceptionsdialog.h"
 #include "httpsonlyexceptionsdialog.h"
 #include "dnsoverhttpsmanager.h"
 #include "threatblockmanager.h"
 #include "networkmanager.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
+#include "referrerguardmanager.h"
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
@@ -425,6 +427,28 @@ Preferences::Preferences(BrowserWindow* window)
     ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
     ui->fingerprintProtection->setChecked(settings.value(QSL("FingerprintProtection"), true).toBool());
     ui->globalPrivacyControl->setChecked(settings.value(QSL("GlobalPrivacyControl"), true).toBool());
+
+    // Cross-site referrer protection: the checkbox carries the
+    // tool's on/off, the combo its strength. A stored off keeps the
+    // strength selectable so re-enabling remembers what was chosen.
+    {
+        const int referrerMode = settings.value(QSL("ReferrerGuardMode"), 1).toInt();
+        ui->referrerGuard->setChecked(referrerMode != 0);
+        ui->referrerGuardMode->setCurrentIndex(referrerMode == 2 ? 1 : 0);
+    }
+    ui->referrerGuard->setEnabled(ReferrerGuardManager::isSupported());
+    ui->labelReferrerGuardMode->setEnabled(ReferrerGuardManager::isSupported());
+    ui->labelReferrerExceptions->setEnabled(ReferrerGuardManager::isSupported());
+    ui->referrerExceptionsButton->setEnabled(ReferrerGuardManager::isSupported());
+    connect(ui->referrerGuard, &QCheckBox::toggled, this, [this](bool on) {
+        // The strength only answers while the tool is on - the same
+        // arrangement the DoH rows have with their mode.
+        ui->referrerGuardMode->setEnabled(on && ReferrerGuardManager::isSupported());
+    });
+    // The starting state, without waiting for a toggle: the strength
+    // follows the checkbox as loaded.
+    ui->referrerGuardMode->setEnabled(ui->referrerGuard->isChecked() && ReferrerGuardManager::isSupported());
+
     ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
     loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
     connect(ui->dnsOverHttpsServers, &QComboBox::currentIndexChanged, this, &Preferences::dnsOverHttpsServerChanged);
@@ -632,6 +656,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->httpsOnlyExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openHttpsOnlyExceptions);
     connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
     connect(ui->gpcExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openGpcExceptions);
+    connect(ui->referrerExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openReferrerExceptions);
     connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
@@ -896,6 +921,20 @@ void Preferences::openGpcExceptions()
     }
 }
 
+void Preferences::openReferrerExceptions()
+{
+    ReferrerExceptionsDialog dialog(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList(), this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        // The manager owns the list's single source of truth: it
+        // persists the result. The header half follows the network
+        // stack's reload - the same two-step the padlock menu's
+        // per-site control takes.
+        ReferrerGuardManager::instance()->setExclusions(dialog.exclusions());
+        mApp->networkManager()->loadSettings();
+    }
+}
+
 void Preferences::exportSecuritySettings()
 {
     const QString path = QzTools::getSaveFileName(QSL("SecuritySettings-Export"), this, tr("Export Security Settings"),
@@ -1096,6 +1135,14 @@ void Preferences::updateSecurityToolsWidgets()
     ui->stripTrackingQuery->setChecked(settings.value(QSL("StripTrackingQuery"), true).toBool());
     ui->fingerprintProtection->setChecked(settings.value(QSL("FingerprintProtection"), true).toBool());
     ui->globalPrivacyControl->setChecked(settings.value(QSL("GlobalPrivacyControl"), true).toBool());
+
+    {
+        const int referrerMode = settings.value(QSL("ReferrerGuardMode"), 1).toInt();
+        ui->referrerGuard->setChecked(referrerMode != 0);
+        ui->referrerGuardMode->setCurrentIndex(referrerMode == 2 ? 1 : 0);
+        ui->referrerGuardMode->setEnabled(referrerMode != 0 && ReferrerGuardManager::isSupported());
+    }
+
     ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
     loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
     settings.endGroup();
@@ -1450,6 +1497,9 @@ void Preferences::saveSettings()
     settings.setValue(QSL("StripTrackingQuery"), ui->stripTrackingQuery->isChecked());
     settings.setValue(QSL("FingerprintProtection"), ui->fingerprintProtection->isChecked());
     settings.setValue(QSL("GlobalPrivacyControl"), ui->globalPrivacyControl->isChecked());
+    settings.setValue(QSL("ReferrerGuardMode"), !ui->referrerGuard->isChecked()
+                      ? 0
+                      : (ui->referrerGuardMode->currentIndex() == 1 ? 2 : 1));
     settings.setValue(QSL("ThreatBlockEnabled"), ui->threatBlock->isChecked());
     if (!ui->threatBlockSource->text().trimmed().isEmpty()) {
         settings.setValue(QSL("ThreatBlockSource"), ui->threatBlockSource->text().trimmed());

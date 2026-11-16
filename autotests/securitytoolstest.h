@@ -64,6 +64,11 @@ private Q_SLOTS:
     void gpcDomSignalIntegrationTest();
     void gpcHeaderIntegrationTest();
 
+    void referrerGuardModeTest();
+    void referrerGuardExclusionTest();
+    void referrerGuardSameSiteTest();
+    void referrerGuardHeaderIntegrationTest();
+
     void selfTestNoisePatternTest();
     void selfTestNoiseEquivalenceTest();
     void selfTestPageBuildTest();

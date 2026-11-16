@@ -38,7 +38,7 @@
       <property name="rightMargin">
        <number>15</number>
       </property>
-      <item row="14" column="0" colspan="3">
+      <item row="16" column="0" colspan="3">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="protocolHandlerLabel"/>
@@ -65,7 +65,7 @@
         </property>
        </widget>
       </item>
-      <item row="16" column="0" colspan="3">
+      <item row="18" column="0" colspan="3">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>6</number>
@@ -111,7 +111,7 @@
         </property>
        </widget>
       </item>
-      <item row="13" column="0" colspan="3">
+      <item row="15" column="0" colspan="3">
        <widget class="Line" name="protocolHandlerLine">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -125,7 +125,7 @@
         </property>
        </widget>
       </item>
-      <item row="15" column="0" colspan="3">
+      <item row="17" column="0" colspan="3">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -244,6 +244,43 @@
        </widget>
       </item>
       <item row="11" column="2">
+       <layout class="QHBoxLayout" name="referrerRowLayout">
+        <property name="spacing">
+         <number>4</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="referrerLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="referrerGuardDiffLink">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="12" column="2">
+       <widget class="QPushButton" name="referrerButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="2">
        <layout class="QHBoxLayout" name="threatBlockRowLayout">
         <property name="spacing">
          <number>4</number>
@@ -270,7 +307,7 @@
         </item>
        </layout>
       </item>
-      <item row="12" column="2">
+      <item row="14" column="2">
        <layout class="QHBoxLayout" name="threatBlockButtonsLayout">
         <property name="spacing">
          <number>4</number>

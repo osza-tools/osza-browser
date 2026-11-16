@@ -28,6 +28,7 @@
 #include "securityimportpreviewdialog.h"
 #include "securitymanager.h"
 #include "securitypresets.h"
+#include "referrerguardmanager.h"
 #include "securitysettingsporter.h"
 #include "settingsdiffpage.h"
 #include "settings.h"
@@ -102,6 +103,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_threatBlockToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleThreatBlock);
     connect(m_fingerprintToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleFingerprintProtection);
     connect(m_gpcToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleGpc);
+    connect(m_referrerGuardToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleReferrerGuard);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
     connect(m_selfTestButton, &QToolButton::clicked, this, &SecuritySideBar::openSelfTest);
 
@@ -167,8 +169,9 @@ void SecuritySideBar::createLayout()
     statusRow->addWidget(m_statusLabel, 1);
     mainLayout->addLayout(statusRow);
 
-    // Totals: a 2x2 grid keeps the four tiles readable even in a
-    // narrow sidebar.
+    // Totals: a 2-column grid keeps the tiles readable even in a
+    // narrow sidebar; the fifth counter takes the third row's first
+    // cell, and the empty cell beside it keeps the rhythm.
     mainLayout->addWidget(headingLabel(tr("Protection totals")));
 
     auto *tilesLayout = new QGridLayout;
@@ -177,10 +180,12 @@ void SecuritySideBar::createLayout()
     auto *trackersTile = createCounterTile(tr("Trackers stripped"), &m_trackersValue);
     auto *upgradesTile = createCounterTile(tr("HTTPS upgrades"), &m_upgradesValue);
     auto *threatsTile = createCounterTile(tr("Threats blocked"), &m_threatsValue);
+    auto *referrersTile = createCounterTile(tr("Referrers trimmed"), &m_referrersValue);
     tilesLayout->addWidget(adsTile, 0, 0);
     tilesLayout->addWidget(trackersTile, 0, 1);
     tilesLayout->addWidget(upgradesTile, 1, 0);
     tilesLayout->addWidget(threatsTile, 1, 1);
+    tilesLayout->addWidget(referrersTile, 2, 0);
     mainLayout->addLayout(tilesLayout);
 
     // Current site
@@ -196,10 +201,12 @@ void SecuritySideBar::createLayout()
     auto *siteTrackersRow = createHostRow(tr("Trackers stripped"), &m_siteTrackersValue);
     auto *siteUpgradesRow = createHostRow(tr("HTTPS upgrades"), &m_siteUpgradesValue);
     auto *siteThreatsRow = createHostRow(tr("Threats blocked"), &m_siteThreatsValue);
+    auto *siteReferrersRow = createHostRow(tr("Referrers trimmed"), &m_siteReferrersValue);
     siteGrid->addWidget(siteAdsRow, 0, 0);
     siteGrid->addWidget(siteTrackersRow, 1, 0);
     siteGrid->addWidget(siteUpgradesRow, 2, 0);
     siteGrid->addWidget(siteThreatsRow, 3, 0);
+    siteGrid->addWidget(siteReferrersRow, 4, 0);
     mainLayout->addLayout(siteGrid);
 
     // Quick switches
@@ -228,6 +235,11 @@ void SecuritySideBar::createLayout()
     m_gpcState = new QLabel(this);
     m_gpcState->setContentsMargins(20, 0, 0, 0);
     m_gpcState->setWordWrap(true);
+    m_referrerGuardToggle = new QCheckBox(tr("Cross-site referrer protection"), this);
+    m_referrerGuardToggle->setToolTip(tr("Trim the referrer on requests to other sites, so the site you were reading never leaks where a link or request goes. Individual sites can be excluded from the padlock menu or the exceptions dialog in Preferences."));
+    m_referrerGuardState = new QLabel(this);
+    m_referrerGuardState->setContentsMargins(20, 0, 0, 0);
+    m_referrerGuardState->setWordWrap(true);
 
     // One row per tool: the quick switch, and beside it the deep link
     // to that tool's part of the recommended baseline's diff. The
@@ -243,6 +255,8 @@ void SecuritySideBar::createLayout()
     mainLayout->addWidget(m_fingerprintState);
     mainLayout->addWidget(createToolRow(m_gpcToggle, QSL("globalPrivacyControl")));
     mainLayout->addWidget(m_gpcState);
+    mainLayout->addWidget(createToolRow(m_referrerGuardToggle, QSL("referrerGuard")));
+    mainLayout->addWidget(m_referrerGuardState);
 
     mainLayout->addStretch(1);
 
@@ -397,6 +411,7 @@ void SecuritySideBar::refresh()
     m_trackersValue->setText(formatCount(security->trackersStripped()));
     m_upgradesValue->setText(formatCount(security->httpsUpgrades()));
     m_threatsValue->setText(formatCount(security->threatsBlocked()));
+    m_referrersValue->setText(formatCount(security->referrersTrimmed()));
 
     const QString host = currentHost();
     m_siteLabel->setText(host.isEmpty() ? tr("No site is open.") : tr("<b>%1</b>").arg(host.toHtmlEscaped()));
@@ -405,6 +420,7 @@ void SecuritySideBar::refresh()
     m_siteTrackersValue->setText(formatCount(security->trackersStrippedForHost(host)));
     m_siteUpgradesValue->setText(formatCount(security->httpsUpgradesForHost(host)));
     m_siteThreatsValue->setText(formatCount(security->threatsBlockedForHost(host)));
+    m_siteReferrersValue->setText(formatCount(security->referrersTrimmedForHost(host)));
 }
 
 void SecuritySideBar::updateStatus()
@@ -415,12 +431,14 @@ void SecuritySideBar::updateStatus()
     const auto *threatBlock = mApp->networkManager()->threatBlockManager();
     const bool fingerprint = FingerprintManager::instance()->isEnabled();
     const bool gpc = GpcManager::instance()->isEnabled();
+    const bool referrerGuard = ReferrerGuardManager::instance()->isEnabled();
 
     const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked()
         || doh->mode() != DnsOverHttpsManager::Disabled
         || threatBlock->isEnabled()
         || fingerprint
-        || gpc;
+        || gpc
+        || referrerGuard;
 
     if (anyOn) {
         m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -466,6 +484,23 @@ void SecuritySideBar::updateStatus()
             m_gpcState->setText(tr("The opt-out is sent everywhere except to %1 (excluded from the padlock menu).").arg(host.toHtmlEscaped()));
         } else {
             m_gpcState->setText(tr("Every request carries the Sec-GPC: 1 opt-out, and pages see navigator.globalPrivacyControl = true."));
+        }
+    }
+
+    // Cross-site referrer protection state, honest about what leaves
+    // the browser and about the site you are on.
+    if (!ReferrerGuardManager::isSupported()) {
+        m_referrerGuardState->setText(tr("Cross-site referrer protection requires QtWebEngine 6.5+."));
+    } else if (!referrerGuard) {
+        m_referrerGuardState->setText(tr("Cross-site referrer protection is off."));
+    } else {
+        const QString host = currentHost();
+        if (!host.isEmpty() && ReferrerGuardManager::instance()->isExcluded(host)) {
+            m_referrerGuardState->setText(tr("Referrers are trimmed everywhere except while you are on %1 (excluded from the padlock menu).").arg(host.toHtmlEscaped()));
+        } else if (ReferrerGuardManager::instance()->mode() == ReferrerGuardManager::NoReferrer) {
+            m_referrerGuardState->setText(tr("Requests to other sites carry no referrer at all."));
+        } else {
+            m_referrerGuardState->setText(tr("Requests to other sites carry at most the site you were reading's address - never its URLs."));
         }
     }
 
@@ -522,6 +557,7 @@ void SecuritySideBar::updateToggles()
     const QSignalBlocker threatBlockBlocker(m_threatBlockToggle);
     const QSignalBlocker fingerprintBlocker(m_fingerprintToggle);
     const QSignalBlocker gpcBlocker(m_gpcToggle);
+    const QSignalBlocker referrerGuardBlocker(m_referrerGuardToggle);
 
     m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
     m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
@@ -538,6 +574,8 @@ void SecuritySideBar::updateToggles()
     m_threatBlockToggle->setChecked(mApp->networkManager()->threatBlockManager()->isEnabled());
     m_fingerprintToggle->setChecked(FingerprintManager::instance()->isEnabled());
     m_gpcToggle->setChecked(GpcManager::instance()->isEnabled());
+    m_referrerGuardToggle->setChecked(ReferrerGuardManager::instance()->isEnabled());
+    m_referrerGuardToggle->setEnabled(ReferrerGuardManager::isSupported());
 }
 
 void SecuritySideBar::resetCounters()
@@ -875,6 +913,19 @@ void SecuritySideBar::toggleGpc(bool enabled)
     // DOM signal script; reloading the network stack makes the
     // Sec-GPC header follow immediately.
     GpcManager::instance()->setEnabled(enabled);
+    mApp->networkManager()->loadSettings();
+    refresh();
+}
+
+void SecuritySideBar::toggleReferrerGuard(bool enabled)
+{
+    // The quick switch moves between off and on at the recommended
+    // strength (the strict one is a Preferences choice); a build
+    // whose QtWebEngine cannot run the guard never gets here, the
+    // switch is disabled above. Reloading the network stack makes
+    // the IO-thread half follow immediately.
+    auto *manager = ReferrerGuardManager::instance();
+    manager->setMode(enabled ? ReferrerGuardManager::OriginOnly : ReferrerGuardManager::Off);
     mApp->networkManager()->loadSettings();
     refresh();
 }

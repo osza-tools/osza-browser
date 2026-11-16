@@ -71,6 +71,7 @@ public Q_SLOTS:
     void toggleThreatBlock(bool enabled);
     void toggleFingerprintProtection(bool enabled);
     void toggleGpc(bool enabled);
+    void toggleReferrerGuard(bool enabled);
 
 private:
     QWidget* createCounterTile(const QString &caption, QLabel **valueOut);
@@ -91,12 +92,14 @@ private:
     QLabel* m_trackersValue;
     QLabel* m_upgradesValue;
     QLabel* m_threatsValue;
+    QLabel* m_referrersValue;
 
     QLabel* m_siteLabel;
     QLabel* m_siteAdsValue;
     QLabel* m_siteTrackersValue;
     QLabel* m_siteUpgradesValue;
     QLabel* m_siteThreatsValue;
+    QLabel* m_siteReferrersValue;
 
     QCheckBox* m_adBlockToggle;
     QCheckBox* m_httpsOnlyToggle;
@@ -109,6 +112,8 @@ private:
     QLabel* m_fingerprintState;
     QCheckBox* m_gpcToggle;
     QLabel* m_gpcState;
+    QCheckBox* m_referrerGuardToggle;
+    QLabel* m_referrerGuardState;
 
     QToolButton* m_resetButton;
     QToolButton* m_selfTestButton;

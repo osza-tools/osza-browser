@@ -68,8 +68,16 @@ QJsonObject threatBlockTool(bool enabled, const QString &sourceUrl)
     return tool;
 }
 
+QJsonObject referrerGuardTool(int mode)
+{
+    QJsonObject tool;
+    tool.insert(QSL("mode"), mode);
+    tool.insert(QSL("exclusions"), QJsonArray());
+    return tool;
+}
+
 // Wraps the shared tools object into a finished preset document.
-// Every preset states all seven tool sections explicitly - including
+// Every preset states all eight tool sections explicitly - including
 // the ones it turns off - so a preset replaces the whole
 // configuration and is never silently merged with whatever was
 // configured before.
@@ -98,7 +106,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("essentials");
         preset.name = presetsTr("Essentials");
-        preset.description = presetsTr("AdBlock, HTTPS-Only mode, tracking-parameter stripping and malicious-site protection on; secure DNS, fingerprint randomization and the Global Privacy Control signal off. For networks and sites where the deeper tools cause trouble.");
+        preset.description = presetsTr("AdBlock, HTTPS-Only mode, tracking-parameter stripping, malicious-site protection and cross-site referrer trimming on; secure DNS, fingerprint randomization and the Global Privacy Control signal off. For networks and sites where the deeper tools cause trouble.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -108,6 +116,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(false));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(false));
+        tools.insert(QSL("referrerGuard"), referrerGuardTool(1));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -117,7 +126,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("recommended-baseline");
         preset.name = presetsTr("Recommended baseline");
-        preset.description = presetsTr("All seven protections on with the project defaults: secure DNS with fallback to the system resolver, the default blocklist source, and no site exceptions. The configuration recommended for everyday browsing.");
+        preset.description = presetsTr("All eight protections on with the project defaults: secure DNS with fallback to the system resolver, the default blocklist source, referrers trimmed to the site's address, and no site exceptions. The configuration recommended for everyday browsing.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -127,6 +136,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
+        tools.insert(QSL("referrerGuard"), referrerGuardTool(1));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -136,7 +146,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("maximum-protection");
         preset.name = presetsTr("Maximum protection");
-        preset.description = presetsTr("All seven protections on, and name resolution through secure DNS only, with no fallback to the system resolver. The strictest setting; on a network that blocks DoH, pages will not load.");
+        preset.description = presetsTr("All eight protections on, name resolution through secure DNS only with no fallback to the system resolver, and no referrer at all to other sites. The strictest setting; on a network that blocks DoH, pages will not load.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -146,6 +156,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("threatBlock"), threatBlockTool(true, ThreatBlockManager::defaultSourceUrl()));
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
+        tools.insert(QSL("referrerGuard"), referrerGuardTool(2));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);

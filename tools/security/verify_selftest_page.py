@@ -145,6 +145,7 @@ def build_statuses(fingerprint_on, gpc_on):
         {"id": "threatblock", "label": "Malicious site protection", "on": True, "detail": "d"},
         {"id": "fingerprint", "label": "Fingerprint protection", "on": fingerprint_on, "detail": "d"},
         {"id": "gpc", "label": "Global Privacy Control", "on": gpc_on, "detail": "d"},
+        {"id": "referrerguard", "label": "Cross-site referrer protection", "on": True, "detail": "d"},
     ]
 
 
@@ -493,7 +494,7 @@ function sectionLinks(run) {
     const navigatorOn = { hardwareConcurrency: 4, deviceMemory: 8, globalPrivacyControl: true };
     const a1 = await runScenario('A1: on, guard live, first load', scriptOn,
                                  { guardLive: true, navigator: navigatorOn, storage: sharedStorage });
-    check('seven status rows', a1.elements['st-statuses'].children.length === 7);
+    check('eight status rows', a1.elements['st-statuses'].children.length === 8);
     check('status rows carry ids', a1.elements['st-statuses'].children.every(function (r) { return r.attrs['data-id']; }));
     check('guard check passed', a1.st.results.guard.verdict === 'pass');
     check('canvas check passed', a1.st.results.canvas.verdict === 'pass');

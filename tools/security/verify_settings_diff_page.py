@@ -338,12 +338,12 @@ DIFF_DATA = {
     "preset": {
         "id": "recommended-baseline",
         "name": "Recommended baseline",
-        "description": "All seven protections on with the project defaults.",
+        "description": "All eight protections on with the project defaults.",
     },
     "preview": {
         "ok": True,
-        "configuredTools": 6,
-        "totalTools": 7,
+        "configuredTools": 7,
+        "totalTools": 8,
         "changes": [
             {"tool": "adblock", "toolName": "AdBlock",
              "field": "enabled", "fieldName": "Enabled",
@@ -398,11 +398,11 @@ BROKEN_DATA = {
 NO_CHANGE_DATA = {
     "mode": "diff",
     "preset": {"id": "maximum-protection", "name": "Maximum protection",
-               "description": "All seven on, secure DNS only."},
+               "description": "All eight on, secure DNS only."},
     "preview": {
         "ok": True,
-        "configuredTools": 7,
-        "totalTools": 7,
+        "configuredTools": 8,
+        "totalTools": 8,
         "changes": [],
         "skippedTools": [],
         "unchangedTools": [],
@@ -439,8 +439,8 @@ I18N = {
     "pill_changes_one": "would change 1 setting",
     "pill_changes_many": "would change %1 settings",
     "preset_open": "Preview the diff",
-    "banner_changes": 'The baseline "%1" would change %2 settings across %3 of the 7 security tools.',
-    "banner_changes_single": 'The baseline "%1" would change 1 setting in %2 of the 7 security tools.',
+    "banner_changes": 'The baseline "%1" would change %2 settings across %3 of the 8 security tools.',
+    "banner_changes_single": 'The baseline "%1" would change 1 setting in %2 of the 8 security tools.',
     "banner_none": 'The baseline "%1" changes nothing that is set right now.',
     "banner_skipped_one": "1 section would be skipped, listed below with the reason.",
     "banner_skipped_many": "%1 sections would be skipped, listed below with the reasons.",
@@ -661,7 +661,7 @@ function scenarioDiff() {
           banners[0].children.length === 1 &&
           banners[0].children[0].textContent.indexOf('Recommended baseline') !== -1 &&
           banners[0].children[0].textContent.indexOf('4 settings') !== -1 &&
-          banners[0].children[0].textContent.indexOf('3 of the 7') !== -1);
+          banners[0].children[0].textContent.indexOf('3 of the 8') !== -1);
     check('one section per changed tool', sections.length === 3);
     check('sections are marked with the stable tool key',
           sections.map(function (s) { return s.attrs['data-tool']; }).join(',') === 'adblock,httpsOnly,secureDns');

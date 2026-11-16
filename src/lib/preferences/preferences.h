@@ -65,6 +65,7 @@ private Q_SLOTS:
     void openHttpsOnlyExceptions();
     void openFingerprintExceptions();
     void openGpcExceptions();
+    void openReferrerExceptions();
     void exportSecuritySettings();
     void importSecuritySettings();
     void saveSecurityPresetToFile();

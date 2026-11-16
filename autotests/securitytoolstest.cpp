@@ -23,14 +23,17 @@
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
 #include "gpcexceptionsdialog.h"
+#include "referrerexceptionsdialog.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
 #include "locationbar.h"
 #include "siteicon.h"
 #include "networkmanager.h"
+#include "networkurlinterceptor.h"
 #include "mainapplication.h"
 #include "qzcommon.h"
+#include "referrerguardmanager.h"
 #include "securitymanager.h"
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
@@ -83,28 +86,38 @@ void SecurityToolsTest::securityManagerCountersTest()
     const quint64 ads = security->adsBlocked();
     const quint64 trackers = security->trackersStripped();
     const quint64 upgrades = security->httpsUpgrades();
+    const quint64 referrers = security->referrersTrimmed();
 
     security->reportAdBlocked(QSL("Example.COM"));
     security->reportAdBlocked(QSL("example.com"));
     security->reportTrackerStripped(QSL("news.example.com"));
     security->reportHttpsUpgrade(QSL("http-only.example"));
+    security->reportReferrerTrimmed(QSL("Shop.Example.com"));
+    security->reportReferrerTrimmed(QSL("shop.example.com"));
+    security->reportReferrerTrimmed(QSL("other.example"));
 
     QCOMPARE(security->adsBlocked(), ads + 2);
     QCOMPARE(security->trackersStripped(), trackers + 1);
     QCOMPARE(security->httpsUpgrades(), upgrades + 1);
+    QCOMPARE(security->referrersTrimmed(), referrers + 3);
 
     // Host counters are normalized, both reports hit the same host.
     QCOMPARE(security->adsBlockedForHost(QSL("example.com")), quint64(2));
     QCOMPARE(security->adsBlockedForHost(QSL("EXAMPLE.com")), quint64(2));
     QCOMPARE(security->trackersStrippedForHost(QSL("news.example.com")), quint64(1));
     QCOMPARE(security->httpsUpgradesForHost(QSL("http-only.example")), quint64(1));
+    QCOMPARE(security->referrersTrimmedForHost(QSL("shop.example.com")), quint64(2));
+    QCOMPARE(security->referrersTrimmedForHost(QSL("SHOP.example.COM")), quint64(2));
+    QCOMPARE(security->referrersTrimmedForHost(QSL("other.example")), quint64(1));
 
     security->resetCounters();
 
     QCOMPARE(security->adsBlocked(), quint64(0));
     QCOMPARE(security->trackersStripped(), quint64(0));
     QCOMPARE(security->httpsUpgrades(), quint64(0));
+    QCOMPARE(security->referrersTrimmed(), quint64(0));
     QCOMPARE(security->adsBlockedForHost(QSL("example.com")), quint64(0));
+    QCOMPARE(security->referrersTrimmedForHost(QSL("shop.example.com")), quint64(0));
 }
 
 void SecurityToolsTest::securityManagerPersistenceTest()
@@ -127,7 +140,7 @@ void SecurityToolsTest::securityManagerPersistenceTest()
 
 void SecurityToolsTest::relaxedProtectionsQueryTest()
 {
-    // The one query behind the location-bar badge: exactly the four
+    // The one query behind the location-bar badge: exactly the five
     // tools with per-site state, judged the way each padlock-menu
     // row judges (enabled first, then the site's own exception),
     // returned as the porter's stable keys in the menu's row order,
@@ -138,26 +151,31 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
+    auto *referrerGuard = ReferrerGuardManager::instance();
     auto *threat = mApp->networkManager()->threatBlockManager();
     QVERIFY(interceptor);
     QVERIFY(fingerprint);
     QVERIFY(gpc);
+    QVERIFY(referrerGuard);
     QVERIFY(threat);
 
-    // save the state the other tests expect, then have all four
+    // save the state the other tests expect, then have all five
     // tools enabled
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
     const bool httpsOnlyBefore = settings.value(QSL("HttpsOnlyMode"), true).toBool();
     const bool fingerprintBefore = settings.value(QSL("FingerprintProtection"), true).toBool();
     const bool gpcBefore = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
+    const int referrerGuardBefore = settings.value(QSL("ReferrerGuardMode"), 1).toInt();
     settings.setValue(QSL("HttpsOnlyMode"), true);
     settings.setValue(QSL("FingerprintProtection"), true);
     settings.setValue(QSL("GlobalPrivacyControl"), true);
+    settings.setValue(QSL("ReferrerGuardMode"), 1);
     settings.endGroup();
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->loadSettings();
+    referrerGuard->loadSettings();
     const bool threatBefore = threat->isEnabled();
     threat->setEnabled(true);
 
@@ -166,6 +184,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     interceptor->removeExclusion(host);
     fingerprint->removeExclusion(host);
     gpc->removeExclusion(host);
+    referrerGuard->removeExclusion(host);
     threat->removeSessionAllow(host);
 
     // nothing relaxed for a clean site, and the keys it would
@@ -174,7 +193,8 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))), QStringList());
 
     const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
-                                         QSL("globalPrivacyControl"), QSL("threatBlock")};
+                                         QSL("globalPrivacyControl"), QSL("referrerGuard"),
+                                         QSL("threatBlock")};
     for (const QString &key : perSiteToolKeys) {
         QVERIFY(SecuritySettingsPorter::toolKeys().contains(key));
         QVERIFY(!SecuritySettingsPorter::toolDisplayName(key).isEmpty());
@@ -194,13 +214,17 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
              (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")}));
 
+    referrerGuard->addExclusion(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard")}));
+
     threat->allowForSession(host);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock")}));
 
     // the exceptions cover subdomains; a sibling host stays clean
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://deep.%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock")}));
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://sibling.example/x"))), QStringList());
 
     // a tool switched off globally retires the site's exception
@@ -213,7 +237,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         fingerprint->loadSettings();
     }
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
+             (QStringList{QSL("httpsOnly"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock")}));
     {
         Settings on;
         on.beginGroup(QSL("Web-Browser-Settings"));
@@ -222,11 +246,30 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         fingerprint->loadSettings();
     }
 
+    // the same holds for the referrer guard's mode off while the
+    // site's exception stands
+    {
+        Settings off;
+        off.beginGroup(QSL("Web-Browser-Settings"));
+        off.setValue(QSL("ReferrerGuardMode"), 0);
+        off.endGroup();
+        referrerGuard->loadSettings();
+    }
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
+    {
+        Settings on;
+        on.beginGroup(QSL("Web-Browser-Settings"));
+        on.setValue(QSL("ReferrerGuardMode"), 1);
+        on.endGroup();
+        referrerGuard->loadSettings();
+    }
+
     // the same holds for a paused threat-block while the tool
     // itself is off
     threat->setEnabled(false);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl")}));
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard")}));
     threat->setEnabled(true);
 
     // schemes the tools do not cover carry no per-site state
@@ -238,6 +281,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     interceptor->removeExclusion(host);
     fingerprint->removeExclusion(host);
     gpc->removeExclusion(host);
+    referrerGuard->removeExclusion(host);
     threat->removeSessionAllow(host);
     {
         Settings restore;
@@ -245,11 +289,13 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         restore.setValue(QSL("HttpsOnlyMode"), httpsOnlyBefore);
         restore.setValue(QSL("FingerprintProtection"), fingerprintBefore);
         restore.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
+        restore.setValue(QSL("ReferrerGuardMode"), referrerGuardBefore);
         restore.endGroup();
     }
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->loadSettings();
+    referrerGuard->loadSettings();
     threat->setEnabled(threatBefore);
 }
 
@@ -404,11 +450,29 @@ void SecurityToolsTest::securityDashboardWidgetTest()
     sidebar.toggleGpc(!gpcBefore);
     QCOMPARE(GpcManager::instance()->isEnabled(), !gpcBefore);
 
+    // The referrer guard quick switch must apply through the manager.
+    const auto referrerModeBefore = ReferrerGuardManager::instance()->mode();
+
+    if (ReferrerGuardManager::isSupported()) {
+        sidebar.toggleReferrerGuard(referrerModeBefore == ReferrerGuardManager::Off);
+        QCOMPARE(ReferrerGuardManager::instance()->mode() == ReferrerGuardManager::Off,
+                 !(referrerModeBefore == ReferrerGuardManager::Off));
+
+        // The quick switch turns on at the recommended strength.
+        if (referrerModeBefore == ReferrerGuardManager::Off) {
+            QCOMPARE(ReferrerGuardManager::instance()->mode(), ReferrerGuardManager::OriginOnly);
+        }
+    }
+
     // restore the original state
     sidebar.toggleHttpsOnly(httpsOnlyBefore);
     sidebar.toggleThreatBlock(threatBlockBefore);
     sidebar.toggleFingerprintProtection(fingerprintBefore);
     sidebar.toggleGpc(gpcBefore);
+    if (ReferrerGuardManager::isSupported()) {
+        ReferrerGuardManager::instance()->setMode(referrerModeBefore);
+        mApp->networkManager()->loadSettings();
+    }
 }
 
 void SecurityToolsTest::securityDashboardToolDiffLinksTest()
@@ -516,9 +580,10 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     // The padlock menu's per-site entries carry the same deep links
     // the security dashboard's tool rows carry: this tool's part of
     // the recommended baseline's diff, one click away from the
-    // per-site state. Exactly the four tools with per-site entries in
+    // per-site state. Exactly the five tools with per-site entries in
     // the menu (HTTPS-Only mode, fingerprint protection, the GPC
-    // signal, malicious site protection), built the same honest way -
+    // signal, cross-site referrer protection, malicious site
+    // protection), built the same honest way -
     // the porter's key list must know the key, the catalog must carry
     // the baseline - and landed by the same shared
     // SettingsDiffPage::openToolDiff() the dashboard's rows use, so
@@ -539,10 +604,11 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     padlock->show();
     QVERIFY(QTest::qWaitForWindowExposed(padlock));
 
-    // Exactly the four per-site entries carry a link under the
+    // Exactly the five per-site entries carry a link under the
     // dashboard's naming scheme - no strays, none missing.
     const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
-                                         QSL("globalPrivacyControl"), QSL("threatBlock")};
+                                         QSL("globalPrivacyControl"), QSL("referrerGuard"),
+                                         QSL("threatBlock")};
     const auto links = padlock->findChildren<QLabel*>(QRegularExpression(QSL("^[A-Za-z]+DiffLink$")));
     QCOMPARE(links.size(), perSiteToolKeys.size());
 
@@ -2217,6 +2283,401 @@ void SecurityToolsTest::gpcHeaderIntegrationTest()
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 }
 
+void SecurityToolsTest::referrerGuardModeTest()
+{
+    // The mode is the tool's single knob: off, the recommended
+    // site-address strength, and the strict no-referrer strength,
+    // persisted through the settings keys the interceptor reads.
+    auto *manager = ReferrerGuardManager::instance();
+    QVERIFY(manager);
+
+    const auto modeBefore = manager->mode();
+
+    // setMode persists, and only reports real changes.
+    manager->setMode(ReferrerGuardManager::NoReferrer);
+    QCOMPARE(manager->mode(), ReferrerGuardManager::NoReferrer);
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardMode")).toInt(),
+             static_cast<int>(ReferrerGuardManager::NoReferrer));
+    QVERIFY(manager->isEnabled());
+
+    manager->setMode(ReferrerGuardManager::Off);
+    QCOMPARE(manager->mode(), ReferrerGuardManager::Off);
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardMode")).toInt(),
+             static_cast<int>(ReferrerGuardManager::Off));
+    QVERIFY(!manager->isEnabled());
+
+    manager->setMode(ReferrerGuardManager::OriginOnly);
+    QCOMPARE(manager->mode(), ReferrerGuardManager::OriginOnly);
+    QVERIFY(manager->isEnabled());
+
+    // loadSettings reads the same keys back, and a corrupted value
+    // lands on the recommended strength, never on an unknown mode.
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/ReferrerGuardMode"), 42);
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), ReferrerGuardManager::OriginOnly);
+
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/ReferrerGuardMode"), -1);
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), ReferrerGuardManager::OriginOnly);
+
+    // The out-of-the-box default: enabled at the recommended
+    // strength, so the floor is active from the first run.
+    Settings::globalSettings()->remove(QSL("Web-Browser-Settings/ReferrerGuardMode"));
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), ReferrerGuardManager::OriginOnly);
+
+    // The interceptor's IO-thread copy follows the network stack's
+    // reload - the same two-step every padlock control takes.
+    manager->setMode(ReferrerGuardManager::NoReferrer);
+    mApp->networkManager()->loadSettings();
+    {
+        // The copy is private state; the proof it followed is the
+        // header integration test below, which drives real requests
+        // through the very same reload. Here the round trip is only
+        // pinned at the settings level.
+        QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardMode")).toInt(),
+                 static_cast<int>(ReferrerGuardManager::NoReferrer));
+    }
+
+    // restore the state the other tests expect
+    manager->setMode(modeBefore);
+    mApp->networkManager()->loadSettings();
+}
+
+void SecurityToolsTest::referrerGuardExclusionTest()
+{
+    // The per-site exceptions: the same entry matching the GPC and
+    // fingerprint lists use (the entry host itself, its subdomains,
+    // "*.domain" wildcards), anchored on the site whose URLs would
+    // leak, persisted lowercased and deduplicated.
+    auto *manager = ReferrerGuardManager::instance();
+    QVERIFY(manager);
+
+    // isolate from other tests / user settings
+    manager->removeExclusion(QSL("Add.Example"));
+    manager->removeExclusion(QSL("*.wild.example"));
+
+    QVERIFY(!manager->isExcluded(QSL("add.example")));
+
+    manager->addExclusion(QSL("  Add.Example  "));
+    QVERIFY(manager->isExcluded(QSL("add.example")));
+    // entries are stored lowercase and cover subdomains
+    QCOMPARE(manager->exclusions(), QStringList{QSL("add.example")});
+    QVERIFY(manager->isExcluded(QSL("ADD.example")));
+    QVERIFY(manager->isExcluded(QSL("deep.sub.add.example")));
+    QVERIFY(!manager->isExcluded(QSL("notadd.example")));
+
+    // the entry also covers the host only with the dot boundary:
+    // a sibling sharing a suffix is not covered
+    QVERIFY(!manager->isExcluded(QSL("xadd.example")));
+
+    // wildcards: "*.wild.example" covers the subdomains only
+    manager->addExclusion(QSL("*.wild.example"));
+    QVERIFY(manager->isExcluded(QSL("sub.wild.example")));
+    QVERIFY(manager->isExcluded(QSL("wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("wild.example.org")));
+
+    // adding the same host twice does not duplicate it
+    manager->addExclusion(QSL("add.example"));
+    QCOMPARE(manager->exclusions().count(QSL("add.example")), 1);
+
+    // removing drops the entry (case-insensitively) and persists
+    manager->removeExclusion(QSL("ADD.example"));
+    QVERIFY(!manager->isExcluded(QSL("add.example")));
+    QVERIFY(manager->isExcluded(QSL("sub.wild.example")));
+
+    // empty input is refused
+    manager->addExclusion(QSL("   "));
+    manager->removeExclusion(QString());
+    QVERIFY(!manager->isExcluded(QString()));
+
+    // setExclusions replaces the whole list, normalizing like the
+    // porter's import path does (lowercase, deduplicated, empty
+    // dropped) - the import and the dialog land the same list
+    manager->setExclusions({QSL("  Porter.Example  "), QSL("porter.example"), QString(), QSL("*.bulk.example")});
+    QCOMPARE(manager->exclusions(), (QStringList{QSL("porter.example"), QSL("*.bulk.example")}));
+    QVERIFY(manager->isExcluded(QSL("deep.bulk.example")));
+
+    // The persisted list is exactly the manager's
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions")).toStringList(),
+             manager->exclusions());
+
+    // loadSettings reads the same keys back
+    manager->setExclusions(QStringList{QSL("reload.example")});
+    manager->loadSettings();
+    QCOMPARE(manager->exclusions(), QStringList{QSL("reload.example")});
+
+    // restore the state the other tests expect
+    manager->setExclusions(QStringList());
+    mApp->networkManager()->loadSettings();
+
+    // The exceptions management dialog: the bulk list editor the
+    // other tools have, with the same add/duplicate/remove behavior.
+    ReferrerExceptionsDialog dialog(QStringList{QSL("dialog.example"), QSL("other.example")});
+    QCOMPARE(dialog.exclusions(), (QStringList{QSL("dialog.example"), QSL("other.example")}));
+}
+
+void SecurityToolsTest::referrerGuardSameSiteTest()
+{
+    // The cross-site judgment, pinned on the two URLs alone: same
+    // scheme with the same host, or with two hosts of one domain
+    // family, is one site telling itself where you were; everything
+    // else is another site, a scheme mismatch least of all.
+    QVERIFY(NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x?q=1")),
+                                              QUrl(QSL("https://a.example/y"))));
+    QVERIFY(NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                              QUrl(QSL("https://sub.a.example/y"))));
+    QVERIFY(NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://sub.a.example/x")),
+                                              QUrl(QSL("https://a.example/y"))));
+    QVERIFY(NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                              QUrl(QSL("https://a.example:8443/y"))));
+
+    // A scheme downgrade is never same-site - no referrer survives
+    // it, whatever the hosts are.
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("http://a.example/y"))));
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("http://sub.a.example/y"))));
+
+    // A scheme change in the safer direction is still another site.
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("http://a.example/x")),
+                                               QUrl(QSL("https://a.example/y"))));
+
+    // Unrelated hosts, including the suffix-sharing pair the dot
+    // boundary must keep apart.
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("https://b.example/y"))));
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("https://nota.example/y"))));
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("https://example.com/y"))));
+
+    // Empty or non-web URLs never count as one site.
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")), QUrl()));
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(), QUrl(QSL("https://a.example/y"))));
+    QVERIFY(!NetworkUrlInterceptor::isSameSite(QUrl(QSL("https://a.example/x")),
+                                               QUrl(QSL("file:///tmp/y"))));
+
+    // The origin the site-address strength sends: scheme, host,
+    // explicit port, empty path - never the URLs.
+    QCOMPARE(NetworkUrlInterceptor::referrerOrigin(QUrl(QSL("https://a.example/deep/path?query=1#frag"))),
+             QSL("https://a.example/"));
+    QCOMPARE(NetworkUrlInterceptor::referrerOrigin(QUrl(QSL("http://a.example:8080/x"))),
+             QSL("http://a.example:8080/"));
+    QCOMPARE(NetworkUrlInterceptor::referrerOrigin(QUrl(QSL("https://user@a.example/x"))),
+             QSL("https://a.example/"));
+    // A default port is not restated.
+    QCOMPARE(NetworkUrlInterceptor::referrerOrigin(QUrl(QSL("https://a.example:443/x"))),
+             QSL("https://a.example/"));
+}
+
+void SecurityToolsTest::referrerGuardHeaderIntegrationTest()
+{
+    // Full end-to-end check of the header half, when this build's
+    // QtWebEngine can run the tool: a one-shot HTTP server on
+    // loopback captures the raw requests, and a page whose own
+    // referrer policy is "unsafe-url" links across hosts - the very
+    // leak the tool exists to close (under the engine's own default
+    // policy the cross-site request would carry only the origin, so
+    // the page declares the most generous policy there is, and the
+    // guard's floor has to hold against it). "localhost" and
+    // "127.0.0.1" are different sites to the judgment but the same
+    // server to the loopback. Every case runs on its own page path,
+    // so the engine's cache cannot answer any case for another.
+    if (!ReferrerGuardManager::isSupported()) {
+        return;
+    }
+
+    // The capture must not depend on the machine the test runs on.
+    QNetworkProxyFactory::setUseSystemConfiguration(false);
+    QNetworkProxy noProxy;
+    noProxy.setType(QNetworkProxy::NoProxy);
+    QNetworkProxy::setApplicationProxy(noProxy);
+
+    auto *manager = ReferrerGuardManager::instance();
+    const auto modeBefore = manager->mode();
+    const QStringList exclusionsBefore = manager->exclusions();
+
+    QTcpServer server;
+    QVERIFY(server.listen(QHostAddress(QHostAddress::LocalHost), 0));
+    const quint16 port = server.serverPort();
+
+    // A page declaring the most generous referrer policy there is,
+    // linking where the case wants it; the anchor is clicked by the
+    // page's own script, so the navigation is a real link navigation
+    // with the page as its referrer.
+    const QString pageHtml = QStringLiteral(
+        "<html><head><meta name='referrer' content='unsafe-url'>"
+        "<link rel='icon' href='data:,'></head><body>"
+        "<a id='go' href='%1'>go</a>"
+        "<script>document.getElementById('go').click();</script>"
+        "</body></html>");
+    const QString plainPage = QStringLiteral(
+        "<html><head><link rel='icon' href='data:,'></head><body>ok</body></html>");
+
+    // One case: answer the referrer page's own request with the
+    // page linking to `targetUrl`, then capture the request the
+    // navigation sends to the target - the request whose Referer is
+    // under test. The wait spins the event loop in short slices: the
+    // navigation only progresses while events are processed, so a
+    // plain blocking wait would deadlock the request it waits for.
+    auto driveReferrerCase = [&](const QString &pagePath, const QString &targetUrl) -> QString {
+        const QByteArray targetPath = QUrl(targetUrl).path().toLatin1();
+        const QByteArray pageLine = QByteArrayLiteral("GET ") + pagePath.toLatin1();
+        const QByteArray targetLine = QByteArrayLiteral("GET ") + targetPath;
+
+        auto respond = [](QTcpSocket *socket, const QByteArray &body) {
+            const QByteArray response = QByteArrayLiteral("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ")
+                + QByteArray::number(body.size()) + QByteArrayLiteral("\r\n\r\n") + body;
+            socket->write(response);
+            socket->flush();
+            socket->disconnectFromHost();
+            if (socket->state() == QAbstractSocket::ConnectedState) {
+                socket->waitForDisconnected(2000);
+            }
+        };
+
+        QElapsedTimer timer;
+        timer.start();
+        while (timer.elapsed() < 20000) {
+            QEventLoop loop;
+            QTimer::singleShot(200, &loop, &QEventLoop::quit);
+            QObject::connect(&server, &QTcpServer::newConnection, &loop, &QEventLoop::quit);
+            loop.exec();
+            while (server.hasPendingConnections()) {
+                QTcpSocket *socket = server.nextPendingConnection();
+                QByteArray raw;
+                QElapsedTimer readTimer;
+                readTimer.start();
+                while (!raw.contains("\r\n\r\n") && readTimer.elapsed() < 5000) {
+                    socket->waitForReadyRead(200);
+                    raw += socket->readAll();
+                }
+
+                if (raw.startsWith(pageLine)) {
+                    // The referrer page: answer with the link that
+                    // drives the case, and keep waiting for the
+                    // navigation it triggers.
+                    respond(socket, pageHtml.arg(targetUrl).toUtf8());
+                    continue;
+                }
+
+                if (raw.startsWith(targetLine)) {
+                    respond(socket, plainPage.toUtf8());
+                    return QString::fromLatin1(raw);
+                }
+
+                // Anything else is answered and dropped.
+                respond(socket, plainPage.toUtf8());
+            }
+        }
+        return QString();
+    };
+
+    const QString pageHost = QSL("127.0.0.1:%1").arg(port);
+    const QString otherHost = QSL("localhost:%1").arg(port);
+
+    WebPage page;
+    QSignalSpy loadFinishedSpy(&page, &QWebEnginePage::loadFinished);
+
+    auto refererOf = [](const QString &raw) -> QString {
+        // The Referer line of a captured request, empty when absent.
+        const QRegularExpression expression(QSL("referer:[ ]*([^\\r\\n]*)"), QRegularExpression::CaseInsensitiveOption);
+        const QRegularExpressionMatch match = expression.match(raw);
+        return match.hasMatch() ? match.captured(1).trimmed() : QString();
+    };
+
+    // Guard off: the unsafe-url policy sends the full URL, path and
+    // query included - the leak, witnessed.
+    manager->setMode(ReferrerGuardManager::Off);
+    mApp->networkManager()->loadSettings();
+
+    {
+        const QString pageUrl = QSL("http://%1/referrer-off?secret=1").arg(pageHost);
+        page.load(QUrl(pageUrl));
+        const QString raw = driveReferrerCase(QSL("/referrer-off"), QSL("http://%1/target-off").arg(otherHost));
+        QVERIFY(!raw.isEmpty());
+        if (loadFinishedSpy.count() == 0) {
+            QVERIFY(loadFinishedSpy.wait(20000));
+        }
+        QCOMPARE(refererOf(raw), pageUrl);
+    }
+
+    // Guard on, site-address strength: the other host receives at
+    // most the page's origin - never its URL.
+    manager->setMode(ReferrerGuardManager::OriginOnly);
+    mApp->networkManager()->loadSettings();
+
+    {
+        const QString pageUrl = QSL("http://%1/referrer-origin?secret=1").arg(pageHost);
+        page.load(QUrl(pageUrl));
+        const QString raw = driveReferrerCase(QSL("/referrer-origin"), QSL("http://%1/target-origin").arg(otherHost));
+        QVERIFY(!raw.isEmpty());
+        if (loadFinishedSpy.count() == 0) {
+            QVERIFY(loadFinishedSpy.wait(20000));
+        }
+        QCOMPARE(refererOf(raw), QSL("http://127.0.0.1:%1/").arg(port));
+    }
+
+    // Guard on, strict strength: no referrer at all.
+    manager->setMode(ReferrerGuardManager::NoReferrer);
+    mApp->networkManager()->loadSettings();
+
+    {
+        const QString pageUrl = QSL("http://%1/referrer-none?secret=1").arg(pageHost);
+        page.load(QUrl(pageUrl));
+        const QString raw = driveReferrerCase(QSL("/referrer-none"), QSL("http://%1/target-none").arg(otherHost));
+        QVERIFY(!raw.isEmpty());
+        if (loadFinishedSpy.count() == 0) {
+            QVERIFY(loadFinishedSpy.wait(20000));
+        }
+        QVERIFY(refererOf(raw).isEmpty());
+    }
+
+    // Strict strength, same-site target: the site keeps telling
+    // itself the full URL, exactly as its policy says.
+    {
+        const QString pageUrl = QSL("http://%1/referrer-same?secret=1").arg(pageHost);
+        page.load(QUrl(pageUrl));
+        const QString raw = driveReferrerCase(QSL("/referrer-same"), QSL("http://%1/target-same").arg(pageHost));
+        QVERIFY(!raw.isEmpty());
+        if (loadFinishedSpy.count() == 0) {
+            QVERIFY(loadFinishedSpy.wait(20000));
+        }
+        QCOMPARE(refererOf(raw), pageUrl);
+    }
+
+    // Strict strength, the site excluded: its outgoing requests keep
+    // whatever the site's own policy sends.
+    manager->addExclusion(QSL("127.0.0.1"));
+    mApp->networkManager()->loadSettings();
+
+    {
+        const QString pageUrl = QSL("http://%1/referrer-excluded?secret=1").arg(pageHost);
+        page.load(QUrl(pageUrl));
+        const QString raw = driveReferrerCase(QSL("/referrer-excluded"), QSL("http://%1/target-excluded").arg(otherHost));
+        QVERIFY(!raw.isEmpty());
+        if (loadFinishedSpy.count() == 0) {
+            QVERIFY(loadFinishedSpy.wait(20000));
+        }
+        QCOMPARE(refererOf(raw), pageUrl);
+    }
+
+    // The trimmed requests were counted against the site whose URLs
+    // stopped leaking: the origin and the no-referrer case (the
+    // same-site and excluded cases never touch the header).
+    QVERIFY(SecurityManager::instance()->referrersTrimmedForHost(QSL("127.0.0.1")) >= quint64(2));
+
+    // restore the state the other tests expect, and the proxy
+    // resolution the app would use
+    manager->removeExclusion(QSL("127.0.0.1"));
+    manager->setMode(modeBefore);
+    manager->setExclusions(exclusionsBefore);
+    mApp->networkManager()->loadSettings();
+    QNetworkProxy::setApplicationProxy(QNetworkProxy());
+    QNetworkProxyFactory::setUseSystemConfiguration(true);
+}
+
 void SecurityToolsTest::selfTestNoisePatternTest()
 {
     // The C++ mirror of the guard's perturbation: deterministic,
@@ -2341,7 +2802,7 @@ void SecurityToolsTest::selfTestNoiseEquivalenceTest()
 void SecurityToolsTest::selfTestPageBuildTest()
 {
     // The page builds with every placeholder substituted and carries
-    // the statuses of all seven bundled tools.
+    // the statuses of all eight bundled tools.
     const QString page = SelfTestPage::buildPage();
 
     QVERIFY(page.contains(QLatin1String("osza-selftest")));
@@ -2354,7 +2815,7 @@ void SecurityToolsTest::selfTestPageBuildTest()
     QVERIFY(!page.contains(QLatin1String("%DIRECTION%")));
 
     const QJsonArray statuses = SelfTestPage::collectToolStatuses();
-    QCOMPARE(statuses.size(), 7);
+    QCOMPARE(statuses.size(), 8);
 
     QStringList ids;
     for (const QJsonValue &value : statuses) {
@@ -2369,23 +2830,32 @@ void SecurityToolsTest::selfTestPageBuildTest()
     }
 
     const QStringList expectedIds = {QSL("adblock"), QSL("httpsonly"), QSL("striptracking"),
-                                     QSL("doh"), QSL("threatblock"), QSL("fingerprint"), QSL("gpc")};
+                                     QSL("doh"), QSL("threatblock"), QSL("fingerprint"), QSL("gpc"),
+                                     QSL("referrerguard")};
     for (const QString &id : expectedIds) {
         QVERIFY(ids.contains(id));
     }
 
     // The statuses follow the settings: toggling fingerprint
-    // protection flips its entry.
+    // protection flips its entry, and moving the referrer guard to
+    // its strict strength flips the referrer row's detail.
     auto *manager = FingerprintManager::instance();
     const bool enabledBefore = manager->isEnabled();
+    auto *referrerGuard = ReferrerGuardManager::instance();
+    const auto referrerModeBefore = referrerGuard->mode();
 
     {
         Settings settings;
         settings.beginGroup(QSL("Web-Browser-Settings"));
         settings.setValue(QSL("FingerprintProtection"), !enabledBefore);
+        settings.setValue(QSL("ReferrerGuardMode"),
+                          referrerModeBefore == ReferrerGuardManager::NoReferrer
+                              ? static_cast<int>(ReferrerGuardManager::OriginOnly)
+                              : static_cast<int>(ReferrerGuardManager::NoReferrer));
         settings.endGroup();
     }
     manager->loadSettings();
+    referrerGuard->loadSettings();
 
     bool reflected = false;
     for (const QJsonValue &value : SelfTestPage::collectToolStatuses()) {
@@ -2395,6 +2865,18 @@ void SecurityToolsTest::selfTestPageBuildTest()
         }
     }
     QVERIFY(reflected);
+
+    if (ReferrerGuardManager::isSupported()) {
+        bool referrerReflected = false;
+        for (const QJsonValue &value : SelfTestPage::collectToolStatuses()) {
+            const QJsonObject status = value.toObject();
+            if (status.value(QSL("id")).toString() == QSL("referrerguard")) {
+                referrerReflected = status.value(QSL("on")).toBool()
+                    && status.value(QSL("detail")).toString() == QSL("Requests to other sites carry no referrer at all.");
+            }
+        }
+        QVERIFY(referrerReflected);
+    }
 
     // The demo patterns are embedded once a seed exists.
     if (manager->masterSeed() != 0) {
@@ -2407,9 +2889,11 @@ void SecurityToolsTest::selfTestPageBuildTest()
         Settings settings;
         settings.beginGroup(QSL("Web-Browser-Settings"));
         settings.setValue(QSL("FingerprintProtection"), enabledBefore);
+        settings.setValue(QSL("ReferrerGuardMode"), static_cast<int>(referrerModeBefore));
         settings.endGroup();
     }
     manager->loadSettings();
+    referrerGuard->loadSettings();
 }
 
 void SecurityToolsTest::selfTestSectionUrlTest()
@@ -2445,7 +2929,7 @@ void SecurityToolsTest::selfTestSectionUrlTest()
 void SecurityToolsTest::selfTestPageIntegrationTest()
 {
     // The real page through the real osza: scheme handler: it must
-    // load, render the seven statuses, run every live check, expose a
+    // load, render the eight statuses, run every live check, expose a
     // correct SHA-256, and measure a canvas digest that is stable
     // across reloads of the same page.
     auto *manager = FingerprintManager::instance();
@@ -2495,9 +2979,9 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
 
     QVERIFY(loadAndSettle());
 
-    // The page rendered: seven status rows, the test cards, the
+    // The page rendered: eight status rows, the test cards, the
     // tiles (live page + two demo hosts).
-    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-statuses li.st-row').length")).toInt(), 7);
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-statuses li.st-row').length")).toInt(), 8);
     QVERIFY(runScript(&page, QSL("document.querySelectorAll('.st-test').length")).toInt() >= 8);
     QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-tile').length")).toInt(), 3);
 
@@ -2575,14 +3059,16 @@ void SecurityToolsTest::settingsPorterDocumentTest()
     QCOMPARE(document.value(QSL("version")).toInt(), 1);
     QVERIFY(QDateTime::fromString(document.value(QSL("exportedAt")).toString(), Qt::ISODate).isValid());
 
-    // All seven bundled tools are covered. Six carry a plain enabled
+    // All eight bundled tools are covered. Six carry a plain enabled
     // state; secure DNS carries its mode instead - the mode is the
     // enabled state there (0 is Disabled), with the servers beside
-    // it - so it is asserted by its own shape, not by "enabled".
+    // it - and the referrer guard carries its mode the same way, with
+    // the exceptions beside it - so the two are asserted by their own
+    // shape, not by "enabled".
     const QJsonObject tools = document.value(QSL("tools")).toObject();
     const QStringList expectedTools = {QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
                                        QSL("secureDns"), QSL("threatBlock"), QSL("fingerprintProtection"),
-                                       QSL("globalPrivacyControl")};
+                                       QSL("globalPrivacyControl"), QSL("referrerGuard")};
     QCOMPARE(tools.size(), expectedTools.size());
 
     for (const QString &id : expectedTools) {
@@ -2590,6 +3076,9 @@ void SecurityToolsTest::settingsPorterDocumentTest()
         if (id == QSL("secureDns")) {
             QVERIFY(tools.value(id).toObject().contains(QSL("mode")));
             QVERIFY(tools.value(id).toObject().contains(QSL("servers")));
+        } else if (id == QSL("referrerGuard")) {
+            QVERIFY(tools.value(id).toObject().contains(QSL("mode")));
+            QVERIFY(tools.value(id).toObject().contains(QSL("exclusions")));
         } else {
             QVERIFY(tools.value(id).toObject().contains(QSL("enabled")));
         }
@@ -2640,14 +3129,16 @@ void SecurityToolsTest::settingsPorterDocumentTest()
 
 void SecurityToolsTest::settingsPorterRoundTripTest()
 {
+    auto *adblock = AdBlockManager::instance();
     auto *interceptor = mApp->networkManager()->httpsOnlyInterceptor();
     auto *doh = mApp->networkManager()->dnsOverHttpsManager();
     auto *threatBlock = mApp->networkManager()->threatBlockManager();
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
-    auto *adblock = AdBlockManager::instance();
+    auto *referrerGuard = ReferrerGuardManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
+    const bool referrerGuardSupported = ReferrerGuardManager::isSupported();
 
     // Snapshot every piece of state the porter touches.
     const bool httpsOnlyBefore = interceptor->isEnabled();
@@ -2660,6 +3151,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
+    const auto referrerModeBefore = referrerGuard->mode();
+    const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -2677,6 +3170,10 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     const QStringList gpcExclusionsTarget = {QSL("shop.porter.example")};
     const QStringList dohServersTarget = {QSL("https://dns.porter.example/dns-query{?dns}")};
     const auto dohModeTarget = DnsOverHttpsManager::SecureWithFallback;
+    const auto referrerModeTarget = referrerModeBefore == ReferrerGuardManager::NoReferrer
+        ? ReferrerGuardManager::OriginOnly
+        : ReferrerGuardManager::NoReferrer;
+    const QStringList referrerExclusionsTarget = {QSL("reader.porter.example")};
 
     // Phase 1: apply the target state through the normal manager APIs.
     {
@@ -2694,6 +3191,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcTarget);
     gpc->setExclusions(gpcExclusionsTarget);
+    referrerGuard->setMode(referrerModeTarget);
+    referrerGuard->setExclusions(referrerExclusionsTarget);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockTarget);
     threatBlock->setEnabled(threatEnabledTarget);
@@ -2743,6 +3242,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
     gpc->setExclusions(QStringList{QSL("old.porter.example")});
+    referrerGuard->setMode(ReferrerGuardManager::Off);
+    referrerGuard->setExclusions(QStringList{QSL("old.porter.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -2757,19 +3258,27 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
     QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
     QCOMPARE(gpc->isEnabled(), gpcBefore);
+    QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::Off);
 
     // Phase 4: import through the file path.
     const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
 
     QVERIFY(result.ok);
     QVERIFY(result.error.isEmpty());
-    if (dohSupported) {
-        QCOMPARE(result.appliedTools, 7);
-        QCOMPARE(result.skippedTools.size(), 0);
-    } else {
-        QCOMPARE(result.appliedTools, 6);
-        QCOMPARE(result.skippedTools.size(), 1);
+    const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 6;
+    QCOMPARE(result.appliedTools, expectedApplied);
+    QCOMPARE(result.skippedTools.size(), 8 - expectedApplied);
+    if (!dohSupported) {
         QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
+    }
+    if (!referrerGuardSupported) {
+        bool referrerSkipped = false;
+        for (const QString &entry : std::as_const(result.skippedTools)) {
+            if (entry.startsWith(QSL("referrerGuard"))) {
+                referrerSkipped = true;
+            }
+        }
+        QVERIFY(referrerSkipped);
     }
 
     // Phase 5: every tool arrived, through the same APIs the
@@ -2801,6 +3310,13 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QVERIFY(!gpc->isExcluded(QSL("old.porter.example")));
     QCOMPARE(gpc->exclusions(), gpcExclusionsTarget);
 
+    if (referrerGuardSupported) {
+        QCOMPARE(referrerGuard->mode(), referrerModeTarget);
+        QVERIFY(referrerGuard->isExcluded(QSL("reader.porter.example")));
+        QVERIFY(!referrerGuard->isExcluded(QSL("old.porter.example")));
+        QCOMPARE(referrerGuard->exclusions(), referrerExclusionsTarget);
+    }
+
     // The guard script follows the imported fingerprint state.
     if (fingerprintTarget) {
         QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
@@ -2828,6 +3344,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
     gpc->setExclusions(gpcExclusionsBefore);
+    referrerGuard->setMode(referrerModeBefore);
+    referrerGuard->setExclusions(referrerExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -2840,6 +3358,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
     QCOMPARE(gpc->isEnabled(), gpcBefore);
     QCOMPARE(gpc->exclusions(), gpcExclusionsBefore);
+    QCOMPARE(referrerGuard->mode(), referrerModeBefore);
+    QCOMPARE(referrerGuard->exclusions(), referrerExclusionsBefore);
     QCOMPARE(adblock->isEnabled(), adblockBefore);
     QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
     QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
@@ -3055,6 +3575,55 @@ void SecurityToolsTest::settingsPorterValidationTest()
         QCOMPARE(result.appliedTools, 1);
         QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureOnly);
         QCOMPARE(doh->serverTemplates(), QStringList{QSL("https://dns.porter.example/dns-query{?dns}")});
+    }
+
+    // The referrer guard's section judges its mode the same way
+    // secureDns judges its own: the number itself, so a fractional
+    // or out-of-range value cannot slide through as a valid mode.
+    {
+        auto *referrerGuard = ReferrerGuardManager::instance();
+        const auto referrerModeBefore = referrerGuard->mode();
+        const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
+
+        QJsonObject tools;
+        tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("mode"), 9}, {QSL("exclusions"), QJsonArray{}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(result.skippedTools.size(), 1);
+        QVERIFY(result.skippedTools.constFirst().startsWith(QSL("referrerGuard")));
+        QCOMPARE(referrerGuard->mode(), referrerModeBefore);
+
+        tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("mode"), 1.5}, {QSL("exclusions"), QJsonArray{}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(referrerGuard->mode(), referrerModeBefore);
+
+        tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("exclusions"), QJsonArray{}}});
+        result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+        QVERIFY(result.ok);
+        QCOMPARE(result.appliedTools, 0);
+        QCOMPARE(referrerGuard->mode(), referrerModeBefore);
+
+        if (ReferrerGuardManager::isSupported()) {
+            tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("mode"), 2},
+                                                           {QSL("exclusions"), QJsonArray{QSL("case-ignore.PORter.example"), QSL("case-ignore.porter.EXAMPLE"), QString()}}});
+            result = SecuritySettingsPorter::applyDocument(makeDocument(tools));
+            QVERIFY(result.ok);
+            QCOMPARE(result.appliedTools, 1);
+            QCOMPARE(result.skippedTools.size(), 0);
+            QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::NoReferrer);
+            // The manager's list normalization: lowercase, deduplicated,
+            // empty dropped - exactly the list the preview promised.
+            QCOMPARE(referrerGuard->exclusions(), QStringList{QSL("case-ignore.porter.example")});
+            QVERIFY(referrerGuard->isExcluded(QSL("case-ignore.porter.example")));
+            QVERIFY(!referrerGuard->isExcluded(QSL("other.example")));
+
+            // restore for the tests below
+            referrerGuard->setMode(referrerModeBefore);
+            referrerGuard->setExclusions(referrerExclusionsBefore);
+        }
     }
 
     // restore the state the other tests expect
@@ -3276,8 +3845,10 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     auto *threatBlock = mApp->networkManager()->threatBlockManager();
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
+    auto *referrerGuard = ReferrerGuardManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
+    const bool referrerGuardSupported = ReferrerGuardManager::isSupported();
 
     // Snapshot every piece of state the preview must leave untouched.
     const bool adblockBefore = adblock->isEnabled();
@@ -3290,6 +3861,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
+    const auto referrerModeBefore = referrerGuard->mode();
+    const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -3309,6 +3882,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     fingerprint->loadSettings();
     gpc->setEnabled(true);
     gpc->setExclusions(QStringList{QSL("gpc-preview.example")});
+    referrerGuard->setMode(ReferrerGuardManager::OriginOnly);
+    referrerGuard->setExclusions(QStringList{QSL("referrer-preview.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(true);
     threatBlock->setEnabled(true);
@@ -3328,6 +3903,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
                                                  {QSL("sourceUrl"), QSL("https://after.example/hosts")}});
     tools.insert(QSL("fingerprintProtection"), QJsonObject{{QSL("enabled"), QSL("yes")}});
     tools.insert(QSL("globalPrivacyControl"), QJsonObject{{QSL("enabled"), true}});
+    tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("mode"), 2}, {QSL("exclusions"), QJsonArray{}}});
 
     QJsonObject document;
     document.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
@@ -3373,17 +3949,29 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QCOMPARE(preview.checksum, SecuritySettingsPorter::ChecksumState::NoChecksum);
 
     // The absent tool is reported as unchanged, not as skipped.
-    QCOMPARE(preview.configuredTools, 6);
+    QCOMPARE(preview.configuredTools, 7);
     QCOMPARE(preview.unchangedTools, QStringList{QSL("trackingParameters")});
 
     // The malformed section is reported with the reason the import
     // would give (and the build limitation, when it applies).
-    if (dohSupported) {
-        QCOMPARE(preview.skippedTools.size(), 1);
-        QVERIFY(preview.skippedTools.constFirst().startsWith(QSL("fingerprintProtection")));
-    } else {
-        QCOMPARE(preview.skippedTools.size(), 2);
-        QVERIFY(preview.skippedTools.constFirst().startsWith(QSL("secureDns")));
+    {
+        int expectedSkipped = 1; // fingerprintProtection
+        if (!dohSupported) {
+            ++expectedSkipped;
+        }
+        if (!referrerGuardSupported) {
+            ++expectedSkipped;
+        }
+        QCOMPARE(preview.skippedTools.size(), expectedSkipped);
+        QVERIFY(preview.skippedTools.constFirst().startsWith(QSL("fingerprintProtection"))
+                || preview.skippedTools.constFirst().startsWith(QSL("secureDns")));
+        bool fingerprintSkipped = false;
+        for (const QString &entry : std::as_const(preview.skippedTools)) {
+            if (entry.startsWith(QSL("fingerprintProtection"))) {
+                fingerprintSkipped = true;
+            }
+        }
+        QVERIFY(fingerprintSkipped);
     }
 
     // The diff: exactly the fields whose effective value changes.
@@ -3407,6 +3995,26 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QCOMPARE(changeCount(preview, QSL("globalPrivacyControl")), 1);
     // The skipped tool contributes no diff rows.
     QCOMPARE(changeCount(preview, QSL("fingerprintProtection")), 0);
+    // The referrer guard moves to the strict strength, and the
+    // unstated exclusions field resets the list - two rows, exactly
+    // the shape the other mode tools produce (secureDns's mode and
+    // servers are the same pair).
+    if (referrerGuardSupported) {
+        QVERIFY(hasChange(preview, QSL("referrerGuard"), QSL("mode"),
+                          QSL("on, at most the site's address to other sites"),
+                          QSL("on, no referrer to other sites")));
+        QVERIFY(hasChange(preview, QSL("referrerGuard"), QSL("exclusions"), QSL("referrer-preview.example"), QSL("none")));
+        QCOMPARE(changeCount(preview, QSL("referrerGuard")), 2);
+
+        const SecuritySettingsPorter::PreviewChange *referrerExclusions = findChange(preview, QSL("referrerGuard"), QSL("exclusions"));
+        QVERIFY(referrerExclusions);
+        QCOMPARE(referrerExclusions->clearedEntries, QStringList{QSL("referrer-preview.example")});
+        QVERIFY(referrerExclusions->addedEntries.isEmpty());
+        QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*referrerExclusions),
+                 QStringList{QSL("Clears the exception for: referrer-preview.example")});
+    } else {
+        QCOMPARE(changeCount(preview, QSL("referrerGuard")), 0);
+    }
 
     // A site-exception change names the sites whose treatment
     // changes: the httpsOnly row clears preview.example, and the
@@ -3448,6 +4056,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QVERIFY(fingerprint->isExcluded(QSL("preview.example")));
     QCOMPARE(gpc->isEnabled(), true);
     QVERIFY(gpc->isExcluded(QSL("gpc-preview.example")));
+    QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::OriginOnly);
+    QVERIFY(referrerGuard->isExcluded(QSL("referrer-preview.example")));
     if (dohSupported) {
         QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureWithFallback);
         QCOMPARE(doh->serverTemplates(), QStringList{DnsOverHttpsManager::defaultServerTemplate()});
@@ -3534,17 +4144,18 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QVERIFY(!result.checksumMismatch);
         QCOMPARE(result.skippedTools, preview.skippedTools);
 
-        if (dohSupported) {
-            QCOMPARE(result.appliedTools, 5);
-        } else {
-            QCOMPARE(result.appliedTools, 4);
-        }
+        const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 5;
+        QCOMPARE(result.appliedTools, expectedApplied);
 
         // The announced diff was the truth: the changed values hold.
         QCOMPARE(adblock->isEnabled(), false);
         QVERIFY(!interceptor->hasExplicitExclusion(QSL("preview.example")));
         QCOMPARE(threatBlock->sourceUrl(), QSL("https://after.example/hosts"));
         QVERIFY(!gpc->isExcluded(QSL("gpc-preview.example")));
+        if (referrerGuardSupported) {
+            QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::NoReferrer);
+            QVERIFY(!referrerGuard->isExcluded(QSL("referrer-preview.example")));
+        }
         if (dohSupported) {
             QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
         }
@@ -3599,7 +4210,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     {
         const QStringList keys{QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
                                QSL("secureDns"), QSL("threatBlock"),
-                               QSL("fingerprintProtection"), QSL("globalPrivacyControl")};
+                               QSL("fingerprintProtection"), QSL("globalPrivacyControl"),
+                               QSL("referrerGuard")};
         QSet<QString> names;
 
         for (const QString &key : keys) {
@@ -3648,6 +4260,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
     gpc->setExclusions(gpcExclusionsBefore);
+    referrerGuard->setMode(referrerModeBefore);
+    referrerGuard->setExclusions(referrerExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -3665,6 +4279,7 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     auto *threatBlock = mApp->networkManager()->threatBlockManager();
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
+    auto *referrerGuard = ReferrerGuardManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
 
@@ -3679,6 +4294,8 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
+    const auto referrerModeBefore = referrerGuard->mode();
+    const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -3713,7 +4330,8 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
 
         QVERIFY(result.ok);
         QVERIFY(!result.checksumMismatch);
-        QCOMPARE(result.skippedTools.size(), dohSupported ? 0 : 1);
+        QCOMPARE(result.skippedTools.size(),
+                 (dohSupported ? 0 : 1) + (ReferrerGuardManager::isSupported() ? 0 : 1));
     }
 
     // Exporting again to the same path overwrites atomically.
@@ -3784,6 +4402,8 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
     gpc->setExclusions(gpcExclusionsBefore);
+    referrerGuard->setMode(referrerModeBefore);
+    referrerGuard->setExclusions(referrerExclusionsBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -4065,12 +4685,12 @@ void SecurityToolsTest::securityPresetsTest()
         ids.insert(preset.id);
 
         // Every preset is a well-formed document in the import format
-        // that states all seven tools explicitly - the ones it turns
+        // that states all eight tools explicitly - the ones it turns
         // off included - and carries neither a seed nor a checksum.
         QVERIFY(SecuritySettingsPorter::validateDocumentHeader(preset.document, nullptr));
 
         const QJsonObject tools = preset.document.value(QSL("tools")).toObject();
-        QCOMPARE(tools.size(), 7);
+        QCOMPARE(tools.size(), 8);
         QVERIFY(tools.value(QSL("adblock")).isObject());
         QVERIFY(tools.value(QSL("httpsOnly")).isObject());
         QVERIFY(tools.value(QSL("trackingParameters")).isObject());
@@ -4078,6 +4698,7 @@ void SecurityToolsTest::securityPresetsTest()
         QVERIFY(tools.value(QSL("threatBlock")).isObject());
         QVERIFY(tools.value(QSL("fingerprintProtection")).isObject());
         QVERIFY(tools.value(QSL("globalPrivacyControl")).isObject());
+        QVERIFY(tools.value(QSL("referrerGuard")).isObject());
 
         QCOMPARE(SecuritySettingsPorter::checkChecksum(preset.document),
                  SecuritySettingsPorter::ChecksumState::NoChecksum);
@@ -4108,6 +4729,9 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), false);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(ReferrerGuardManager::OriginOnly));
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     {
@@ -4127,6 +4751,9 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("exclusions")).toArray().size(), 0);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(ReferrerGuardManager::OriginOnly));
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     {
@@ -4143,6 +4770,9 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("fingerprintProtection")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("enabled")).toBool(), true);
         QCOMPARE(tools.value(QSL("globalPrivacyControl")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(ReferrerGuardManager::NoReferrer));
+        QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
     }
 
     // Lookup by id finds every built-in and nothing else.
@@ -4183,14 +4813,9 @@ void SecurityToolsTest::securityPresetsTest()
 
         QVERIFY(result.ok);
         QVERIFY(!result.checksumMismatch);
-        if (dohSupported) {
-            QCOMPARE(result.appliedTools, 7);
-            QCOMPARE(result.skippedTools.size(), 0);
-        } else {
-            QCOMPARE(result.appliedTools, 6);
-            QCOMPARE(result.skippedTools.size(), 1);
-            QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
-        }
+        const int expectedApplied = (dohSupported ? 1 : 0) + (ReferrerGuardManager::isSupported() ? 1 : 0) + 6;
+        QCOMPARE(result.appliedTools, expectedApplied);
+        QCOMPARE(result.skippedTools.size(), 8 - expectedApplied);
 
         QCOMPARE(adblock->isEnabled(), true);
         QCOMPARE(interceptor->isEnabled(), true);
@@ -4206,6 +4831,10 @@ void SecurityToolsTest::securityPresetsTest()
         QVERIFY(!fingerprint->isExcluded(QSL("preset.example")));
         QCOMPARE(gpc->isEnabled(), true);
         QVERIFY(!gpc->isExcluded(QSL("preset.example")));
+        if (ReferrerGuardManager::isSupported()) {
+            QCOMPARE(ReferrerGuardManager::instance()->mode(), ReferrerGuardManager::OriginOnly);
+            QVERIFY(!ReferrerGuardManager::instance()->isExcluded(QSL("preset.example")));
+        }
 
         // The guard script follows the preset.
         QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
@@ -4224,6 +4853,18 @@ void SecurityToolsTest::securityPresetsTest()
             QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
         }
         QVERIFY(mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
+    }
+
+    // The maximum baseline is the strict strength of the referrer
+    // guard; a preset really replaces the whole configuration.
+    {
+        const SecuritySettingsPorter::ImportResult result =
+            SecuritySettingsPorter::applyDocument(SecurityPresets::presetById(QSL("maximum-protection")).document);
+
+        QVERIFY(result.ok);
+        if (ReferrerGuardManager::isSupported()) {
+            QCOMPARE(ReferrerGuardManager::instance()->mode(), ReferrerGuardManager::NoReferrer);
+        }
     }
 
     // restore the state the other tests expect
@@ -4314,7 +4955,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
         const QJsonObject previewObject = data.value(QSL("preview")).toObject();
         QVERIFY(previewObject.value(QSL("ok")).toBool());
         QCOMPARE(previewObject.value(QSL("configuredTools")).toInt(), preview.configuredTools);
-        QCOMPARE(previewObject.value(QSL("totalTools")).toInt(), 7);
+        QCOMPARE(previewObject.value(QSL("totalTools")).toInt(), 8);
         QCOMPARE(previewObject.value(QSL("changes")).toArray().size(), preview.changes.size());
 
         const QString page = SettingsDiffPage::buildPage(preset.id);
@@ -4338,7 +4979,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
             QVERIFY(change.contains(QSL("summary")));
         }
 
-        // Presets state all seven sections; the page accounts for
+        // Presets state all eight sections; the page accounts for
         // every one of them: changed, skipped or already matching.
         int quiet = 0;
         for (const QJsonValue &value : previewObject.value(QSL("quietTools")).toArray()) {
@@ -4444,7 +5085,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
             } else if (isSkipped) {
                 QVERIFY(note.contains(skipReason));
             } else {
-                // The built-in presets state all seven sections, so
+                // The built-in presets state all eight sections, so
                 // an answered tool without changes is already at the
                 // baseline's settings.
                 QVERIFY(toolsOfDocument.contains(toolKey));

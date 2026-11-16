@@ -15,6 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
+#include "referrerguardmanager.h"
 #include "selftestpage.h"
 #include "adblockmanager.h"
 #include "dnsoverhttpsmanager.h"
@@ -207,6 +208,21 @@ QJsonArray SelfTestPage::collectToolStatuses()
         }
     }
     statuses.append(toolStatus(QSL("gpc"), tr("Global Privacy Control"), gpc, gpcDetail));
+
+    // Cross-site referrer protection
+    const auto *referrerGuard = ReferrerGuardManager::instance();
+    const bool referrerOn = referrerGuard->isEnabled() && ReferrerGuardManager::isSupported();
+    QString referrerDetail;
+    if (!ReferrerGuardManager::isSupported()) {
+        referrerDetail = tr("Requires QtWebEngine 6.5 or newer.");
+    } else if (referrerGuard->mode() == ReferrerGuardManager::NoReferrer) {
+        referrerDetail = tr("Requests to other sites carry no referrer at all.");
+    } else if (referrerGuard->isEnabled()) {
+        referrerDetail = tr("Requests to other sites carry at most this site's address, never its URLs.");
+    } else {
+        referrerDetail = tr("Requests carry whatever referrer the sites' own policies send.");
+    }
+    statuses.append(toolStatus(QSL("referrerguard"), tr("Cross-site referrer protection"), referrerOn, referrerDetail));
 
     return statuses;
 }
