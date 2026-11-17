@@ -19,6 +19,7 @@
 #include "siteinfowidget.h"
 #include "ui_siteinfowidget.h"
 #include "browserwindow.h"
+#include "cookielifecyclemanager.h"
 #include "mainapplication.h"
 #include "webpage.h"
 #include "tabbedwebview.h"
@@ -122,6 +123,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     updateGpcState();
     updateReferrerGuardState();
     updateThreatBlockState();
+    updateCookieLifecycleState();
 
     // The per-site entries' "diff" links: the same deep links the
     // security dashboard's tool rows carry, beside the entries they
@@ -131,6 +133,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     setupToolDiffLink(ui->globalPrivacyControlDiffLink, QSL("globalPrivacyControl"));
     setupToolDiffLink(ui->referrerGuardDiffLink, QSL("referrerGuard"));
     setupToolDiffLink(ui->threatBlockDiffLink, QSL("threatBlock"));
+    setupToolDiffLink(ui->cookieLifecycleDiffLink, QSL("cookieLifecycle"));
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
@@ -140,6 +143,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     connect(ui->referrerButton, &QPushButton::clicked, this, &SiteInfoWidget::referrerGuardButtonClicked);
     connect(ui->threatBlockButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockButtonClicked);
     connect(ui->threatBlockUpdateButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockUpdateButtonClicked);
+    connect(ui->cookieLifecycleButton, &QPushButton::clicked, this, &SiteInfoWidget::cookieLifecycleButtonClicked);
 
     // The blocklist can change while the menu is open: a refresh
     // landing or failing re-renders the threat-block row through the
@@ -609,4 +613,64 @@ void SiteInfoWidget::threatBlockUpdateButtonClicked()
     // offered it.
     mApp->networkManager()->threatBlockManager()->updateNow();
     updateThreatBlockState();
+}
+
+void SiteInfoWidget::updateCookieLifecycleState()
+{
+    // The cookie lifecycle tool's per-site row: the one decision a
+    // site is part of - whether its cookies survive the exit sweep.
+    // The row follows the tool's own shape: no engine version gates
+    // it (the sweep is the browser's own act, not the engine's), so
+    // unlike the referrer row there is no capability case - only
+    // the web-scheme case every per-site row starts with.
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->cookieLifecycleLabel->hide();
+        ui->cookieLifecycleButton->hide();
+        ui->cookieLifecycleDiffLink->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+    auto *manager = CookieLifecycleManager::instance();
+
+    if (!manager->isEnabled()) {
+        ui->cookieLifecycleLabel->setText(tr("The cookie exit sweep is <b>off</b>."));
+        ui->cookieLifecycleButton->setText(tr("Sweep cookies on exit"));
+    }
+    else if (manager->isKept(host)) {
+        ui->cookieLifecycleLabel->setText(tr("This site's cookies <b>survive</b> the exit sweep."));
+        ui->cookieLifecycleButton->setText(tr("Sweep this site's cookies too"));
+    } else {
+        if (manager->mode() == CookieLifecycleManager::SessionOnly) {
+            ui->cookieLifecycleLabel->setText(tr("Cookies this site set since the browser started are <b>swept at exit</b>; its earlier cookies stay."));
+        } else {
+            ui->cookieLifecycleLabel->setText(tr("Every cookie this site leaves behind is <b>swept at exit</b>."));
+        }
+        ui->cookieLifecycleButton->setText(tr("Keep this site's cookies"));
+    }
+}
+
+void SiteInfoWidget::cookieLifecycleButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = CookieLifecycleManager::instance();
+
+    if (!manager->isEnabled()) {
+        // The per-site shortcut needs the sweep itself, turn it on
+        // at the session strength - the gentle one that keeps what
+        // the browser started with; the strict strength is a
+        // Preferences choice, like the referrer guard's.
+        manager->setMode(CookieLifecycleManager::SessionOnly);
+    }
+    else if (manager->isKept(url.host())) {
+        manager->removeKeepSite(url.host());
+    } else {
+        manager->addKeepSite(url.host());
+    }
+
+    // Nothing to reload: the sweep is an exit discipline, and the
+    // page's own cookies are untouched until the browser closes.
+    close();
 }

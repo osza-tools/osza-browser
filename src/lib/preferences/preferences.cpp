@@ -33,6 +33,7 @@
 #include "fingerprintexceptionsdialog.h"
 #include "gpcexceptionsdialog.h"
 #include "referrerexceptionsdialog.h"
+#include "cookiekeeplistdialog.h"
 #include "httpsonlyexceptionsdialog.h"
 #include "dnsoverhttpsmanager.h"
 #include "threatblockmanager.h"
@@ -40,6 +41,7 @@
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "referrerguardmanager.h"
+#include "cookielifecyclemanager.h"
 #include "securityimportpreviewdialog.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
@@ -449,6 +451,24 @@ Preferences::Preferences(BrowserWindow* window)
     // follows the checkbox as loaded.
     ui->referrerGuardMode->setEnabled(ui->referrerGuard->isChecked() && ReferrerGuardManager::isSupported());
 
+    // Cookie lifecycle on exit: the checkbox carries the tool's
+    // on/off, the combo its strength - the same arrangement the
+    // referrer rows have. A stored off keeps the strength selectable
+    // so re-enabling remembers what was chosen. No engine version
+    // gates this tool: the sweep is the browser's own act.
+    {
+        const int cookieMode = settings.value(QSL("CookieLifecycleMode"), 0).toInt();
+        ui->cookieLifecycle->setChecked(cookieMode != 0);
+        ui->cookieLifecycleMode->setCurrentIndex(cookieMode == 2 ? 1 : 0);
+    }
+    connect(ui->cookieLifecycle, &QCheckBox::toggled, this, [this](bool on) {
+        // The strength only answers while the tool is on - the same
+        // arrangement the referrer rows have with their mode.
+        ui->cookieLifecycleMode->setEnabled(on);
+    });
+    // The starting state, without waiting for a toggle.
+    ui->cookieLifecycleMode->setEnabled(ui->cookieLifecycle->isChecked());
+
     ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
     loadDnsOverHttpsServers(settings.value(QSL("DnsOverHttpsServers"), QStringList()).toStringList());
     connect(ui->dnsOverHttpsServers, &QComboBox::currentIndexChanged, this, &Preferences::dnsOverHttpsServerChanged);
@@ -657,6 +677,7 @@ Preferences::Preferences(BrowserWindow* window)
     connect(ui->fingerprintExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openFingerprintExceptions);
     connect(ui->gpcExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openGpcExceptions);
     connect(ui->referrerExceptionsButton, &QAbstractButton::clicked, this, &Preferences::openReferrerExceptions);
+    connect(ui->cookieKeepSitesButton, &QAbstractButton::clicked, this, &Preferences::openCookieKeepSites);
     connect(ui->securityExportButton, &QAbstractButton::clicked, this, &Preferences::exportSecuritySettings);
     connect(ui->securityImportButton, &QAbstractButton::clicked, this, &Preferences::importSecuritySettings);
     connect(ui->securityBaselineButton, &QAbstractButton::clicked, this, &Preferences::applySecurityPreset);
@@ -935,6 +956,21 @@ void Preferences::openReferrerExceptions()
     }
 }
 
+void Preferences::openCookieKeepSites()
+{
+    // The bulk editor for the kept sites - the cookie lifecycle
+    // tool's counterpart of the exceptions dialogs. The manager owns
+    // the list's single source of truth: it persists the result, and
+    // the next exit sweep reads it from there. Nothing to reload:
+    // the sweep is an exit discipline, and no page's cookies move
+    // until the browser closes.
+    CookieKeepSitesDialog dialog(Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites"), QStringList()).toStringList(), this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        CookieLifecycleManager::instance()->setKeepSites(dialog.keepSites());
+    }
+}
+
 void Preferences::exportSecuritySettings()
 {
     const QString path = QzTools::getSaveFileName(QSL("SecuritySettings-Export"), this, tr("Export Security Settings"),
@@ -1141,6 +1177,13 @@ void Preferences::updateSecurityToolsWidgets()
         ui->referrerGuard->setChecked(referrerMode != 0);
         ui->referrerGuardMode->setCurrentIndex(referrerMode == 2 ? 1 : 0);
         ui->referrerGuardMode->setEnabled(referrerMode != 0 && ReferrerGuardManager::isSupported());
+    }
+
+    {
+        const int cookieMode = settings.value(QSL("CookieLifecycleMode"), 0).toInt();
+        ui->cookieLifecycle->setChecked(cookieMode != 0);
+        ui->cookieLifecycleMode->setCurrentIndex(cookieMode == 2 ? 1 : 0);
+        ui->cookieLifecycleMode->setEnabled(cookieMode != 0);
     }
 
     ui->dnsOverHttpsMode->setCurrentIndex(settings.value(QSL("DnsOverHttpsMode"), 0).toInt());
@@ -1500,6 +1543,9 @@ void Preferences::saveSettings()
     settings.setValue(QSL("ReferrerGuardMode"), !ui->referrerGuard->isChecked()
                       ? 0
                       : (ui->referrerGuardMode->currentIndex() == 1 ? 2 : 1));
+    settings.setValue(QSL("CookieLifecycleMode"), !ui->cookieLifecycle->isChecked()
+                      ? 0
+                      : (ui->cookieLifecycleMode->currentIndex() == 1 ? 2 : 1));
     settings.setValue(QSL("ThreatBlockEnabled"), ui->threatBlock->isChecked());
     if (!ui->threatBlockSource->text().trimmed().isEmpty()) {
         settings.setValue(QSL("ThreatBlockSource"), ui->threatBlockSource->text().trimmed());

@@ -192,11 +192,12 @@ tool_checks = [
     ("globalPrivacyControl", "GpcManager::instance()", "isEnabled()", "isExcluded(host)"),
     ("referrerGuard", "ReferrerGuardManager::instance()", "isEnabled()", "isExcluded(host)"),
     ("threatBlock", "threatBlockManager()", "isEnabled()", "isSessionAllowed(host)"),
+    ("cookieLifecycle", "CookieLifecycleManager::instance()", "isEnabled()", "isKept(host)"),
 ]
 appended_order = [m.group(1) for m in re.finditer(r'tools\.append\(QSL\("([a-zA-Z]+)"\)\);', query)]
-check("the five tools append in the padlock menu's row order",
+check("the six tools append in the padlock menu's row order",
       appended_order == ["httpsOnly", "fingerprintProtection", "globalPrivacyControl",
-                         "referrerGuard", "threatBlock"])
+                         "referrerGuard", "threatBlock", "cookieLifecycle"])
 
 for key, manager, enabled, per_site in tool_checks:
     ok = (manager in query and enabled in query and per_site in query)
@@ -215,12 +216,12 @@ check("both network-owned managers come from mApp->networkManager()",
 print("3. keys and names from the porter's catalog")
 
 porter_keys = re.findall(r'plan\.key = QSL\("([a-zA-Z]+)"\);', porter_cpp)
-check("the porter's buildPlans() knows all eight tools",
-      len(porter_keys) == 8)
+check("the porter's buildPlans() knows all nine tools",
+      len(porter_keys) == 9)
 
 per_site_keys = ["httpsOnly", "fingerprintProtection", "globalPrivacyControl",
-                 "referrerGuard", "threatBlock"]
-check("the four per-site keys are a subset of the porter's keys",
+                 "referrerGuard", "threatBlock", "cookieLifecycle"]
+check("the six per-site keys are a subset of the porter's keys",
       all(k in porter_keys for k in per_site_keys))
 
 for key in per_site_keys:

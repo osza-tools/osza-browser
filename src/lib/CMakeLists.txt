@@ -226,6 +226,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.cpp
     preferences/autoopenprotocolsdialog.cpp
     preferences/certificatemanager.cpp
+    preferences/cookiekeeplistdialog.cpp
     preferences/fingerprintexceptionsdialog.cpp
     preferences/gpcexceptionsdialog.cpp
     preferences/referrerexceptionsdialog.cpp
@@ -240,6 +241,7 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.cpp
     preferences/thememanager.cpp
     preferences/useragentdialog.cpp
+    security/cookielifecyclemanager.cpp
     security/fingerprintmanager.cpp
     security/gpcmanager.cpp
     security/referrerguardmanager.cpp
@@ -484,6 +486,7 @@ set(SRCS ${SRCS}
     preferences/autofillmanager.h
     preferences/autoopenprotocolsdialog.h
     preferences/certificatemanager.h
+    preferences/cookiekeeplistdialog.h
     preferences/fingerprintexceptionsdialog.h
     preferences/gpcexceptionsdialog.h
     preferences/referrerexceptionsdialog.h
@@ -498,6 +501,7 @@ set(SRCS ${SRCS}
     preferences/sitesettingshtml5item.h
     preferences/thememanager.h
     preferences/useragentdialog.h
+    security/cookielifecyclemanager.h
     security/fingerprintmanager.h
     security/gpcmanager.h
     security/referrerguardmanager.h

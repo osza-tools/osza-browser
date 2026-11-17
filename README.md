@@ -47,6 +47,16 @@ and KDE contributors for their work.
   opt-out in the padlock menu and a bulk-management dialog in
   Preferences; the rewrite reads the request's own Referer header,
   so it never introduces a referrer where the engine sent none),
+  cookie lifecycle on exit
+  (a cookie is the one tracker built to outlive the session that
+  created it: when the browser closes, the sweep deletes the
+  persistent cookies that would hand your identity to the next
+  launch - only the ones this session picked up, or every cookie
+  except the kept sites'; the strength is a choice, session cookies
+  always die with the browser anyway and are never touched, and
+  the kept sites are a per-site decision in the padlock menu or a
+  bulk list in Preferences; off by default, because it ends
+  sessions on exit and that is a choice, not a silent floor),
   DNS-over-HTTPS (encrypts all
   hostname resolution, with known providers or a custom server) and
   malicious-site protection (navigations to blocklisted hosts stop on
@@ -102,7 +112,7 @@ and KDE contributors for their work.
   [FILE-or-preset]`. For a quick start, the same places offer
   recommended-baseline presets - Essentials, Recommended baseline
   and Maximum protection - that apply a ready-made configuration of
-  all eight tools through the same validation as an import, and the
+  all nine tools through the same validation as an import, and the
   picker also saves any preset as a regular checksum-verified
   settings file, so a baseline can be shared without applying it
   first. Baselines can be judged before they are applied: the
@@ -149,8 +159,10 @@ and KDE contributors for their work.
   location bar's site icon (and the popup windows' location bar)
   carries a small amber badge whenever the current site has a
   per-site exception - an HTTPS-Only exclusion, a fingerprint or
-  GPC opt-out exclusion, or a threat-block "proceed anyway" paused
-  for the session - and its tooltip names the relaxed protections,
+  GPC opt-out exclusion, a referrer-guard opt-out, a threat-block
+  "proceed anyway" paused for the session, or a kept site whose
+  cookies survive the exit sweep - and its tooltip names the relaxed
+  protections,
   while a blocklist refresh in flight breathes a soft cyan pulse
   behind the glyph, named in the tooltip, until the fresh evidence
   lands; clicking the icon opens the padlock menu, where each

@@ -18,6 +18,7 @@
 #include "referrerguardmanager.h"
 #include "selftestpage.h"
 #include "adblockmanager.h"
+#include "cookielifecyclemanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
@@ -25,6 +26,7 @@
 #include "mainapplication.h"
 #include "networkmanager.h"
 #include "qztools.h"
+#include "securitymanager.h"
 #include "settings.h"
 #include "threatblockmanager.h"
 
@@ -223,6 +225,32 @@ QJsonArray SelfTestPage::collectToolStatuses()
         referrerDetail = tr("Requests carry whatever referrer the sites' own policies send.");
     }
     statuses.append(toolStatus(QSL("referrerguard"), tr("Cross-site referrer protection"), referrerOn, referrerDetail));
+
+    // Cookie lifecycle on exit
+    const auto *cookieLifecycle = CookieLifecycleManager::instance();
+    QString cookieDetail;
+    if (!cookieLifecycle->isEnabled()) {
+        cookieDetail = tr("Cookies this profile holds are kept as they are.");
+    } else {
+        const QStringList keepSites = cookieLifecycle->keepSites();
+
+        if (cookieLifecycle->mode() == CookieLifecycleManager::SessionOnly) {
+            cookieDetail = tr("Cookies picked up since this browser started are swept at exit; earlier cookies stay.");
+        } else {
+            cookieDetail = tr("Every cookie except the kept sites' is swept at exit.");
+        }
+
+        if (!keepSites.isEmpty()) {
+            cookieDetail += QSL(" ") + tr("%n site(s) keep their cookies.", nullptr, keepSites.size());
+        }
+
+        const quint64 swept = SecurityManager::instance()->cookiesSwept();
+        if (swept > 0) {
+            cookieDetail += QSL(" ") + tr("%1 cookie(s) swept so far.").arg(QLocale().toString(swept));
+        }
+    }
+    statuses.append(toolStatus(QSL("cookielifecycle"), tr("Cookie lifecycle on exit"),
+                               cookieLifecycle->isEnabled(), cookieDetail));
 
     return statuses;
 }

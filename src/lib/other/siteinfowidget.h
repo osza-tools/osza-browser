@@ -53,6 +53,8 @@ private:
     void updateThreatBlockState();
     void threatBlockButtonClicked();
     void threatBlockUpdateButtonClicked();
+    void updateCookieLifecycleState();
+    void cookieLifecycleButtonClicked();
 
     // Configure the "diff" link of a per-site entry: the same deep
     // link the security dashboard's tool rows carry - this tool's

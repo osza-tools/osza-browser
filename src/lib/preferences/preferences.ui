@@ -2759,14 +2759,87 @@ Requires QtWebEngine 6.5 or newer.</string>
                  </property>
                 </widget>
                </item>
+               <item row="25" column="0">
+                <spacer name="horizontalSpacerCookieLifecycle">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Policy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="25" column="2">
+                <widget class="QCheckBox" name="cookieLifecycle">
+                 <property name="toolTip">
+                  <string>Sweep persistent cookies when the browser closes, so sites cannot re-identify you on the next launch. Session cookies always die with the browser anyway and are never touched. The strength is a choice: only the cookies this session picked up, or every cookie except the kept sites'. The current site can also be kept from the padlock menu.</string>
+                 </property>
+                 <property name="text">
+                  <string>Sweep cookies on exit</string>
+                 </property>
+                </widget>
+               </item>
                <item row="26" column="0">
+                <widget class="QLabel" name="labelCookieLifecycleMode">
+                 <property name="text">
+                  <string>Cookie sweep strength</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="26" column="2">
+                <widget class="QComboBox" name="cookieLifecycleMode">
+                 <property name="toolTip">
+                  <string>What the exit sweep deletes, when it is enabled: only the persistent cookies that were not present when this browser started (your long-standing logins survive), or every persistent cookie except the kept sites'.</string>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Only this session's cookies (recommended)</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>All cookies except kept sites</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="27" column="0">
+                <widget class="QLabel" name="labelCookieKeepSites">
+                 <property name="text">
+                  <string>Manage kept sites</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="27" column="2">
+                <widget class="QPushButton" name="cookieKeepSitesButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>Cookies of sites in this list survive the exit sweep. The current site can also be kept from the padlock menu.</string>
+                 </property>
+                 <property name="text">
+                  <string>Kept sites...</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="28" column="0">
                 <widget class="QLabel" name="labelSecurityBackup">
                  <property name="text">
                   <string>Backup security settings</string>
                  </property>
                 </widget>
                </item>
-               <item row="26" column="2">
+               <item row="28" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayoutSecurityBackup">
                  <item>
                   <widget class="QPushButton" name="securityExportButton">
@@ -2815,14 +2888,14 @@ Requires QtWebEngine 6.5 or newer.</string>
                  </item>
                 </layout>
                </item>
-               <item row="27" column="0">
+               <item row="29" column="0">
                 <widget class="QLabel" name="labelSecurityPreset">
                  <property name="text">
                   <string>Recommended baseline</string>
                  </property>
                 </widget>
                </item>
-               <item row="27" column="2">
+               <item row="29" column="2">
                 <layout class="QHBoxLayout" name="horizontalLayoutSecurityPreset">
                  <item>
                   <widget class="QComboBox" name="securityPresetCombo">
@@ -2894,7 +2967,7 @@ Requires QtWebEngine 6.5 or newer.</string>
                  </item>
                 </layout>
                </item>
-               <item row="28" column="0" colspan="3">
+               <item row="30" column="0" colspan="3">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

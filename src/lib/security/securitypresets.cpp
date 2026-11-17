@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * ============================================================ */
 #include "securitypresets.h"
+#include "cookielifecyclemanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "securitysettingsporter.h"
 #include "threatblockmanager.h"
@@ -76,8 +77,16 @@ QJsonObject referrerGuardTool(int mode)
     return tool;
 }
 
+QJsonObject cookieLifecycleTool(int mode)
+{
+    QJsonObject tool;
+    tool.insert(QSL("mode"), mode);
+    tool.insert(QSL("keepSites"), QJsonArray());
+    return tool;
+}
+
 // Wraps the shared tools object into a finished preset document.
-// Every preset states all eight tool sections explicitly - including
+// Every preset states all nine tool sections explicitly - including
 // the ones it turns off - so a preset replaces the whole
 // configuration and is never silently merged with whatever was
 // configured before.
@@ -106,7 +115,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("essentials");
         preset.name = presetsTr("Essentials");
-        preset.description = presetsTr("AdBlock, HTTPS-Only mode, tracking-parameter stripping, malicious-site protection and cross-site referrer trimming on; secure DNS, fingerprint randomization and the Global Privacy Control signal off. For networks and sites where the deeper tools cause trouble.");
+        preset.description = presetsTr("AdBlock, HTTPS-Only mode, tracking-parameter stripping, malicious-site protection and cross-site referrer trimming on; secure DNS, fingerprint randomization, the Global Privacy Control signal and the cookie exit sweep off. For networks and sites where the deeper tools cause trouble.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -117,6 +126,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(false));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(false));
         tools.insert(QSL("referrerGuard"), referrerGuardTool(1));
+        tools.insert(QSL("cookieLifecycle"), cookieLifecycleTool(0));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -126,7 +136,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("recommended-baseline");
         preset.name = presetsTr("Recommended baseline");
-        preset.description = presetsTr("All eight protections on with the project defaults: secure DNS with fallback to the system resolver, the default blocklist source, referrers trimmed to the site's address, and no site exceptions. The configuration recommended for everyday browsing.");
+        preset.description = presetsTr("The eight always-on protections at the project defaults: secure DNS with fallback to the system resolver, the default blocklist source, referrers trimmed to the site's address, and no site exceptions; the cookie exit sweep stays off, because it ends sessions on exit and is an opt-in discipline rather than a silent floor. The configuration recommended for everyday browsing.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -137,6 +147,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
         tools.insert(QSL("referrerGuard"), referrerGuardTool(1));
+        tools.insert(QSL("cookieLifecycle"), cookieLifecycleTool(0));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);
@@ -146,7 +157,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         Preset preset;
         preset.id = QSL("maximum-protection");
         preset.name = presetsTr("Maximum protection");
-        preset.description = presetsTr("All eight protections on, name resolution through secure DNS only with no fallback to the system resolver, and no referrer at all to other sites. The strictest setting; on a network that blocks DoH, pages will not load.");
+        preset.description = presetsTr("The eight always-on protections at their strictest: name resolution through secure DNS only with no fallback to the system resolver, no referrer at all to other sites, and the cookie exit sweep on at its strict strength - no site is kept, so nothing a session picked up survives it. The strictest setting; on a network that blocks DoH, pages will not load, and every site starts each session fresh.");
 
         QJsonObject tools;
         tools.insert(QSL("adblock"), boolTool(true));
@@ -157,6 +168,7 @@ QList<SecurityPresets::Preset> SecurityPresets::presets()
         tools.insert(QSL("fingerprintProtection"), exclusionsTool(true));
         tools.insert(QSL("globalPrivacyControl"), exclusionsTool(true));
         tools.insert(QSL("referrerGuard"), referrerGuardTool(2));
+        tools.insert(QSL("cookieLifecycle"), cookieLifecycleTool(2));
         preset.document = wrapDocument(tools, preset.id);
 
         result.append(preset);

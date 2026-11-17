@@ -18,6 +18,7 @@
 #include "securitymanager.h"
 #include "settings.h"
 
+#include "cookielifecyclemanager.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
 #include "httpsonlyinterceptor.h"
@@ -47,6 +48,7 @@ SecurityManager::SecurityManager(QObject *parent)
     , m_httpsUpgrades(0)
     , m_threatsBlocked(0)
     , m_referrersTrimmed(0)
+    , m_cookiesSwept(0)
 {
 }
 
@@ -62,7 +64,7 @@ QString SecurityManager::normalizeHost(const QString &host)
 
 QStringList SecurityManager::relaxedProtections(const QUrl &url)
 {
-    // The five tools whose state can be per-site - the same five
+    // The six tools whose state can be per-site - the same six
     // the padlock menu carries rows for, judged the way each row
     // judges (enabled first, then the site's own exception), so the
     // badge in the location bar can never claim a relaxation a
@@ -101,6 +103,11 @@ QStringList SecurityManager::relaxedProtections(const QUrl &url)
     const auto *threatBlock = mApp->networkManager()->threatBlockManager();
     if (threatBlock && threatBlock->isEnabled() && threatBlock->isSessionAllowed(host)) {
         tools.append(QSL("threatBlock"));
+    }
+
+    const auto *cookieLifecycle = CookieLifecycleManager::instance();
+    if (cookieLifecycle && cookieLifecycle->isEnabled() && cookieLifecycle->isKept(host)) {
+        tools.append(QSL("cookieLifecycle"));
     }
 
     return tools;
@@ -186,6 +193,15 @@ void SecurityManager::reportReferrerTrimmed(const QString &host)
     }
 }
 
+void SecurityManager::reportCookiesSwept(quint64 count)
+{
+    // The GUI thread's own report, from the exit sweep: a total-only
+    // counter, so there is no host table to guard and no signal to
+    // emit - the dashboard that would listen is closing with the
+    // browser, and the next launch reads the persisted total.
+    m_cookiesSwept.fetch_add(count, std::memory_order_relaxed);
+}
+
 quint64 SecurityManager::adsBlocked() const
 {
     return m_adsBlocked.load(std::memory_order_relaxed);
@@ -209,6 +225,11 @@ quint64 SecurityManager::threatsBlocked() const
 quint64 SecurityManager::referrersTrimmed() const
 {
     return m_referrersTrimmed.load(std::memory_order_relaxed);
+}
+
+quint64 SecurityManager::cookiesSwept() const
+{
+    return m_cookiesSwept.load(std::memory_order_relaxed);
 }
 
 quint64 SecurityManager::adsBlockedForHost(const QString &host) const
@@ -250,6 +271,7 @@ void SecurityManager::loadCounters()
     m_httpsUpgrades.store(settings.value(QSL("HttpsUpgrades"), 0).toULongLong(), std::memory_order_relaxed);
     m_threatsBlocked.store(settings.value(QSL("ThreatsBlocked"), 0).toULongLong(), std::memory_order_relaxed);
     m_referrersTrimmed.store(settings.value(QSL("ReferrersTrimmed"), 0).toULongLong(), std::memory_order_relaxed);
+    m_cookiesSwept.store(settings.value(QSL("CookiesSwept"), 0).toULongLong(), std::memory_order_relaxed);
     settings.endGroup();
 
     Q_EMIT countersChanged();
@@ -264,6 +286,7 @@ void SecurityManager::saveCounters()
     settings.setValue(QSL("HttpsUpgrades"), qulonglong(m_httpsUpgrades.load(std::memory_order_relaxed)));
     settings.setValue(QSL("ThreatsBlocked"), qulonglong(m_threatsBlocked.load(std::memory_order_relaxed)));
     settings.setValue(QSL("ReferrersTrimmed"), qulonglong(m_referrersTrimmed.load(std::memory_order_relaxed)));
+    settings.setValue(QSL("CookiesSwept"), qulonglong(m_cookiesSwept.load(std::memory_order_relaxed)));
     settings.endGroup();
 }
 
@@ -274,6 +297,7 @@ void SecurityManager::resetCounters()
     m_httpsUpgrades.store(0, std::memory_order_relaxed);
     m_threatsBlocked.store(0, std::memory_order_relaxed);
     m_referrersTrimmed.store(0, std::memory_order_relaxed);
+    m_cookiesSwept.store(0, std::memory_order_relaxed);
 
     {
         QMutexLocker lock(&m_hostMutex);

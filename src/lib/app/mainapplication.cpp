@@ -43,6 +43,7 @@
 #include "browsinglibrary.h"
 #include "downloadmanager.h"
 #include "clearprivatedata.h"
+#include "cookielifecyclemanager.h"
 #include "useragentmanager.h"
 #include "commandlineoptions.h"
 #include "searchenginesmanager.h"
@@ -936,6 +937,18 @@ void MainApplication::saveSettings()
     if (deleteHtml5Storage) {
         ClearPrivateData::clearLocalStorage();
     }
+    // The cookie lifecycle tool's exit sweep, the ninth bundled
+    // security tool. It runs BEFORE the Cookie Manager's own
+    // delete-on-close pass, and the order is the counter's honesty:
+    // this pass counts exactly the cookies it removed itself, while
+    // running it after the legacy pass would count cookies already
+    // on their way out through that one. The deletions themselves
+    // compose either way - two deletion passes never keep anything
+    // one of them removes - and the private profile never gets here
+    // at all (this function returns above for it), which is the
+    // tool's own statement about private windows: their cookies die
+    // with the window, sweep or no sweep.
+    CookieLifecycleManager::instance()->performExitSweep(m_cookieJar);
     if (deleteCookies) {
         m_cookieJar->deleteAllCookies(false);
     }
@@ -1161,6 +1174,11 @@ void MainApplication::loadSettings()
     FingerprintManager::instance()->loadSettings();
     GpcManager::instance()->loadSettings();
     ReferrerGuardManager::instance()->loadSettings();
+    // Also schedules the startup snapshot the session strength
+    // judges by, once per process (the loadSettings() call is the
+    // startup one; every later call finds the snapshot already
+    // scheduled or taken).
+    CookieLifecycleManager::instance()->loadSettings();
 }
 
 void MainApplication::loadTheme(const QString &name)

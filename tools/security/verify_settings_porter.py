@@ -89,6 +89,10 @@ DNS_MODE_MAX = 2
 # validation accepts.
 REFERRER_MODE_MIN = 0
 REFERRER_MODE_MAX = 2
+# CookieLifecycleManager::Mode values, the same range the C++
+# validation accepts.
+COOKIE_MODE_MIN = 0
+COOKIE_MODE_MAX = 2
 
 
 def constants_from_source():
@@ -217,11 +221,21 @@ def preset_document_from_source(preset_id):
                 raise ValueError("unknown referrer guard mode %r in "
                                  "securitypresets.cpp" % args)
             tools[key] = {"mode": mode, "exclusions": []}
+        elif helper == "cookieLifecycleTool":
+            try:
+                mode = int(args.strip())
+            except ValueError:
+                raise ValueError("unknown cookie lifecycle mode %r in "
+                                 "securitypresets.cpp" % args)
+            if mode not in (0, 1, 2):
+                raise ValueError("unknown cookie lifecycle mode %r in "
+                                 "securitypresets.cpp" % args)
+            tools[key] = {"mode": mode, "keepSites": []}
         else:
             raise ValueError("unknown preset helper %r in securitypresets.cpp" % helper)
 
-    if len(tools) != 8:
-        raise ValueError("preset %r does not state all eight tools in "
+    if len(tools) != 9:
+        raise ValueError("preset %r does not state all nine tools in "
                          "securitypresets.cpp" % preset_id)
 
     return {"format": FORMAT, "version": VERSION, "preset": preset_id, "tools": tools}
@@ -346,7 +360,7 @@ def validate_document(document, report):
         report.error("tools is not an object")
         return
 
-    known = set(BOOL_TOOLS) | set(EXCLUSION_TOOLS) | {"secureDns", "threatBlock", "referrerGuard"}
+    known = set(BOOL_TOOLS) | set(EXCLUSION_TOOLS) | {"secureDns", "threatBlock", "referrerGuard", "cookieLifecycle"}
 
     for name, section in tools.items():
         if name not in known:
@@ -420,6 +434,25 @@ def validate_document(document, report):
                         if not entry.strip():
                             report.warn("tools.referrerGuard.exclusions contains an empty entry")
 
+        if name == "cookieLifecycle":
+            # Mirrors QJsonValue::toInt(): 1.0 reads back as 1.
+            mode = canonicalize(section.get("mode"))
+            if not isinstance(mode, int) or isinstance(mode, bool) \
+                    or not (COOKIE_MODE_MIN <= mode <= COOKIE_MODE_MAX):
+                report.error("tools.cookieLifecycle.mode is missing or outside %d..%d"
+                             % (COOKIE_MODE_MIN, COOKIE_MODE_MAX))
+            if "keepSites" in section:
+                keep_sites = section["keepSites"]
+                if not isinstance(keep_sites, list):
+                    report.error("tools.cookieLifecycle.keepSites is not an array")
+                else:
+                    for entry in keep_sites:
+                        if not isinstance(entry, str):
+                            report.error("tools.cookieLifecycle.keepSites contains a non-string")
+                            break
+                        if not entry.strip():
+                            report.warn("tools.cookieLifecycle.keepSites contains an empty entry")
+
         if name == "threatBlock":
             enabled = section.get("enabled")
             if not isinstance(enabled, bool):
@@ -457,7 +490,7 @@ def validate_file(path):
 # lightest (request path) to deepest (profile and resolver).
 TOOL_ORDER = ("adblock", "httpsOnly", "trackingParameters", "secureDns",
               "threatBlock", "fingerprintProtection", "globalPrivacyControl",
-              "referrerGuard")
+              "referrerGuard", "cookieLifecycle")
 
 
 def _on_off(value):
@@ -482,6 +515,15 @@ def _referrer_mode_label(mode):
     return "off"
 
 
+def _cookie_mode_label(mode):
+    # Mirrors the labels of SecuritySettingsPorter::previewDocument.
+    if mode == 2:
+        return "on, every cookie except kept sites swept"
+    if mode == 1:
+        return "on, only this session's cookies swept"
+    return "off"
+
+
 def _list_label(values):
     return "none" if not values else ", ".join(values)
 
@@ -500,6 +542,8 @@ def _field_label(tool, field, section):
         mode = canonicalize(section.get("mode"))
         if tool == "referrerGuard":
             return _referrer_mode_label(mode if isinstance(mode, int) else 0)
+        if tool == "cookieLifecycle":
+            return _cookie_mode_label(mode if isinstance(mode, int) else 0)
         return _mode_label(mode if isinstance(mode, int) else 0)
     if field == "servers":
         servers = section.get("servers", [])
@@ -507,6 +551,9 @@ def _field_label(tool, field, section):
     if field == "sourceUrl":
         source = section.get("sourceUrl")
         return source if isinstance(source, str) else "(not set)"
+    if field == "keepSites":
+        keep_sites = section.get("keepSites", [])
+        return _list_label(keep_sites if isinstance(keep_sites, list) else [])
     return repr(section.get(field))
 
 
@@ -521,6 +568,8 @@ def _tool_fields(tool):
         return ("enabled", "sourceUrl")
     if tool == "referrerGuard":
         return ("mode", "exclusions")
+    if tool == "cookieLifecycle":
+        return ("mode", "keepSites")
     return ()
 
 
@@ -531,12 +580,17 @@ def _exclusion_summary_lines(field, section_a, section_b):
     the sites whose treatment changes, instead of two raw lists.
     Hosts compare case-insensitively (the way both tools match
     them), so an entry that only changes case is neither cleared
-    nor added; a duplicate entry is reported once."""
-    if field != "exclusions":
+    nor added; a duplicate entry is reported once.
+
+    The kept-sites list of the cookie lifecycle tool rides the same
+    one-line shape with its own honest wording: what changes for a
+    site there is whether its cookies survive the exit sweep, and
+    "exception" would say the opposite."""
+    if field not in ("exclusions", "keepSites"):
         return []
 
     def entries(section):
-        value = section.get("exclusions", [])
+        value = section.get(field, [])
         return value if isinstance(value, list) else []
 
     list_a = entries(section_a)
@@ -563,6 +617,13 @@ def _exclusion_summary_lines(field, section_a, section_b):
             added.append(entry)
 
     lines = []
+    if field == "keepSites":
+        if cleared:
+            lines.append("Stops keeping cookies for: %s" % ", ".join(cleared))
+        if added:
+            lines.append("Starts keeping cookies for: %s" % ", ".join(added))
+        return lines
+
     if cleared:
         lines.append("Clears the exception for: %s" % ", ".join(cleared))
     if added:
@@ -622,7 +683,7 @@ def format_diff(differences, only_a, only_b, name_a, name_b):
     lines = ["diff: %s against %s" % (name_a, name_b)]
 
     if not differences and not only_a and not only_b:
-        lines.append("  no differences in the eight security tools")
+        lines.append("  no differences in the nine security tools")
         return "\n".join(lines)
 
     for tool, fields in differences:
@@ -905,7 +966,7 @@ def self_test():
     # --- per-tool diff, mirroring settingsPorterPreviewTest ---
 
     # The presets rebuild from the C++ source: three documents, each
-    # stating all eight tools with the pinned content.
+    # stating all nine tools with the pinned content.
     try:
         rebuilt = {pid: preset_document_from_source(pid)
                    for pid in EXPECTED_PRESET_IDS}
@@ -913,8 +974,8 @@ def self_test():
             check(document["format"] == FORMAT and document["version"] == VERSION,
                   "the rebuilt preset %s must carry the format header" % pid)
             tools = document["tools"]
-            check(len(tools) == 8,
-                  "the rebuilt preset %s must state all eight tools" % pid)
+            check(len(tools) == 9,
+                  "the rebuilt preset %s must state all nine tools" % pid)
         check(rebuilt["essentials"]["tools"]["secureDns"]["mode"] == 0,
               "essentials must disable secure DNS")
         check(rebuilt["essentials"]["tools"]["fingerprintProtection"]["enabled"] is False,
@@ -931,6 +992,14 @@ def self_test():
               "the recommended baseline must trim cross-site referrers to the site's address")
         check(rebuilt["maximum-protection"]["tools"]["referrerGuard"]["mode"] == 2,
               "maximum protection must send no referrer to other sites")
+        check(rebuilt["essentials"]["tools"]["cookieLifecycle"]["mode"] == 0,
+              "essentials must leave the cookie exit sweep off")
+        check(rebuilt["recommended-baseline"]["tools"]["cookieLifecycle"]["mode"] == 0,
+              "the recommended baseline must leave the cookie exit sweep off")
+        check(rebuilt["maximum-protection"]["tools"]["cookieLifecycle"]["mode"] == 2,
+              "maximum protection must sweep every cookie at exit")
+        check(rebuilt["maximum-protection"]["tools"]["cookieLifecycle"]["keepSites"] == [],
+              "maximum protection must keep no site")
     except ValueError as e:
         check(False, "the preset parser must be able to read securitypresets.cpp: %s" % e)
         rebuilt = {}
@@ -1012,6 +1081,40 @@ def self_test():
                        for tool, fields in differences}
         check(summary_map.get("httpsOnly") == {"exclusions": []},
               "a change of case only must not clear or add any site: %r" % summary_map)
+
+        # The kept-sites list rides the same one-line shape with its
+        # own honest wording, mirroring the autotest's preview check.
+        with_keep_sites = json.loads(json.dumps(rebuilt["recommended-baseline"]))
+        with_keep_sites["tools"]["cookieLifecycle"]["mode"] = 2
+        with_keep_sites["tools"]["cookieLifecycle"]["keepSites"] = ["mail.example"]
+
+        differences, only_a, only_b = diff_documents(rebuilt["recommended-baseline"], with_keep_sites)
+        diff_map = {tool: dict((f, (va, vb)) for f, va, vb, _ in fields)
+                    for tool, fields in differences}
+        check(diff_map.get("cookieLifecycle") == {
+                  "mode": ("off", "on, every cookie except kept sites swept"),
+                  "keepSites": ("none", "mail.example")},
+              "the cookie lifecycle change must pair the mode with the kept sites: %r" % diff_map)
+        summary_map = {tool: dict((f, summary) for f, _va, _vb, summary in fields)
+                       for tool, fields in differences}
+        check(summary_map.get("cookieLifecycle") == {"mode": [], "keepSites":
+              ["Starts keeping cookies for: mail.example"]},
+              "a growing kept-sites list must name the kept sites: %r" % summary_map)
+
+        differences, only_a, only_b = diff_documents(with_keep_sites, rebuilt["recommended-baseline"])
+        summary_map = {tool: dict((f, summary) for f, _va, _vb, summary in fields)
+                       for tool, fields in differences}
+        check(summary_map.get("cookieLifecycle") == {"mode": [], "keepSites":
+              ["Stops keeping cookies for: mail.example"]},
+              "resetting a kept-sites list must name the released sites: %r" % summary_map)
+
+        # An absent keepSites field means the same as an empty one
+        # (the import resets the list), so it is no difference.
+        absent_keep = json.loads(json.dumps(rebuilt["recommended-baseline"]))
+        absent_keep["tools"]["cookieLifecycle"].pop("keepSites")
+        differences, only_a, only_b = diff_documents(absent_keep, rebuilt["recommended-baseline"])
+        check(not differences,
+              "an absent keepSites field must count as none: %r" % differences)
 
     if failures:
         print("self-test FAILED:")

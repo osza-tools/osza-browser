@@ -389,7 +389,7 @@ check("the porter's preview carries the exception summaries, like every other li
 check("the porter names the tool",
       'return porterTr("Cross-site referrer protection");' in PORTER_CPP)
 check("the porter's key list gains the tool",
-      PORTER_CPP.count('plan.key = QSL(') == 8)
+      PORTER_CPP.count('plan.key = QSL(') == 9)
 
 check("all three baselines state the tool explicitly",
       PRESETS_CPP.count('tools.insert(QSL("referrerGuard"), referrerGuardTool(') == 3)
@@ -397,12 +397,12 @@ check("Essentials and the recommended baseline trim to the site's address",
       PRESETS_CPP.count("referrerGuardTool(1)") == 2)
 check("Maximum protection sends no referrer at all",
       "referrerGuardTool(2)" in PRESETS_CPP)
-check("the preset descriptions speak of eight protections",
-      "All eight protections on" in PRESETS_CPP)
+check("the preset descriptions speak of the always-on protections",
+      "The eight always-on protections" in PRESETS_CPP)
 
-check("the settings-diff page speaks of eight security tools",
-      "of the 8 security tools." in DIFFPAGE_CPP
-      and "const int kTotalTools = 8;" in DIFFPAGE_CPP)
+check("the settings-diff page speaks of nine security tools",
+      "of the 9 security tools." in DIFFPAGE_CPP
+      and "const int kTotalTools = 9;" in DIFFPAGE_CPP)
 
 # ------------------------------------------------------------------
 # 5. The autotests and the docs
@@ -427,8 +427,8 @@ check("the presets test pins the eighth section and its strengths",
 
 check("the README tells the feature",
       "cross-site referrer protection" in README)
-check("the README speaks of eight tools where it spoke of seven",
-      "all eight tools" in README and "all seven tools" not in README)
+check("the README speaks of nine tools where it spoke of eight",
+      "all nine tools" in README and "all eight tools" not in README)
 check("the CHANGELOG has the entry",
       "Security tools (25): cross-site referrer protection" in CHANGELOG)
 

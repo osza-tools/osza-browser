@@ -17,6 +17,7 @@
 * ============================================================ */
 #include "securitysettingsporter.h"
 #include "adblockmanager.h"
+#include "cookielifecyclemanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
@@ -145,6 +146,11 @@ struct ToolPlan
     DnsOverHttpsManager::Mode mode = DnsOverHttpsManager::Disabled; // secureDns
     QStringList servers;           // secureDns; sanitized
     int referrerMode = 0;          // referrerGuard; ReferrerGuardManager::Mode
+    int cookieMode = 0;            // cookieLifecycle; CookieLifecycleManager::Mode
+    QStringList keepSites;         // cookieLifecycle; the effective list
+                                   // after the import - a missing field
+                                   // resets it, like the apply step
+    bool statedKeepSites = false;  // the document stated the field itself
     QString sourceUrl;             // threatBlock; the effective source after the
                                    // import - a missing field keeps the current one
     bool statedSourceUrl = false;  // the document stated the field itself
@@ -498,6 +504,87 @@ QList<ToolPlan> buildPlans(const QJsonObject &tools)
         plans.append(plan);
     }
 
+    // Cookie lifecycle on exit
+    {
+        ToolPlan plan;
+        plan.key = QSL("cookieLifecycle");
+
+        const QJsonValue value = tools.value(plan.key);
+        plan.present = !value.isUndefined();
+
+        if (value.isObject()) {
+            const QJsonObject tool = value.toObject();
+
+            // The mode is judged exactly like the referrer guard
+            // judges its own: the number itself, not its toInt()
+            // reading, so a hand-edited "mode": 1.5 or 9 cannot
+            // slide through as a valid value.
+            const QJsonValue modeValue = tool.value(QSL("mode"));
+            int cookieMode = -1;
+
+            if (modeValue.isDouble()) {
+                const double number = modeValue.toDouble();
+
+                if (std::floor(number) == number
+                    && number >= static_cast<double>(CookieLifecycleManager::Off)
+                    && number <= static_cast<double>(CookieLifecycleManager::ClearOnExit)) {
+                    cookieMode = static_cast<int>(number);
+                }
+            }
+
+            // The keep-list rides under its own field name: this
+            // tool's list keeps cookies alive instead of relaxing a
+            // protection, and a field called "exclusions" would say
+            // the opposite of what it does.
+            const QJsonValue keepValue = tool.value(QSL("keepSites"));
+            bool keepSitesOk = true;
+            QStringList keepSites;
+
+            if (!keepValue.isUndefined()) {
+                if (keepValue.isArray()) {
+                    const QJsonArray array = keepValue.toArray();
+
+                    for (const QJsonValue &entry : array) {
+                        if (!entry.isString()) {
+                            keepSitesOk = false;
+                            break;
+                        }
+                        keepSites.append(entry.toString());
+                    }
+                } else {
+                    keepSitesOk = false;
+                }
+            }
+
+            if (cookieMode < 0 || !keepSitesOk) {
+                plan.reason = porterTr("a field is missing or has the wrong type");
+            } else {
+                plan.apply = true;
+                plan.cookieMode = cookieMode;
+                // The same normalization the manager's
+                // setKeepSites() applies: lowercase and
+                // case-insensitively deduplicated, so the preview
+                // shows exactly the list the import will land.
+                QStringList normalized;
+                const QStringList sanitized = sanitizeHostList(keepSites);
+
+                for (const QString &entry : sanitized) {
+                    const QString lowered = entry.toLower();
+
+                    if (!normalized.contains(lowered)) {
+                        normalized.append(lowered);
+                    }
+                }
+
+                plan.keepSites = normalized;
+            }
+        } else if (plan.present) {
+            plan.reason = porterTr("the section is not an object");
+        }
+
+        plans.append(plan);
+    }
+
     return plans;
 }
 
@@ -593,6 +680,19 @@ QString referrerModeLabel(int mode)
     case ReferrerGuardManager::NoReferrer:
         return porterTr("on, no referrer to other sites");
     case ReferrerGuardManager::Off:
+    default:
+        return porterTr("off");
+    }
+}
+
+QString cookieModeLabel(int mode)
+{
+    switch (mode) {
+    case CookieLifecycleManager::SessionOnly:
+        return porterTr("on, only this session's cookies swept");
+    case CookieLifecycleManager::ClearOnExit:
+        return porterTr("on, every cookie except kept sites swept");
+    case CookieLifecycleManager::Off:
     default:
         return porterTr("off");
     }
@@ -738,6 +838,14 @@ QJsonObject SecuritySettingsPorter::buildDocument()
         tool.insert(QSL("exclusions"),
                     QJsonArray::fromStringList(ReferrerGuardManager::instance()->exclusions()));
         tools.insert(QSL("referrerGuard"), tool);
+    }
+
+    {
+        QJsonObject tool;
+        tool.insert(QSL("mode"), static_cast<int>(CookieLifecycleManager::instance()->mode()));
+        tool.insert(QSL("keepSites"),
+                    QJsonArray::fromStringList(CookieLifecycleManager::instance()->keepSites()));
+        tools.insert(QSL("cookieLifecycle"), tool);
     }
 
     QJsonObject document;
@@ -1042,6 +1150,15 @@ SecuritySettingsPorter::ImportResult SecuritySettingsPorter::applyDocument(const
                 result.skippedTools.append(QSL("%1: %2").arg(plan.key, porterTr("this build cannot use the referrer guard")));
                 continue;
             }
+        } else if (plan.key == QSL("cookieLifecycle")) {
+            // setMode persists the preference and the effective
+            // keep-list is written in the same breath; there is no
+            // network stack to reload - the sweep reads the manager
+            // at exit, on the GUI thread - so the import is in force
+            // the moment it lands. No build can be incapable of it:
+            // the sweep is the browser's own act, not the engine's.
+            CookieLifecycleManager::instance()->setMode(static_cast<CookieLifecycleManager::Mode>(plan.cookieMode));
+            CookieLifecycleManager::instance()->setKeepSites(plan.keepSites);
         }
 
         ++result.appliedTools;
@@ -1164,6 +1281,22 @@ SecuritySettingsPorter::Preview SecuritySettingsPorter::previewDocument(const QJ
                       listLabel(currentTool.value(QSL("exclusions")).toArray()),
                       listLabel(plan.exclusions),
                       clearedExclusions, addedExclusions);
+        } else if (plan.key == QSL("cookieLifecycle")) {
+            addChange(plan.key, QSL("mode"),
+                      cookieModeLabel(currentTool.value(QSL("mode")).toInt()),
+                      cookieModeLabel(plan.cookieMode));
+
+            // The sites whose cookies' fate changes, named like the
+            // exclusions are - the same case-insensitive comparison,
+            // the same one-line summaries (the keep phrasing).
+            QStringList clearedKeepSites, addedKeepSites;
+            listDifference(stringListFromJson(currentTool.value(QSL("keepSites")).toArray()),
+                           plan.keepSites,
+                           &clearedKeepSites, &addedKeepSites);
+            addChange(plan.key, QSL("keepSites"),
+                      listLabel(currentTool.value(QSL("keepSites")).toArray()),
+                      listLabel(plan.keepSites),
+                      clearedKeepSites, addedKeepSites);
         } else if (plan.key == QSL("threatBlock")) {
             addChange(plan.key, QSL("enabled"),
                       onOffLabel(currentTool.value(QSL("enabled")).toBool()),
@@ -1225,6 +1358,9 @@ QString SecuritySettingsPorter::toolDisplayName(const QString &tool)
     if (tool == QSL("referrerGuard")) {
         return porterTr("Cross-site referrer protection");
     }
+    if (tool == QSL("cookieLifecycle")) {
+        return porterTr("Cookie lifecycle on exit");
+    }
     return tool;
 }
 
@@ -1250,6 +1386,9 @@ QString SecuritySettingsPorter::fieldDisplayName(const QString & /*tool*/, const
     if (field == QSL("sourceUrl")) {
         return porterTr("Blocklist source");
     }
+    if (field == QSL("keepSites")) {
+        return porterTr("Kept sites");
+    }
     return field;
 }
 
@@ -1260,16 +1399,27 @@ QStringList SecuritySettingsPorter::exceptionSummaryLines(const PreviewChange &c
     // the next (HTTPS-Only starts forcing https there, fingerprint
     // randomization starts applying to it), so it leads. The lines
     // are phrased tool-agnostically on purpose - the row above them
-    // already names the tool, and both tools have the same notion of
-    // an exception.
+    // already names the tool, and the tools that share an exception
+    // notion have the same idea of one.
+    //
+    // The kept-sites list of the cookie lifecycle tool rides the
+    // same one-line shape with its own honest wording: what changes
+    // for a site there is whether its cookies survive the exit
+    // sweep, and "exception" would say the opposite.
     QStringList lines;
 
+    const bool keepSites = change.field == QSL("keepSites");
+
     if (!change.clearedEntries.isEmpty()) {
-        lines.append(porterTr("Clears the exception for: %1").arg(change.clearedEntries.join(QSL(", "))));
+        lines.append(keepSites
+                         ? porterTr("Stops keeping cookies for: %1").arg(change.clearedEntries.join(QSL(", ")))
+                         : porterTr("Clears the exception for: %1").arg(change.clearedEntries.join(QSL(", "))));
     }
 
     if (!change.addedEntries.isEmpty()) {
-        lines.append(porterTr("Adds an exception for: %1").arg(change.addedEntries.join(QSL(", "))));
+        lines.append(keepSites
+                         ? porterTr("Starts keeping cookies for: %1").arg(change.addedEntries.join(QSL(", ")))
+                         : porterTr("Adds an exception for: %1").arg(change.addedEntries.join(QSL(", "))));
     }
 
     return lines;

@@ -69,6 +69,11 @@ private Q_SLOTS:
     void referrerGuardSameSiteTest();
     void referrerGuardHeaderIntegrationTest();
 
+    void cookieLifecycleModeTest();
+    void cookieLifecycleKeepListTest();
+    void cookieLifecycleSweepTest();
+    void cookieLifecycleExitSweepIntegrationTest();
+
     void selfTestNoisePatternTest();
     void selfTestNoiseEquivalenceTest();
     void selfTestPageBuildTest();

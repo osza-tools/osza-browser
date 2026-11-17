@@ -18,6 +18,7 @@
 #include "securitysidebar.h"
 #include "browserwindow.h"
 #include "adblockmanager.h"
+#include "cookielifecyclemanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
 #include "gpcmanager.h"
@@ -104,6 +105,7 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_fingerprintToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleFingerprintProtection);
     connect(m_gpcToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleGpc);
     connect(m_referrerGuardToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleReferrerGuard);
+    connect(m_cookieLifecycleToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleCookieLifecycle);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
     connect(m_selfTestButton, &QToolButton::clicked, this, &SecuritySideBar::openSelfTest);
 
@@ -170,8 +172,11 @@ void SecuritySideBar::createLayout()
     mainLayout->addLayout(statusRow);
 
     // Totals: a 2-column grid keeps the tiles readable even in a
-    // narrow sidebar; the fifth counter takes the third row's first
-    // cell, and the empty cell beside it keeps the rhythm.
+    // narrow sidebar; the sixth counter fills the third row's
+    // second cell, and the grid reads three rows of two. The swept
+    // cookies tile is a total across sessions - the sweep is the
+    // browser's last act, so the number this launch shows is the
+    // one the last exit earned.
     mainLayout->addWidget(headingLabel(tr("Protection totals")));
 
     auto *tilesLayout = new QGridLayout;
@@ -181,11 +186,13 @@ void SecuritySideBar::createLayout()
     auto *upgradesTile = createCounterTile(tr("HTTPS upgrades"), &m_upgradesValue);
     auto *threatsTile = createCounterTile(tr("Threats blocked"), &m_threatsValue);
     auto *referrersTile = createCounterTile(tr("Referrers trimmed"), &m_referrersValue);
+    auto *cookiesSweptTile = createCounterTile(tr("Cookies swept"), &m_cookiesSweptValue);
     tilesLayout->addWidget(adsTile, 0, 0);
     tilesLayout->addWidget(trackersTile, 0, 1);
     tilesLayout->addWidget(upgradesTile, 1, 0);
     tilesLayout->addWidget(threatsTile, 1, 1);
     tilesLayout->addWidget(referrersTile, 2, 0);
+    tilesLayout->addWidget(cookiesSweptTile, 2, 1);
     mainLayout->addLayout(tilesLayout);
 
     // Current site
@@ -240,6 +247,11 @@ void SecuritySideBar::createLayout()
     m_referrerGuardState = new QLabel(this);
     m_referrerGuardState->setContentsMargins(20, 0, 0, 0);
     m_referrerGuardState->setWordWrap(true);
+    m_cookieLifecycleToggle = new QCheckBox(tr("Cookie lifecycle on exit"), this);
+    m_cookieLifecycleToggle->setToolTip(tr("Sweep persistent cookies when the browser closes: only the ones this session picked up, or every cookie except the kept sites'. Session cookies always die with the browser anyway; kept sites are managed from the padlock menu or the kept-sites dialog in Preferences."));
+    m_cookieLifecycleState = new QLabel(this);
+    m_cookieLifecycleState->setContentsMargins(20, 0, 0, 0);
+    m_cookieLifecycleState->setWordWrap(true);
 
     // One row per tool: the quick switch, and beside it the deep link
     // to that tool's part of the recommended baseline's diff. The
@@ -257,6 +269,8 @@ void SecuritySideBar::createLayout()
     mainLayout->addWidget(m_gpcState);
     mainLayout->addWidget(createToolRow(m_referrerGuardToggle, QSL("referrerGuard")));
     mainLayout->addWidget(m_referrerGuardState);
+    mainLayout->addWidget(createToolRow(m_cookieLifecycleToggle, QSL("cookieLifecycle")));
+    mainLayout->addWidget(m_cookieLifecycleState);
 
     mainLayout->addStretch(1);
 
@@ -412,6 +426,7 @@ void SecuritySideBar::refresh()
     m_upgradesValue->setText(formatCount(security->httpsUpgrades()));
     m_threatsValue->setText(formatCount(security->threatsBlocked()));
     m_referrersValue->setText(formatCount(security->referrersTrimmed()));
+    m_cookiesSweptValue->setText(formatCount(security->cookiesSwept()));
 
     const QString host = currentHost();
     m_siteLabel->setText(host.isEmpty() ? tr("No site is open.") : tr("<b>%1</b>").arg(host.toHtmlEscaped()));
@@ -432,13 +447,15 @@ void SecuritySideBar::updateStatus()
     const bool fingerprint = FingerprintManager::instance()->isEnabled();
     const bool gpc = GpcManager::instance()->isEnabled();
     const bool referrerGuard = ReferrerGuardManager::instance()->isEnabled();
+    const bool cookieLifecycle = CookieLifecycleManager::instance()->isEnabled();
 
     const bool anyOn = adBlock || httpsOnly || m_stripTrackingToggle->isChecked()
         || doh->mode() != DnsOverHttpsManager::Disabled
         || threatBlock->isEnabled()
         || fingerprint
         || gpc
-        || referrerGuard;
+        || referrerGuard
+        || cookieLifecycle;
 
     if (anyOn) {
         m_statusIcon->setPixmap(QPixmap(QSL(":/icons/locationbar/safe.svg")).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -504,6 +521,34 @@ void SecuritySideBar::updateStatus()
         }
     }
 
+    // Cookie lifecycle state, honest about what survives the exit
+    // and about the site you are on. The swept total rides along
+    // when the sweep has ever run: it is the counter the tile above
+    // shows, the history of what the discipline earned.
+    if (!cookieLifecycle) {
+        m_cookieLifecycleState->setText(tr("The cookie exit sweep is off."));
+    } else {
+        const QString host = currentHost();
+        QString text;
+
+        if (CookieLifecycleManager::instance()->mode() == CookieLifecycleManager::SessionOnly) {
+            text = tr("Cookies picked up since this browser started are swept at exit; earlier cookies stay.");
+        } else {
+            text = tr("Every cookie except the kept sites' is swept at exit.");
+        }
+
+        if (!host.isEmpty() && CookieLifecycleManager::instance()->isKept(host)) {
+            text += QSL(" ") + tr("This site's cookies survive (kept from the padlock menu).");
+        }
+
+        const quint64 swept = SecurityManager::instance()->cookiesSwept();
+        if (swept > 0) {
+            text += QSL(" ") + tr("%1 cookie(s) swept so far.").arg(QLocale().toString(swept));
+        }
+
+        m_cookieLifecycleState->setText(text);
+    }
+
     // Malicious-site protection state, honest about the list and
     // about the one per-site state the tool has. The list's age is
     // spoken in relative terms (the same describeListAge() the
@@ -558,6 +603,7 @@ void SecuritySideBar::updateToggles()
     const QSignalBlocker fingerprintBlocker(m_fingerprintToggle);
     const QSignalBlocker gpcBlocker(m_gpcToggle);
     const QSignalBlocker referrerGuardBlocker(m_referrerGuardToggle);
+    const QSignalBlocker cookieLifecycleBlocker(m_cookieLifecycleToggle);
 
     m_adBlockToggle->setChecked(AdBlockManager::instance()->isEnabled());
     m_httpsOnlyToggle->setChecked(mApp->networkManager()->httpsOnlyInterceptor()->isEnabled());
@@ -576,6 +622,7 @@ void SecuritySideBar::updateToggles()
     m_gpcToggle->setChecked(GpcManager::instance()->isEnabled());
     m_referrerGuardToggle->setChecked(ReferrerGuardManager::instance()->isEnabled());
     m_referrerGuardToggle->setEnabled(ReferrerGuardManager::isSupported());
+    m_cookieLifecycleToggle->setChecked(CookieLifecycleManager::instance()->isEnabled());
 }
 
 void SecuritySideBar::resetCounters()
@@ -927,5 +974,16 @@ void SecuritySideBar::toggleReferrerGuard(bool enabled)
     auto *manager = ReferrerGuardManager::instance();
     manager->setMode(enabled ? ReferrerGuardManager::OriginOnly : ReferrerGuardManager::Off);
     mApp->networkManager()->loadSettings();
+    refresh();
+}
+
+void SecuritySideBar::toggleCookieLifecycle(bool enabled)
+{
+    // The quick switch moves between off and on at the session
+    // strength (the strict one is a Preferences choice). There is no
+    // IO-thread half to reload: the sweep reads the manager at exit,
+    // on this thread, so the choice is in force the moment it lands.
+    auto *manager = CookieLifecycleManager::instance();
+    manager->setMode(enabled ? CookieLifecycleManager::SessionOnly : CookieLifecycleManager::Off);
     refresh();
 }

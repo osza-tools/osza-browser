@@ -30,7 +30,8 @@ class QJsonObject;
  *
  * The bundled security suite (AdBlock, HTTPS-Only mode, tracking
  * parameter stripping, secure DNS, malicious site protection,
- * fingerprint protection and the Global Privacy Control signal) is
+ * fingerprint protection, the Global Privacy Control signal,
+ * cross-site referrer protection and the cookie exit sweep) is
  * configured through a dozen keys in two settings groups. This class
  * serializes that configuration into one portable JSON document and
  * applies such a document back into a profile, so a hardened setup
@@ -57,7 +58,9 @@ class QJsonObject;
  *                                 "sourceUrl": "https://..." },
  *     "fingerprintProtection":  { "enabled": true,
  *                                 "exclusions": ["bank.example"] },
- *     "globalPrivacyControl":   { "enabled": true }
+ *     "globalPrivacyControl":   { "enabled": true },
+ *     "cookieLifecycle":        { "mode": 1,
+ *                                 "keepSites": ["mail.example"] }
  *   }
  * }
  *
@@ -90,6 +93,10 @@ class QJsonObject;
  *    copying it to another machine would give two browsers the
  *    identical fingerprint, the exact opposite of the protection.
  *  - The protection counters are usage history, not settings.
+ *  - The cookie lifecycle tool's startup snapshot is never exported
+ *    either: it is a fact about one running session, not a setting,
+ *    and the importing browser judges "this session's cookies" by
+ *    its own startup.
  *  - Unknown tools and unknown fields are ignored on import, so
  *    documents from newer versions degrade instead of failing.
  *  - Every tool section is optional and validated on its own; a

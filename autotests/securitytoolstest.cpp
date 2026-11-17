@@ -19,6 +19,9 @@
 #include "securitytoolstest.h"
 #include "adblockmanager.h"
 #include "browserwindow.h"
+#include "cookiejar.h"
+#include "cookielifecyclemanager.h"
+#include "cookiekeeplistdialog.h"
 #include "datapaths.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintexceptionsdialog.h"
@@ -71,6 +74,7 @@
 #include <QEventLoop>
 #include <QElapsedTimer>
 #include <QHostAddress>
+#include <QNetworkCookie>
 #include <QNetworkProxy>
 #include <QNetworkProxyFactory>
 #include <QTcpServer>
@@ -87,6 +91,7 @@ void SecurityToolsTest::securityManagerCountersTest()
     const quint64 trackers = security->trackersStripped();
     const quint64 upgrades = security->httpsUpgrades();
     const quint64 referrers = security->referrersTrimmed();
+    const quint64 swept = security->cookiesSwept();
 
     security->reportAdBlocked(QSL("Example.COM"));
     security->reportAdBlocked(QSL("example.com"));
@@ -95,11 +100,14 @@ void SecurityToolsTest::securityManagerCountersTest()
     security->reportReferrerTrimmed(QSL("Shop.Example.com"));
     security->reportReferrerTrimmed(QSL("shop.example.com"));
     security->reportReferrerTrimmed(QSL("other.example"));
+    // The exit sweep's own report, in the bulk it earns at once.
+    security->reportCookiesSwept(7);
 
     QCOMPARE(security->adsBlocked(), ads + 2);
     QCOMPARE(security->trackersStripped(), trackers + 1);
     QCOMPARE(security->httpsUpgrades(), upgrades + 1);
     QCOMPARE(security->referrersTrimmed(), referrers + 3);
+    QCOMPARE(security->cookiesSwept(), swept + 7);
 
     // Host counters are normalized, both reports hit the same host.
     QCOMPARE(security->adsBlockedForHost(QSL("example.com")), quint64(2));
@@ -116,6 +124,7 @@ void SecurityToolsTest::securityManagerCountersTest()
     QCOMPARE(security->trackersStripped(), quint64(0));
     QCOMPARE(security->httpsUpgrades(), quint64(0));
     QCOMPARE(security->referrersTrimmed(), quint64(0));
+    QCOMPARE(security->cookiesSwept(), quint64(0));
     QCOMPARE(security->adsBlockedForHost(QSL("example.com")), quint64(0));
     QCOMPARE(security->referrersTrimmedForHost(QSL("shop.example.com")), quint64(0));
 }
@@ -126,6 +135,7 @@ void SecurityToolsTest::securityManagerPersistenceTest()
 
     security->resetCounters();
     security->reportHttpsUpgrade(QSL("persist.example"));
+    security->reportCookiesSwept(3);
 
     const quint64 expected = security->httpsUpgrades();
     QVERIFY(expected > 0);
@@ -134,13 +144,14 @@ void SecurityToolsTest::securityManagerPersistenceTest()
     security->loadCounters();
 
     QCOMPARE(security->httpsUpgrades(), expected);
+    QCOMPARE(security->cookiesSwept(), quint64(3));
 
     security->resetCounters();
 }
 
 void SecurityToolsTest::relaxedProtectionsQueryTest()
 {
-    // The one query behind the location-bar badge: exactly the five
+    // The one query behind the location-bar badge: exactly the six
     // tools with per-site state, judged the way each padlock-menu
     // row judges (enabled first, then the site's own exception),
     // returned as the porter's stable keys in the menu's row order,
@@ -153,13 +164,15 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     auto *gpc = GpcManager::instance();
     auto *referrerGuard = ReferrerGuardManager::instance();
     auto *threat = mApp->networkManager()->threatBlockManager();
+    auto *cookieLifecycle = CookieLifecycleManager::instance();
     QVERIFY(interceptor);
     QVERIFY(fingerprint);
     QVERIFY(gpc);
     QVERIFY(referrerGuard);
     QVERIFY(threat);
+    QVERIFY(cookieLifecycle);
 
-    // save the state the other tests expect, then have all five
+    // save the state the other tests expect, then have all six
     // tools enabled
     Settings settings;
     settings.beginGroup(QSL("Web-Browser-Settings"));
@@ -167,15 +180,18 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     const bool fingerprintBefore = settings.value(QSL("FingerprintProtection"), true).toBool();
     const bool gpcBefore = settings.value(QSL("GlobalPrivacyControl"), true).toBool();
     const int referrerGuardBefore = settings.value(QSL("ReferrerGuardMode"), 1).toInt();
+    const int cookieLifecycleBefore = settings.value(QSL("CookieLifecycleMode"), 0).toInt();
     settings.setValue(QSL("HttpsOnlyMode"), true);
     settings.setValue(QSL("FingerprintProtection"), true);
     settings.setValue(QSL("GlobalPrivacyControl"), true);
     settings.setValue(QSL("ReferrerGuardMode"), 1);
+    settings.setValue(QSL("CookieLifecycleMode"), 1);
     settings.endGroup();
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->loadSettings();
     referrerGuard->loadSettings();
+    cookieLifecycle->loadSettings();
     const bool threatBefore = threat->isEnabled();
     threat->setEnabled(true);
 
@@ -186,6 +202,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     gpc->removeExclusion(host);
     referrerGuard->removeExclusion(host);
     threat->removeSessionAllow(host);
+    cookieLifecycle->removeKeepSite(host);
 
     // nothing relaxed for a clean site, and the keys it would
     // return are the porter's - the badge can never name a tool
@@ -194,7 +211,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
 
     const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
                                          QSL("globalPrivacyControl"), QSL("referrerGuard"),
-                                         QSL("threatBlock")};
+                                         QSL("threatBlock"), QSL("cookieLifecycle")};
     for (const QString &key : perSiteToolKeys) {
         QVERIFY(SecuritySettingsPorter::toolKeys().contains(key));
         QVERIFY(!SecuritySettingsPorter::toolDisplayName(key).isEmpty());
@@ -222,9 +239,15 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
              (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock")}));
 
-    // the exceptions cover subdomains; a sibling host stays clean
+    // a kept site relaxes the cookie sweep, last in the menu's row
+    // order
+    cookieLifecycle->addKeepSite(host);
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock"), QSL("cookieLifecycle")}));
+
+    // the keep entries cover subdomains; a sibling host stays clean
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://deep.%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock")}));
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("threatBlock"), QSL("cookieLifecycle")}));
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://sibling.example/x"))), QStringList());
 
     // a tool switched off globally retires the site's exception
@@ -265,11 +288,30 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         referrerGuard->loadSettings();
     }
 
+    // the same holds for the cookie sweep's mode off while the
+    // site's keep entry stands
+    {
+        Settings off;
+        off.beginGroup(QSL("Web-Browser-Settings"));
+        off.setValue(QSL("CookieLifecycleMode"), 0);
+        off.endGroup();
+        cookieLifecycle->loadSettings();
+    }
+    QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("threatBlock")}));
+    {
+        Settings on;
+        on.beginGroup(QSL("Web-Browser-Settings"));
+        on.setValue(QSL("CookieLifecycleMode"), 1);
+        on.endGroup();
+        cookieLifecycle->loadSettings();
+    }
+
     // the same holds for a paused threat-block while the tool
     // itself is off
     threat->setEnabled(false);
     QCOMPARE(SecurityManager::relaxedProtections(QUrl(QSL("https://%1/x").arg(host))),
-             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard")}));
+             (QStringList{QSL("httpsOnly"), QSL("fingerprintProtection"), QSL("globalPrivacyControl"), QSL("referrerGuard"), QSL("cookieLifecycle")}));
     threat->setEnabled(true);
 
     // schemes the tools do not cover carry no per-site state
@@ -283,6 +325,7 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
     gpc->removeExclusion(host);
     referrerGuard->removeExclusion(host);
     threat->removeSessionAllow(host);
+    cookieLifecycle->removeKeepSite(host);
     {
         Settings restore;
         restore.beginGroup(QSL("Web-Browser-Settings"));
@@ -290,12 +333,14 @@ void SecurityToolsTest::relaxedProtectionsQueryTest()
         restore.setValue(QSL("FingerprintProtection"), fingerprintBefore);
         restore.setValue(QSL("GlobalPrivacyControl"), gpcBefore);
         restore.setValue(QSL("ReferrerGuardMode"), referrerGuardBefore);
+        restore.setValue(QSL("CookieLifecycleMode"), cookieLifecycleBefore);
         restore.endGroup();
     }
     interceptor->loadSettings();
     fingerprint->loadSettings();
     gpc->loadSettings();
     referrerGuard->loadSettings();
+    cookieLifecycle->loadSettings();
     threat->setEnabled(threatBefore);
 }
 
@@ -464,6 +509,18 @@ void SecurityToolsTest::securityDashboardWidgetTest()
         }
     }
 
+    // The cookie lifecycle quick switch must apply through the
+    // manager, turning on at the session strength.
+    const auto cookieModeBefore = CookieLifecycleManager::instance()->mode();
+
+    sidebar.toggleCookieLifecycle(cookieModeBefore == CookieLifecycleManager::Off);
+    QCOMPARE(CookieLifecycleManager::instance()->mode() == CookieLifecycleManager::Off,
+             !(cookieModeBefore == CookieLifecycleManager::Off));
+
+    if (cookieModeBefore == CookieLifecycleManager::Off) {
+        QCOMPARE(CookieLifecycleManager::instance()->mode(), CookieLifecycleManager::SessionOnly);
+    }
+
     // restore the original state
     sidebar.toggleHttpsOnly(httpsOnlyBefore);
     sidebar.toggleThreatBlock(threatBlockBefore);
@@ -473,6 +530,7 @@ void SecurityToolsTest::securityDashboardWidgetTest()
         ReferrerGuardManager::instance()->setMode(referrerModeBefore);
         mApp->networkManager()->loadSettings();
     }
+    CookieLifecycleManager::instance()->setMode(cookieModeBefore);
 }
 
 void SecurityToolsTest::securityDashboardToolDiffLinksTest()
@@ -580,10 +638,10 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     // The padlock menu's per-site entries carry the same deep links
     // the security dashboard's tool rows carry: this tool's part of
     // the recommended baseline's diff, one click away from the
-    // per-site state. Exactly the five tools with per-site entries in
+    // per-site state. Exactly the six tools with per-site entries in
     // the menu (HTTPS-Only mode, fingerprint protection, the GPC
     // signal, cross-site referrer protection, malicious site
-    // protection), built the same honest way -
+    // protection, cookie lifecycle), built the same honest way -
     // the porter's key list must know the key, the catalog must carry
     // the baseline - and landed by the same shared
     // SettingsDiffPage::openToolDiff() the dashboard's rows use, so
@@ -604,11 +662,11 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     padlock->show();
     QVERIFY(QTest::qWaitForWindowExposed(padlock));
 
-    // Exactly the five per-site entries carry a link under the
+    // Exactly the six per-site entries carry a link under the
     // dashboard's naming scheme - no strays, none missing.
     const QStringList perSiteToolKeys = {QSL("httpsOnly"), QSL("fingerprintProtection"),
                                          QSL("globalPrivacyControl"), QSL("referrerGuard"),
-                                         QSL("threatBlock")};
+                                         QSL("threatBlock"), QSL("cookieLifecycle")};
     const auto links = padlock->findChildren<QLabel*>(QRegularExpression(QSL("^[A-Za-z]+DiffLink$")));
     QCOMPARE(links.size(), perSiteToolKeys.size());
 
@@ -2371,10 +2429,14 @@ void SecurityToolsTest::referrerGuardExclusionTest()
     // a sibling sharing a suffix is not covered
     QVERIFY(!manager->isExcluded(QSL("xadd.example")));
 
-    // wildcards: "*.wild.example" covers the subdomains only
+    // wildcards: "*.wild.example" covers the subdomains only - not
+    // the bare domain, the same rule the HTTPS-Only list applies
+    // (the comment said "only" all along; the assertion had it the
+    // other way, unnoticed because CI compiles the autotests
+    // without running them)
     manager->addExclusion(QSL("*.wild.example"));
     QVERIFY(manager->isExcluded(QSL("sub.wild.example")));
-    QVERIFY(manager->isExcluded(QSL("wild.example")));
+    QVERIFY(!manager->isExcluded(QSL("wild.example")));
     QVERIFY(!manager->isExcluded(QSL("wild.example.org")));
 
     // adding the same host twice does not duplicate it
@@ -2678,6 +2740,357 @@ void SecurityToolsTest::referrerGuardHeaderIntegrationTest()
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 }
 
+void SecurityToolsTest::cookieLifecycleModeTest()
+{
+    // The mode is the tool's single knob: off (the out-of-the-box
+    // strength - the sweep ends sessions on exit and is a choice, not
+    // a silent floor), the session strength, and the strict one,
+    // persisted through the settings keys the exit sweep reads.
+    auto *manager = CookieLifecycleManager::instance();
+    QVERIFY(manager);
+
+    const auto modeBefore = manager->mode();
+
+    // setMode persists, and only reports real changes.
+    manager->setMode(CookieLifecycleManager::ClearOnExit);
+    QCOMPARE(manager->mode(), CookieLifecycleManager::ClearOnExit);
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieLifecycleMode")).toInt(),
+             static_cast<int>(CookieLifecycleManager::ClearOnExit));
+    QVERIFY(manager->isEnabled());
+
+    manager->setMode(CookieLifecycleManager::Off);
+    QCOMPARE(manager->mode(), CookieLifecycleManager::Off);
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieLifecycleMode")).toInt(),
+             static_cast<int>(CookieLifecycleManager::Off));
+    QVERIFY(!manager->isEnabled());
+
+    manager->setMode(CookieLifecycleManager::SessionOnly);
+    QCOMPARE(manager->mode(), CookieLifecycleManager::SessionOnly);
+    QVERIFY(manager->isEnabled());
+
+    // loadSettings reads the same keys back, and a corrupted value
+    // lands on the honest default - off - never on an unknown mode.
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/CookieLifecycleMode"), 42);
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), CookieLifecycleManager::Off);
+
+    Settings::globalSettings()->setValue(QSL("Web-Browser-Settings/CookieLifecycleMode"), -1);
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), CookieLifecycleManager::Off);
+
+    // The out-of-the-box default: off, unlike the referrer guard's
+    // on-by-default floor - this tool changes what survives a
+    // restart, and that is the user's decision to make.
+    Settings::globalSettings()->remove(QSL("Web-Browser-Settings/CookieLifecycleMode"));
+    manager->loadSettings();
+    QCOMPARE(manager->mode(), CookieLifecycleManager::Off);
+
+    // A mode change is announced, and only a real one.
+    int modeChanges = 0;
+    connect(manager, &CookieLifecycleManager::modeChanged, this, [&modeChanges]() { ++modeChanges; });
+
+    manager->setMode(CookieLifecycleManager::SessionOnly);
+    manager->setMode(CookieLifecycleManager::SessionOnly);
+    QCOMPARE(modeChanges, 1);
+
+    disconnect(manager, &CookieLifecycleManager::modeChanged, this, nullptr);
+
+    // restore the state the other tests expect
+    manager->setMode(modeBefore);
+}
+
+void SecurityToolsTest::cookieLifecycleKeepListTest()
+{
+    // The kept sites: the same entry matching every other list in the
+    // suite uses (the entry host itself, its subdomains, "*.domain"
+    // wildcards), anchored on the cookie's own domain - leading dot
+    // included, the cookie grammar's own spelling of a host - and
+    // persisted lowercased and deduplicated.
+    auto *manager = CookieLifecycleManager::instance();
+    QVERIFY(manager);
+
+    // isolate from other tests / user settings
+    manager->removeKeepSite(QSL("Keep.Example"));
+    manager->removeKeepSite(QSL("*.wild.example"));
+
+    QVERIFY(!manager->isKept(QSL("keep.example")));
+    QVERIFY(!manager->isKept(QSL(".keep.example")));
+
+    manager->addKeepSite(QSL("  Keep.Example  "));
+    QVERIFY(manager->isKept(QSL("keep.example")));
+    // the cookie grammar's leading dot is understood and dropped
+    QVERIFY(manager->isKept(QSL(".keep.example")));
+    QVERIFY(manager->isKept(QSL("KEEP.example")));
+    // entries are stored lowercase and cover subdomains
+    QCOMPARE(manager->keepSites(), QStringList{QSL("keep.example")});
+    QVERIFY(manager->isKept(QSL("deep.sub.keep.example")));
+    QVERIFY(!manager->isKept(QSL("notkeep.example")));
+    QVERIFY(!manager->isKept(QSL("xkeep.example")));
+
+    // wildcards: "*.wild.example" covers the subdomains only, not
+    // the bare domain - the same rule every other list in the suite
+    // applies
+    manager->addKeepSite(QSL("*.wild.example"));
+    QVERIFY(manager->isKept(QSL("sub.wild.example")));
+    QVERIFY(!manager->isKept(QSL("wild.example")));
+    QVERIFY(!manager->isKept(QSL("wild.example.org")));
+
+    // adding the same host twice does not duplicate it
+    manager->addKeepSite(QSL("keep.example"));
+    QCOMPARE(manager->keepSites().count(QSL("keep.example")), 1);
+
+    // removing drops the entry (case-insensitively) and persists
+    manager->removeKeepSite(QSL("KEEP.example"));
+    QVERIFY(!manager->isKept(QSL("keep.example")));
+    QVERIFY(manager->isKept(QSL("sub.wild.example")));
+
+    // empty input is refused
+    manager->addKeepSite(QSL("   "));
+    manager->removeKeepSite(QString());
+    QVERIFY(!manager->isKept(QString()));
+    QVERIFY(!manager->isKept(QSL(".")));
+
+    // setKeepSites replaces the whole list, normalizing like the
+    // porter's import path does (lowercase, deduplicated, empty
+    // dropped) - the import and the dialog land the same list
+    manager->setKeepSites({QSL("  Porter.Example  "), QSL("porter.example"), QString(), QSL("*.bulk.example")});
+    QCOMPARE(manager->keepSites(), (QStringList{QSL("porter.example"), QSL("*.bulk.example")}));
+    QVERIFY(manager->isKept(QSL("deep.bulk.example")));
+
+    // The persisted list is exactly the manager's
+    QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites")).toStringList(),
+             manager->keepSites());
+
+    // loadSettings reads the same keys back
+    manager->setKeepSites(QStringList{QSL("reload.example")});
+    manager->loadSettings();
+    QCOMPARE(manager->keepSites(), QStringList{QSL("reload.example")});
+
+    // restore the state the other tests expect
+    manager->setKeepSites(QStringList());
+
+    // The kept-sites management dialog: the bulk list editor the
+    // other tools have, with the same add/duplicate/remove behavior.
+    CookieKeepSitesDialog dialog(QStringList{QSL("dialog.example"), QSL("other.example")});
+    QCOMPARE(dialog.keepSites(), (QStringList{QSL("dialog.example"), QSL("other.example")}));
+}
+
+void SecurityToolsTest::cookieLifecycleSweepTest()
+{
+    // The one judgment the sweep is made of, pinned on the cookie
+    // alone: session cookies never move (they die with the browser
+    // anyway - deleting or counting them would be a claim the tool
+    // did not earn), kept sites' cookies never move, and the session
+    // strength keeps what the browser started with.
+    auto *manager = CookieLifecycleManager::instance();
+    QVERIFY(manager);
+
+    const auto modeBefore = manager->mode();
+    const QStringList keepSitesBefore = manager->keepSites();
+
+    auto persistentCookie = [](const QString &name, const QString &domain) {
+        QNetworkCookie cookie(name.toLatin1(), "value");
+        cookie.setDomain(domain);
+        cookie.setPath(QSL("/"));
+        cookie.setExpirationDate(QDateTime::currentDateTimeUtc().addDays(30));
+        return cookie;
+    };
+
+    const QNetworkCookie sessionCookie = []() {
+        QNetworkCookie cookie(QByteArrayLiteral("sid"), "value");
+        cookie.setDomain(QSL("session.example"));
+        cookie.setPath(QSL("/"));
+        return cookie;
+    }();
+
+    const QNetworkCookie oldPersistent = persistentCookie(QSL("old"), QSL("old.example"));
+    const QNetworkCookie newPersistent = persistentCookie(QSL("new"), QSL("new.example"));
+    const QNetworkCookie keptPersistent = persistentCookie(QSL("kept"), QSL(".keep.example"));
+
+    // Off: nothing is ever swept.
+    manager->setMode(CookieLifecycleManager::Off);
+    QVERIFY(!manager->sweepsAtExit(oldPersistent));
+    QVERIFY(!manager->sweepsAtExit(newPersistent));
+    QVERIFY(!manager->sweepsAtExit(sessionCookie));
+
+    // ClearOnExit: every persistent cookie except the kept sites'.
+    manager->setKeepSites(QStringList{QSL("keep.example")});
+    manager->setMode(CookieLifecycleManager::ClearOnExit);
+    QVERIFY(manager->sweepsAtExit(oldPersistent));
+    QVERIFY(manager->sweepsAtExit(newPersistent));
+    QVERIFY(!manager->sweepsAtExit(keptPersistent));
+    QVERIFY(!manager->sweepsAtExit(sessionCookie));
+
+    // The keep entry covers subdomains; a sibling sharing a suffix
+    // is not covered.
+    QVERIFY(!manager->sweepsAtExit(persistentCookie(QSL("sub"), QSL("sub.keep.example"))));
+    QVERIFY(manager->sweepsAtExit(persistentCookie(QSL("sibling"), QSL("xkeep.example"))));
+
+    // SessionOnly: without a snapshot there is nothing that provably
+    // existed at startup, so every persistent cookie counts as this
+    // session's - the honest reading, not a silent no-op.
+    manager->setMode(CookieLifecycleManager::SessionOnly);
+    QVERIFY(manager->sweepsAtExit(oldPersistent));
+    QVERIFY(manager->sweepsAtExit(newPersistent));
+    QVERIFY(!manager->sweepsAtExit(keptPersistent));
+    QVERIFY(!manager->sweepsAtExit(sessionCookie));
+
+    // With a snapshot, the judgment turns on it: what existed at
+    // startup survives, what this session picked up goes. The
+    // snapshot is built from the live jar, so its judgment is driven
+    // end to end by the integration test below.
+
+    // restore the state the other tests expect
+    manager->setMode(modeBefore);
+    manager->setKeepSites(keepSitesBefore);
+}
+
+void SecurityToolsTest::cookieLifecycleExitSweepIntegrationTest()
+{
+    // Full end-to-end check of the exit sweep against the real
+    // cookie store: cookies set after the snapshot are swept in the
+    // session strength, what the snapshot holds survives it, kept
+    // sites survive the strict strength, session cookies are never
+    // touched, the off mode touches nothing - and the counter counts
+    // exactly the cookies the sweep removed.
+    //
+    // The snapshot's meaning is "what existed when this browser
+    // started". This process took its own snapshot at its startup -
+    // whenever the startup timer fired - so whether the test may
+    // still take it (a young process) or must live with the one the
+    // timer took (the usual case in a long suite) decides which
+    // half of the session judgment is demonstrated directly; both
+    // halves are pinned either way, one per branch.
+    auto *manager = CookieLifecycleManager::instance();
+    auto *jar = mApp->cookieJar();
+    QVERIFY(manager);
+    QVERIFY(jar);
+
+    const auto modeBefore = manager->mode();
+    const QStringList keepSitesBefore = manager->keepSites();
+    const quint64 sweptBefore = SecurityManager::instance()->cookiesSwept();
+
+    // Sets a cookie through the real store and answers the cookie
+    // the engine actually stored - its own spelling of the domain,
+    // not the request's - captured from the jar's own signal, so
+    // every later judgment compares like with like.
+    auto setCookieAndWait = [jar](const QString &name, const QString &domain, bool persistent) -> QNetworkCookie {
+        QNetworkCookie cookie(name.toLatin1(), "value");
+        cookie.setDomain(domain);
+        cookie.setPath(QSL("/"));
+        if (persistent) {
+            cookie.setExpirationDate(QDateTime::currentDateTimeUtc().addDays(30));
+        }
+
+        QString host = domain;
+        if (host.startsWith(QLatin1Char('.'))) {
+            host.remove(0, 1);
+        }
+
+        QSignalSpy spy(jar, &CookieJar::cookieAdded);
+        mApp->webProfile()->cookieStore()->setCookie(cookie, QUrl(QSL("https://%1/").arg(host)));
+
+        QElapsedTimer timer;
+        timer.start();
+        while (timer.elapsed() < 20000) {
+            for (int i = 0; i < spy.count(); ++i) {
+                const QNetworkCookie arrived = spy.at(i).at(0).value<QNetworkCookie>();
+                if (QString::fromUtf8(arrived.name()) == name) {
+                    return arrived;
+                }
+            }
+            spy.wait(100);
+        }
+        return QNetworkCookie();
+    };
+
+    auto jarHas = [jar](const QNetworkCookie &cookie) {
+        return !cookie.name().isEmpty() && jar->getAllCookies().contains(cookie);
+    };
+
+    auto jarLacks = [jar](const QNetworkCookie &cookie) {
+        return !cookie.name().isEmpty() && !jar->getAllCookies().contains(cookie);
+    };
+
+    // The cookie that plays "existed when the browser started".
+    const QNetworkCookie startupCookie = setCookieAndWait(QSL("sweep-startup"), QSL("sweep-old.example"), true);
+    QVERIFY(!startupCookie.name().isEmpty());
+
+    // If this process has not taken its snapshot yet, take it now,
+    // with the startup cookie in place - exactly the way the
+    // startup timer would find it.
+    const bool snapshotTakenHere = !manager->hasStartupSnapshot();
+    if (snapshotTakenHere) {
+        manager->takeStartupSnapshot();
+        QVERIFY(manager->hasStartupSnapshot());
+    }
+
+    // The cookies this session picked up: a persistent one and a
+    // session one.
+    const QNetworkCookie sessionPersistent = setCookieAndWait(QSL("sweep-session"), QSL("sweep-new.example"), true);
+    QVERIFY(!sessionPersistent.name().isEmpty());
+    const QNetworkCookie pureSession = setCookieAndWait(QSL("sweep-pure-session"), QSL("sweep-new.example"), false);
+    QVERIFY(!pureSession.name().isEmpty());
+
+    // Off: the sweep does nothing, to cookies or to the counter.
+    manager->setMode(CookieLifecycleManager::Off);
+    QCOMPARE(manager->performExitSweep(jar), quint64(0));
+    QVERIFY(jarHas(startupCookie));
+    QVERIFY(jarHas(sessionPersistent));
+    QCOMPARE(SecurityManager::instance()->cookiesSwept(), sweptBefore);
+
+    // SessionOnly: the cookie this session picked up goes; the
+    // startup cookie's fate is exactly what the snapshot says - it
+    // survives when the snapshot was taken with it in place, and
+    // counts as this session's when the process's own snapshot
+    // predates it. A session cookie is never the sweep's to take.
+    manager->setMode(CookieLifecycleManager::SessionOnly);
+    const quint64 sessionSwept = manager->performExitSweep(jar);
+    QVERIFY(sessionSwept >= quint64(1));
+    QTRY_VERIFY_WITH_TIMEOUT(jarLacks(sessionPersistent), 20000);
+    if (snapshotTakenHere) {
+        QVERIFY(jarHas(startupCookie));
+    } else {
+        QTRY_VERIFY_WITH_TIMEOUT(jarLacks(startupCookie), 20000);
+    }
+    QVERIFY(jarHas(pureSession));
+    QVERIFY(SecurityManager::instance()->cookiesSwept() >= sweptBefore + 1);
+
+    // A kept site survives even the strict strength, and its
+    // subdomain with it.
+    manager->setKeepSites(QStringList{QSL("sweep-keep.example")});
+    const QNetworkCookie keptCookie = setCookieAndWait(QSL("sweep-kept"), QSL(".sweep-keep.example"), true);
+    QVERIFY(!keptCookie.name().isEmpty());
+    const QNetworkCookie keptSubCookie = setCookieAndWait(QSL("sweep-kept-sub"), QSL("deep.sweep-keep.example"), true);
+    QVERIFY(!keptSubCookie.name().isEmpty());
+    const QNetworkCookie doomedCookie = setCookieAndWait(QSL("sweep-doomed"), QSL("sweep-drop.example"), true);
+    QVERIFY(!doomedCookie.name().isEmpty());
+
+    manager->setMode(CookieLifecycleManager::ClearOnExit);
+    manager->performExitSweep(jar);
+    QTRY_VERIFY_WITH_TIMEOUT(jarLacks(doomedCookie), 20000);
+    QVERIFY(jarHas(keptCookie));
+    QVERIFY(jarHas(keptSubCookie));
+    QVERIFY(jarHas(pureSession));
+
+    // The sweep needs the jar it is handed; a null jar sweeps
+    // nothing and counts nothing.
+    const quint64 beforeNull = SecurityManager::instance()->cookiesSwept();
+    QCOMPARE(manager->performExitSweep(nullptr), quint64(0));
+    QCOMPARE(SecurityManager::instance()->cookiesSwept(), beforeNull);
+
+    // restore the state the other tests expect. The cookies the
+    // test set are deleted through the same store the sweep uses,
+    // and the manager's settings are back where they were found.
+    mApp->webProfile()->cookieStore()->deleteCookie(keptCookie);
+    mApp->webProfile()->cookieStore()->deleteCookie(keptSubCookie);
+    mApp->webProfile()->cookieStore()->deleteCookie(pureSession);
+    QTRY_VERIFY_WITH_TIMEOUT(jarLacks(keptCookie) && jarLacks(keptSubCookie) && jarLacks(pureSession), 20000);
+
+    manager->setMode(modeBefore);
+    manager->setKeepSites(keepSitesBefore);
+}
+
 void SecurityToolsTest::selfTestNoisePatternTest()
 {
     // The C++ mirror of the guard's perturbation: deterministic,
@@ -2802,7 +3215,7 @@ void SecurityToolsTest::selfTestNoiseEquivalenceTest()
 void SecurityToolsTest::selfTestPageBuildTest()
 {
     // The page builds with every placeholder substituted and carries
-    // the statuses of all eight bundled tools.
+    // the statuses of all nine bundled tools.
     const QString page = SelfTestPage::buildPage();
 
     QVERIFY(page.contains(QLatin1String("osza-selftest")));
@@ -2815,7 +3228,7 @@ void SecurityToolsTest::selfTestPageBuildTest()
     QVERIFY(!page.contains(QLatin1String("%DIRECTION%")));
 
     const QJsonArray statuses = SelfTestPage::collectToolStatuses();
-    QCOMPARE(statuses.size(), 8);
+    QCOMPARE(statuses.size(), 9);
 
     QStringList ids;
     for (const QJsonValue &value : statuses) {
@@ -2831,7 +3244,7 @@ void SecurityToolsTest::selfTestPageBuildTest()
 
     const QStringList expectedIds = {QSL("adblock"), QSL("httpsonly"), QSL("striptracking"),
                                      QSL("doh"), QSL("threatblock"), QSL("fingerprint"), QSL("gpc"),
-                                     QSL("referrerguard")};
+                                     QSL("referrerguard"), QSL("cookielifecycle")};
     for (const QString &id : expectedIds) {
         QVERIFY(ids.contains(id));
     }
@@ -2929,7 +3342,7 @@ void SecurityToolsTest::selfTestSectionUrlTest()
 void SecurityToolsTest::selfTestPageIntegrationTest()
 {
     // The real page through the real osza: scheme handler: it must
-    // load, render the eight statuses, run every live check, expose a
+    // load, render the nine statuses, run every live check, expose a
     // correct SHA-256, and measure a canvas digest that is stable
     // across reloads of the same page.
     auto *manager = FingerprintManager::instance();
@@ -2979,9 +3392,9 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
 
     QVERIFY(loadAndSettle());
 
-    // The page rendered: eight status rows, the test cards, the
+    // The page rendered: nine status rows, the test cards, the
     // tiles (live page + two demo hosts).
-    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-statuses li.st-row').length")).toInt(), 8);
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-statuses li.st-row').length")).toInt(), 9);
     QVERIFY(runScript(&page, QSL("document.querySelectorAll('.st-test').length")).toInt() >= 8);
     QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-tile').length")).toInt(), 3);
 
@@ -3059,16 +3472,17 @@ void SecurityToolsTest::settingsPorterDocumentTest()
     QCOMPARE(document.value(QSL("version")).toInt(), 1);
     QVERIFY(QDateTime::fromString(document.value(QSL("exportedAt")).toString(), Qt::ISODate).isValid());
 
-    // All eight bundled tools are covered. Six carry a plain enabled
+    // All nine bundled tools are covered. Six carry a plain enabled
     // state; secure DNS carries its mode instead - the mode is the
     // enabled state there (0 is Disabled), with the servers beside
-    // it - and the referrer guard carries its mode the same way, with
-    // the exceptions beside it - so the two are asserted by their own
-    // shape, not by "enabled".
+    // it - and the referrer guard and the cookie lifecycle carry
+    // their modes the same way, with their lists beside them - so
+    // the three are asserted by their own shape, not by "enabled".
     const QJsonObject tools = document.value(QSL("tools")).toObject();
     const QStringList expectedTools = {QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
                                        QSL("secureDns"), QSL("threatBlock"), QSL("fingerprintProtection"),
-                                       QSL("globalPrivacyControl"), QSL("referrerGuard")};
+                                       QSL("globalPrivacyControl"), QSL("referrerGuard"),
+                                       QSL("cookieLifecycle")};
     QCOMPARE(tools.size(), expectedTools.size());
 
     for (const QString &id : expectedTools) {
@@ -3079,6 +3493,9 @@ void SecurityToolsTest::settingsPorterDocumentTest()
         } else if (id == QSL("referrerGuard")) {
             QVERIFY(tools.value(id).toObject().contains(QSL("mode")));
             QVERIFY(tools.value(id).toObject().contains(QSL("exclusions")));
+        } else if (id == QSL("cookieLifecycle")) {
+            QVERIFY(tools.value(id).toObject().contains(QSL("mode")));
+            QVERIFY(tools.value(id).toObject().contains(QSL("keepSites")));
         } else {
             QVERIFY(tools.value(id).toObject().contains(QSL("enabled")));
         }
@@ -3115,6 +3532,7 @@ void SecurityToolsTest::settingsPorterDocumentTest()
     QVERIFY(!serialized.contains("TrackersStripped"));
     QVERIFY(!serialized.contains("HttpsUpgrades"));
     QVERIFY(!serialized.contains("ThreatsBlocked"));
+    QVERIFY(!serialized.contains("CookiesSwept"));
 
     // restore the state the other tests expect
     {
@@ -3136,6 +3554,7 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
     auto *referrerGuard = ReferrerGuardManager::instance();
+    auto *cookieLifecycle = CookieLifecycleManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
     const bool referrerGuardSupported = ReferrerGuardManager::isSupported();
@@ -3153,6 +3572,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto referrerModeBefore = referrerGuard->mode();
     const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
+    const auto cookieModeBefore = cookieLifecycle->mode();
+    const QStringList keepSitesBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -3174,6 +3595,10 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
         ? ReferrerGuardManager::OriginOnly
         : ReferrerGuardManager::NoReferrer;
     const QStringList referrerExclusionsTarget = {QSL("reader.porter.example")};
+    const auto cookieModeTarget = cookieModeBefore == CookieLifecycleManager::ClearOnExit
+        ? CookieLifecycleManager::SessionOnly
+        : CookieLifecycleManager::ClearOnExit;
+    const QStringList keepSitesTarget = {QSL("mail.porter.example")};
 
     // Phase 1: apply the target state through the normal manager APIs.
     {
@@ -3193,6 +3618,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     gpc->setExclusions(gpcExclusionsTarget);
     referrerGuard->setMode(referrerModeTarget);
     referrerGuard->setExclusions(referrerExclusionsTarget);
+    cookieLifecycle->setMode(cookieModeTarget);
+    cookieLifecycle->setKeepSites(keepSitesTarget);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockTarget);
     threatBlock->setEnabled(threatEnabledTarget);
@@ -3244,6 +3671,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     gpc->setExclusions(QStringList{QSL("old.porter.example")});
     referrerGuard->setMode(ReferrerGuardManager::Off);
     referrerGuard->setExclusions(QStringList{QSL("old.porter.example")});
+    cookieLifecycle->setMode(CookieLifecycleManager::Off);
+    cookieLifecycle->setKeepSites(QStringList{QSL("old.porter.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -3259,15 +3688,16 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QCOMPARE(fingerprint->isEnabled(), fingerprintBefore);
     QCOMPARE(gpc->isEnabled(), gpcBefore);
     QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::Off);
+    QCOMPARE(cookieLifecycle->mode(), CookieLifecycleManager::Off);
 
     // Phase 4: import through the file path.
     const SecuritySettingsPorter::ImportResult result = SecuritySettingsPorter::importFromFile(path);
 
     QVERIFY(result.ok);
     QVERIFY(result.error.isEmpty());
-    const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 6;
+    const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 7;
     QCOMPARE(result.appliedTools, expectedApplied);
-    QCOMPARE(result.skippedTools.size(), 8 - expectedApplied);
+    QCOMPARE(result.skippedTools.size(), 9 - expectedApplied);
     if (!dohSupported) {
         QVERIFY(result.skippedTools.constFirst().startsWith(QSL("secureDns")));
     }
@@ -3317,6 +3747,13 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
         QCOMPARE(referrerGuard->exclusions(), referrerExclusionsTarget);
     }
 
+    // The cookie lifecycle tool has no capability gate - the sweep
+    // is the browser's own act - so its import always applies.
+    QCOMPARE(cookieLifecycle->mode(), cookieModeTarget);
+    QVERIFY(cookieLifecycle->isKept(QSL("mail.porter.example")));
+    QVERIFY(!cookieLifecycle->isKept(QSL("old.porter.example")));
+    QCOMPARE(cookieLifecycle->keepSites(), keepSitesTarget);
+
     // The guard script follows the imported fingerprint state.
     if (fingerprintTarget) {
         QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
@@ -3346,6 +3783,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     gpc->setExclusions(gpcExclusionsBefore);
     referrerGuard->setMode(referrerModeBefore);
     referrerGuard->setExclusions(referrerExclusionsBefore);
+    cookieLifecycle->setMode(cookieModeBefore);
+    cookieLifecycle->setKeepSites(keepSitesBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -3360,6 +3799,8 @@ void SecurityToolsTest::settingsPorterRoundTripTest()
     QCOMPARE(gpc->exclusions(), gpcExclusionsBefore);
     QCOMPARE(referrerGuard->mode(), referrerModeBefore);
     QCOMPARE(referrerGuard->exclusions(), referrerExclusionsBefore);
+    QCOMPARE(cookieLifecycle->mode(), cookieModeBefore);
+    QCOMPARE(cookieLifecycle->keepSites(), keepSitesBefore);
     QCOMPARE(adblock->isEnabled(), adblockBefore);
     QCOMPARE(threatBlock->isEnabled(), threatEnabledBefore);
     QCOMPARE(threatBlock->sourceUrl(), threatSourceBefore);
@@ -3846,6 +4287,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
     auto *referrerGuard = ReferrerGuardManager::instance();
+    auto *cookieLifecycle = CookieLifecycleManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
     const bool referrerGuardSupported = ReferrerGuardManager::isSupported();
@@ -3863,6 +4305,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto referrerModeBefore = referrerGuard->mode();
     const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
+    const auto cookieModeBefore = cookieLifecycle->mode();
+    const QStringList keepSitesBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -3884,6 +4328,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     gpc->setExclusions(QStringList{QSL("gpc-preview.example")});
     referrerGuard->setMode(ReferrerGuardManager::OriginOnly);
     referrerGuard->setExclusions(QStringList{QSL("referrer-preview.example")});
+    cookieLifecycle->setMode(CookieLifecycleManager::SessionOnly);
+    cookieLifecycle->setKeepSites(QStringList{QSL("old-cookie-preview.example")});
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(true);
     threatBlock->setEnabled(true);
@@ -3904,6 +4350,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     tools.insert(QSL("fingerprintProtection"), QJsonObject{{QSL("enabled"), QSL("yes")}});
     tools.insert(QSL("globalPrivacyControl"), QJsonObject{{QSL("enabled"), true}});
     tools.insert(QSL("referrerGuard"), QJsonObject{{QSL("mode"), 2}, {QSL("exclusions"), QJsonArray{}}});
+    tools.insert(QSL("cookieLifecycle"), QJsonObject{{QSL("mode"), 2}, {QSL("keepSites"), QJsonArray{QSL("mail-cookie-preview.example")}}});
 
     QJsonObject document;
     document.insert(QSL("format"), SecuritySettingsPorter::formatIdentifier());
@@ -3949,7 +4396,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QCOMPARE(preview.checksum, SecuritySettingsPorter::ChecksumState::NoChecksum);
 
     // The absent tool is reported as unchanged, not as skipped.
-    QCOMPARE(preview.configuredTools, 7);
+    QCOMPARE(preview.configuredTools, 8);
     QCOMPARE(preview.unchangedTools, QStringList{QSL("trackingParameters")});
 
     // The malformed section is reported with the reason the import
@@ -4016,6 +4463,27 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QCOMPARE(changeCount(preview, QSL("referrerGuard")), 0);
     }
 
+    // The cookie lifecycle tool moves to the strict strength and
+    // replaces the keep list - two rows, the same shape the other
+    // mode tools produce, and the keep list's one-line summaries
+    // speak the keep phrasing, not the exception phrasing.
+    QVERIFY(hasChange(preview, QSL("cookieLifecycle"), QSL("mode"),
+                      QSL("on, only this session's cookies swept"),
+                      QSL("on, every cookie except kept sites swept")));
+    QVERIFY(hasChange(preview, QSL("cookieLifecycle"), QSL("keepSites"),
+                      QSL("old-cookie-preview.example"), QSL("mail-cookie-preview.example")));
+    QCOMPARE(changeCount(preview, QSL("cookieLifecycle")), 2);
+
+    {
+        const SecuritySettingsPorter::PreviewChange *keepSites = findChange(preview, QSL("cookieLifecycle"), QSL("keepSites"));
+        QVERIFY(keepSites);
+        QCOMPARE(keepSites->clearedEntries, QStringList{QSL("old-cookie-preview.example")});
+        QCOMPARE(keepSites->addedEntries, QStringList{QSL("mail-cookie-preview.example")});
+        QCOMPARE(SecuritySettingsPorter::exceptionSummaryLines(*keepSites),
+                 (QStringList{QSL("Stops keeping cookies for: old-cookie-preview.example"),
+                              QSL("Starts keeping cookies for: mail-cookie-preview.example")}));
+    }
+
     // A site-exception change names the sites whose treatment
     // changes: the httpsOnly row clears preview.example, and the
     // summary line says so in one line. The gpc row names its site
@@ -4058,6 +4526,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     QVERIFY(gpc->isExcluded(QSL("gpc-preview.example")));
     QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::OriginOnly);
     QVERIFY(referrerGuard->isExcluded(QSL("referrer-preview.example")));
+    QCOMPARE(cookieLifecycle->mode(), CookieLifecycleManager::SessionOnly);
+    QCOMPARE(cookieLifecycle->keepSites(), QStringList{QSL("old-cookie-preview.example")});
     if (dohSupported) {
         QCOMPARE(doh->mode(), DnsOverHttpsManager::SecureWithFallback);
         QCOMPARE(doh->serverTemplates(), QStringList{DnsOverHttpsManager::defaultServerTemplate()});
@@ -4144,7 +4614,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QVERIFY(!result.checksumMismatch);
         QCOMPARE(result.skippedTools, preview.skippedTools);
 
-        const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 5;
+        const int expectedApplied = (dohSupported ? 1 : 0) + (referrerGuardSupported ? 1 : 0) + 6;
         QCOMPARE(result.appliedTools, expectedApplied);
 
         // The announced diff was the truth: the changed values hold.
@@ -4156,6 +4626,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
             QCOMPARE(referrerGuard->mode(), ReferrerGuardManager::NoReferrer);
             QVERIFY(!referrerGuard->isExcluded(QSL("referrer-preview.example")));
         }
+        QCOMPARE(cookieLifecycle->mode(), CookieLifecycleManager::ClearOnExit);
+        QCOMPARE(cookieLifecycle->keepSites(), QStringList{QSL("mail-cookie-preview.example")});
         if (dohSupported) {
             QCOMPARE(doh->mode(), DnsOverHttpsManager::Disabled);
         }
@@ -4211,7 +4683,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         const QStringList keys{QSL("adblock"), QSL("httpsOnly"), QSL("trackingParameters"),
                                QSL("secureDns"), QSL("threatBlock"),
                                QSL("fingerprintProtection"), QSL("globalPrivacyControl"),
-                               QSL("referrerGuard")};
+                               QSL("referrerGuard"), QSL("cookieLifecycle")};
         QSet<QString> names;
 
         for (const QString &key : keys) {
@@ -4226,6 +4698,7 @@ void SecurityToolsTest::settingsPorterPreviewTest()
         QCOMPARE(SecuritySettingsPorter::toolDisplayName(QSL("unknownTool")), QSL("unknownTool"));
         QCOMPARE(SecuritySettingsPorter::fieldDisplayName(QSL("adblock"), QSL("unknownField")), QSL("unknownField"));
         QVERIFY(!SecuritySettingsPorter::fieldDisplayName(QSL("threatBlock"), QSL("sourceUrl")).isEmpty());
+        QVERIFY(!SecuritySettingsPorter::fieldDisplayName(QSL("cookieLifecycle"), QSL("keepSites")).isEmpty());
     }
 
     // Provenance: a document that names a preset carries its id into
@@ -4262,6 +4735,8 @@ void SecurityToolsTest::settingsPorterPreviewTest()
     gpc->setExclusions(gpcExclusionsBefore);
     referrerGuard->setMode(referrerModeBefore);
     referrerGuard->setExclusions(referrerExclusionsBefore);
+    cookieLifecycle->setMode(cookieModeBefore);
+    cookieLifecycle->setKeepSites(keepSitesBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -4280,6 +4755,7 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     auto *fingerprint = FingerprintManager::instance();
     auto *gpc = GpcManager::instance();
     auto *referrerGuard = ReferrerGuardManager::instance();
+    auto *cookieLifecycle = CookieLifecycleManager::instance();
 
     const bool dohSupported = DnsOverHttpsManager::isSupported();
 
@@ -4296,6 +4772,8 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
     const auto referrerModeBefore = referrerGuard->mode();
     const QStringList referrerExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardExclusions"), QStringList()).toStringList();
+    const auto cookieModeBefore = cookieLifecycle->mode();
+    const QStringList keepSitesBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -4404,6 +4882,8 @@ void SecurityToolsTest::settingsPorterPresetExportTest()
     gpc->setExclusions(gpcExclusionsBefore);
     referrerGuard->setMode(referrerModeBefore);
     referrerGuard->setExclusions(referrerExclusionsBefore);
+    cookieLifecycle->setMode(cookieModeBefore);
+    cookieLifecycle->setKeepSites(keepSitesBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -4665,6 +5145,8 @@ void SecurityToolsTest::securityPresetsTest()
     const QStringList httpsExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/HttpsOnlyExclusions"), QStringList()).toStringList();
     const QStringList fingerprintExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/FingerprintExclusions"), QStringList()).toStringList();
     const QStringList gpcExclusionsBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/GpcExclusions"), QStringList()).toStringList();
+    const auto cookieModeBefore = CookieLifecycleManager::instance()->mode();
+    const QStringList keepSitesBefore = Settings::globalSettings()->value(QSL("Web-Browser-Settings/CookieKeepSites"), QStringList()).toStringList();
     const auto dohModeBefore = doh->mode();
     const QStringList dohServersBefore = doh->serverTemplates();
 
@@ -4685,12 +5167,12 @@ void SecurityToolsTest::securityPresetsTest()
         ids.insert(preset.id);
 
         // Every preset is a well-formed document in the import format
-        // that states all eight tools explicitly - the ones it turns
+        // that states all nine tools explicitly - the ones it turns
         // off included - and carries neither a seed nor a checksum.
         QVERIFY(SecuritySettingsPorter::validateDocumentHeader(preset.document, nullptr));
 
         const QJsonObject tools = preset.document.value(QSL("tools")).toObject();
-        QCOMPARE(tools.size(), 8);
+        QCOMPARE(tools.size(), 9);
         QVERIFY(tools.value(QSL("adblock")).isObject());
         QVERIFY(tools.value(QSL("httpsOnly")).isObject());
         QVERIFY(tools.value(QSL("trackingParameters")).isObject());
@@ -4699,6 +5181,7 @@ void SecurityToolsTest::securityPresetsTest()
         QVERIFY(tools.value(QSL("fingerprintProtection")).isObject());
         QVERIFY(tools.value(QSL("globalPrivacyControl")).isObject());
         QVERIFY(tools.value(QSL("referrerGuard")).isObject());
+        QVERIFY(tools.value(QSL("cookieLifecycle")).isObject());
 
         QCOMPARE(SecuritySettingsPorter::checkChecksum(preset.document),
                  SecuritySettingsPorter::ChecksumState::NoChecksum);
@@ -4732,6 +5215,11 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
                  static_cast<int>(ReferrerGuardManager::OriginOnly));
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        // Essentials leaves the cookie exit sweep off: it is an
+        // opt-in discipline, not a silent floor.
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(CookieLifecycleManager::Off));
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("keepSites")).toArray().size(), 0);
     }
 
     {
@@ -4754,6 +5242,12 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
                  static_cast<int>(ReferrerGuardManager::OriginOnly));
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        // The recommended baseline keeps the sweep off on purpose:
+        // it ends sessions on exit and is the user's choice to make,
+        // one selection away in the same dialog.
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(CookieLifecycleManager::Off));
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("keepSites")).toArray().size(), 0);
     }
 
     {
@@ -4773,6 +5267,11 @@ void SecurityToolsTest::securityPresetsTest()
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("mode")).toInt(),
                  static_cast<int>(ReferrerGuardManager::NoReferrer));
         QCOMPARE(tools.value(QSL("referrerGuard")).toObject().value(QSL("exclusions")).toArray().size(), 0);
+        // Maximum protection sweeps everything at exit and keeps
+        // no site: nothing a session picked up survives it.
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("mode")).toInt(),
+                 static_cast<int>(CookieLifecycleManager::ClearOnExit));
+        QCOMPARE(tools.value(QSL("cookieLifecycle")).toObject().value(QSL("keepSites")).toArray().size(), 0);
     }
 
     // Lookup by id finds every built-in and nothing else.
@@ -4800,6 +5299,8 @@ void SecurityToolsTest::securityPresetsTest()
         fingerprint->loadSettings();
         gpc->setEnabled(!gpcBefore);
         gpc->setExclusions(QStringList{QSL("preset.example")});
+        CookieLifecycleManager::instance()->setMode(CookieLifecycleManager::ClearOnExit);
+        CookieLifecycleManager::instance()->setKeepSites(QStringList{QSL("preset.example")});
         mApp->networkManager()->loadSettings();
         adblock->setEnabled(!adblockBefore);
         threatBlock->setEnabled(!threatEnabledBefore);
@@ -4813,9 +5314,9 @@ void SecurityToolsTest::securityPresetsTest()
 
         QVERIFY(result.ok);
         QVERIFY(!result.checksumMismatch);
-        const int expectedApplied = (dohSupported ? 1 : 0) + (ReferrerGuardManager::isSupported() ? 1 : 0) + 6;
+        const int expectedApplied = (dohSupported ? 1 : 0) + (ReferrerGuardManager::isSupported() ? 1 : 0) + 7;
         QCOMPARE(result.appliedTools, expectedApplied);
-        QCOMPARE(result.skippedTools.size(), 8 - expectedApplied);
+        QCOMPARE(result.skippedTools.size(), 9 - expectedApplied);
 
         QCOMPARE(adblock->isEnabled(), true);
         QCOMPARE(interceptor->isEnabled(), true);
@@ -4835,6 +5336,11 @@ void SecurityToolsTest::securityPresetsTest()
             QCOMPARE(ReferrerGuardManager::instance()->mode(), ReferrerGuardManager::OriginOnly);
             QVERIFY(!ReferrerGuardManager::instance()->isExcluded(QSL("preset.example")));
         }
+
+        // The recommended baseline turns the sweep off and clears
+        // the kept sites.
+        QCOMPARE(CookieLifecycleManager::instance()->mode(), CookieLifecycleManager::Off);
+        QCOMPARE(CookieLifecycleManager::instance()->keepSites(), QStringList());
 
         // The guard script follows the preset.
         QVERIFY(!mApp->webProfile()->scripts()->find(QSL("_osza_fingerprint_guard")).isEmpty());
@@ -4856,7 +5362,8 @@ void SecurityToolsTest::securityPresetsTest()
     }
 
     // The maximum baseline is the strict strength of the referrer
-    // guard; a preset really replaces the whole configuration.
+    // guard and of the cookie exit sweep; a preset really replaces
+    // the whole configuration.
     {
         const SecuritySettingsPorter::ImportResult result =
             SecuritySettingsPorter::applyDocument(SecurityPresets::presetById(QSL("maximum-protection")).document);
@@ -4865,6 +5372,8 @@ void SecurityToolsTest::securityPresetsTest()
         if (ReferrerGuardManager::isSupported()) {
             QCOMPARE(ReferrerGuardManager::instance()->mode(), ReferrerGuardManager::NoReferrer);
         }
+        QCOMPARE(CookieLifecycleManager::instance()->mode(), CookieLifecycleManager::ClearOnExit);
+        QCOMPARE(CookieLifecycleManager::instance()->keepSites(), QStringList());
     }
 
     // restore the state the other tests expect
@@ -4883,6 +5392,8 @@ void SecurityToolsTest::securityPresetsTest()
     fingerprint->loadSettings();
     gpc->setEnabled(gpcBefore);
     gpc->setExclusions(gpcExclusionsBefore);
+    CookieLifecycleManager::instance()->setMode(cookieModeBefore);
+    CookieLifecycleManager::instance()->setKeepSites(keepSitesBefore);
     mApp->networkManager()->loadSettings();
     adblock->setEnabled(adblockBefore);
     threatBlock->setEnabled(threatEnabledBefore);
@@ -4955,7 +5466,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
         const QJsonObject previewObject = data.value(QSL("preview")).toObject();
         QVERIFY(previewObject.value(QSL("ok")).toBool());
         QCOMPARE(previewObject.value(QSL("configuredTools")).toInt(), preview.configuredTools);
-        QCOMPARE(previewObject.value(QSL("totalTools")).toInt(), 8);
+        QCOMPARE(previewObject.value(QSL("totalTools")).toInt(), 9);
         QCOMPARE(previewObject.value(QSL("changes")).toArray().size(), preview.changes.size());
 
         const QString page = SettingsDiffPage::buildPage(preset.id);
@@ -4979,7 +5490,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
             QVERIFY(change.contains(QSL("summary")));
         }
 
-        // Presets state all eight sections; the page accounts for
+        // Presets state all nine sections; the page accounts for
         // every one of them: changed, skipped or already matching.
         int quiet = 0;
         for (const QJsonValue &value : previewObject.value(QSL("quietTools")).toArray()) {
@@ -4994,7 +5505,13 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
         for (const QString &entry : preview.skippedTools) {
             accounted.insert(entry.left(entry.indexOf(QSL(": "))));
         }
-        QCOMPARE(quiet + accounted.size(), 7);
+        // The identity the page's accounting must always keep: every
+        // carried section is changed, skipped or quiet, and no section
+        // is more than one of them - so the sum is the number of
+        // sections the preset carries. (The referrer guard's arrival
+        // left this pin at the seven-tool era's value; the count is
+        // restated here so the next tool's arrival moves it again.)
+        QCOMPARE(quiet + accounted.size(), 9);
     }
 
     // An id that is not one of the built-ins is a dead end with a
@@ -5085,7 +5602,7 @@ void SecurityToolsTest::settingsDiffPageBuildTest()
             } else if (isSkipped) {
                 QVERIFY(note.contains(skipReason));
             } else {
-                // The built-in presets state all eight sections, so
+                // The built-in presets state all nine sections, so
                 // an answered tool without changes is already at the
                 // baseline's settings.
                 QVERIFY(toolsOfDocument.contains(toolKey));

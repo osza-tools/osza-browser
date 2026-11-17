@@ -188,6 +188,64 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (26): cookie lifecycle on exit, the ninth bundled
+  tool - a cookie is the one tracker built to outlive the session
+  that created it: a site leaves a persistent cookie behind, and
+  the next launch hands your identity back to whoever reads it.
+  The Cookie Manager's own "delete cookies on close" answers with
+  one all-or-nothing pass; the sweep gives the exit discipline the
+  suite's shape. When the browser closes, it deletes the persistent
+  cookies in one of two strengths: only the ones this session
+  picked up (the recommended strength - the logins you arrived
+  with survive, the crumbs this session earned go; what "existed
+  at startup" is a snapshot of the jar's persistent cookies taken
+  once, shortly after launch, never retaken, and never persisted),
+  or every cookie except the kept sites' (the strict strength).
+  Session cookies are never touched and never counted - they die
+  with the browser anyway, and deleting them would be a claim the
+  tool did not earn. The kept sites are the per-site decision: a
+  keep-list anchored on the cookie's own domain (leading dot
+  understood), entries covering the host and its subdomains,
+  "*.domain" wildcards like every other list in the suite, one
+  site at a time from the padlock menu or in bulk from a dialog in
+  Preferences. The tool is off out of the box and stays off in
+  Essentials and the recommended baseline - it ends sessions on
+  exit, and that is the user's choice to make, not a silent floor
+  - while Maximum protection sweeps everything and keeps no site.
+  The sweep itself runs once, from the browser's own shutdown path
+  (MainApplication::saveSettings), before the Cookie Manager's
+  delete-on-close pass so the counter speaks about exactly the
+  cookies this tool removed itself; private windows never reach it,
+  their profile keeping nothing anyway; and no engine version
+  gates the tool, because the sweep is the browser's own act, not
+  the engine's. A sixth counter ("Cookies swept", totals only - the
+  sweep is the browser's last act, so a per-site table nothing will
+  ever read is not a counter) reports each sweep and shows the
+  history the next launch's dashboard reads; the location bar's
+  amber badge names a kept site through the same
+  relaxed-protections query the other per-site states ride; the
+  security dashboard carries the quick switch (off to the session
+  strength) with a live state row; the self-test page reports the
+  active strength, the kept-site count and the swept total; the
+  porter exports, imports, previews and presets the tool's mode and
+  kept sites (the preview's one-line summaries speak the keep
+  phrasing - "Stops keeping cookies for:" / "Starts keeping
+  cookies for:" - because "exception" would say the opposite), the
+  settings-diff page speaks "of the 9 security tools", and the
+  per-tool deep links carry the new row everywhere the dashboard's
+  rows already do.
+  tools/security/verify_cookie_lifecycle.py reads the tool clean
+  without a Qt build (the sweep contract, the keep-list matching,
+  the manager's mode and persistence contracts, the startup
+  snapshot wiring, and every surface the tool touches), the
+  autotest grows cookieLifecycleModeTest, cookieLifecycleKeepListTest,
+  cookieLifecycleSweepTest and a cookie-store integration test
+  that sets real cookies, takes the snapshot and watches the sweep
+  delete exactly the ones each strength condemns, and the
+  settings-diff accounting test's carried-section count is restated
+  as the identity it always was (the referrer guard's arrival had
+  left it at the seven-tool era's value - CI compiles the autotests
+  but does not run them, so the stale pin had gone unnoticed).
 - Security tools (25): cross-site referrer protection, the eighth
   bundled tool - the Referer header tells the receiving site where
   the request came from, and under a page's own "unsafe-url"

@@ -55,11 +55,19 @@ public:
     void reportThreatBlocked(const QString &host);
     void reportReferrerTrimmed(const QString &host);
 
+    // Called from the GUI thread at exit (the cookie lifecycle
+    // tool's sweep) - a total-only counter: the sweep runs while the
+    // browser is closing, so no per-site session table would ever
+    // be read, and the total is what the next launch's dashboard
+    // shows.
+    void reportCookiesSwept(quint64 count);
+
     quint64 adsBlocked() const;
     quint64 trackersStripped() const;
     quint64 httpsUpgrades() const;
     quint64 threatsBlocked() const;
     quint64 referrersTrimmed() const;
+    quint64 cookiesSwept() const;
 
     // Session counters for a single site (first-party host).
     quint64 adsBlockedForHost(const QString &host) const;
@@ -75,13 +83,14 @@ public:
      * fingerprint or GPC exclusion (the site's readouts are not
      * randomized / the opt-out is not sent), a referrer-guard
      * exclusion (the site's URLs leave for other sites as the site
-     * intends), or a threat-block session allow ("proceed
-     * anyway"). A tool's entry only counts while the tool itself is
-     * enabled: a global switch is not per-site state, the padlock
-     * menu and Preferences own it. Returns the porter's stable tool
-     * keys in the padlock menu's row order; empty for schemes the
-     * tools do not cover. UI thread only (Settings-backed managers,
-     * no locking).
+     * intends), a threat-block session allow ("proceed
+     * anyway") or a cookie-lifecycle kept site (its cookies survive
+     * the exit sweep). A tool's entry only counts while the tool
+     * itself is enabled: a global switch is not per-site state, the
+     * padlock menu and Preferences own it. Returns the porter's
+     * stable tool keys in the padlock menu's row order; empty for
+     * schemes the tools do not cover. UI thread only (Settings-
+     * backed managers, no locking).
      */
     static QStringList relaxedProtections(const QUrl &url);
 
@@ -106,12 +115,16 @@ private:
 
     static QString normalizeHost(const QString &host);
 
-    // Total counters, persisted between sessions.
+    // Total counters, persisted between sessions. The swept-cookies
+    // total has no per-host sibling on purpose: the sweep is the
+    // browser's last act, and a table nothing will ever read is not
+    // a counter, it is a claim.
     std::atomic<quint64> m_adsBlocked;
     std::atomic<quint64> m_trackersStripped;
     std::atomic<quint64> m_httpsUpgrades;
     std::atomic<quint64> m_threatsBlocked;
     std::atomic<quint64> m_referrersTrimmed;
+    std::atomic<quint64> m_cookiesSwept;
 
     // Per-host session counters, only exposed in the dashboard.
     mutable QMutex m_hostMutex;
