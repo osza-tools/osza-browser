@@ -223,10 +223,14 @@ QString OszaSchemeReply::pageContents(const QString &pageName, const QUrl &reque
             ThreatBlockManager::blockedUrlFromPageUrl(requestUrl));
     } else if (pageName == QLatin1String("selftest")) {
         // The "section" query item names the part of the page the
-        // request asks to focus; the page answers every value it can
-        // be handed (a known section focused, an unknown one noted
-        // over the whole page, none at all meaning the plain page).
-        contents = SelfTestPage::buildPage(SelfTestPage::sectionIdFromUrl(requestUrl));
+        // request asks to focus; the "site" item names the site the
+        // per-state section should answer for; the page answers every
+        // value either can be handed (a known section focused, an
+        // unknown one noted over the whole page, a judgeable site
+        // judged, an unjudgeable one answered honestly, none at all
+        // meaning the plain page).
+        contents = SelfTestPage::buildPage(SelfTestPage::sectionIdFromUrl(requestUrl),
+                                           SelfTestPage::siteFromUrl(requestUrl));
     } else if (pageName == QLatin1String("settings-diff")) {
         // The baseline the request asks for rides in the "preset"
         // query item, the tool to focus in the "tool" item; the page

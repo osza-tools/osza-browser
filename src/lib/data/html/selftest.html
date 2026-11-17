@@ -134,6 +134,57 @@ body { direction: %DIRECTION%; }
 
 .st-row__detail { flex-basis: 100%; color: var(--osza-text-dim); font-size: 12.5px; }
 
+/* The relaxed pill: the amber the page's attention badges wear, the
+   same alphas in pill geometry. */
+.st-pill--relaxed {
+    border-color: rgba(255, 180, 84, 0.50);
+    background: rgba(255, 180, 84, 0.10);
+    color: #ffb454;
+}
+
+@media (prefers-color-scheme: light) {
+    .st-pill--relaxed { color: #b06200; }
+}
+
+/* --- Per-site ask form ---------------------------------------------- */
+.st-ask { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 12px 4px; }
+
+.st-ask__input {
+    flex: 1 1 220px;
+    padding: 8px 12px;
+    border: 1px solid var(--osza-card-border);
+    border-radius: var(--osza-radius-sm);
+    background: rgba(0, 0, 0, 0.28);
+    color: var(--osza-text);
+    font-family: var(--osza-font-mono);
+    font-size: 12.5px;
+}
+
+@media (prefers-color-scheme: light) {
+    .st-ask__input { background: rgba(15, 23, 42, 0.05); }
+}
+
+.st-ask__input:focus-visible {
+    outline: none;
+    border-color: rgba(var(--osza-accent-rgb), 0.65);
+    box-shadow: var(--osza-glow);
+}
+
+.st-ask .vx-btn { flex: none; }
+
+/* The host the page is answering for, in the spelling the browser
+   judged it in. */
+.st-site-host {
+    margin: 12px 0 8px;
+    font-family: var(--osza-font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--osza-text);
+    overflow-wrap: anywhere;
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
 /* --- Live test cards ------------------------------------------------ */
 .st-tests { display: flex; flex-direction: column; gap: 8px; }
 
@@ -365,6 +416,24 @@ body { direction: %DIRECTION%; }
       <ul id="st-statuses" class="st-statuses"></ul>
     </section>
 
+    <!-- The per-site half of the page: the host to answer for is
+         substituted by the browser (the judgments are its own, the
+         same lists the padlock menu reads), the form asks for
+         another, and an address that names no site is answered, not
+         judged. -->
+    <section class="st-sec" data-section="site">
+      <h2 class="vx-h st-h"><span class="st-h__text">%SITE-HEADING%</span></h2>
+      <p class="st-intro">%SITE-INTRO%</p>
+      <p class="st-ask">
+        <input id="st-site-input" class="st-ask__input" type="text" spellcheck="false"
+               autocomplete="off" placeholder="%SITE-INPUT-PLACEHOLDER%" aria-label="%SITE-INPUT-LABEL%">
+        <button id="st-site-ask" class="vx-btn vx-btn--primary" type="button">%SITE-ASK-LABEL%</button>
+      </p>
+      <p id="st-site-note" class="st-focus-note" style="display: none;"></p>
+      <h3 id="st-site-host" class="st-site-host" style="display: none;"></h3>
+      <ul id="st-sitelist" class="st-statuses"></ul>
+    </section>
+
     <section class="st-sec" data-section="fingerprint">
       <h2 class="vx-h st-h"><span class="st-h__text">%FP-HEADING%</span></h2>
       <p class="st-intro">%FP-INTRO%</p>
@@ -411,6 +480,7 @@ var OSZA_DEMO = %DEMO-PATTERNS%;
 var OSZA_I18N = %I18N-JSON%;
 var OSZA_TILE_SIZE = 64;
 var OSZA_FOCUS = %FOCUS-JSON%;
+var OSZA_SITE = %SITE-JSON%;
 
 var statusById = {};
 for (var si = 0; si < OSZA_STATUSES.length; si++) {
@@ -462,6 +532,34 @@ function el(tag, cls, text) {
    by the offline verifier the same way the diff page's is. */
 function sectionUrl(sectionId) {
     return 'osza:selftest?section=' + encodeURIComponent(sectionId);
+}
+
+/* --- The per-site question -------------------------------------------- */
+
+/* The address that asks the page about one site, spelled the same
+   way SelfTestPage::pageUrl() spells it - the one URL shape again,
+   kept in step by the same offline verifier. */
+function siteUrl(host) {
+    return 'osza:selftest?site=' + encodeURIComponent(host);
+}
+
+/* What the address asked about, verbatim; the judgment of what
+   counts as a site is the browser's (OSZA_SITE carries it), never
+   the form's. */
+function askedSite() {
+    return (OSZA_SITE && OSZA_SITE.asked) || '';
+}
+
+/* What the address asked the page to focus: the section item when it
+   names one, else the per-site section when a site was asked - the
+   answer to a per-site question should land where it is answered,
+   and a request that names a section of its own keeps that focus
+   with the per-site answer still rendered. */
+function requestedSectionId() {
+    if (OSZA_FOCUS && OSZA_FOCUS.section) {
+        return OSZA_FOCUS.section;
+    }
+    return askedSite() ? 'site' : '';
 }
 
 /* The async Clipboard API first - the browser answers the clipboard
@@ -668,7 +766,7 @@ function wireSectionLinks()
    page. */
 function focusRequestedSection()
 {
-    var requested = (OSZA_FOCUS && OSZA_FOCUS.section) || '';
+    var requested = requestedSectionId();
     if (!requested) {
         return;
     }
@@ -1235,6 +1333,96 @@ function runStatuses() {
     }
 }
 
+/* --- The per-site answer ------------------------------------------------------ */
+
+/* The pill of one per-site state: protected reads the accent, relaxed
+   the amber the page's attention badges wear, off the quiet default. */
+function sitePill(state) {
+    if (state === 'on') {
+        return { cls: 'st-pill st-pill--on', text: t('site_pill_on') };
+    }
+    if (state === 'relaxed') {
+        return { cls: 'st-pill st-pill--relaxed', text: t('site_pill_relaxed') };
+    }
+    return { cls: 'st-pill st-pill--off', text: t('pill_off') };
+}
+
+function runSiteStates() {
+    var input = document.getElementById('st-site-input');
+    var ask = document.getElementById('st-site-ask');
+    var list = document.getElementById('st-sitelist');
+    var note = document.getElementById('st-site-note');
+    var hostHeading = document.getElementById('st-site-host');
+
+    /* The ask form: one navigation, one place - the button and the
+       Enter key both ride it, and an empty input navigates nowhere,
+       because the honest answer to an empty question is the same
+       page. */
+    var askForSite = function () {
+        var wanted = String(input && input.value ? input.value : '');
+        wanted = wanted.replace(/^\s+/, '').replace(/\s+$/, '');
+        if (!wanted) {
+            return;
+        }
+        window.location.href = siteUrl(wanted);
+    };
+
+    if (ask) {
+        ask.addEventListener('click', askForSite);
+    }
+    if (input) {
+        input.addEventListener('keydown', function (event) {
+            if (event && event.key === 'Enter') {
+                if (event.preventDefault) {
+                    event.preventDefault();
+                }
+                askForSite();
+            }
+        });
+    }
+
+    var site = OSZA_SITE || {};
+
+    if (!site.judgeable) {
+        /* The honest answer to a question that did not name a site:
+           the note says so, nothing is judged, and the form carries
+           what was asked so it can be fixed and asked again. */
+        if (askedSite() && note) {
+            note.textContent = t('site_unjudgeable');
+            note.style.display = 'block';
+        }
+        if (askedSite() && input) {
+            input.value = askedSite();
+        }
+        return;
+    }
+
+    /* The answer: the host heading names the host the browser judged
+       (the spelling the lists read), the form carries it for the next
+       question, and every row renders through the same builders the
+       protections list uses - label, pill, detail. */
+    if (input) {
+        input.value = site.host;
+    }
+    if (hostHeading) {
+        hostHeading.textContent = site.host;
+        hostHeading.style.display = 'block';
+    }
+    if (!list) {
+        return;
+    }
+    for (var i = 0; i < site.rows.length; i++) {
+        var state = site.rows[i];
+        var row = el('li', 'st-row');
+        row.setAttribute('data-id', state.id);
+        row.appendChild(el('span', 'st-row__label', state.label));
+        var pill = sitePill(state.state);
+        row.appendChild(el('span', pill.cls, pill.text));
+        row.appendChild(el('span', 'st-row__detail', state.detail));
+        list.appendChild(row);
+    }
+}
+
 function finish() {
     var banner = document.getElementById('st-summary');
     var text = document.getElementById('st-summary-text');
@@ -1274,6 +1462,7 @@ function run() {
     focusRequestedSection();
 
     runStatuses();
+    runSiteStates();
     runGuardCheck();
     runCanvasCheck();
     runWebglStringsCheck();

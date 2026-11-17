@@ -34,6 +34,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QRegularExpression>
 #include <QUrlQuery>
 
 namespace {
@@ -48,12 +49,12 @@ const char kDemoHost2[] = "example.org";
 
 } // namespace
 
-QString SelfTestPage::buildPage(const QString &sectionId)
+QString SelfTestPage::buildPage(const QString &sectionId, const QString &site)
 {
     // The translated template is built once; the dynamic values
-    // (statuses, demo patterns, the requested section) are
-    // substituted on every request, the same split as the speed
-    // dial page.
+    // (statuses, demo patterns, the per-site answer, the requested
+    // section) are substituted on every request, the same split as
+    // the speed dial page.
     static QString sPage;
 
     if (sPage.isEmpty()) {
@@ -66,6 +67,12 @@ QString SelfTestPage::buildPage(const QString &sectionId)
 
         sPage.replace(QLatin1String("%STATUS-HEADING%"), tr("Protections"));
         sPage.replace(QLatin1String("%STATUS-INTRO%"), tr("Snapshot of the moment this page was loaded \u2014 reload to refresh."));
+
+        sPage.replace(QLatin1String("%SITE-HEADING%"), tr("Per-site state"));
+        sPage.replace(QLatin1String("%SITE-INTRO%"), tr("Ask how the protections treat any site: the same lists and strengths the padlock menu reads, judged for a host you name. AdBlock, tracking-parameter stripping and secure DNS carry no per-site choice. The answer is a snapshot of the moment this page was loaded \u2014 reload to refresh."));
+        sPage.replace(QLatin1String("%SITE-INPUT-PLACEHOLDER%"), tr("like example.com"));
+        sPage.replace(QLatin1String("%SITE-INPUT-LABEL%"), tr("The site to ask about"));
+        sPage.replace(QLatin1String("%SITE-ASK-LABEL%"), tr("Ask"));
 
         sPage.replace(QLatin1String("%FP-HEADING%"), tr("Fingerprint randomization \u2014 live"));
         sPage.replace(QLatin1String("%FP-INTRO%"), tr("Each check below measures a real readout of this very page, through the same hooks a fingerprinting site would use."));
@@ -86,6 +93,7 @@ QString SelfTestPage::buildPage(const QString &sectionId)
     QString page = sPage;
     page.replace(QLatin1String("%STATUS-JSON%"), statusesJson());
     page.replace(QLatin1String("%DEMO-PATTERNS%"), demoPatternsJson());
+    page.replace(QLatin1String("%SITE-JSON%"), siteJson(site));
     page.replace(QLatin1String("%FOCUS-JSON%"), focusJson(sectionId));
     return page;
 }
@@ -255,6 +263,235 @@ QJsonArray SelfTestPage::collectToolStatuses()
     return statuses;
 }
 
+QJsonObject SelfTestPage::siteState(const QString &id, const QString &label, const QString &state, const QString &detail)
+{
+    QJsonObject row;
+    row.insert(QSL("id"), id);
+    row.insert(QSL("label"), label);
+    row.insert(QSL("state"), state);
+    row.insert(QSL("detail"), detail);
+    return row;
+}
+
+QJsonObject SelfTestPage::collectSiteStates(const QString &site)
+{
+    // The per-site question, answered: what a host is asked is
+    // normalized once, and every judgment below runs through the
+    // same manager the padlock menu's row for that tool reads - the
+    // page can never disagree with the menu about one site. A string
+    // that does not name a host is answered honestly as unjudgeable
+    // (rows empty) rather than judged against the lists with a name
+    // they could never match.
+    const QString asked = site.trimmed();
+    const QString host = normalizeSiteHost(asked);
+
+    QJsonObject states;
+    states.insert(QSL("asked"), asked);
+    states.insert(QSL("host"), host);
+    states.insert(QSL("judgeable"), !host.isEmpty());
+
+    QJsonArray rows;
+
+    if (!host.isEmpty()) {
+        // HTTPS-Only mode - the padlock row's own judgment: the mode
+        // itself, then the site's explicit exclusion.
+        const auto *httpsOnly = mApp->networkManager()->httpsOnlyInterceptor();
+        if (!httpsOnly->isEnabled()) {
+            rows.append(siteState(QSL("httpsonly"), tr("HTTPS-Only mode"), QSL("off"),
+                                  tr("Insecure connections load as they are.")));
+        } else if (httpsOnly->hasExplicitExclusion(host)) {
+            rows.append(siteState(QSL("httpsonly"), tr("HTTPS-Only mode"), QSL("relaxed"),
+                                  tr("HTTP connections to this site are never upgraded.")));
+        } else {
+            rows.append(siteState(QSL("httpsonly"), tr("HTTPS-Only mode"), QSL("on"),
+                                  tr("HTTP connections to this site are upgraded to HTTPS.")));
+        }
+
+        // Fingerprint protection
+        const auto *fingerprint = FingerprintManager::instance();
+        if (!fingerprint->isEnabled()) {
+            rows.append(siteState(QSL("fingerprint"), tr("Fingerprint protection"), QSL("off"),
+                                  tr("Canvas, WebGL, audio and hardware readouts report your real system.")));
+        } else if (fingerprint->isExcluded(host)) {
+            rows.append(siteState(QSL("fingerprint"), tr("Fingerprint protection"), QSL("relaxed"),
+                                  tr("Canvas and audio readouts are not randomized on this site.")));
+        } else {
+            rows.append(siteState(QSL("fingerprint"), tr("Fingerprint protection"), QSL("on"),
+                                  tr("Canvas and audio readouts are randomized on this site.")));
+        }
+
+        // Global Privacy Control
+        const auto *gpc = GpcManager::instance();
+        if (!gpc->isEnabled()) {
+            rows.append(siteState(QSL("gpc"), tr("Global Privacy Control"), QSL("off"),
+                                  tr("No opt-out signal is sent.")));
+        } else if (gpc->isExcluded(host)) {
+            rows.append(siteState(QSL("gpc"), tr("Global Privacy Control"), QSL("relaxed"),
+                                  tr("The GPC opt-out is not sent to this site.")));
+        } else {
+            rows.append(siteState(QSL("gpc"), tr("Global Privacy Control"), QSL("on"),
+                                  tr("The GPC opt-out is sent to this site.")));
+        }
+
+        // Cross-site referrer protection - the row follows the
+        // tool's own capability gate: an engine that cannot run the
+        // guard has no per-site state to speak of, so the row is not
+        // offered at all, the same honesty its padlock row lives by.
+        if (ReferrerGuardManager::isSupported()) {
+            const auto *referrerGuard = ReferrerGuardManager::instance();
+            if (!referrerGuard->isEnabled()) {
+                rows.append(siteState(QSL("referrerguard"), tr("Cross-site referrer protection"), QSL("off"),
+                                      tr("URLs of this site leave for other sites as the site intends.")));
+            } else if (referrerGuard->isExcluded(host)) {
+                rows.append(siteState(QSL("referrerguard"), tr("Cross-site referrer protection"), QSL("relaxed"),
+                                      tr("URLs of this site leave for other sites as the site intends.")));
+            } else if (referrerGuard->mode() == ReferrerGuardManager::NoReferrer) {
+                rows.append(siteState(QSL("referrerguard"), tr("Cross-site referrer protection"), QSL("on"),
+                                      tr("Requests to other sites carry no referrer from this site.")));
+            } else {
+                rows.append(siteState(QSL("referrerguard"), tr("Cross-site referrer protection"), QSL("on"),
+                                      tr("Requests to other sites carry at most this site's address, never its URLs.")));
+            }
+        }
+
+        // Malicious site protection - the one per-site state is the
+        // interstitial's session-scoped "proceed anyway"; while the
+        // blocklist itself is missing there is no coverage to claim,
+        // and with it in place the answer names the site's standing
+        // on the list with the same freshness, failure and movement
+        // the padlock row composes.
+        const auto *threatBlock = mApp->networkManager()->threatBlockManager();
+        if (!threatBlock->isEnabled()) {
+            rows.append(siteState(QSL("threatblock"), tr("Malicious site protection"), QSL("off"),
+                                  tr("Navigations to blocklisted sites are not stopped.")));
+        } else if (threatBlock->isSessionAllowed(host)) {
+            rows.append(siteState(QSL("threatblock"), tr("Malicious site protection"), QSL("relaxed"),
+                                  tr("Protection is paused for this site (this session).")));
+        } else if (!threatBlock->isListLoaded()) {
+            QString gap;
+            if (threatBlock->isUpdating()) {
+                gap = tr("The malicious-site blocklist is being downloaded now.");
+            } else if (!threatBlock->lastUpdateError().isEmpty()) {
+                gap = tr("The malicious-site blocklist could not be downloaded: %1").arg(threatBlock->lastUpdateError());
+            } else {
+                gap = tr("The malicious-site blocklist is still loading.");
+            }
+            rows.append(siteState(QSL("threatblock"), tr("Malicious site protection"), QSL("on"), gap));
+        } else {
+            const QString coverage = threatBlock->isHostBlocked(host)
+                ? tr("This site is on the malicious-site blocklist.")
+                : tr("This site is not on the malicious-site blocklist.");
+            QString detail;
+            if (threatBlock->isUpdating()) {
+                detail = tr("%1 The list is being refreshed now.").arg(coverage);
+            } else if (!threatBlock->lastUpdateError().isEmpty()) {
+                detail = tr("%1 The last update failed: %2").arg(coverage, threatBlock->lastUpdateError());
+            } else {
+                detail = tr("%1 (list updated %2)")
+                             .arg(coverage, ThreatBlockManager::describeListAge(threatBlock->lastUpdate()))
+                         + threatBlock->listMovement();
+            }
+            rows.append(siteState(QSL("threatblock"), tr("Malicious site protection"), QSL("on"), detail));
+        }
+
+        // Cookie lifecycle on exit - the one per-site decision is the
+        // keep-list; the strength speaks in the detail, the padlock
+        // row's own phrasing.
+        const auto *cookieLifecycle = CookieLifecycleManager::instance();
+        if (!cookieLifecycle->isEnabled()) {
+            rows.append(siteState(QSL("cookielifecycle"), tr("Cookie lifecycle on exit"), QSL("off"),
+                                  tr("Cookies this profile holds are kept as they are.")));
+        } else if (cookieLifecycle->isKept(host)) {
+            rows.append(siteState(QSL("cookielifecycle"), tr("Cookie lifecycle on exit"), QSL("relaxed"),
+                                  tr("This site's cookies survive the exit sweep.")));
+        } else if (cookieLifecycle->mode() == CookieLifecycleManager::SessionOnly) {
+            rows.append(siteState(QSL("cookielifecycle"), tr("Cookie lifecycle on exit"), QSL("on"),
+                                  tr("Cookies this site set since the browser started are swept at exit; its earlier cookies stay.")));
+        } else {
+            rows.append(siteState(QSL("cookielifecycle"), tr("Cookie lifecycle on exit"), QSL("on"),
+                                  tr("Every cookie this site leaves behind is swept at exit.")));
+        }
+    }
+
+    states.insert(QSL("rows"), rows);
+    return states;
+}
+
+QString SelfTestPage::normalizeSiteHost(const QString &site)
+{
+    // The one place that decides what counts as a host. The page asks
+    // for a host, but a pasted address is a kindness it accepts: the
+    // host of whatever was typed is used. Every step keeps the
+    // judgment honest against the lists the padlock menu reads,
+    // which are spelled the way QUrl::host() spells them.
+    QString host = site.trimmed();
+    if (host.isEmpty()) {
+        return QString();
+    }
+
+    // A scheme, when present, ends at "://": everything before it
+    // goes, and only the authority remains.
+    const int schemeEnd = host.indexOf(QSL("://"));
+    if (schemeEnd >= 0) {
+        host.remove(0, schemeEnd + 3);
+    }
+
+    // The authority ends at the first path, query or fragment mark.
+    int cut = host.size();
+    for (const QChar mark : {QLatin1Char('/'), QLatin1Char('?'), QLatin1Char('#')}) {
+        const int at = host.indexOf(mark);
+        if (at >= 0) {
+            cut = qMin(cut, at);
+        }
+    }
+    host = host.left(cut);
+
+    // Userinfo, when present, ends at the last "@" of the authority.
+    const int userinfo = host.lastIndexOf(QLatin1Char('@'));
+    if (userinfo >= 0) {
+        host.remove(0, userinfo + 1);
+    }
+
+    // A port, when present, starts at the last ":" - dropped only
+    // when what follows is all digits; an IPv6 literal keeps its
+    // colons and is refused by the judgment below.
+    const int port = host.lastIndexOf(QLatin1Char(':'));
+    if (port >= 0) {
+        const QString tail = host.mid(port + 1);
+        bool digits = !tail.isEmpty();
+        for (const QChar &ch : tail) {
+            digits = digits && ch.isDigit();
+        }
+        if (digits) {
+            host.truncate(port);
+        }
+    }
+
+    // The name is judged in the browser's own spelling: ASCII lower
+    // case, like QUrl::host(), and one trailing dot - the
+    // fully-qualified spelling - dropped, the way the engine reads it.
+    host = host.toLower();
+    if (host.endsWith(QLatin1Char('.'))) {
+        host.chop(1);
+    }
+
+    // The judgment: a host this page can name is non-empty and built
+    // of letters, digits, hyphens and dots, and cannot begin with a
+    // dot (a "*.domain" entry is a list entry, not a host - its "*"
+    // is refused here too). Everything else is answered as
+    // unjudgeable rather than judged against the lists with a name
+    // they can never match: an IDN in its unicode spelling would be
+    // judged clean while the lists carry the ASCII form the browser
+    // actually judged, so it is refused honestly (typing the ASCII
+    // form, xn--..., works).
+    static const QRegularExpression validHost(QSL("^[a-z0-9-]([a-z0-9.-]*[a-z0-9-])?$"));
+    if (host.isEmpty() || !validHost.match(host).hasMatch()) {
+        return QString();
+    }
+
+    return host;
+}
+
 QString SelfTestPage::focusJson(const QString &sectionId)
 {
     // What a request asks the page to focus: the verbatim trimmed
@@ -268,16 +505,25 @@ QString SelfTestPage::focusJson(const QString &sectionId)
     return jsonToScriptLiteral(QJsonDocument(focus));
 }
 
-QUrl SelfTestPage::pageUrl(const QString &sectionId)
+QUrl SelfTestPage::pageUrl(const QString &sectionId, const QString &site)
 {
     QUrl url;
     url.setScheme(QSL("osza"));
     url.setPath(QSL("selftest"));
 
-    const QString trimmed = sectionId.trimmed();
-    if (!trimmed.isEmpty()) {
-        QUrlQuery query;
-        query.addQueryItem(QSL("section"), trimmed);
+    QUrlQuery query;
+
+    const QString trimmedSection = sectionId.trimmed();
+    if (!trimmedSection.isEmpty()) {
+        query.addQueryItem(QSL("section"), trimmedSection);
+    }
+
+    const QString trimmedSite = site.trimmed();
+    if (!trimmedSite.isEmpty()) {
+        query.addQueryItem(QSL("site"), trimmedSite);
+    }
+
+    if (!query.isEmpty()) {
         url.setQuery(query);
     }
 
@@ -289,9 +535,19 @@ QString SelfTestPage::sectionIdFromUrl(const QUrl &url)
     return QUrlQuery(url).queryItemValue(QSL("section")).trimmed();
 }
 
+QString SelfTestPage::siteFromUrl(const QUrl &url)
+{
+    return QUrlQuery(url).queryItemValue(QSL("site")).trimmed();
+}
+
 QString SelfTestPage::statusesJson()
 {
     return jsonToScriptLiteral(QJsonDocument(collectToolStatuses()));
+}
+
+QString SelfTestPage::siteJson(const QString &site)
+{
+    return jsonToScriptLiteral(QJsonDocument(collectSiteStates(site)));
 }
 
 QString SelfTestPage::demoPatternsJson()
@@ -332,6 +588,8 @@ QString SelfTestPage::i18nJson()
     // Pills and badges
     strings.insert(QSL("pill_on"), tr("on"));
     strings.insert(QSL("pill_off"), tr("off"));
+    strings.insert(QSL("site_pill_on"), tr("protected"));
+    strings.insert(QSL("site_pill_relaxed"), tr("relaxed"));
     strings.insert(QSL("badge_pass"), tr("passed"));
     strings.insert(QSL("badge_warn"), tr("attention"));
     strings.insert(QSL("badge_fail"), tr("failed"));
@@ -389,6 +647,9 @@ QString SelfTestPage::i18nJson()
     // The focused section's note
     strings.insert(QSL("focus_note"), tr("Showing the %1 section of the self-test."));
     strings.insert(QSL("focus_unknown"), tr("The address asked for a section this page does not have; everything is shown from the top."));
+
+    // The per-site section's own words
+    strings.insert(QSL("site_unjudgeable"), tr("The address did not name a site this page can judge \u2014 type a host like example.com, or a full address whose host part is used."));
 
     return jsonToScriptLiteral(QJsonDocument(strings));
 }

@@ -3223,6 +3223,12 @@ void SecurityToolsTest::selfTestPageBuildTest()
     QVERIFY(!page.contains(QLatin1String("%TITLE%")));
     QVERIFY(!page.contains(QLatin1String("%STATUS-JSON%")));
     QVERIFY(!page.contains(QLatin1String("%DEMO-PATTERNS%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-JSON%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-HEADING%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-INTRO%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-INPUT-PLACEHOLDER%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-INPUT-LABEL%")));
+    QVERIFY(!page.contains(QLatin1String("%SITE-ASK-LABEL%")));
     QVERIFY(!page.contains(QLatin1String("%I18N-JSON%")));
     QVERIFY(!page.contains(QLatin1String("%FOCUS-JSON%")));
     QVERIFY(!page.contains(QLatin1String("%DIRECTION%")));
@@ -3337,6 +3343,171 @@ void SecurityToolsTest::selfTestSectionUrlTest()
     QVERIFY(focused.contains(QLatin1String("var OSZA_FOCUS = {\"section\":\"noise\"};")));
     const QString unfocused = SelfTestPage::buildPage();
     QVERIFY(unfocused.contains(QLatin1String("var OSZA_FOCUS = {\"section\":\"\"};")));
+
+    // The per-site question's address: the "site" query item, the
+    // same one-shape contract - built by pageUrl() and read back by
+    // siteFromUrl(), composed after the section item so one address
+    // can ask for both.
+    QCOMPARE(SelfTestPage::pageUrl(QString(), QSL("example.com")).toString(),
+             QSL("osza:selftest?site=example.com"));
+    QCOMPARE(SelfTestPage::pageUrl(QString(), QSL("  example.com  ")).toString(),
+             QSL("osza:selftest?site=example.com"));
+    QCOMPARE(SelfTestPage::pageUrl(QSL("site"), QSL("example.com")).toString(),
+             QSL("osza:selftest?section=site&site=example.com"));
+
+    QCOMPARE(SelfTestPage::siteFromUrl(SelfTestPage::pageUrl(QString(), QSL("example.com"))),
+             QSL("example.com"));
+    // The item is piped through verbatim (trimmed, case untouched):
+    // what counts as a host is the page's own judgment, never the
+    // URL's.
+    QCOMPARE(SelfTestPage::siteFromUrl(QUrl(QSL("osza:selftest?site=%20Example.COM%20"))),
+             QSL("Example.COM"));
+    QCOMPARE(SelfTestPage::siteFromUrl(QUrl(QSL("osza:selftest"))), QString());
+    QCOMPARE(SelfTestPage::siteFromUrl(QUrl(QSL("osza:selftest?site="))), QString());
+
+    // The page is handed the asked site verbatim, trimmed, in its
+    // own script literal.
+    const QString asked = SelfTestPage::buildPage(QString(), QSL(" example.com "));
+    QVERIFY(asked.contains(QLatin1String("var OSZA_SITE = {\"asked\":\"example.com\",\"host\":\"example.com\",\"judgeable\":true,")));
+}
+
+void SecurityToolsTest::selfTestSiteStateTest()
+{
+    // The per-site half of the page: what counts as a host, and how
+    // every protection with a per-site choice treats it - judged
+    // through the same managers the padlock menu's rows read, so the
+    // page can never disagree with the menu about one site.
+
+    // What is refused honestly, never judged with a name the lists
+    // could never match: nothing, wildcards (list entries, not
+    // hosts), spaces, IPv6, empty authorities, leading dots, and a
+    // non-ASCII IDN (its unicode spelling would be judged clean
+    // while the lists carry the ASCII form the browser judged).
+    const QStringList refused = {QString(), QSL("   "), QSL("*.example.com"),
+                                 QSL("not a host"), QSL("::1"), QSL("https://"),
+                                 QSL(".example.com"), QString::fromUtf8("b\u00fccher.de")};
+    for (const QString &asked : refused) {
+        const QJsonObject states = SelfTestPage::collectSiteStates(asked);
+        QCOMPARE(states.value(QSL("asked")).toString(), asked.trimmed());
+        QCOMPARE(states.value(QSL("host")).toString(), QString());
+        QCOMPARE(states.value(QSL("judgeable")).toBool(), false);
+        QCOMPARE(states.value(QSL("rows")).toArray().size(), 0);
+    }
+
+    // What a pasted address yields: the host of whatever was typed,
+    // in the spelling the lists read - lower case, one trailing fqdn
+    // dot dropped, scheme, userinfo, port, path, query and fragment
+    // gone.
+    const QList<QPair<QString, QString>> judgeable = {
+        {QSL("example.com"), QSL("example.com")},
+        {QSL("  Example.COM  "), QSL("example.com")},
+        {QSL("https://Example.com/some/path?q=1#frag"), QSL("example.com")},
+        {QSL("HTTPS://Sub.Example.COM:8080/"), QSL("sub.example.com")},
+        {QSL("http://user:pass@Example.com/"), QSL("example.com")},
+        {QSL("example.org."), QSL("example.org")},
+        {QSL("localhost"), QSL("localhost")},
+        {QSL("xn--bcher-kva.de"), QSL("xn--bcher-kva.de")},
+    };
+    for (const auto &ask : judgeable) {
+        const QJsonObject states = SelfTestPage::collectSiteStates(ask.first);
+        QCOMPARE(states.value(QSL("judgeable")).toBool(), true);
+        QCOMPARE(states.value(QSL("host")).toString(), ask.second);
+    }
+
+    // The rows: the protections with a per-site choice, in the
+    // padlock menu's row order, each carrying a state and a detail.
+    const QJsonObject states = SelfTestPage::collectSiteStates(QSL("example.com"));
+    const QJsonArray rows = states.value(QSL("rows")).toArray();
+
+    QStringList expectedIds = {QSL("httpsonly"), QSL("fingerprint"), QSL("gpc"),
+                               QSL("referrerguard"), QSL("threatblock"), QSL("cookielifecycle")};
+    if (!ReferrerGuardManager::isSupported()) {
+        // The referrer row follows the tool's capability gate, the
+        // same case its padlock row makes.
+        expectedIds.removeAll(QSL("referrerguard"));
+    }
+    QCOMPARE(rows.size(), expectedIds.size());
+
+    QStringList ids;
+    for (const QJsonValue &value : rows) {
+        const QJsonObject row = value.toObject();
+        QVERIFY(row.contains(QSL("id")));
+        QVERIFY(row.contains(QSL("label")));
+        QVERIFY(row.contains(QSL("state")));
+        QVERIFY(row.contains(QSL("detail")));
+        QVERIFY(!row.value(QSL("label")).toString().isEmpty());
+        QVERIFY(!row.value(QSL("detail")).toString().isEmpty());
+        const QString state = row.value(QSL("state")).toString();
+        QVERIFY(state == QSL("on") || state == QSL("off") || state == QSL("relaxed"));
+        ids << row.value(QSL("id")).toString();
+    }
+    QCOMPARE(ids, expectedIds);
+
+    // The judgment follows the settings, through the same lists the
+    // padlock rows read: a site holding an exception is relaxed, a
+    // kept site is relaxed - and a tool that is off answers off.
+    auto stateOf = [](const QJsonObject &siteStates, const QString &id) {
+        for (const QJsonValue &value : siteStates.value(QSL("rows")).toArray()) {
+            const QJsonObject row = value.toObject();
+            if (row.value(QSL("id")).toString() == id) {
+                return row.value(QSL("state")).toString();
+            }
+        }
+        return QString();
+    };
+
+    auto *fingerprint = FingerprintManager::instance();
+    auto *cookieLifecycle = CookieLifecycleManager::instance();
+    const bool fingerprintBefore = fingerprint->isEnabled();
+    const auto cookieModeBefore = cookieLifecycle->mode();
+
+    fingerprint->removeExclusion(QSL("selftest-state.example"));
+    cookieLifecycle->removeKeepSite(QSL("selftest-state.example"));
+
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), true);
+        settings.setValue(QSL("CookieLifecycleMode"), static_cast<int>(CookieLifecycleManager::SessionOnly));
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+    cookieLifecycle->loadSettings();
+
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("selftest-state.example")), QSL("fingerprint")),
+             QSL("on"));
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("selftest-state.example")), QSL("cookielifecycle")),
+             QSL("on"));
+
+    fingerprint->addExclusion(QSL("selftest-state.example"));
+    cookieLifecycle->addKeepSite(QSL("selftest-state.example"));
+
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("selftest-state.example")), QSL("fingerprint")),
+             QSL("relaxed"));
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("selftest-state.example")), QSL("cookielifecycle")),
+             QSL("relaxed"));
+    // The exclusion covers subdomains and the wildcards of the list
+    // grammar, judged exactly as the padlock row judges them.
+    fingerprint->removeExclusion(QSL("selftest-state.example"));
+    fingerprint->addExclusion(QSL("*.selftest-state.example"));
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("deep.selftest-state.example")), QSL("fingerprint")),
+             QSL("relaxed"));
+    QCOMPARE(stateOf(SelfTestPage::collectSiteStates(QSL("selftest-state.example")), QSL("fingerprint")),
+             QSL("on"));
+
+    fingerprint->removeExclusion(QSL("*.selftest-state.example"));
+    cookieLifecycle->removeKeepSite(QSL("selftest-state.example"));
+
+    // restore the state the other tests expect
+    {
+        Settings settings;
+        settings.beginGroup(QSL("Web-Browser-Settings"));
+        settings.setValue(QSL("FingerprintProtection"), fingerprintBefore);
+        settings.setValue(QSL("CookieLifecycleMode"), static_cast<int>(cookieModeBefore));
+        settings.endGroup();
+    }
+    fingerprint->loadSettings();
+    cookieLifecycle->loadSettings();
 }
 
 void SecurityToolsTest::selfTestPageIntegrationTest()
@@ -3425,10 +3596,11 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
     // Every section carries a "#" anchor wired for copying, and its
     // href is exactly the address pageUrl() builds - the one URL
     // shape, on the real page.
-    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec > .st-h > a.st-link').length")).toInt(), 4);
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec > .st-h > a.st-link').length")).toInt(), 5);
     QCOMPARE(runScript(&page, QSL("Array.prototype.map.call(document.querySelectorAll('.st-sec > .st-h > a.st-link'), function(a) { return a.href; }).join(' ')")),
-             QStringList({QSL("osza:selftest?section=protections"), QSL("osza:selftest?section=fingerprint"),
-                          QSL("osza:selftest?section=noise"), QSL("osza:selftest?section=verify")}).join(QLatin1Char(' ')));
+             QStringList({QSL("osza:selftest?section=protections"), QSL("osza:selftest?section=site"),
+                          QSL("osza:selftest?section=fingerprint"), QSL("osza:selftest?section=noise"),
+                          QSL("osza:selftest?section=verify")}).join(QLatin1Char(' ')));
 
     // A section deep link lands focused on its section: the wrapper
     // is marked, scrolled to, and the note says where the reader
@@ -3448,6 +3620,42 @@ void SecurityToolsTest::selfTestPageIntegrationTest()
     QVERIFY(loadFinishedSpy.wait(20000));
     QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec--focus').length")).toInt(), 0);
     QVERIFY(runScript(&page, QSL("document.getElementById('st-focus-note').textContent")).contains(QSL("does not have")));
+
+    // The per-site half, on the real engine: an address asking about
+    // a site lands on the per-site section, the host is named in the
+    // spelling the browser judged, the protections with a per-site
+    // choice answer, and the site's fingerprint row is protected
+    // (the protection is on here and the site holds no exception).
+    loadFinishedSpy.clear();
+    page.load(SelfTestPage::pageUrl(QString(), QSL("Example.COM")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('.st-sec--focus').length")).toInt(), 1);
+    QCOMPARE(runScript(&page, QSL("document.querySelector('.st-sec--focus').getAttribute('data-section')")), QSL("site"));
+    QCOMPARE(runScript(&page, QSL("document.getElementById('st-site-host').textContent")), QSL("example.com"));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-sitelist li.st-row').length")).toInt(),
+             ReferrerGuardManager::isSupported() ? 6 : 5);
+    QCOMPARE(runScript(&page, QSL("document.querySelector('#st-sitelist li[data-id=fingerprint] .st-pill--on') === null ? 'missing' : 'shown'")),
+             QSL("shown"));
+    QCOMPARE(runScript(&page, QSL("document.getElementById('st-site-input').value")), QSL("example.com"));
+
+    // The ask form navigates: typing another host and asking lands on
+    // its answer - the same page, judged for the new host.
+    loadFinishedSpy.clear();
+    runScript(&page, QSL("document.getElementById('st-site-input').value = 'example.org';"
+                         "document.getElementById('st-site-ask').click();"));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QCOMPARE(page.url(), SelfTestPage::pageUrl(QString(), QSL("example.org")));
+    QCOMPARE(runScript(&page, QSL("document.getElementById('st-site-host').textContent")), QSL("example.org"));
+
+    // An address naming no judgeable site is answered, never judged:
+    // no rows, the note says so, the form carries what was asked.
+    loadFinishedSpy.clear();
+    page.load(SelfTestPage::pageUrl(QString(), QSL("not a host")));
+    QVERIFY(loadFinishedSpy.wait(20000));
+    QCOMPARE(runScript(&page, QSL("document.querySelectorAll('#st-sitelist li.st-row').length")).toInt(), 0);
+    QVERIFY(runScript(&page, QSL("document.getElementById('st-site-note').style.display")).contains(QLatin1String("block")));
+    QVERIFY(runScript(&page, QSL("document.getElementById('st-site-note').textContent")).contains(QSL("can judge")));
+    QCOMPARE(runScript(&page, QSL("document.getElementById('st-site-input').value")), QSL("not a host"));
 
     // restore the state the other tests expect
     {

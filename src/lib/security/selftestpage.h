@@ -20,6 +20,7 @@
 
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QObject>
 #include <QString>
 #include <QUrl>
@@ -47,6 +48,20 @@
  * its section. The URL shape exists once here, in pageUrl() and
  * sectionIdFromUrl(), the same rule the settings-diff page's deep
  * links follow.
+ *
+ * The page also answers the per-site question: its "Per-site state"
+ * section names, for a host the address asks about, how every
+ * protection with a per-site choice treats that host right now -
+ * the same lists and strengths the padlock menu's rows read, each
+ * row marked protected, relaxed or off. The asked site rides in the
+ * "site" query item (osza:selftest?site=example.com), piped through
+ * verbatim exactly like the "section" item; what counts as a host,
+ * and every judgment about it, is decided in one place,
+ * collectSiteStates(). A request that asks for a site lands focused
+ * on the per-site section (the page's own composition, in its
+ * script - the browser stays a pipe for the item itself), and a
+ * request that also names a section of its own keeps that focus
+ * with the per-site answer still rendered.
  */
 class OSZA_EXPORT SelfTestPage : public QObject
 {
@@ -54,10 +69,11 @@ class OSZA_EXPORT SelfTestPage : public QObject
 
 public:
     // The complete HTML document (translated, with the current tool
-    // statuses, demo patterns, and the section a request asks to
-    // focus, if any). Called for every page request, so the
+    // statuses, demo patterns, the per-site answer of the asked site
+    // when the request carries one, and the section a request asks
+    // to focus, if any). Called for every page request, so the
     // statuses always reflect the settings at request time.
-    static QString buildPage(const QString &sectionId = QString());
+    static QString buildPage(const QString &sectionId = QString(), const QString &site = QString());
 
     // One JSON object per bundled security tool:
     //   { "id": stable id, "label": translated name,
@@ -65,26 +81,54 @@ public:
     // Public for the autotests.
     static QJsonArray collectToolStatuses();
 
+    // The per-site half of the page: how every protection with a
+    // per-site choice treats the site the string asks about, judged
+    // through the same managers the padlock menu's rows read. The
+    // answer is one object:
+    //   { "asked": the trimmed string verbatim,
+    //     "host": the host the judgments ran against ("" when the
+    //             string did not name one),
+    //     "judgeable": whether a host was named,
+    //     "rows": one row per protection, in the padlock menu's row
+    //             order - { "id", "label", "state" ("on" = the
+    //             protection applies to this site, "relaxed" = this
+    //             site holds an exception, "off" = the tool itself
+    //             is off), "detail" } - with the referrer row
+    //             absent on engines too old to run the guard, the
+    //             same capability case its padlock row follows.
+    // Public for the autotests.
+    static QJsonObject collectSiteStates(const QString &site);
+
     // The address of the page, focused on one section when a
     // non-empty id is given: osza:selftest?section=<id>. The one
     // place the URL shape exists, so the page's own anchors, the
     // scheme handler and any future menu entry cannot drift apart.
-    // The ids are the page's section ids ("protections",
+    // The ids are the page's section ids ("protections", "site",
     // "fingerprint", "noise", "verify"); which of them exist is
     // the page's own judgment, same as the diff page judges its
     // "tool" item against the porter's key list.
-    static QUrl pageUrl(const QString &sectionId = QString());
+    static QUrl pageUrl(const QString &sectionId = QString(), const QString &site = QString());
 
     // The section a request asks to focus: the verbatim "section"
     // query item, trimmed; empty when the request carries none (or
     // asks for an empty one - the same unfocused page).
     static QString sectionIdFromUrl(const QUrl &url);
 
+    // The site a request asks about: the verbatim "site" query item,
+    // trimmed; empty when the request carries none. Whether the
+    // string names a host the page can judge is collectSiteStates'
+    // own decision, never the URL's - the same pipe rule the
+    // section item follows.
+    static QString siteFromUrl(const QUrl &url);
+
 private:
     SelfTestPage() = default;
 
     static QJsonObject toolStatus(const QString &id, const QString &label, bool on, const QString &detail);
+    static QJsonObject siteState(const QString &id, const QString &label, const QString &state, const QString &detail);
+    static QString normalizeSiteHost(const QString &site);
     static QString statusesJson();
+    static QString siteJson(const QString &site);
     static QString demoPatternsJson();
     static QString focusJson(const QString &sectionId);
     static QString i18nJson();

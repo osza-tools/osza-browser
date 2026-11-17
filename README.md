@@ -154,7 +154,13 @@ and KDE contributors for their work.
   browser's own canvas, WebGL, audio and hardware readouts live -
   through the same hooks a fingerprinting site would use - and
   verifies the randomization
-  working, with the invisible per-site noise made visible. The
+  working, with the invisible per-site noise made visible. The page
+  also answers the per-site question: its "Per-site state" section
+  (osza:selftest?site=example.com, or a host typed into its ask
+  form) names how every protection with a per-site choice treats
+  any site - the same lists and strengths the padlock menu reads,
+  each row marked protected, relaxed or off, and an address that
+  names no site answered honestly instead of judged. The
   per-site state is visible before any menu is opened: the
   location bar's site icon (and the popup windows' location bar)
   carries a small amber badge whenever the current site has a

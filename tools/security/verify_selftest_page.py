@@ -20,9 +20,25 @@
 #   C. GPC on but navigator.globalPrivacyControl missing: the GPC
 #      check fails loudly (integration-bug detection), and passes
 #      again once the signal is reported
+#   G. no site asked: the per-site section asks (form present, no
+#      rows, no host heading), the Ask button and the Enter key both
+#      navigate to the site address, and an empty input navigates
+#      nowhere
+#   H. a site asked and judgeable: the rows render with their pills
+#      (protected / relaxed / off), the host heading names the host,
+#      the form carries it, and the site item alone focuses the
+#      per-site section
+#   I. a site asked but unjudgeable: answered, never judged - the
+#      note says so, no rows, the form carries what was asked
+#   J. a request naming both a section and a site: the section keeps
+#      the focus, the per-site answer still renders
 # Plus the page's self-contained SHA-256 against the published test
-# vectors, and the demo-pattern digits against the same siteNoise
-# mirror as tools/security/verify_fingerprint_guard.py.
+# vectors, the demo-pattern digits against the same siteNoise
+# mirror as tools/security/verify_fingerprint_guard.py, and the
+# per-site half: the "site" URL shape pinned on every side that
+# spells it, a pure-Python mirror of the host normalization against
+# its truth table, and the per-tool judgment wiring pinned to the
+# same managers the padlock menu's rows read.
 #
 # Usage:
 #   python3 tools/security/verify_selftest_page.py
@@ -71,33 +87,174 @@ static_check("pageUrl() spells the one address shape",
       'url.setPath(QSL("selftest"))' in page_cpp
       and 'query.addQueryItem(QSL("section")' in page_cpp)
 static_check("pageUrl() drops an empty section, keeping the plain address",
-      re.search(r"const QString trimmed = sectionId\.trimmed\(\);\s*\n\s*if \(!trimmed\.isEmpty\(\)\)",
+      re.search(r"const QString trimmedSection = sectionId\.trimmed\(\);\s*\n\s*if \(!trimmedSection\.isEmpty\(\)\)",
                 page_cpp) is not None)
 static_check("sectionIdFromUrl() reads the same item back",
       'queryItemValue(QSL("section")).trimmed()' in page_cpp)
-static_check("the scheme handler hands the item to the page",
-      re.search(r"SelfTestPage::buildPage\(SelfTestPage::sectionIdFromUrl\(requestUrl\)\)",
+static_check("the scheme handler hands both items to the page",
+      re.search(r"SelfTestPage::buildPage\(SelfTestPage::sectionIdFromUrl\(requestUrl\),\s*\n\s*SelfTestPage::siteFromUrl\(requestUrl\)\)",
                 handler_cpp) is not None)
 static_check("the page script spells the same URL shape",
       "'osza:selftest?section=' + encodeURIComponent(sectionId)" in script)
 static_check("the four sections carry their stable ids in order",
       re.findall(r'data-section="([a-z]+)"', html)
-      == ["protections", "fingerprint", "noise", "verify"])
+      == ["protections", "site", "fingerprint", "noise", "verify"])
 static_check("every heading keeps its translated text in the name span",
-      len(re.findall(r'<span class="st-h__text">%[A-Z-]+%</span>', html)) == 4)
+      len(re.findall(r'<span class="st-h__text">%[A-Z-]+%</span>', html)) == 5)
 static_check("the focus note has its dedicated element",
       'id="st-focus-note"' in html)
 static_check("the anchors are wired into the headings",
       "wireCopyLink(deepLink, deepLinkHref)" in script
       and "heading.appendChild(deepLink)" in script)
 static_check("the focus lands before the checks run",
-      re.search(r"function run\(\) \{\s*\n\s*wireSectionLinks\(\);\s*\n\s*focusRequestedSection\(\);\s*\n\s*runStatuses\(\);",
+      re.search(r"function run\(\) \{\s*\n\s*wireSectionLinks\(\);\s*\n\s*focusRequestedSection\(\);\s*\n\s*runStatuses\(\);\s*\n\s*runSiteStates\(\);",
                 script) is not None)
 static_check("the link titles and focus notes are translated in the page class",
       all(key in page_cpp for key in (
           'QSL("section_link_title")', 'QSL("section_link_copied_title")',
           'QSL("section_link_copy_failed_title")',
           'QSL("focus_note")', 'QSL("focus_unknown")')))
+
+
+# ------------------------------------------------------------------
+# 0b. The per-site half: the "site" URL shape on every side that
+#     spells it, the host normalization against its truth table,
+#     and the per-tool judgment wiring
+# ------------------------------------------------------------------
+print("== per-site state: the URL shape, the host grammar, the judgments ==")
+
+static_check("pageUrl() composes the site item after the section item",
+      'query.addQueryItem(QSL("site")' in page_cpp)
+static_check("pageUrl() drops an empty site, keeping the address honest",
+      re.search(r"const QString trimmedSite = site\.trimmed\(\);\s*\n\s*if \(!trimmedSite\.isEmpty\(\)\)",
+                page_cpp) is not None)
+static_check("siteFromUrl() reads the same item back",
+      'queryItemValue(QSL("site")).trimmed()' in page_cpp)
+static_check("the page script spells the same URL shape",
+      "'osza:selftest?site=' + encodeURIComponent(host)" in script)
+static_check("the per-site section's elements exist once each",
+      html.count('id="st-site-input"') == 1
+      and html.count('id="st-site-ask"') == 1
+      and html.count('id="st-sitelist"') == 1
+      and html.count('id="st-site-host"') == 1
+      and html.count('id="st-site-note"') == 1)
+static_check("the ask form rides the same one-place navigation",
+      re.search(r"var askForSite = function \(\) \{[\s\S]*?window\.location\.href = siteUrl\(wanted\);",
+                script) is not None)
+static_check("the focus composes: a section item wins, a site item lands on its section",
+      "function requestedSectionId()" in script
+      and "return askedSite() ? 'site' : '';" in script)
+static_check("the per-site pills and the unjudgeable note are translated in the page class",
+      all(key in page_cpp for key in (
+          'QSL("site_pill_on")', 'QSL("site_pill_relaxed")',
+          'QSL("site_unjudgeable")')))
+
+
+# Mirror of SelfTestPage::normalizeSiteHost(), the one place that
+# decides what counts as a host. Keep in sync with selftestpage.cpp.
+def normalize_site_host(site):
+    host = site.strip()
+    if not host:
+        return ""
+    scheme_end = host.find("://")
+    if scheme_end >= 0:
+        host = host[scheme_end + 3:]
+    cut = len(host)
+    for mark in ("/", "?", "#"):
+        at = host.find(mark)
+        if at >= 0:
+            cut = min(cut, at)
+    host = host[:cut]
+    userinfo = host.rfind("@")
+    if userinfo >= 0:
+        host = host[userinfo + 1:]
+    port = host.rfind(":")
+    if port >= 0 and host[port + 1:] and host[port + 1:].isdigit():
+        host = host[:port]
+    host = host.lower()
+    if host.endswith("."):
+        host = host[:-1]
+    if not host or not re.fullmatch(r"[a-z0-9-]([a-z0-9.-]*[a-z0-9-])?", host):
+        return ""
+    return host
+
+
+# The host grammar's truth table: what a pasted address yields, and
+# what is refused honestly instead of judged with a name the lists
+# could never match.
+normalize_cases = [
+    ("example.com", "example.com"),
+    ("  Example.COM  ", "example.com"),
+    ("https://Example.com/some/path?q=1#frag", "example.com"),
+    ("HTTPS://Sub.Example.COM:8080/", "sub.example.com"),
+    ("http://user:pass@Example.com/", "example.com"),
+    ("example.org.", "example.org"),
+    ("example.com:8080", "example.com"),
+    ("localhost", "localhost"),
+    ("xn--bcher-kva.de", "xn--bcher-kva.de"),
+    # refused: nothing, wildcards (list entries, not hosts), spaces,
+    # IPv6, empty authorities, leading dots, non-ASCII (an IDN would
+    # be judged in its unicode spelling while the lists carry the
+    # ASCII form the browser judged)
+    ("", ""),
+    ("   ", ""),
+    ("*.example.com", ""),
+    ("not a host", ""),
+    ("::1", ""),
+    ("https://", ""),
+    (".example.com", ""),
+    ("b\u00fccher.de", ""),
+]
+
+for asked, expected in normalize_cases:
+    static_check("normalizeSiteHost(%r) -> %r" % (asked, expected),
+                 normalize_site_host(asked) == expected)
+
+static_check("the C++ normalization strips a scheme",
+      'indexOf(QSL("://"))' in page_cpp)
+static_check("the C++ normalization cuts path, query and fragment",
+      all(mark in page_cpp for mark in (
+          "QLatin1Char('/')", "QLatin1Char('?')", "QLatin1Char('#')")))
+static_check("the C++ normalization drops userinfo and a numeric port",
+      "lastIndexOf(QLatin1Char('@'))" in page_cpp
+      and "lastIndexOf(QLatin1Char(':'))" in page_cpp)
+static_check("the C++ normalization speaks the browser's host casing and drops the fqdn dot",
+      "host.toLower()" in page_cpp and "host.chop(1)" in page_cpp)
+static_check("the C++ normalization refuses what the lists can never match",
+      'QRegularExpression validHost' in page_cpp)
+
+
+# The per-tool judgments: the same managers the padlock menu's rows
+# read, in the padlock menu's row order, with the referrer row
+# following the tool's capability gate.
+site_fn_start = page_cpp.index("QJsonObject SelfTestPage::collectSiteStates")
+site_fn_end = page_cpp.index("QString SelfTestPage::normalizeSiteHost")
+site_fn = page_cpp[site_fn_start:site_fn_end]
+
+# Every branch of one tool's judgment spells the same id; the row
+# order is the order the ids first appear in.
+row_order = list(dict.fromkeys(re.findall(r'siteState\(QSL\("([a-z]+)"\)', site_fn)))
+
+static_check("the per-site rows follow the padlock menu's row order",
+      row_order
+      == ["httpsonly", "fingerprint", "gpc", "referrerguard", "threatblock", "cookielifecycle"])
+static_check("every judgment rides the same manager the padlock row reads",
+      all(call in site_fn for call in (
+          "httpsOnlyInterceptor()", "hasExplicitExclusion(host)",
+          "FingerprintManager::instance()", "fingerprint->isExcluded(host)",
+          "GpcManager::instance()", "gpc->isExcluded(host)",
+          "ReferrerGuardManager::instance()", "referrerGuard->isExcluded(host)",
+          "isSessionAllowed(host)", "isHostBlocked(host)",
+          "CookieLifecycleManager::instance()", "cookieLifecycle->isKept(host)")))
+static_check("the referrer row follows the tool's capability gate",
+      "ReferrerGuardManager::isSupported()" in site_fn)
+static_check("the threat-block row speaks the same freshness, failure and movement the padlock row composes",
+      "isListLoaded()" in site_fn and "describeListAge" in site_fn
+      and "listMovement()" in site_fn and "isUpdating()" in site_fn)
+static_check("an unjudgeable ask is answered with empty rows, never judged",
+      re.search(r"QJsonArray rows;\s*\n\s*if \(!host\.isEmpty\(\)\) \{", page_cpp) is not None
+      and re.search(r'states\.insert\(QSL\("judgeable"\), !host\.isEmpty\(\)\)',
+                    page_cpp) is not None)
 if checks[0]:
     print("STATIC CHECK(S) FAILED")
     exit(1)
@@ -170,6 +327,7 @@ function makeElement(tag, id) {
     const node = {
         tag: tag,
         id: id || '',
+        value: '',
         children: [],
         style: {},
         className: '',
@@ -308,16 +466,22 @@ function makeSandbox(options) {
     //   recorded - the texts written, the commands run, the timers
     //   scheduled - so the scenarios assert what really happened.
     const storage = options.storage;
-    const state = { clipboardWrites: [], execCommandCalls: [] };
+    const state = { clipboardWrites: [], execCommandCalls: [], navigations: [] };
     const timers = [];
     let timerId = 0;
 
     const elements = {};
-    for (const id of ['st-summary', 'st-summary-text', 'st-focus-note', 'st-reload']) {
+    for (const id of ['st-summary', 'st-summary-text', 'st-focus-note', 'st-reload',
+                      'st-site-note', 'st-site-host']) {
         elements[id] = makeElement(null, id);
     }
 
-    // The four sections the static template carries, mocked with
+    // The ask form's own two elements: the input carries a value the
+    // page reads and writes, the button a click the scenarios fire.
+    elements['st-site-input'] = makeElement('input', 'st-site-input');
+    elements['st-site-ask'] = makeElement('button', 'st-site-ask');
+
+    // The five sections the static template carries, mocked with
     // the same shape the page's own script looks for: a wrapper with
     // data-section, a heading row, the translated name in its span,
     // and the section's content container (which the checks render
@@ -325,6 +489,7 @@ function makeSandbox(options) {
     const sections = [];
     const sectionSpecs = [
         ['protections', 'Protections', 'st-statuses'],
+        ['site', 'Per-site state', 'st-sitelist'],
         ['fingerprint', 'Fingerprint randomization', 'st-tests'],
         ['noise', 'The invisible noise', 'st-tiles'],
         ['verify', 'Verify on a real site', null]
@@ -375,6 +540,15 @@ function makeSandbox(options) {
             return !!options.execCommand;
         }
     };
+    // The ask form navigates by assigning location.href; the mock
+    // records every navigation instead of following it, so the
+    // scenarios can assert the address the form built.
+    const locationObj = { reload: function () {} };
+    Object.defineProperty(locationObj, 'href', {
+        get: function () { return ''; },
+        set: function (v) { state.navigations.push(String(v)); }
+    });
+
     const sandbox = {
         console: console,
         Math: Math, Object: Object, Array: Array, String: String, Promise: Promise,
@@ -384,7 +558,7 @@ function makeSandbox(options) {
         encodeURIComponent: encodeURIComponent,
         document: document,
         navigator: options.navigator,
-        location: { reload: function () {} },
+        location: locationObj,
         localStorage: {
             getItem: function (k) { return (k in storage) ? storage[k] : null; },
             setItem: function (k, v) { storage[k] = String(v); }
@@ -545,20 +719,20 @@ function sectionLinks(run) {
                                 buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: focusI18n }),
                                 { guardLive: true, navigator: navigatorOn, storage: {} });
     check('the focused section is marked',
-          d.sections[2].className.indexOf('st-sec--focus') !== -1);
+          d.sections[3].className.indexOf('st-sec--focus') !== -1);
     check('only the asked-for section is marked',
           d.sections.filter(function (s) { return s.className.indexOf('st-sec--focus') !== -1; }).length === 1);
-    check('the focused section is scrolled to', d.sections[2].scrolledIntoView === true);
+    check('the focused section is scrolled to', d.sections[3].scrolledIntoView === true);
     check('the note names the section by its own heading',
           d.elements['st-focus-note'].style.display === 'block'
           && d.elements['st-focus-note'].textContent === 'Showing the The invisible noise section of the self-test.');
     check('every section carries a wired anchor',
-          sectionLinks(d).length === 4
+          sectionLinks(d).length === 5
           && sectionLinks(d).every(function (l) { return typeof l.listeners['click'] === 'function'; }));
     check('the anchors carry the pageUrl() address shape',
           sectionLinks(d).every(function (l, i) {
               return String(l.href) === 'osza:selftest?section='
-                     + ['protections', 'fingerprint', 'noise', 'verify'][i];
+                     + ['protections', 'site', 'fingerprint', 'noise', 'verify'][i];
           }));
 
     // E: an address naming no section is answered, never an error.
@@ -582,7 +756,7 @@ function sectionLinks(run) {
                                 { guardLive: true, storage: {}, clipboard: 'async-ok' });
     const fLinks = sectionLinks(f);
     let fPrevented = false;
-    fLinks[2].listeners['click']({ button: 0, preventDefault: function () { fPrevented = true; } });
+    fLinks[3].listeners['click']({ button: 0, preventDefault: function () { fPrevented = true; } });
 
     await afterMicrotasks(function () {
         check('a plain click does not follow the anchor', fPrevented === true);
@@ -591,11 +765,11 @@ function sectionLinks(run) {
               && f.state.clipboardWrites[0] === 'osza:selftest?section=noise');
         check('the legacy path was not needed', f.state.execCommandCalls.length === 0);
         check('the checkmark shows while the address sits in the clipboard',
-              fLinks[2].className.indexOf('st-link--copied') !== -1
-              && fLinks[2].textContent === '\u2713');
+              fLinks[3].className.indexOf('st-link--copied') !== -1
+              && fLinks[3].textContent === '\u2713');
         check('the title says the link was copied',
-              fLinks[2].attrs['title'] === 'Link copied to the clipboard'
-              && fLinks[2].attrs['aria-label'] === 'Link copied to the clipboard');
+              fLinks[3].attrs['title'] === 'Link copied to the clipboard'
+              && fLinks[3].attrs['aria-label'] === 'Link copied to the clipboard');
         check('the revert is scheduled with the answer, not the click',
               f.timers.length === 1);
 
@@ -634,13 +808,13 @@ function sectionLinks(run) {
                                  { guardLive: true, storage: {}, execCommand: false });
     const f3Links = sectionLinks(f3);
     let f3Prevented = false;
-    f3Links[3].listeners['click']({ button: 0, preventDefault: function () { f3Prevented = true; } });
+    f3Links[4].listeners['click']({ button: 0, preventDefault: function () { f3Prevented = true; } });
 
     await afterMicrotasks(function () {
         check('without any clipboard the anchor is honest',
-              f3Links[3].attrs['title'] === focusI18n.section_link_copy_failed_title
-              && f3Links[3].attrs['aria-label'] === focusI18n.section_link_copy_failed_title);
-        check('no checkmark without a copy', f3Links[3].textContent === '#');
+              f3Links[4].attrs['title'] === focusI18n.section_link_copy_failed_title
+              && f3Links[4].attrs['aria-label'] === focusI18n.section_link_copy_failed_title);
+        check('no checkmark without a copy', f3Links[4].textContent === '#');
         check('the anchor was still not followed', f3Prevented === true);
     });
 
@@ -651,8 +825,8 @@ function sectionLinks(run) {
     const f4Links = sectionLinks(f4);
     let ctrlPrevented = false;
     let middlePrevented = false;
-    f4Links[1].listeners['click']({ button: 0, ctrlKey: true, preventDefault: function () { ctrlPrevented = true; } });
-    f4Links[1].listeners['click']({ button: 1, preventDefault: function () { middlePrevented = true; } });
+    f4Links[2].listeners['click']({ button: 0, ctrlKey: true, preventDefault: function () { ctrlPrevented = true; } });
+    f4Links[2].listeners['click']({ button: 1, preventDefault: function () { middlePrevented = true; } });
 
     await afterMicrotasks(function () {
         check('a ctrl-click is left to the browser',
@@ -660,7 +834,7 @@ function sectionLinks(run) {
         check('a middle click is left to the browser',
               middlePrevented === false && f4.state.execCommandCalls.length === 0);
         check('the anchor keeps its href for everything else',
-              String(f4Links[1].href) === 'osza:selftest?section=fingerprint');
+              String(f4Links[2].href) === 'osza:selftest?section=fingerprint');
     });
 
     // F5: a double click writes the address twice, appends the copied
@@ -680,6 +854,124 @@ function sectionLinks(run) {
         check('exactly one revert stays pending',
               f5.timers.length === 1);
     });
+
+    // G: the per-site question, not asked yet: the section asks, and
+    // the form's two ways of asking both navigate to the site address.
+    const siteI18n = {
+        section_link_title: 'Copy a link to this section of the self-test',
+        focus_note: 'Showing the %1 section of the self-test.',
+        pill_off: 'off',
+        site_pill_on: 'protected',
+        site_pill_relaxed: 'relaxed',
+        site_unjudgeable: 'The address did not name a site this page can judge.'
+    };
+    const g = await runScenario('G: no site asked',
+                                buildScript({ fingerprint: true, gpc: true, i18n: siteI18n }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('no rows are judged before a site is asked',
+          g.elements['st-sitelist'].children.length === 0);
+    check('no host heading before a site is asked',
+          g.elements['st-site-host'].style.display !== 'block');
+    check('no note before a site is asked',
+          g.elements['st-site-note'].style.display !== 'block');
+    check('nothing is focused without a section or a site',
+          g.sections.every(function (s) { return s.className.indexOf('st-sec--focus') === -1; }));
+    check('the ask button is wired',
+          typeof g.elements['st-site-ask'].listeners['click'] === 'function');
+    g.elements['st-site-input'].value = '  Example.com ';
+    g.elements['st-site-ask'].listeners['click']();
+    check('asking navigates to the site address',
+          g.state.navigations.length === 1
+          && g.state.navigations[0] === 'osza:selftest?site=Example.com');
+
+    // G2: the Enter key asks too, and an empty input navigates
+    // nowhere - the honest answer to an empty question is the same
+    // page.
+    const g2 = await runScenario('G2: the Enter key asks, an empty input does not',
+                                 buildScript({ fingerprint: true, gpc: true, i18n: siteI18n }),
+                                 { guardLive: true, navigator: navigatorOn, storage: {} });
+    let g2Prevented = false;
+    g2.elements['st-site-input'].value = 'example.org';
+    g2.elements['st-site-input'].listeners['keydown']({ key: 'Enter', preventDefault: function () { g2Prevented = true; } });
+    check('Enter navigates to the site address',
+          g2Prevented === true
+          && g2.state.navigations.length === 1
+          && g2.state.navigations[0] === 'osza:selftest?site=example.org');
+    g2.elements['st-site-input'].value = '   ';
+    g2.elements['st-site-ask'].listeners['click']();
+    check('an empty input navigates nowhere',
+          g2.state.navigations.length === 1);
+
+    // H: a site asked and judgeable: the rows render with their
+    // pills, the host heading names the host, the form carries it,
+    // and the site item alone focuses the per-site section.
+    const siteData = {
+        asked: 'Example.COM', host: 'example.com', judgeable: true, rows: [
+            { id: 'httpsonly', label: 'HTTPS-Only mode', state: 'on', detail: 'd1' },
+            { id: 'fingerprint', label: 'Fingerprint protection', state: 'relaxed', detail: 'd2' },
+            { id: 'gpc', label: 'Global Privacy Control', state: 'off', detail: 'd3' },
+            { id: 'referrerguard', label: 'Cross-site referrer protection', state: 'on', detail: 'd4' },
+            { id: 'threatblock', label: 'Malicious site protection', state: 'on', detail: 'd5' },
+            { id: 'cookielifecycle', label: 'Cookie lifecycle on exit', state: 'relaxed', detail: 'd6' }
+        ]
+    };
+    const h = await runScenario('H: site asked and judgeable',
+                                buildScript({ fingerprint: true, gpc: true, i18n: siteI18n, site: siteData }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('six rows are judged', h.elements['st-sitelist'].children.length === 6);
+    check('the rows carry their ids',
+          h.elements['st-sitelist'].children.every(function (r) { return r.attrs['data-id']; }));
+    check('the pill classes follow the states',
+          h.elements['st-sitelist'].children[0].children[1].className === 'st-pill st-pill--on'
+          && h.elements['st-sitelist'].children[1].children[1].className === 'st-pill st-pill--relaxed'
+          && h.elements['st-sitelist'].children[2].children[1].className === 'st-pill st-pill--off');
+    check('the pills speak the states',
+          h.elements['st-sitelist'].children[0].children[1].textContent === 'protected'
+          && h.elements['st-sitelist'].children[1].children[1].textContent === 'relaxed'
+          && h.elements['st-sitelist'].children[2].children[1].textContent === 'off');
+    check('the host heading names the host the browser judged',
+          h.elements['st-site-host'].style.display === 'block'
+          && h.elements['st-site-host'].textContent === 'example.com');
+    check('the form carries the host for the next question',
+          h.elements['st-site-input'].value === 'example.com');
+    check('the site item alone focuses the per-site section',
+          h.sections[1].className.indexOf('st-sec--focus') !== -1
+          && h.sections[1].scrolledIntoView === true);
+    check('only the per-site section is marked',
+          h.sections.filter(function (s) { return s.className.indexOf('st-sec--focus') !== -1; }).length === 1);
+    check('the note names the per-site section by its own heading',
+          h.elements['st-focus-note'].style.display === 'block'
+          && h.elements['st-focus-note'].textContent === 'Showing the Per-site state section of the self-test.');
+
+    // I: a site asked but unjudgeable: answered, never judged - the
+    // note says so, no rows, the form carries what was asked.
+    const siteBad = { asked: 'not a host', host: '', judgeable: false, rows: [] };
+    const i = await runScenario('I: site asked, unjudgeable',
+                                buildScript({ fingerprint: true, gpc: true, i18n: siteI18n, site: siteBad }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('no rows are judged for an unjudgeable ask',
+          i.elements['st-sitelist'].children.length === 0);
+    check('no host heading for an unjudgeable ask',
+          i.elements['st-site-host'].style.display !== 'block');
+    check('the note says the address named no judgeable site',
+          i.elements['st-site-note'].style.display === 'block'
+          && i.elements['st-site-note'].textContent === siteI18n.site_unjudgeable);
+    check('the form carries what was asked, to be fixed and asked again',
+          i.elements['st-site-input'].value === 'not a host');
+    check('the landing is still the per-site section',
+          i.sections[1].className.indexOf('st-sec--focus') !== -1);
+
+    // J: a request naming both a section and a site: the section
+    // keeps the focus, the per-site answer still renders.
+    const j = await runScenario('J: a section and a site, one address',
+                                buildScript({ fingerprint: true, gpc: true, section: 'noise', i18n: siteI18n, site: siteData }),
+                                { guardLive: true, navigator: navigatorOn, storage: {} });
+    check('the named section keeps the focus',
+          j.sections[3].className.indexOf('st-sec--focus') !== -1
+          && j.sections[1].className.indexOf('st-sec--focus') === -1);
+    check('the per-site answer still renders',
+          j.elements['st-sitelist'].children.length === 6
+          && j.elements['st-site-host'].textContent === 'example.com');
 
     console.log(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
     process.exit(failures === 0 ? 0 : 1);
@@ -701,6 +993,7 @@ function buildScript(opts) {
     page = page.replace("%DEMO-PATTERNS%", JSON.stringify(DEMO));
     page = page.replace("%FOCUS-JSON%", JSON.stringify({ section: opts.section || "" }));
     page = page.replace("%I18N-JSON%", JSON.stringify(opts.i18n || {}));
+    page = page.replace("%SITE-JSON%", JSON.stringify(opts.site || { asked: '', host: '', judgeable: false, rows: [] }));
     return page;
 }
 const PAGE_SCRIPT_ON = buildScript({ fingerprint: true, gpc: true });
