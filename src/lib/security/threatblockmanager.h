@@ -123,6 +123,22 @@ public:
     // wording keeps its shape everywhere.
     static QString describeListAge(const QDateTime &since);
 
+    // Whether a finished download's error is the transfer timeout
+    // - the watchdog that cuts a refresh no data has arrived from
+    // in a whole timeout window - taking the reply's error code
+    // and error string instead of the reply itself, so the
+    // classifier needs no live object to answer. The two eras of
+    // the timeout are both named: Qt 6.7 and newer abort the
+    // reply with QNetworkReply::TimeoutError, older Qt reported
+    // the same death as a plain cancellation with "timed out" as
+    // the only distinguishing mark (the string is matched case-
+    // insensitively, so the classifier is honest on every Qt the
+    // browser builds against). A deliberate abort through
+    // abortUpdate() answers false - a choice is never a stall -
+    // so the failure the surfaces remember can never call one of
+    // the two deaths the other.
+    static bool wasTransferTimeout(int error, const QString &errorString);
+
     // Blocking queries - thread safe, may be called from the IO thread.
     // A host matches when the host itself or any parent domain is on
     // the list ("bad.example" is blocked by a "bad.example" and by an

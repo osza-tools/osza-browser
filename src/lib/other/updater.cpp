@@ -27,6 +27,21 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
+namespace {
+
+// The watchdog over the update check, the same window the
+// threat-block blocklist and the adblock subscriptions ride: an
+// inactivity timeout, restarted by every byte that arrives, so a
+// slow-but-flowing download is never cut - only a connection that
+// delivers nothing at all for a whole minute is. The check is a
+// one-shot the browser starts a minute after launch; without the
+// watchdog a stalled connection would hold the reply open for the
+// whole session, the "update available" it carried never arriving
+// and nothing retrying until the next launch.
+const int kUpdateCheckTimeoutMs = 60 * 1000;
+
+} // namespace
+
 Updater::Version::Version(const QString &s)
     : isValid(false)
     , majorVersion(-1)
@@ -129,7 +144,10 @@ void Updater::start()
 
 void Updater::startDownloadingUpdateInfo(const QUrl &url)
 {
-    QNetworkReply *reply = mApp->networkManager()->get(QNetworkRequest(QUrl(url)));
+    QNetworkRequest request(url);
+    request.setTransferTimeout(kUpdateCheckTimeoutMs);
+
+    QNetworkReply *reply = mApp->networkManager()->get(request);
 
     connect(reply, &QNetworkReply::finished, this, &Updater::downCompleted);
 }

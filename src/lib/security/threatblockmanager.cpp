@@ -29,6 +29,7 @@
 #include <QLocale>
 #include <QMutexLocker>
 #include <QRegularExpression>
+#include <QSaveFile>
 #include <QWebEngineProfile>
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
@@ -48,6 +49,22 @@ const int kRefreshIntervalMs = 12 * 60 * 60 * 1000;
 // host feed is around a hundred thousand entries; anything beyond
 // this is almost certainly not a host list.
 const int kMaxListEntries = 1000000;
+
+// The watchdog over a blocklist download. The engine's transfer
+// timeout is an inactivity timeout: the window restarts with every
+// byte that arrives, so a slow-but-flowing download is never cut -
+// only a connection that delivers nothing at all for the whole
+// window is aborted. Without it, a stalled connection (a captive
+// portal, a network that changed mid-flight, a half-open socket)
+// leaves the refresh "in flight" forever: m_updating stays set,
+// every later attempt is declined by the guard in fetchList(), the
+// location bar's pulse breathes without end, the warning page's
+// "refresh now" does nothing - and the blocklist can never be
+// renewed again until the browser is restarted. Sixty seconds of
+// complete silence covers connection setup and the first byte on
+// even a poor network, while a dead connection is still named
+// within a minute.
+const int kTransferTimeoutMs = 60 * 1000;
 
 const char kListHeader[] = "# Osza Browser threat blocklist";
 const char kListSourcePrefix[] = "# source: ";
@@ -312,6 +329,25 @@ QString ThreatBlockManager::describeListAge(const QDateTime &since)
     }
 
     return tr("%n day(s) ago", nullptr, int(hours / 24));
+}
+
+bool ThreatBlockManager::wasTransferTimeout(int error, const QString &errorString)
+{
+    // The two eras of the watchdog, one answer: Qt 6.7 and newer
+    // abort a stalled transfer with TimeoutError; older Qt reported
+    // the same death as a plain cancellation whose only
+    // distinguishing mark was the "timed out" wording of the error
+    // string - matched case-insensitively, so neither era's
+    // spelling ("transfer timed out", "Operation timed out") slips
+    // through. Every other error - including the deliberate abort
+    // through abortUpdate(), a cancellation carrying the plain
+    // "Operation canceled" wording - answers false.
+    if (error == QNetworkReply::TimeoutError) {
+        return true;
+    }
+
+    return error == QNetworkReply::OperationCanceledError
+        && errorString.contains(QSL("timed out"), Qt::CaseInsensitive);
 }
 
 bool ThreatBlockManager::isHostBlocked(const QString &host) const
@@ -585,7 +621,17 @@ void ThreatBlockManager::applyList(const QSet<QString> &hosts, const QDateTime &
 
 bool ThreatBlockManager::saveList(const QSet<QString> &hosts, const QDateTime &when)
 {
-    QFile file(listFilePath());
+    // The list is saved through QSaveFile, the way the tree's other
+    // security-critical files are: the bytes land in a temporary
+    // file beside the target and are renamed over it only when all
+    // of them arrived. A plain write could be cut in half by a
+    // crash, a power loss or a full disk - and a half-written list
+    // loads on the next start as a shorter list, every host after
+    // the cut silently unblocked, with nothing telling the user the
+    // protection they read about is smaller than the protection
+    // they had. An atomic save can only ever leave the complete new
+    // list or the complete old one standing.
+    QSaveFile file(listFilePath());
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning() << "ThreatBlock: cannot write the blocklist:" << file.errorString();
@@ -606,6 +652,14 @@ bool ThreatBlockManager::saveList(const QSet<QString> &hosts, const QDateTime &w
     std::sort(sorted.begin(), sorted.end());
     for (const QString &host : std::as_const(sorted)) {
         file.write(host.toUtf8() + '\n');
+    }
+
+    // Nothing is durable until the commit's rename lands; a failed
+    // commit leaves the old list standing, exactly like a refused
+    // download does.
+    if (!file.commit()) {
+        qWarning() << "ThreatBlock: cannot commit the blocklist:" << file.errorString();
+        return false;
     }
 
     return true;
@@ -694,6 +748,12 @@ void ThreatBlockManager::fetchList()
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 
+    // The watchdog rides the request itself, so every path a
+    // refresh can take - the timer, the padlock menu's button, the
+    // warning page's refresh link, a revoke's renewal - carries it
+    // without knowing about it.
+    request.setTransferTimeout(kTransferTimeoutMs);
+
     if (mApp->webProfile()) {
         request.setHeader(QNetworkRequest::UserAgentHeader, mApp->webProfile()->httpUserAgent());
     }
@@ -711,7 +771,18 @@ void ThreatBlockManager::fetchList()
         m_reply = nullptr;
         reply->deleteLater();
 
-        if (reply->error() != QNetworkReply::NoError) {
+        // The watchdog's kill is named as the stall it is, not as
+        // the engine's bare "Operation timed out", so the row that
+        // remembers the failure tells the user what died: the
+        // download stopped delivering. A deliberate abort (the
+        // quitting browser's abortUpdate()) is named as the choice
+        // it is, and every other failure keeps the engine's own
+        // wording.
+        if (wasTransferTimeout(reply->error(), reply->errorString())) {
+            error = tr("The blocklist download stalled and was aborted.");
+        } else if (reply->error() == QNetworkReply::OperationCanceledError) {
+            error = tr("The blocklist download was canceled.");
+        } else if (reply->error() != QNetworkReply::NoError) {
             error = reply->errorString();
         } else {
             const QByteArray data = reply->readAll();

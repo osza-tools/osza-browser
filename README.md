@@ -86,7 +86,21 @@ and KDE contributors for their work.
   the fresh list lands or the failure is named, and the warning
   page renews itself when a refresh lands or fails, re-weighing
   the site against the list now in place instead of waiting on a
-  manual reload; the security
+  manual reload; the renewal machinery is itself built to stay honest
+  under failure: a download that delivers nothing for a whole minute -
+  a captive portal, a connection that died mid-flight - is cut and
+  named as a stalled download, so a refresh can never hang "in
+  flight" forever, its pulse breathing and every later renewal
+  declined until a restart; the same watchdog rides every scheduled
+  download the browser starts for itself - the ad-block
+  subscriptions' refresh, the updater's version check - so none of
+  them can hang a session either; a refresh still running when the
+  browser quits is canceled before the teardown instead of racing it;
+  and the list lands on disk atomically, so a crash or a full disk
+  mid-save can never leave a half-written list behind - the complete
+  new list or the complete old one, never a silently shorter
+  protection (`tools/security/verify_threat_block_reliability.py`
+  keeps all of it honest without a Qt build); the security
   sidebar and the self-test page speak the same
   states live). The
   whole suite can be backed up and moved: the dashboard's

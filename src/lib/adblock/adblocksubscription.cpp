@@ -55,6 +55,22 @@
 #include <QNetworkReply>
 #include <QSaveFile>
 
+namespace {
+
+// The watchdog over a subscription download, the same window the
+// threat-block blocklist rides: an inactivity timeout, restarted
+// by every byte that arrives, so a slow-but-flowing download is
+// never cut - only a connection that delivers nothing at all for
+// a whole minute is. The guard in updateSubscription() is why it
+// matters: a reply that never finishes keeps m_reply set, and
+// every later refresh - the manager's scheduled
+// updateAllSubscriptions(), a user's manual one - is declined
+// until the browser is restarted, so the subscription silently
+// stops updating.
+const int kSubscriptionTimeoutMs = 60 * 1000;
+
+} // namespace
+
 AdBlockSubscription::AdBlockSubscription(const QString &title, QObject* parent)
     : QObject(parent)
     , m_reply(nullptr)
@@ -149,7 +165,10 @@ void AdBlockSubscription::updateSubscription()
         return;
     }
 
-    m_reply = mApp->networkManager()->get(QNetworkRequest(m_url));
+    QNetworkRequest request(m_url);
+    request.setTransferTimeout(kSubscriptionTimeoutMs);
+
+    m_reply = mApp->networkManager()->get(request);
     connect(m_reply, &QNetworkReply::finished, this, &AdBlockSubscription::subscriptionDownloaded);
 }
 

@@ -78,6 +78,7 @@
 #include <QNetworkCookie>
 #include <QNetworkProxy>
 #include <QNetworkProxyFactory>
+#include <QNetworkReply>
 #include <QTcpServer>
 #include <QTcpSocket>
 
@@ -1546,6 +1547,53 @@ void SecurityToolsTest::threatBlockListUpdateStateTest()
     // leave the shared manager clean for the other tests
     manager->applyListData(QByteArray());
     manager->loadSettings();
+}
+
+void SecurityToolsTest::threatBlockTransferTimeoutTest()
+{
+    // The watchdog over a blocklist download, and the naming of its
+    // two deaths. A stalled transfer - a connection that delivers
+    // nothing at all for the whole timeout window - is named as the
+    // stall it is on every Qt the browser builds against: Qt 6.7
+    // and newer abort the reply with TimeoutError, older Qt
+    // reported the same death as a cancellation whose only
+    // distinguishing mark was the "timed out" wording of the error
+    // string. A deliberate abort (the quitting browser's
+    // abortUpdate()) is a cancellation with the plain wording, and
+    // must never be called a stall; every other failure keeps its
+    // own name. The verdict decides the failure the surfaces
+    // remember, so the two can never be confused for one another.
+
+    // the current Qt's report of a stalled transfer: the error code
+    // alone is the verdict, whatever the wording
+    QVERIFY(ThreatBlockManager::wasTransferTimeout(QNetworkReply::TimeoutError, QSL("Operation timed out")));
+    QVERIFY(ThreatBlockManager::wasTransferTimeout(QNetworkReply::TimeoutError, QSL("anything at all")));
+
+    // the older Qt's report: a cancellation whose only
+    // distinguishing mark is the wording, in either era's spelling
+    QVERIFY(ThreatBlockManager::wasTransferTimeout(QNetworkReply::OperationCanceledError, QSL("transfer timed out")));
+    QVERIFY(ThreatBlockManager::wasTransferTimeout(QNetworkReply::OperationCanceledError, QSL("Operation timed out")));
+
+    // a deliberate abort is a plain cancellation: a choice, never a stall
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::OperationCanceledError, QSL("Operation canceled")));
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::OperationCanceledError, QString()));
+
+    // every other failure keeps its own name - neither of the two
+    // deaths, whatever the wording says
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::HostNotFoundError, QSL("host not found")));
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::RemoteHostClosedError, QSL("connection closed")));
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::NoError, QString()));
+    QVERIFY(!ThreatBlockManager::wasTransferTimeout(QNetworkReply::NoError, QSL("timed out")));
+
+    // the mark is matched without regard to case, so no era's
+    // spelling slips through
+    QVERIFY(ThreatBlockManager::wasTransferTimeout(QNetworkReply::OperationCanceledError, QSL("Transfer TIMED OUT")));
+
+    // aborting with no download in flight is the quitting
+    // browser's every-day case: the call is a no-op, never a crash
+    ThreatBlockManager manager;
+    manager.abortUpdate();
+    QVERIFY(!manager.isUpdating());
 }
 
 void SecurityToolsTest::threatBlockListDeltaTest()

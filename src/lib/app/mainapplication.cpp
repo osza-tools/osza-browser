@@ -848,6 +848,17 @@ void MainApplication::quitApplication()
 
     m_isClosing = true;
 
+    // A blocklist refresh in flight must not race the teardown: the
+    // abort delivers the download's finished now - on the cancel
+    // path, the one end of a download that applies no list and
+    // writes no file - while every manager it touches and every
+    // profile path still live, instead of leaving a half-open
+    // socket to be torn down whenever the network stack happens to
+    // go, its finished handler firing into a closing browser.
+    if (m_networkManager) {
+        m_networkManager->threatBlockManager()->abortUpdate();
+    }
+
     for (BrowserWindow *window : std::as_const(m_windows)) {
         window->close();
     }

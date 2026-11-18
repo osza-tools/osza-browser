@@ -188,6 +188,69 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (30): the blocklist download cannot hang forever -
+  a stalled refresh is cut after a minute of silence and named as
+  the stall it is. The threat-block blocklist is renewed by a
+  download the browser starts itself, and a download can die
+  without dying: a captive portal that accepts the connection and
+  never answers, a network that changed mid-flight, a half-open
+  socket - the connection stays "up", no byte ever arrives, and
+  before this round nothing in the request told the engine
+  otherwise, so it waited forever. The wait was not quiet:
+  m_updating stays set, and every later attempt is declined by the
+  guard in fetchList() - the timer's next due refresh, the padlock
+  menu's button, the warning page's "refresh now" link, a revoke's
+  renewal, all of them no-ops - the location bar's pulse breathes
+  without end, the warning page promises a renewal that never
+  lands, and the blocklist cannot be renewed again until the
+  browser is restarted. The request now carries the engine's
+  transfer timeout, sixty seconds of complete silence (the window
+  restarts with every byte that arrives, so a slow-but-flowing
+  download is never cut - only a connection that delivers nothing
+  at all for the whole window is), and the two ways a download can
+  end on purpose are named distinctly: a stalled transfer is
+  reported as "The blocklist download stalled and was aborted."
+  while a deliberate abort is reported as canceled, classified by
+  the new ThreatBlockManager::wasTransferTimeout() - one static
+  over both Qt eras, because Qt 6.7 and newer abort a stalled
+  transfer with TimeoutError while older Qt reported the same
+  death as a plain cancellation whose only distinguishing mark was
+  the "timed out" wording of the error string. The same round
+  hardens the two edges the download's data rides: the list is now
+  saved through QSaveFile, so a crash, a power loss or a full disk
+  mid-save can never leave a half-written list that loads on the
+  next start as a shorter, silently weaker protection - the
+  complete new list or the complete old one, never the prefix of
+  one; and a refresh still running when the browser quits is
+  aborted at the top of the teardown, on the cancel path that
+  applies no list and writes no file, instead of leaving its
+  finished handler to fire into a closing browser. The watchdog
+  then rides every scheduled download the browser starts for
+  itself, because the ad-block subscriptions die the same death:
+  updateSubscription() declines every attempt while m_reply is
+  set, so a stalled subscription download silently stops the
+  filters from updating until the browser is restarted - the same
+  sixty-second window now cuts it - and the updater's one-shot
+  version check carries it too, so a stalled check cannot hold
+  its reply open for a whole session with the "update available"
+  it carried never arriving. The interactive downloads (a user
+  script, a theme, a search engine's icon, the location bar's
+  suggestions, a site's image in the page-info dialog) are
+  deliberately outside the round: a user sees nothing arrive and
+  can retry, and the suggestions path aborts its previous reply
+  with every keystroke, so no scheduled refresh is wedged by
+  their stalls. Verified
+  without a Qt build by the new
+  tools/security/verify_threat_block_reliability.py (67
+  checks: the watchdog constant and its riding on every request,
+  the classifier's two eras and the distinct namings, the atomic
+  save and its checked commit, the teardown abort, the sibling
+  housekeeping downloads and the interactive boundary, the
+  autotest's table, and the README and this entry), the autotest
+  grows
+  threatBlockTransferTimeoutTest over the whole classification
+  table plus the no-download abort, and the other twelve
+  verifiers still pass unchanged.
 - Security tools (29): the per-site deep link from the security
   dashboard's rows - the "This site" section counts for one site
   (ads, trackers, upgrades, threats, referrers, one row per tool),
