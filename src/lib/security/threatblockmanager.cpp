@@ -19,6 +19,7 @@
 #include "mainapplication.h"
 #include "networkmanager.h"
 #include "qztools.h"
+#include "selftestpage.h"
 #include "settings.h"
 #include "datapaths.h"
 
@@ -835,6 +836,7 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
         templatePage.replace(QLatin1String("%LEAD%"), tr("Osza stopped this page from loading."));
         templatePage.replace(QLatin1String("%EXPLAIN-1%"), tr("The site <b>%HOST%</b> is on a blocklist of known dangerous hosts. Attack sites try to install programs that steal private information, use your device to attack others, or damage your system."));
         templatePage.replace(QLatin1String("%EXPLAIN-2%"), tr("This protection is part of the Osza security tools. It can be turned off in Preferences &gt; Privacy &gt; Security tools."));
+        templatePage.replace(QLatin1String("%SITE-STATE-LINK%"), tr("How the security tools treat this site"));
         templatePage.replace(QLatin1String("%WHY-LINK%"), tr("Why is this site flagged?"));
         templatePage.replace(QLatin1String("%BLOCKED-URL%"), tr("Blocked URL"));
         templatePage.replace(QLatin1String("%MATCH-ENTRY%"), tr("Matching entry"));
@@ -946,6 +948,20 @@ QString ThreatBlockManager::interstitialPage(const QUrl &blockedUrl) const
     page.replace(QLatin1String("%LIST-INFO%"), listInfo);
     page.replace(QLatin1String("%MATCH-INFO%"), matchInfo);
     page.replace(QLatin1String("%SOURCE-INFO%"), sourceInfo);
+
+    // The per-site deep link: the self-test page's per-site section
+    // for the flagged host - the whole suite's treatment of the site
+    // this warning stopped, one click from the evidence. The address
+    // is built by the same SelfTestPage::pageUrl() the padlock menu's
+    // link and the page's own ask form ride, so every surface that
+    // asks the per-site question lands in the same place; the host
+    // rides in the spelling QUrl::host() gives, and whether the page
+    // can judge it stays the page's own answer - the same pipe rule
+    // everywhere else. The separator is escaped for the href
+    // attribute, the same treatment the refresh link's address gets.
+    QString siteStateHref = SelfTestPage::pageUrl(QString(), blockedUrl.host()).toString(QUrl::FullyEncoded);
+    siteStateHref.replace(QLatin1Char('&'), QSL("&amp;"));
+    page.replace(QLatin1String("%SITE-STATE-URL%"), siteStateHref);
 
     page.replace(QLatin1String("%PROCEED-URL%"),
                  QString::fromLatin1(QUrl::toPercentEncoding(blockedUrl.toString())));

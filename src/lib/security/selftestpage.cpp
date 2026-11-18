@@ -18,6 +18,7 @@
 #include "referrerguardmanager.h"
 #include "selftestpage.h"
 #include "adblockmanager.h"
+#include "browserwindow.h"
 #include "cookielifecyclemanager.h"
 #include "dnsoverhttpsmanager.h"
 #include "fingerprintmanager.h"
@@ -28,6 +29,7 @@
 #include "qztools.h"
 #include "securitymanager.h"
 #include "settings.h"
+#include "tabwidget.h"
 #include "threatblockmanager.h"
 
 #include <QDateTime>
@@ -538,6 +540,39 @@ QString SelfTestPage::sectionIdFromUrl(const QUrl &url)
 QString SelfTestPage::siteFromUrl(const QUrl &url)
 {
     return QUrlQuery(url).queryItemValue(QSL("site")).trimmed();
+}
+
+void SelfTestPage::openSiteState(BrowserWindow *window, const QString &site)
+{
+    // A per-site deep link's landing: the self-test page's per-site
+    // section, answering for the asked site - the same address the
+    // page's own ask form composes, built by the same pageUrl(), so
+    // the padlock menu, the interstitial and the form can never
+    // land in different places (the rule the diff page's
+    // openToolDiff() keeps for the per-tool links). The string
+    // rides through verbatim, trimmed only: whether it names a host
+    // the page can judge is the page's own answer, never this
+    // shortcut's - an IPv6 literal or a unicode IDN spelling gets
+    // the page's honest "not judgeable" answer, not a refusal here
+    // that would have to duplicate the page's judgment.
+    if (!window) {
+        return;
+    }
+
+    const QString asked = site.trimmed();
+
+    // An empty ask is answered with the plain page - the same
+    // honest answer the ask form's empty input gets (it navigates
+    // nowhere) - never an error page.
+    if (asked.isEmpty()) {
+        window->tabWidget()->addView(LoadRequest(pageUrl()), Qz::NT_SelectedTab);
+        return;
+    }
+
+    // The site item alone carries the full intent: the page
+    // composes its own focus and lands on the per-site section
+    // (requestedSectionId()'s own judgment in its script).
+    window->tabWidget()->addView(LoadRequest(pageUrl(QString(), asked)), Qz::NT_SelectedTab);
 }
 
 QString SelfTestPage::statusesJson()

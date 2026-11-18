@@ -33,6 +33,7 @@
 #include "referrerguardmanager.h"
 #include "securitypresets.h"
 #include "securitysettingsporter.h"
+#include "selftestpage.h"
 #include "settingsdiffpage.h"
 #include "settings.h"
 
@@ -134,6 +135,12 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     setupToolDiffLink(ui->referrerGuardDiffLink, QSL("referrerGuard"));
     setupToolDiffLink(ui->threatBlockDiffLink, QSL("threatBlock"));
     setupToolDiffLink(ui->cookieLifecycleDiffLink, QSL("cookieLifecycle"));
+
+    // The per-site summary link under the security entries: the
+    // complete answer - every protection with a per-site choice,
+    // one page - for the site the rows above answer for one tool
+    // at a time.
+    setupSiteStateLink();
 
     connect(ui->pushButton, &QAbstractButton::clicked, m_window->action(QSL("Tools/SiteInfo")), &QAction::trigger);
     connect(ui->protocolHandlerButton, &QPushButton::clicked, this, &SiteInfoWidget::protocolHandlerButtonClicked);
@@ -278,6 +285,49 @@ void SiteInfoWidget::setupToolDiffLink(QLabel *link, const QString &toolKey)
     // drift apart.
     connect(link, &QLabel::linkActivated, this, [this, toolKey](const QString &) {
         SettingsDiffPage::openToolDiff(m_window, toolKey);
+    });
+}
+
+void SiteInfoWidget::setupSiteStateLink()
+{
+    // The per-site summary link: the rows above answer for one tool
+    // at a time, this one opens the whole answer - the self-test
+    // page's per-site section for the site the menu speaks, every
+    // protection with a per-site choice judged through the same
+    // managers the rows read, one page. It follows the rows' own
+    // case (web schemes only) and never a host judgment of its own:
+    // the host rides through in the spelling QUrl::host() gives -
+    // the same spelling every row and every list reads - and
+    // whether the page can judge it is the page's own answer, the
+    // same pipe rule the "site" query item follows.
+    const QString scheme = m_window->weView()->url().scheme();
+
+    if (scheme != QL1S("http") && scheme != QL1S("https")) {
+        ui->siteStateLink->hide();
+        return;
+    }
+
+    const QString host = m_window->weView()->url().host();
+
+    ui->siteStateLink->setTextFormat(Qt::RichText);
+    // osza: URLs belong to the browser, never the OS.
+    ui->siteStateLink->setOpenExternalLinks(false);
+
+    // The same address the page's own ask form composes - the URL
+    // shape that exists once, in SelfTestPage::pageUrl().
+    const QUrl url = SelfTestPage::pageUrl(QString(), host);
+    ui->siteStateLink->setText(QSL("<a href=\"%1\">%2</a>")
+                                  .arg(url.toString().toHtmlEscaped(),
+                                       tr("How the security tools treat this site").toHtmlEscaped()));
+    ui->siteStateLink->setToolTip(tr("Opens the security self-test's per-site section - every protection's treatment of %1 in one page, the same judgments the rows above read. Nothing is changed by the page.").arg(host));
+
+    // The label never opens anything itself: the click hands the
+    // host to the shared openSiteState() - the one place a
+    // per-site deep link lands, the same one the threat
+    // interstitial's link uses - so the visible link and where it
+    // lands cannot drift apart.
+    connect(ui->siteStateLink, &QLabel::linkActivated, this, [this, host](const QString &) {
+        SelfTestPage::openSiteState(m_window, host);
     });
 }
 

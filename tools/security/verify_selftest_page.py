@@ -37,8 +37,12 @@
 # mirror as tools/security/verify_fingerprint_guard.py, and the
 # per-site half: the "site" URL shape pinned on every side that
 # spells it, a pure-Python mirror of the host normalization against
-# its truth table, and the per-tool judgment wiring pinned to the
-# same managers the padlock menu's rows read.
+# its truth table, the per-tool judgment wiring pinned to the same
+# managers the padlock menu's rows read, and the per-site deep
+# links pinned on every side that offers them - the one shared
+# landing (SelfTestPage::openSiteState), the padlock menu's link
+# under the per-tool rows, and the threat interstitial's link for
+# the host it stopped.
 #
 # Usage:
 #   python3 tools/security/verify_selftest_page.py
@@ -60,6 +64,15 @@ HANDLER_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            os.pardir, os.pardir,
                            "src", "lib", "network", "schemehandlers",
                            "oszaschemehandler.cpp")
+SITEINFO_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            os.pardir, os.pardir,
+                            "src", "lib", "other", "siteinfowidget.cpp")
+THREAT_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          os.pardir, os.pardir,
+                          "src", "lib", "security", "threatblockmanager.cpp")
+THREAT_HTML = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           os.pardir, os.pardir,
+                           "src", "lib", "data", "html", "threatblocked.html")
 
 import re
 import json
@@ -70,6 +83,9 @@ html = open(SRC, encoding="utf-8").read()
 script = re.search(r"<script>(.*?)</script>", html, re.DOTALL).group(1)
 page_cpp = open(PAGE_CPP, encoding="utf-8").read()
 handler_cpp = open(HANDLER_CPP, encoding="utf-8").read()
+siteinfo_cpp = open(SITEINFO_CPP, encoding="utf-8").read()
+threat_cpp = open(THREAT_CPP, encoding="utf-8").read()
+threat_html = open(THREAT_HTML, encoding="utf-8").read()
 
 
 # ------------------------------------------------------------------
@@ -255,6 +271,63 @@ static_check("an unjudgeable ask is answered with empty rows, never judged",
       re.search(r"QJsonArray rows;\s*\n\s*if \(!host\.isEmpty\(\)\) \{", page_cpp) is not None
       and re.search(r'states\.insert\(QSL\("judgeable"\), !host\.isEmpty\(\)\)',
                     page_cpp) is not None)
+
+print("== per-site deep links: the padlock menu and the interstitial, one landing ==")
+
+# The shared landing, the openToolDiff() rule applied to the
+# per-site question: every surface that asks it lands in the same
+# place.
+open_fn_start = page_cpp.index("void SelfTestPage::openSiteState")
+open_fn_end = page_cpp.index("QString SelfTestPage::statusesJson")
+open_fn = page_cpp[open_fn_start:open_fn_end]
+
+static_check("openSiteState() is the one shared landing (declared beside its URL builders)",
+      "static void openSiteState(BrowserWindow *window, const QString &site);" in open(PAGE_CPP.replace(".cpp", ".h"), encoding="utf-8").read())
+static_check("openSiteState() lands the address pageUrl() composes for the asked site",
+      "pageUrl(QString(), asked)" in open_fn and "Qz::NT_SelectedTab" in open_fn)
+static_check("openSiteState() pipes the site through verbatim, trimmed only",
+      "const QString asked = site.trimmed();" in open_fn
+      and "siteFromUrl" not in open_fn)
+static_check("openSiteState() answers an empty ask with the plain page, never an error page",
+      re.search(r"asked\.isEmpty\(\)\)\s*\{\s*\n\s*window->tabWidget\(\)->addView\(LoadRequest\(pageUrl\(\)\)", open_fn) is not None)
+static_check("openSiteState() is a no-op without a window (the openToolDiff rule)",
+      "if (!window) {" in open_fn)
+
+# The padlock menu's link: under the per-tool rows, the complete
+# answer for the site they answer for one tool at a time.
+padlock_fn_start = siteinfo_cpp.index("void SiteInfoWidget::setupSiteStateLink")
+padlock_fn_end = siteinfo_cpp.index("void SiteInfoWidget::updateFingerprintState")
+padlock_fn = siteinfo_cpp[padlock_fn_start:padlock_fn_end]
+
+static_check("the padlock menu's link follows the rows' own case (web schemes only)",
+      'scheme != QL1S("http") && scheme != QL1S("https")' in padlock_fn
+      and "ui->siteStateLink->hide();" in padlock_fn)
+static_check("the padlock menu's link carries the host in the rows' own spelling, never a judgment of its own",
+      'm_window->weView()->url().host()' in padlock_fn
+      and "normalizeSiteHost" not in padlock_fn)
+static_check("the padlock menu's link is built by the same pageUrl() the ask form composes",
+      "SelfTestPage::pageUrl(QString(), host)" in padlock_fn)
+static_check("the padlock menu's link lands through the shared openSiteState()",
+      "SelfTestPage::openSiteState(m_window, host);" in padlock_fn
+      and "addView" not in padlock_fn)
+static_check("the padlock menu's link keeps the osza: rule (rich text, never external)",
+      "setTextFormat(Qt::RichText)" in padlock_fn
+      and "setOpenExternalLinks(false)" in padlock_fn)
+static_check("the padlock menu wires the link under the security entries (the ui carries it)",
+      re.search(r'name="siteStateLink"', open(SITEINFO_CPP.replace("siteinfowidget.cpp", "siteinfowidget.ui"), encoding="utf-8").read()) is not None)
+
+# The interstitial's link: the whole suite's treatment of the
+# flagged host, one click from the evidence.
+static_check("the interstitial carries the per-site link beside the suite's note",
+      '<a href="%SITE-STATE-URL%">%SITE-STATE-LINK%</a>' in threat_html)
+static_check("the interstitial's link label is translated in the template pass",
+      'QLatin1String("%SITE-STATE-LINK%"), tr("How the security tools treat this site")' in threat_cpp)
+static_check("the interstitial's link address is built by the same pageUrl(), in the host's own spelling",
+      "SelfTestPage::pageUrl(QString(), blockedUrl.host())" in threat_cpp)
+static_check("the interstitial escapes the address for the href attribute (the refresh link's treatment)",
+      re.search(r'''siteStateHref\.replace\(QLatin1Char\('&'\), QSL\("&amp;"\)\)''', threat_cpp) is not None)
+static_check("the interstitial's link needs no script (the page's only script stays goBack)",
+      threat_html.count("<script>") == 1)
 if checks[0]:
     print("STATIC CHECK(S) FAILED")
     exit(1)

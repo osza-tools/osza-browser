@@ -63,6 +63,13 @@ private:
     // catalog must carry the baseline), hidden otherwise.
     void setupToolDiffLink(QLabel *link, const QString &toolKey);
 
+    // Configure the per-site summary link under the security
+    // entries: the self-test page's per-site section for the site
+    // the menu answers for - the complete answer (every protection
+    // with a per-site choice, one page) behind the per-tool rows,
+    // offered wherever the rows are.
+    void setupSiteStateLink();
+
     Ui::SiteInfoWidget* ui;
     BrowserWindow* m_window;
 };

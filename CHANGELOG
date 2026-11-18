@@ -188,6 +188,37 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (27): per-site deep links into the self-test
+  page's "Per-site state" section - the section answers "what does
+  the suite do to example.com?" for any site, but until now the
+  only way in was the page's own ask form: the two surfaces where
+  the per-site question naturally arises had no way to ask it. The
+  padlock menu carries a "How the security tools treat this site"
+  link under its per-tool rows - the rows answer for one tool at a
+  time, the link opens the whole answer, every protection with a
+  per-site choice judged through the same managers the rows read -
+  and the threat-block warning page carries the same link for the
+  host it stopped: the whole suite's treatment of the flagged
+  site, one click from the warning that stopped it. Both links
+  land through one shared shortcut (SelfTestPage::openSiteState)
+  on the same address the page's own ask form composes
+  (osza:selftest?site=example.com, built by the same pageUrl()),
+  so every surface that asks the per-site question can never land
+  in different places; the host rides through in the spelling the
+  padlock rows and the lists read, and whether the page can judge
+  it stays the page's own answer - the same pipe rule the "site"
+  query item follows. The padlock link follows the rows' own case
+  (web pages only), and the warning page's link is a plain anchor
+  - no script, the same rule both ways out of that page follow.
+  Verified without a Qt build by the two verifiers it grew:
+  tools/security/verify_selftest_page.py (156 checks: the shared
+  landing, the padlock wiring and the interstitial wiring pinned)
+  and tools/security/verify_threat_interstitial.py (86 checks:
+  the two new placeholder tokens, the pageUrl build, the href
+  escaping); the autotest grows padlockMenuSiteStateLinkTest (the
+  link's shape, its visibility rules, the landing, the empty ask
+  answered with the plain page) and extends the interstitial test
+  to the link.
 - Security tools (26): cookie lifecycle on exit, the ninth bundled
   tool - a cookie is the one tracker built to outlive the session
   that created it: a site leaves a persistent cookie behind, and

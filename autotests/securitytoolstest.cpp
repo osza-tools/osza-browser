@@ -728,6 +728,94 @@ void SecurityToolsTest::padlockMenuToolDiffLinksTest()
     delete window;
 }
 
+void SecurityToolsTest::padlockMenuSiteStateLinkTest()
+{
+    // The padlock menu's per-site summary link: under the per-tool
+    // rows, the complete answer - the self-test page's per-site
+    // section for the site the menu speaks, every protection with a
+    // per-site choice judged through the same managers the rows
+    // read. Built on the same pageUrl() the page's own ask form
+    // composes and landed by the same shared
+    // SelfTestPage::openSiteState() the interstitial's link uses,
+    // so every surface that asks the per-site question can never
+    // land in different places.
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the padlock asks for the page the window is
+    // showing, so the tab has to exist first.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    // On the browser's own start page the link is hidden, the same
+    // case every per-site row follows: the per-site answer is a
+    // web-site question.
+    auto *startPagePadlock = new SiteInfoWidget(window);
+    startPagePadlock->show();
+    QVERIFY(QTest::qWaitForWindowExposed(startPagePadlock));
+    QVERIFY(!startPagePadlock->findChild<QLabel*>(QSL("siteStateLink"))->isVisible());
+    delete startPagePadlock;
+
+    // On a web page the link is offered: the visible address is
+    // exactly what pageUrl() builds for the site's host - the URL
+    // shape that exists once - and the click rides the shared
+    // landing, so the link can never land anywhere else.
+    const QString host = QSL("padlock-site-state.example");
+    window->weView()->setHtml(QSL("<html><body></body></html>"), QUrl(QSL("https://%1/").arg(host)));
+    QTRY_COMPARE(window->weView()->url().host(), host);
+
+    auto *padlock = new SiteInfoWidget(window);
+    padlock->show();
+    QVERIFY(QTest::qWaitForWindowExposed(padlock));
+
+    auto *link = padlock->findChild<QLabel*>(QSL("siteStateLink"));
+    QVERIFY(link);
+    QVERIFY(link->isVisible());
+
+    // Rich text with external links off: osza: URLs belong to the
+    // browser, never the OS - the same rule as the rows' "diff"
+    // links.
+    QCOMPARE(link->textFormat(), Qt::RichText);
+    QVERIFY(!link->openExternalLinks());
+
+    const QString href = SelfTestPage::pageUrl(QString(), host).toString();
+    QCOMPARE(href, QSL("osza:selftest?site=%1").arg(host));
+    QVERIFY(link->text().contains(href.toHtmlEscaped()));
+
+    // The tooltip names the site the answer speaks.
+    QVERIFY(!link->toolTip().isEmpty());
+    QVERIFY(link->toolTip().contains(host));
+
+    // The landing, with a real window: the very address the link
+    // shows - the self-test page, its per-site section answering
+    // for the site (the page's own composition from the site item
+    // alone). Whitespace around the site is trimmed, exactly like
+    // the page trims its query item.
+    const int tabsBefore = window->tabWidget()->count();
+
+    SelfTestPage::openSiteState(window, host);
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 1);
+    QTRY_COMPARE(window->weView()->url(), SelfTestPage::pageUrl(QString(), host));
+
+    SelfTestPage::openSiteState(window, QSL("  other.example  "));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 2);
+    QTRY_COMPARE(window->weView()->url(), SelfTestPage::pageUrl(QString(), QSL("other.example")));
+
+    // An empty ask is answered with the plain page - the same
+    // honest answer the ask form's empty input gets - never an
+    // error page.
+    SelfTestPage::openSiteState(window, QSL("   "));
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 3);
+    QTRY_COMPARE(window->weView()->url(), SelfTestPage::pageUrl());
+
+    // Without a window the shared slot is a no-op, exactly like the
+    // diff page's own deep-link shortcut.
+    SelfTestPage::openSiteState(nullptr, host);
+
+    delete padlock;
+    delete window;
+}
+
 void SecurityToolsTest::locationBarProtectionsBadgeTest()
 {
     // The badge end to end, in a real window's location bar: the
@@ -1410,6 +1498,16 @@ void SecurityToolsTest::threatBlockInterstitialTest()
         + QSL("&amp;proceed=1");
     QVERIFY(page.contains(proceedHref));
     QVERIFY(page.contains(QSL("osza:start")));
+
+    // the per-site deep link: the whole suite's treatment of the
+    // flagged host, one click from the warning that stopped it -
+    // the same address the padlock menu's link and the page's own
+    // ask form compose (the one URL shape, built by pageUrl()),
+    // with the host in the spelling QUrl::host() gives
+    const QString siteStateHref = SelfTestPage::pageUrl(QString(), blocked.host()).toString(QUrl::FullyEncoded);
+    QVERIFY(!siteStateHref.contains(QLatin1Char('&')));
+    QVERIFY(page.contains(QSL("<a href=\"%1\">How the security tools treat this site</a>").arg(siteStateHref)));
+    QVERIFY(page.contains(SelfTestPage::pageUrl(QString(), QSL("bad.example")).toString()));
 
     // the "why is this site flagged?" disclosure carries the evidence:
     // a native <details> (the toggle needs no script), the matching

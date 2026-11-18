@@ -190,6 +190,13 @@ body { direction: %DIRECTION%; }
 
     <p class="vx-note" style="margin-block-start: 16px;">%EXPLAIN-2%</p>
 
+    <!-- The per-site deep link: the whole suite's treatment of the
+         flagged host, one click from the warning that stopped it -
+         the same address the padlock menu's link and the page's own
+         ask form compose. A plain anchor on purpose: no script, the
+         same rule both ways out of the page follow. -->
+    <p class="vx-note" style="margin-block-start: 8px;"><a href="%SITE-STATE-URL%">%SITE-STATE-LINK%</a></p>
+
     <p class="vx-threat__warning">%PROCEED-WARN%</p>
     <div class="vx-threat__actions" style="margin-block-start: 14px;">
       <a class="vx-btn" href="osza:threatblocked?url=%PROCEED-URL%&amp;proceed=1">%PROCEED-LABEL%</a>

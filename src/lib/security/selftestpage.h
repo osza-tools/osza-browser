@@ -27,6 +27,8 @@
 
 #include "qzcommon.h"
 
+class BrowserWindow;
+
 /*
  * The osza:selftest security self-test page.
  *
@@ -62,6 +64,13 @@
  * script - the browser stays a pipe for the item itself), and a
  * request that also names a section of its own keeps that focus
  * with the per-site answer still rendered.
+ *
+ * The section is one click away from the surfaces where the
+ * per-site question arises: openSiteState() is the one landing
+ * every per-site deep link rides - the padlock menu's link for
+ * the site it answers for, the threat interstitial's link for the
+ * host it stopped - the same rule SettingsDiffPage::openToolDiff()
+ * keeps for the per-tool deep links.
  */
 class OSZA_EXPORT SelfTestPage : public QObject
 {
@@ -120,6 +129,19 @@ public:
     // own decision, never the URL's - the same pipe rule the
     // section item follows.
     static QString siteFromUrl(const QUrl &url);
+
+    // A per-site deep link's landing: the self-test page opened on
+    // the asked site's answer, in a new selected tab - the one
+    // place the padlock menu's link and the threat interstitial's
+    // link land, built on the same pageUrl() the page's own ask
+    // form composes, so every surface that asks the per-site
+    // question can never land in different places. The site string
+    // is piped through verbatim (trimmed only); whether it names a
+    // host the page can judge stays the page's own answer. An
+    // empty ask opens the plain page - the same honest answer the
+    // ask form's empty input gets - never an error page. A null
+    // window is a no-op, exactly like the diff page's shortcut.
+    static void openSiteState(BrowserWindow *window, const QString &site);
 
 private:
     SelfTestPage() = default;

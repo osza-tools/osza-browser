@@ -38,7 +38,7 @@
       <property name="rightMargin">
        <number>15</number>
       </property>
-      <item row="18" column="0" colspan="3">
+      <item row="19" column="0" colspan="3">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="protocolHandlerLabel"/>
@@ -65,7 +65,7 @@
         </property>
        </widget>
       </item>
-      <item row="20" column="0" colspan="3">
+      <item row="21" column="0" colspan="3">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>6</number>
@@ -111,7 +111,17 @@
         </property>
        </widget>
       </item>
-      <item row="17" column="0" colspan="3">
+      <item row="17" column="2">
+       <widget class="QLabel" name="siteStateLink">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="18" column="0" colspan="3">
        <widget class="Line" name="protocolHandlerLine">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -125,7 +135,7 @@
         </property>
        </widget>
       </item>
-      <item row="19" column="0" colspan="3">
+      <item row="20" column="0" colspan="3">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

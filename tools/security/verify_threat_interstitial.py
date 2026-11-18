@@ -60,7 +60,14 @@
 #      Q_SLOTS, never bare signals:/slots: - the tree builds with
 #      -DQT_NO_KEYWORDS) and the qrc still ships the page.
 #
-#   9. The README and the CHANGELOG tell the user about it.
+#   9. The per-site deep link: the whole suite's treatment of the
+#      flagged host, one click from the warning that stopped it -
+#      the same SelfTestPage::pageUrl() address the padlock menu's
+#      link and the page's own ask form compose, a plain anchor
+#      (no script), the href escaped for the attribute, and the
+#      interstitial test asserting it.
+#
+#  10. The README and the CHANGELOG tell the user about it.
 #
 # Usage:
 #   python3 tools/security/verify_threat_interstitial.py
@@ -203,8 +210,9 @@ check("every C++ token exists in the HTML (HOST arrives through the EXPLAIN-1 tr
       cpp_tokens - html_tokens == {"HOST"})
 check("the retired %DETAILS-HEADING% is gone from both sides",
       "DETAILS-HEADING" not in html_tokens and "DETAILS-HEADING" not in cpp_tokens)
-for token in ("WHY-LINK", "MATCH-ENTRY", "MATCH-INFO", "SOURCE-LABEL", "SOURCE-INFO"):
-    check("the new %%%s%% token exists on both sides" % token,
+for token in ("WHY-LINK", "MATCH-ENTRY", "MATCH-INFO", "SOURCE-LABEL", "SOURCE-INFO",
+              "SITE-STATE-LINK", "SITE-STATE-URL"):
+    check("the %%%s%% token exists on both sides" % token,
           token in html_tokens and token in cpp_tokens)
 check("the EXPLAIN tokens still round-trip (the regex must not lose the digit)",
       "EXPLAIN-1" in html_tokens and "EXPLAIN-2" in cpp_tokens)
@@ -369,6 +377,9 @@ check("the interstitial test keeps the pre-existing checks (heading, escaping, b
       and "%3Cscript%3E&amp;q=1" in interstitial_test
       and "proceedHref" in interstitial_test
       and "not downloaded yet" in interstitial_test)
+check("the interstitial test asserts the per-site deep link (the shared address, the link text)",
+      "SelfTestPage::pageUrl(QString(), blocked.host())" in interstitial_test
+      and "How the security tools treat this site" in interstitial_test)
 
 # ------------------------------------------------------------------
 # 8. Build discipline
@@ -396,9 +407,30 @@ check("the manager stays the one renderer (the scheme handler and nobody else ca
                     "src/lib/security/threatblockmanager.h"])
 
 # ------------------------------------------------------------------
-# 9. The docs
+# 9. The per-site deep link
 # ------------------------------------------------------------------
-print("9. docs")
+print("9. the per-site deep link")
+
+check("the link rides a plain anchor beside the suite's note (no button, no script)",
+      '<a href="%SITE-STATE-URL%">%SITE-STATE-LINK%</a>' in interstitial_html)
+check("the link text is translated once, in the template pass",
+      'QLatin1String("%SITE-STATE-LINK%"), tr("How the security tools treat this site")' in interstitial)
+check("the link address is built by the same pageUrl() the ask form and the padlock menu ride",
+      "SelfTestPage::pageUrl(QString(), blockedUrl.host())" in interstitial)
+check("the host rides in the URL's own spelling, never a second normalization for the link",
+      "SelfTestPage::pageUrl(QString(), blockedUrl.host())" in interstitial
+      and interstitial.count("normalizeHost(") == 1)
+check("the address is escaped for the href attribute (the refresh link's treatment)",
+      re.search(r'''siteStateHref\.replace\(QLatin1Char\('&'\), QSL\("&amp;"\)\)''', interstitial) is not None)
+check("the address is never hand-spelled in the manager (no second URL shape beside pageUrl())",
+      "osza:selftest" not in interstitial)
+check("the page's only script stays goBack (the link is a plain anchor)",
+      interstitial_html.count("<script>") == 1)
+
+# ------------------------------------------------------------------
+# 10. The docs
+# ------------------------------------------------------------------
+print("10. docs")
 
 readme_flat = " ".join(readme.split())
 check("the README tells the user the warning page explains the decision",
@@ -406,6 +438,8 @@ check("the README tells the user the warning page explains the decision",
       and "last update" in readme_flat)
 check("the CHANGELOG has a Security tools (19) entry for the disclosure",
       "Security tools (19)" in changelog and "flagged" in changelog)
+check("the README speaks the per-site deep link from the warning page",
+      "How the security tools treat this site" in readme_flat)
 
 print()
 if failures:
