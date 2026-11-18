@@ -24,11 +24,12 @@
 #      the exclusion list's storage normalization and matching.
 #
 #   4. The wiring: the counter, the relaxed-protections query, the
-#      padlock menu row, the security sidebar, the Preferences
-#      rows, the self-test page row, the porter (export, import
-#      validation, apply, preview), the three baselines, the diff
-#      page's tool count, and the honest "requires QtWebEngine 6.5+"
-#      treatment everywhere a build without the API shows up.
+#      padlock menu row and its strength shortcut, the security
+#      sidebar, the Preferences rows, the self-test page row, the
+#      porter (export, import validation, apply, preview), the three
+#      baselines, the diff page's tool count, and the honest "requires
+#      QtWebEngine 6.5+" treatment everywhere a build without the API
+#      shows up.
 #
 #   5. The autotests and the docs exist.
 #
@@ -320,6 +321,7 @@ check("the padlock menu carries the row",
 check("the padlock menu's row is hidden when the build cannot run the tool",
       re.search(r"if \(!ReferrerGuardManager::isSupported\(\)\) \{\s*\n"
                 r"\s*ui->referrerLabel->hide\(\);\s*\n\s*ui->referrerButton->hide\(\);\s*\n"
+                r"\s*ui->referrerStrengthButton->hide\(\);\s*\n"
                 r"\s*ui->referrerGuardDiffLink->hide\(\);\s*\n\s*return;\s*\n\s*\}", SITEINFO_CPP) is not None)
 check("the padlock menu's button turns the tool on at the recommended strength",
       "manager->setMode(ReferrerGuardManager::OriginOnly);" in SITEINFO_CPP)
@@ -327,7 +329,41 @@ check("the padlock menu's button reloads the network stack and the page",
       SITEINFO_CPP.count("mApp->networkManager()->loadSettings();") >= 2)
 check("the padlock menu UI carries the row's widgets",
       'name="referrerLabel"' in SITEINFO_UI and 'name="referrerButton"' in SITEINFO_UI
+      and 'name="referrerStrengthButton"' in SITEINFO_UI
       and 'name="referrerGuardDiffLink"' in SITEINFO_UI)
+
+# The strength shortcut: the row speaks the current strength, the
+# button beside it offers the other one - the same choice
+# Preferences' selector makes, one mode for every protected site,
+# without leaving the page.
+strength_row_start = SITEINFO_CPP.index("void SiteInfoWidget::updateReferrerGuardState")
+strength_row_end = SITEINFO_CPP.index("void SiteInfoWidget::referrerStrengthButtonClicked")
+strength_row = SITEINFO_CPP[strength_row_start:strength_row_end]
+strength_click_start = strength_row_end
+strength_click_end = SITEINFO_CPP.index("void SiteInfoWidget::referrerGuardButtonClicked")
+strength_click = SITEINFO_CPP[strength_click_start:strength_click_end]
+
+check("the strength button is wired beside the row's own button",
+      "connect(ui->referrerStrengthButton, &QPushButton::clicked, this, &SiteInfoWidget::referrerStrengthButtonClicked);" in SITEINFO_CPP
+      and re.search(r'name="referrerStrengthButton"', SITEINFO_UI) is not None)
+check("the strength shortcut is hidden everywhere it has no strength to speak",
+      strength_row.count("ui->referrerStrengthButton->hide();") == 3
+      and strength_row.count("ui->referrerStrengthButton->show();") == 1)
+check("the strength shortcut offers the other strength in Preferences' own wording",
+      'ui->referrerStrengthButton->setText(tr("Send only the site\'s address"));' in strength_row
+      and 'ui->referrerStrengthButton->setText(tr("Send no referrer at all"));' in strength_row)
+check("the strength shortcut's tooltip names the choice's global reach",
+      "not only this one" in strength_row
+      and "ui->referrerStrengthButton->setToolTip(" in strength_row)
+check("the strength shortcut flips between the two strengths through the manager",
+      re.search(r"manager->setMode\(manager->mode\(\) == ReferrerGuardManager::NoReferrer\s*\n"
+                r"\s*\? ReferrerGuardManager::OriginOnly\s*\n"
+                r"\s*: ReferrerGuardManager::NoReferrer\);", strength_click) is not None)
+check("the strength shortcut answers only its own case (guard on, site protected)",
+      "if (manager->isEnabled() && !manager->isExcluded(url.host())) {" in strength_click)
+check("the strength shortcut takes the same two-step as the row's other choices",
+      "mApp->networkManager()->loadSettings();" in strength_click
+      and "m_window->weView()->reload();" in strength_click)
 
 check("the sidebar carries the quick switch, the state row and the diff link",
       'createToolRow(m_referrerGuardToggle, QSL("referrerGuard"))' in SIDEBAR_CPP

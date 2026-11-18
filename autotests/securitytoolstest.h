@@ -36,6 +36,7 @@ private Q_SLOTS:
     void securityDashboardToolDiffLinksTest();
     void padlockMenuToolDiffLinksTest();
     void padlockMenuSiteStateLinkTest();
+    void padlockMenuReferrerStrengthTest();
     void locationBarProtectionsBadgeTest();
     void locationBarListUpdatePulseTest();
 

@@ -281,14 +281,31 @@
        </layout>
       </item>
       <item row="12" column="2">
-       <widget class="QPushButton" name="referrerButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <layout class="QHBoxLayout" name="referrerButtonsLayout">
+        <property name="spacing">
+         <number>4</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QPushButton" name="referrerButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="referrerStrengthButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="13" column="2">
        <layout class="QHBoxLayout" name="threatBlockRowLayout">

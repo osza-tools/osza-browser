@@ -188,6 +188,39 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (28): the referrer-guard strength shortcut in the
+  padlock row - the row already speaks the current strength ("at
+  most this site's address" or "no referrer"), but taking the other
+  one meant a trip through Preferences; the choice is now a second
+  button in the row itself, offered in Preferences' own wording
+  ("Send no referrer at all" / "Send only the site's address"), so
+  the row and the dialog never speak two names for one choice.
+  The strength is one mode for every protected site - the tooltip
+  says so ("not only this one") - and the button is offered only in
+  the one state that speaks a strength: the guard on, this site
+  protected. An off guard speaks no strength (the enable button is
+  the row's offer), an excluded site's requests keep the site's own
+  policy whatever the strength says, and the browser's own pages
+  hide the whole row like every per-site row. The flip lands
+  through the manager's own setMode - the same call Preferences'
+  selector makes - followed by the network stack's reload, so the
+  IO-thread half follows at once, and the page reloads so its own
+  outgoing requests follow too: the same two-step every row choice
+  takes, and like every row choice it takes effect and closes. The
+  click handler answers only its own case - a guard that is off or
+  a site that is excluded changes nothing, the one-case discipline
+  every row button keeps. Verified without a Qt build by
+  tools/security/verify_referrer_guard.py, grown to 109 checks -
+  the shortcut's visibility rules, its two labels, the flip, its
+  one-case guard and its two-step pinned beside the wiring it
+  rides; the autotest grows padlockMenuReferrerStrengthTest (the
+  four visibility cases, both offered strengths, the tooltip's
+  global reach, and the flip through a real click: the mode
+  changes, persists, and the popup closes and deletes itself).
+  The cookie-lifecycle row's comment no longer calls the referrer
+  strength "a Preferences choice, like the referrer guard's", and
+  the sidebar's quick-switch comment follows. The other eleven
+  verifiers still pass unchanged.
 - Security tools (27): per-site deep links into the self-test
   page's "Per-site state" section - the section answers "what does
   the suite do to example.com?" for any site, but until now the

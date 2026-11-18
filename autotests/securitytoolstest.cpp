@@ -67,6 +67,7 @@
 #include <QTreeWidget>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QPointer>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineScript>
@@ -813,6 +814,128 @@ void SecurityToolsTest::padlockMenuSiteStateLinkTest()
     SelfTestPage::openSiteState(nullptr, host);
 
     delete padlock;
+    delete window;
+}
+
+void SecurityToolsTest::padlockMenuReferrerStrengthTest()
+{
+    // The strength shortcut in the padlock menu's referrer row: the
+    // row speaks the current strength, the button beside it offers
+    // the other one - the same choice Preferences' selector makes,
+    // one mode for every protected site, taken without leaving the
+    // page. Offered only in the one state that speaks a strength
+    // (the guard on, this site protected): hidden on the browser's
+    // own pages like every per-site row, hidden when the guard is
+    // off or the site is excluded, and the flip is the manager's own
+    // mode change with the network stack reloaded behind it - the
+    // same two-step every row choice takes.
+    auto *manager = ReferrerGuardManager::instance();
+    QVERIFY(manager);
+
+    // save the state the other tests expect
+    const auto modeBefore = manager->mode();
+    const QStringList exclusionsBefore = manager->exclusions();
+
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the padlock asks for the page the window is
+    // showing, so the tab has to exist first.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    // On the browser's own start page the strength button is hidden,
+    // the same case every per-site row follows: a strength is spoken
+    // for a web site's outgoing requests.
+    auto *startPagePadlock = new SiteInfoWidget(window);
+    startPagePadlock->show();
+    QVERIFY(QTest::qWaitForWindowExposed(startPagePadlock));
+    QVERIFY(!startPagePadlock->findChild<QPushButton*>(QSL("referrerStrengthButton"))->isVisible());
+    delete startPagePadlock;
+
+    // A web page to answer for.
+    const QString host = QSL("referrer-strength.example");
+    window->weView()->setHtml(QSL("<html><body></body></html>"), QUrl(QSL("https://%1/").arg(host)));
+    QTRY_COMPARE(window->weView()->url().host(), host);
+
+    // The guard off: the row offers to enable the protection, and
+    // the strength button stays hidden - an off guard speaks no
+    // strength.
+    manager->setMode(ReferrerGuardManager::Off);
+    {
+        auto *padlock = new SiteInfoWidget(window);
+        padlock->show();
+        QVERIFY(QTest::qWaitForWindowExposed(padlock));
+        QVERIFY(!padlock->findChild<QPushButton*>(QSL("referrerStrengthButton"))->isVisible());
+        delete padlock;
+    }
+
+    // The site excluded: its URLs leave as the site intends, and the
+    // strength button stays hidden - an excluded site's requests
+    // keep the site's own policy whatever the strength says.
+    manager->setMode(ReferrerGuardManager::OriginOnly);
+    manager->addExclusion(host);
+    {
+        auto *padlock = new SiteInfoWidget(window);
+        padlock->show();
+        QVERIFY(QTest::qWaitForWindowExposed(padlock));
+        QVERIFY(!padlock->findChild<QPushButton*>(QSL("referrerStrengthButton"))->isVisible());
+        delete padlock;
+    }
+
+    // Protected at the recommended strength: the button is offered
+    // with the strict strength, in Preferences' own wording, and its
+    // tooltip names the choice's global reach.
+    manager->removeExclusion(host);
+    {
+        auto *padlock = new SiteInfoWidget(window);
+        padlock->show();
+        QVERIFY(QTest::qWaitForWindowExposed(padlock));
+
+        auto *strength = padlock->findChild<QPushButton*>(QSL("referrerStrengthButton"));
+        QVERIFY(strength);
+        QVERIFY(strength->isVisible());
+        QCOMPARE(strength->text(), QSL("Send no referrer at all"));
+        QVERIFY(!strength->toolTip().isEmpty());
+        QVERIFY(strength->toolTip().contains(QSL("not only this one")));
+
+        // The flip: the mode changes to the offered strength, is
+        // persisted, and the popup closes - the choice takes effect
+        // and gets out of the way, like every row choice. The popup
+        // deletes itself on close, so the QPointer witnesses the
+        // deferred deletion instead of racing it.
+        QPointer<SiteInfoWidget> closing = padlock;
+        strength->click();
+        QCOMPARE(manager->mode(), ReferrerGuardManager::NoReferrer);
+        QCOMPARE(Settings::globalSettings()->value(QSL("Web-Browser-Settings/ReferrerGuardMode")).toInt(),
+                 static_cast<int>(ReferrerGuardManager::NoReferrer));
+        QVERIFY(!closing->isVisible());
+        QTRY_VERIFY(closing.isNull());
+    }
+
+    // Protected at the strict strength: the button offers the
+    // recommended one, and the flip lands there.
+    {
+        auto *padlock = new SiteInfoWidget(window);
+        padlock->show();
+        QVERIFY(QTest::qWaitForWindowExposed(padlock));
+
+        auto *strength = padlock->findChild<QPushButton*>(QSL("referrerStrengthButton"));
+        QVERIFY(strength);
+        QVERIFY(strength->isVisible());
+        QCOMPARE(strength->text(), QSL("Send only the site's address"));
+
+        QPointer<SiteInfoWidget> closing = padlock;
+        strength->click();
+        QCOMPARE(manager->mode(), ReferrerGuardManager::OriginOnly);
+        QTRY_VERIFY(closing.isNull());
+    }
+
+    // restore the state the other tests expect
+    manager->setMode(modeBefore);
+    manager->setExclusions(exclusionsBefore);
+    mApp->networkManager()->loadSettings();
+
     delete window;
 }
 

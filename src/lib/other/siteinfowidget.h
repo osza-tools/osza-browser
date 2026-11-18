@@ -50,6 +50,7 @@ private:
     void gpcButtonClicked();
     void updateReferrerGuardState();
     void referrerGuardButtonClicked();
+    void referrerStrengthButtonClicked();
     void updateThreatBlockState();
     void threatBlockButtonClicked();
     void threatBlockUpdateButtonClicked();

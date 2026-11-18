@@ -148,6 +148,7 @@ SiteInfoWidget::SiteInfoWidget(BrowserWindow* window, QWidget* parent)
     connect(ui->fingerprintButton, &QPushButton::clicked, this, &SiteInfoWidget::fingerprintButtonClicked);
     connect(ui->gpcButton, &QPushButton::clicked, this, &SiteInfoWidget::gpcButtonClicked);
     connect(ui->referrerButton, &QPushButton::clicked, this, &SiteInfoWidget::referrerGuardButtonClicked);
+    connect(ui->referrerStrengthButton, &QPushButton::clicked, this, &SiteInfoWidget::referrerStrengthButtonClicked);
     connect(ui->threatBlockButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockButtonClicked);
     connect(ui->threatBlockUpdateButton, &QPushButton::clicked, this, &SiteInfoWidget::threatBlockUpdateButtonClicked);
     connect(ui->cookieLifecycleButton, &QPushButton::clicked, this, &SiteInfoWidget::cookieLifecycleButtonClicked);
@@ -457,6 +458,7 @@ void SiteInfoWidget::updateReferrerGuardState()
     if (scheme != QL1S("http") && scheme != QL1S("https")) {
         ui->referrerLabel->hide();
         ui->referrerButton->hide();
+        ui->referrerStrengthButton->hide();
         ui->referrerGuardDiffLink->hide();
         return;
     }
@@ -464,12 +466,18 @@ void SiteInfoWidget::updateReferrerGuardState()
     if (!ReferrerGuardManager::isSupported()) {
         ui->referrerLabel->hide();
         ui->referrerButton->hide();
+        ui->referrerStrengthButton->hide();
         ui->referrerGuardDiffLink->hide();
         return;
     }
 
     const QString host = m_window->weView()->url().host();
     auto *manager = ReferrerGuardManager::instance();
+
+    // The strength shortcut starts hidden like the threat row's
+    // buttons: the one state that speaks a strength - the guard on,
+    // this site protected - shows it, offered as the other strength.
+    ui->referrerStrengthButton->hide();
 
     if (!manager->isEnabled()) {
         ui->referrerLabel->setText(tr("Cross-site referrer protection is <b>off</b>."));
@@ -481,11 +489,48 @@ void SiteInfoWidget::updateReferrerGuardState()
     } else {
         if (manager->mode() == ReferrerGuardManager::NoReferrer) {
             ui->referrerLabel->setText(tr("Requests to other sites carry <b>no referrer</b> from this site."));
+            // The same wording Preferences' selector carries, so the
+            // row and the dialog never speak two names for one choice.
+            ui->referrerStrengthButton->setText(tr("Send only the site's address"));
         } else {
             ui->referrerLabel->setText(tr("Requests to other sites carry <b>at most this site's address</b>, never its URLs."));
+            ui->referrerStrengthButton->setText(tr("Send no referrer at all"));
         }
         ui->referrerButton->setText(tr("Do not protect this site's URLs"));
+        ui->referrerStrengthButton->setToolTip(tr("Switch the strength for every site the protection covers, not only this one - the site's address, or no referrer at all. The page reloads so its own outgoing requests follow at once."));
+        ui->referrerStrengthButton->show();
     }
+}
+
+void SiteInfoWidget::referrerStrengthButtonClicked()
+{
+    const QUrl url = m_window->weView()->url();
+    auto *manager = ReferrerGuardManager::instance();
+
+    // The strength shortcut: flip to the other strength - the same
+    // choice Preferences' selector makes, one mode for every
+    // protected site, taken from the row that speaks the current
+    // one. The button is offered only in the one state that speaks a
+    // strength (the guard on, this site protected), so the flip
+    // always starts from there; anything else - the guard off, the
+    // site excluded - is not this button's case and changes nothing,
+    // the same one-case discipline every row button keeps.
+    if (manager->isEnabled() && !manager->isExcluded(url.host())) {
+        manager->setMode(manager->mode() == ReferrerGuardManager::NoReferrer
+                             ? ReferrerGuardManager::OriginOnly
+                             : ReferrerGuardManager::NoReferrer);
+
+        // The header half follows the network stack's reload - the
+        // same two-step the row's other choices take - and the page
+        // is reloaded so its own outgoing requests follow at once.
+        mApp->networkManager()->loadSettings();
+
+        if (url.scheme() == QL1S("http") || url.scheme() == QL1S("https")) {
+            m_window->weView()->reload();
+        }
+    }
+
+    close();
 }
 
 void SiteInfoWidget::referrerGuardButtonClicked()
@@ -710,8 +755,8 @@ void SiteInfoWidget::cookieLifecycleButtonClicked()
     if (!manager->isEnabled()) {
         // The per-site shortcut needs the sweep itself, turn it on
         // at the session strength - the gentle one that keeps what
-        // the browser started with; the strict strength is a
-        // Preferences choice, like the referrer guard's.
+        // the browser started with; the strict strength stays a
+        // Preferences choice.
         manager->setMode(CookieLifecycleManager::SessionOnly);
     }
     else if (manager->isKept(url.host())) {

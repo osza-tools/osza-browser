@@ -42,11 +42,12 @@ and KDE contributors for their work.
   (requests to another site carry at most the site you were
   reading's address - never its full URL with path and query -
   whatever "unsafe-url" referrer policy the page declared, and the
-  strength is a choice: the site's address, or no referrer at all;
-  on by default at the recommended strength, with a per-site
-  opt-out in the padlock menu and a bulk-management dialog in
-  Preferences; the rewrite reads the request's own Referer header,
-  so it never introduces a referrer where the engine sent none),
+  strength is a choice: the site's address, or no referrer at all,
+  one padlock-row click away; on by default at the recommended
+  strength, with a per-site opt-out in the padlock menu and a
+  bulk-management dialog in Preferences; the rewrite reads the
+  request's own Referer header, so it never introduces a referrer
+  where the engine sent none),
   cookie lifecycle on exit
   (a cookie is the one tracker built to outlive the session that
   created it: when the browser closes, the sweep deletes the

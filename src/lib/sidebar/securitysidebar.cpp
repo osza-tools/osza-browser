@@ -967,10 +967,11 @@ void SecuritySideBar::toggleGpc(bool enabled)
 void SecuritySideBar::toggleReferrerGuard(bool enabled)
 {
     // The quick switch moves between off and on at the recommended
-    // strength (the strict one is a Preferences choice); a build
-    // whose QtWebEngine cannot run the guard never gets here, the
-    // switch is disabled above. Reloading the network stack makes
-    // the IO-thread half follow immediately.
+    // strength (the other strength is one padlock-row click away,
+    // where the row speaks the current one); a build whose
+    // QtWebEngine cannot run the guard never gets here, the switch
+    // is disabled above. Reloading the network stack makes the
+    // IO-thread half follow immediately.
     auto *manager = ReferrerGuardManager::instance();
     manager->setMode(enabled ? ReferrerGuardManager::OriginOnly : ReferrerGuardManager::Off);
     mApp->networkManager()->loadSettings();
