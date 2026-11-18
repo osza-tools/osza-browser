@@ -31,6 +31,7 @@
 #include "securitypresets.h"
 #include "referrerguardmanager.h"
 #include "securitysettingsporter.h"
+#include "selftestpage.h"
 #include "settingsdiffpage.h"
 #include "settings.h"
 #include "tabwidget.h"
@@ -108,6 +109,13 @@ SecuritySideBar::SecuritySideBar(BrowserWindow* window, QWidget* parent)
     connect(m_cookieLifecycleToggle, &QCheckBox::toggled, this, &SecuritySideBar::toggleCookieLifecycle);
     connect(m_resetButton, &QToolButton::clicked, this, &SecuritySideBar::resetCounters);
     connect(m_selfTestButton, &QToolButton::clicked, this, &SecuritySideBar::openSelfTest);
+
+    // The per-site deep link's click rides the shared landing - the
+    // same rule the padlock menu's link keeps: the label never
+    // opens anything itself.
+    connect(m_siteStateLink, &QLabel::linkActivated, this, [this](const QString &) {
+        openSiteState();
+    });
 
     connect(m_backupMenu->addAction(tr("Export settings...")), &QAction::triggered,
             this, &SecuritySideBar::exportSecuritySettings);
@@ -215,6 +223,18 @@ void SecuritySideBar::createLayout()
     siteGrid->addWidget(siteThreatsRow, 3, 0);
     siteGrid->addWidget(siteReferrersRow, 4, 0);
     mainLayout->addLayout(siteGrid);
+
+    // The per-site deep link, under the This-site rows: the complete
+    // answer for the site they count for - the same link the padlock
+    // menu carries under its per-tool rows. Its text follows the
+    // tab in refresh(); only the shape is laid out here.
+    m_siteStateLink = new QLabel(this);
+    m_siteStateLink->setObjectName(QSL("siteStateLink"));
+    m_siteStateLink->setTextFormat(Qt::RichText);
+    // osza: URLs belong to the browser, never the OS.
+    m_siteStateLink->setOpenExternalLinks(false);
+    m_siteStateLink->setWordWrap(true);
+    mainLayout->addWidget(m_siteStateLink);
 
     // Quick switches
     mainLayout->addWidget(headingLabel(tr("Protections")));
@@ -436,6 +456,47 @@ void SecuritySideBar::refresh()
     m_siteUpgradesValue->setText(formatCount(security->httpsUpgradesForHost(host)));
     m_siteThreatsValue->setText(formatCount(security->threatsBlockedForHost(host)));
     m_siteReferrersValue->setText(formatCount(security->referrersTrimmedForHost(host)));
+
+    updateSiteStateLink();
+}
+
+void SecuritySideBar::updateSiteStateLink()
+{
+    // The per-site deep link follows the section's own site: the
+    // same link the padlock menu carries under its per-tool rows,
+    // answering for the site the counters above count for. The same
+    // case rules too - offered for the web schemes only, the host
+    // in the spelling QUrl::host() gives (the same spelling every
+    // row and every list reads), never a host judgment of its own:
+    // whether the page can judge it is the page's own answer, the
+    // same pipe rule the "site" query item follows.
+    WebView *view = m_window ? m_window->weView() : nullptr;
+    const QUrl url = view ? view->url() : QUrl();
+    const QString scheme = url.scheme();
+    const QString host = url.host();
+
+    if (scheme != QSL("http") && scheme != QSL("https")) {
+        m_siteStateHost.clear();
+        m_siteStateLink->hide();
+        return;
+    }
+
+    // The host the link speaks is kept beside the link itself, so a
+    // click always lands on the answer the visible link promised -
+    // never on a fresher reading of the tab, which a navigation
+    // inside the refresh interval could have changed into a
+    // different answer than the one shown. Cleared with every hide,
+    // so a hidden link never carries a stale host to land on.
+    m_siteStateHost = host;
+
+    // The same address the page's own ask form composes - the URL
+    // shape that exists once, in SelfTestPage::pageUrl().
+    const QUrl target = SelfTestPage::pageUrl(QString(), host);
+    m_siteStateLink->setText(QSL("<a href=\"%1\">%2</a>")
+                                 .arg(target.toString().toHtmlEscaped(),
+                                      tr("How the security tools treat this site").toHtmlEscaped()));
+    m_siteStateLink->setToolTip(tr("Opens the security self-test's per-site section - every protection's treatment of %1 in one page, the same judgments the padlock menu's rows read. Nothing is changed by the page.").arg(host));
+    m_siteStateLink->show();
 }
 
 void SecuritySideBar::updateStatus()
@@ -662,6 +723,20 @@ void SecuritySideBar::openToolDiff(const QString &toolKey)
     // baselines overview when the request cannot be answered
     // honestly - never an error page.
     SettingsDiffPage::openToolDiff(m_window, toolKey);
+}
+
+void SecuritySideBar::openSiteState()
+{
+    // The per-site deep link's landing: the host the link last spoke
+    // rides the shared SelfTestPage::openSiteState() - the one place
+    // every per-site deep link lands, the same one the padlock
+    // menu's link and the threat interstitial's link ride - so this
+    // surface's link can never land anywhere else either. An empty
+    // host (no web page open, the link hidden) is answered with the
+    // plain page - the same honest answer the ask form's empty
+    // input gets - and without a window the shared landing is a
+    // no-op, exactly like the dashboard's own tool-diff shortcut.
+    SelfTestPage::openSiteState(m_window, m_siteStateHost);
 }
 
 void SecuritySideBar::exportSecuritySettings()

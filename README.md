@@ -165,8 +165,10 @@ and KDE contributors for their work.
   is one click away from the surfaces where the question arises:
   the padlock menu carries a "How the security tools treat this
   site" link under its per-tool rows, opening the page on the
-  current site's answer, and the threat-block warning page carries
-  the same link for the host it stopped - the whole suite's
+  current site's answer, the security dashboard's "This site"
+  section carries the same link under its counter rows, and the
+  threat-block warning page carries the same link for the host it
+  stopped - the whole suite's
   treatment of the flagged site behind the warning that stopped
   it. The
   per-site state is visible before any menu is opened: the

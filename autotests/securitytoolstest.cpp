@@ -634,6 +634,98 @@ void SecurityToolsTest::securityDashboardToolDiffLinksTest()
     delete window;
 }
 
+void SecurityToolsTest::securityDashboardSiteStateLinkTest()
+{
+    // The dashboard's per-site deep link: under its This-site rows -
+    // the counters that answer one tool at a time for the site the
+    // section speaks - the same "How the security tools treat this
+    // site" link the padlock menu carries under its per-tool rows,
+    // the complete answer, one page. Built on the same pageUrl() the
+    // page's own ask form composes and landed by the same shared
+    // SelfTestPage::openSiteState() the padlock menu's link and the
+    // threat interstitial's link ride, so every surface that asks
+    // the per-site question can never land in different places. The
+    // link follows the section's own site - hidden without a web
+    // page to answer for, offered for the web schemes only, and
+    // refreshed beside the per-site values it answers for.
+
+    // Without a window there is no site to answer for: the link is
+    // hidden and the slot stays a no-op, exactly like the dashboard's
+    // own tool-diff shortcut.
+    SecuritySideBar windowless(nullptr);
+    windowless.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&windowless));
+    QVERIFY(!windowless.findChild<QLabel*>(QSL("siteStateLink"))->isVisible());
+    windowless.openSiteState();
+
+    BrowserWindow *window = mApp->createWindow(Qz::BW_NewWindow);
+    QVERIFY(window);
+
+    // The window builds its first tab in postLaunch(), deferred to
+    // the event loop - the dashboard asks for the page the window is
+    // showing, so the tab has to exist first.
+    QTRY_VERIFY(window->tabWidget()->count() > 0);
+
+    // On the browser's own start page the link is hidden, the same
+    // case every per-site surface follows.
+    SecuritySideBar dashboard(window);
+    dashboard.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&dashboard));
+    auto *link = dashboard.findChild<QLabel*>(QSL("siteStateLink"));
+    QVERIFY(link);
+    QVERIFY(!link->isVisible());
+
+    // On a web page the link is offered: the visible address is
+    // exactly what pageUrl() builds for the site's host - the URL
+    // shape that exists once - and the tooltip names the site the
+    // answer speaks. The link rides the section's own refresh, so
+    // the wait is the link's own update.
+    const QString host = QSL("dashboard-site-state.example");
+    window->weView()->setHtml(QSL("<html><body></body></html>"), QUrl(QSL("https://%1/").arg(host)));
+    QTRY_COMPARE(window->weView()->url().host(), host);
+    QTRY_VERIFY(link->isVisible());
+
+    // Rich text with external links off: osza: URLs belong to the
+    // browser, never the OS - the same rule as the rows' "diff"
+    // links and the padlock menu's own per-site link.
+    QCOMPARE(link->textFormat(), Qt::RichText);
+    QVERIFY(!link->openExternalLinks());
+
+    const QString href = SelfTestPage::pageUrl(QString(), host).toString();
+    QCOMPARE(href, QSL("osza:selftest?site=%1").arg(host));
+    QVERIFY(link->text().contains(href.toHtmlEscaped()));
+    QVERIFY(!link->toolTip().isEmpty());
+    QVERIFY(link->toolTip().contains(host));
+
+    // The landing, with a real window: the very address the link
+    // shows, through the link's own click path - the label hands its
+    // activation to the dashboard's slot (it never opens anything
+    // itself), and the slot rides the shared landing.
+    const int tabsBefore = window->tabWidget()->count();
+    Q_EMIT link->linkActivated(href);
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 1);
+    QTRY_COMPARE(window->weView()->url(), SelfTestPage::pageUrl(QString(), host));
+
+    // The landing makes the self-test page the current tab - an
+    // osza: page - so the link hides again with the section's own
+    // case, and without a host to speak the slot answers the empty
+    // ask the way the shared landing always has: the plain page,
+    // never an error page.
+    QTRY_VERIFY(!link->isVisible());
+    dashboard.openSiteState();
+    QTRY_COMPARE(window->tabWidget()->count(), tabsBefore + 2);
+    QTRY_COMPARE(window->weView()->url(), SelfTestPage::pageUrl());
+
+    // A switch back to the web page refreshes the link with it - the
+    // tab switch rides the stack's own currentChanged signal - and
+    // the link speaks the same host it spoke before.
+    window->tabWidget()->setCurrentIndex(0);
+    QTRY_VERIFY(link->isVisible());
+    QVERIFY(link->text().contains(href.toHtmlEscaped()));
+
+    delete window;
+}
+
 void SecurityToolsTest::padlockMenuToolDiffLinksTest()
 {
     // The padlock menu's per-site entries carry the same deep links

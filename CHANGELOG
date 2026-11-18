@@ -188,6 +188,49 @@ Added:
   real bugs in the chrome theme that had been shipping silently
   (see Fixed), and it keeps the coverage honest as widgets are
   added to the tree.
+- Security tools (29): the per-site deep link from the security
+  dashboard's rows - the "This site" section counts for one site
+  (ads, trackers, upgrades, threats, referrers, one row per tool),
+  but the whole-suite question - "what does the security tools
+  suite do to this site?" - had no way to be asked from there; the
+  section now carries the same "How the security tools treat this
+  site" link the padlock menu keeps under its per-tool rows, under
+  the counter rows it answers for. The third surface where the
+  per-site question naturally arises lands like the first two:
+  built by the same SelfTestPage::pageUrl() the page's own ask form
+  composes (osza:selftest?site=example.com, the URL shape that
+  exists once) and landed by the same shared
+  SelfTestPage::openSiteState(), so every surface that asks the
+  question can never land in different places. The link follows the
+  section's own site, refreshed beside the per-site values on the
+  section's own refresh (the one-second timer and the tab switch
+  both ride it): offered for the web schemes only, hidden with the
+  browser's own pages and without a window, the host in the
+  spelling QUrl::host() gives - the same spelling every row and
+  every list reads - and never a host judgment of its own (whether
+  the page can judge it is the page's own answer, the same pipe
+  rule the "site" query item follows). Because the dashboard is a
+  long-lived surface that follows a living tab, the host the link
+  speaks is kept beside the link itself, updated together with it
+  and cleared with every hide, so a click always lands on the
+  answer the visible link promised - never on a fresher reading of
+  the tab, which a navigation inside the refresh interval could
+  have changed into a different answer than the one shown; the
+  landing itself is what clears it (the self-test page the link
+  opens is an osza: page), and the slot's empty-host ask is
+  answered the way the shared landing always has: the plain page,
+  never an error page. Verified without a Qt build by
+  tools/security/verify_selftest_page.py, grown to 164 checks -
+  the dashboard's wiring pinned beside the padlock menu's and the
+  interstitial's: the web-scheme case, the pageUrl build, the
+  shared landing, the osza: rule, the same label, the kept host and
+  the refresh; the autotest grows securityDashboardSiteStateLinkTest
+  (hidden without a window and on the browser's own pages, offered
+  on a web page with the exact pageUrl address, the landing through
+  the dashboard's own slot, the hide and the honest empty ask after
+  it, and the link following a tab switch back to the web page).
+  The README speaks the link, and the other eleven verifiers still
+  pass unchanged.
 - Security tools (28): the referrer-guard strength shortcut in the
   padlock row - the row already speaks the current strength ("at
   most this site's address" or "no referrer"), but taking the other

@@ -46,6 +46,14 @@ class BrowserWindow;
  * dialog's "view as page" link carry, focused on that tool's
  * section - so from the row that shows a tool's state, one click
  * shows what the project's recommendation would change about it.
+ *
+ * The "This site" section also carries the per-site deep link
+ * (openSiteState): the same "How the security tools treat this
+ * site" link the padlock menu keeps under its per-tool rows,
+ * answering the whole-suite question for the site the section's
+ * counters count for - every protection with a per-site choice,
+ * one page - so the third surface where the per-site question
+ * naturally arises lands in the same place the first two do.
  */
 class OSZA_EXPORT SecuritySideBar : public QWidget
 {
@@ -64,6 +72,7 @@ public Q_SLOTS:
     void applySecurityPreset(const QString &id);
     void previewSecurityBaselines();
     void openToolDiff(const QString &toolKey);
+    void openSiteState();
     void toggleAdBlock(bool enabled);
     void toggleHttpsOnly(bool enabled);
     void toggleStripTracking(bool enabled);
@@ -81,6 +90,7 @@ private:
     void createLayout();
     void updateStatus();
     void updateToggles();
+    void updateSiteStateLink();
     QString currentHost() const;
     QString formatCount(quint64 count) const;
 
@@ -102,6 +112,12 @@ private:
     QLabel* m_siteUpgradesValue;
     QLabel* m_siteThreatsValue;
     QLabel* m_siteReferrersValue;
+
+    // The per-site deep link and the host it last spoke: kept beside
+    // each other, updated together, so a click always lands on the
+    // answer the visible link promised.
+    QLabel* m_siteStateLink;
+    QString m_siteStateHost;
 
     QCheckBox* m_adBlockToggle;
     QCheckBox* m_httpsOnlyToggle;

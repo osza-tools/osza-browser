@@ -34,6 +34,7 @@ private Q_SLOTS:
     void dnsOverHttpsProvidersTest();
     void securityDashboardWidgetTest();
     void securityDashboardToolDiffLinksTest();
+    void securityDashboardSiteStateLinkTest();
     void padlockMenuToolDiffLinksTest();
     void padlockMenuSiteStateLinkTest();
     void padlockMenuReferrerStrengthTest();

@@ -67,6 +67,12 @@ HANDLER_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 SITEINFO_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             os.pardir, os.pardir,
                             "src", "lib", "other", "siteinfowidget.cpp")
+SIDEBAR_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           os.pardir, os.pardir,
+                           "src", "lib", "sidebar", "securitysidebar.cpp")
+SIDEBAR_H = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         os.pardir, os.pardir,
+                         "src", "lib", "sidebar", "securitysidebar.h")
 THREAT_CPP = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           os.pardir, os.pardir,
                           "src", "lib", "security", "threatblockmanager.cpp")
@@ -84,6 +90,8 @@ script = re.search(r"<script>(.*?)</script>", html, re.DOTALL).group(1)
 page_cpp = open(PAGE_CPP, encoding="utf-8").read()
 handler_cpp = open(HANDLER_CPP, encoding="utf-8").read()
 siteinfo_cpp = open(SITEINFO_CPP, encoding="utf-8").read()
+sidebar_cpp = open(SIDEBAR_CPP, encoding="utf-8").read()
+sidebar_h = open(SIDEBAR_H, encoding="utf-8").read()
 threat_cpp = open(THREAT_CPP, encoding="utf-8").read()
 threat_html = open(THREAT_HTML, encoding="utf-8").read()
 
@@ -272,7 +280,7 @@ static_check("an unjudgeable ask is answered with empty rows, never judged",
       and re.search(r'states\.insert\(QSL\("judgeable"\), !host\.isEmpty\(\)\)',
                     page_cpp) is not None)
 
-print("== per-site deep links: the padlock menu and the interstitial, one landing ==")
+print("== per-site deep links: the padlock menu, the interstitial and the dashboard, one landing ==")
 
 # The shared landing, the openToolDiff() rule applied to the
 # per-site question: every surface that asks it lands in the same
@@ -328,6 +336,41 @@ static_check("the interstitial escapes the address for the href attribute (the r
       re.search(r'''siteStateHref\.replace\(QLatin1Char\('&'\), QSL\("&amp;"\)\)''', threat_cpp) is not None)
 static_check("the interstitial's link needs no script (the page's only script stays goBack)",
       threat_html.count("<script>") == 1)
+
+# The dashboard's link: under its This-site rows, the complete
+# answer for the site they count for - the third surface where the
+# per-site question naturally arises, landing in the same place
+# the first two do.
+sidebar_link_start = sidebar_cpp.index("void SecuritySideBar::updateSiteStateLink")
+sidebar_link_end = sidebar_cpp.index("void SecuritySideBar::updateStatus")
+sidebar_link = sidebar_cpp[sidebar_link_start:sidebar_link_end]
+sidebar_shape = sidebar_cpp[sidebar_cpp.index("void SecuritySideBar::createLayout"):sidebar_cpp.index("QWidget* SecuritySideBar::createCounterTile")]
+sidebar_landing = sidebar_cpp[sidebar_cpp.index("void SecuritySideBar::openSiteState"):sidebar_cpp.index("void SecuritySideBar::exportSecuritySettings")]
+
+static_check("the dashboard's link follows the rows' own case (web schemes only)",
+      'scheme != QSL("http") && scheme != QSL("https")' in sidebar_link
+      and "m_siteStateLink->hide();" in sidebar_link)
+static_check("the dashboard's link carries the host in the rows' own spelling, never a judgment of its own",
+      re.search(r"const QString host = url\.host\(\);", sidebar_link) is not None
+      and "normalizeSiteHost" not in sidebar_link)
+static_check("the dashboard's link is built by the same pageUrl() the ask form composes",
+      "SelfTestPage::pageUrl(QString(), host)" in sidebar_link)
+static_check("the dashboard's link lands through the shared openSiteState()",
+      "SelfTestPage::openSiteState(m_window, m_siteStateHost);" in sidebar_landing
+      and "addView" not in sidebar_landing)
+static_check("the dashboard's link keeps the osza: rule (rich text, never external)",
+      "setTextFormat(Qt::RichText)" in sidebar_shape
+      and "setOpenExternalLinks(false)" in sidebar_shape
+      and 'setObjectName(QSL("siteStateLink"))' in sidebar_shape)
+static_check("the dashboard's link speaks the same label the padlock menu's does",
+      'tr("How the security tools treat this site")' in sidebar_link)
+static_check("the dashboard keeps the host the link speaks beside the link, so a click never lands on a fresher tab reading",
+      "m_siteStateHost = host;" in sidebar_link
+      and "m_siteStateHost.clear();" in sidebar_link
+      and "QString m_siteStateHost;" in sidebar_h)
+static_check("the dashboard's link refreshes with the section it answers for (beside the per-site values)",
+      re.search(r"m_siteReferrersValue->setText\(formatCount\(security->referrersTrimmedForHost\(host\)\)\);\s*\n\s*updateSiteStateLink\(\);", sidebar_cpp) is not None
+      and "    void updateSiteStateLink();" in sidebar_h)
 if checks[0]:
     print("STATIC CHECK(S) FAILED")
     exit(1)
